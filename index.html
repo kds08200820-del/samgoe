@@ -42,13 +42,15 @@
     .ph-circle{border-radius:50%;}
     .ph-rounded{border-radius:18px;}
 
-    /* Nav hover — 메뉴에 마우스를 올리면 색이 바뀜 */
-    .nav-links a:not(.nav-cta){transition:color .15s ease;}
-    .nav-links a:not(.nav-cta):hover{color:var(--blue);}
-    .nav-cta{transition:background .15s ease;}
-    .nav-cta:hover{background:var(--blue-focus);}
-    footer a{transition:color .15s ease;}
-    footer a:hover{color:var(--blue);}
+    /* Nav hover — 마우스를 올리면 색이 변하고 영역(알약 배경)이 부드럽게 표시됨.
+       메뉴 링크엔 color가 인라인으로 박혀 있어 :hover 색상은 !important로 덮어씀. */
+    .nav-links a:not(.nav-cta){padding:7px 12px;border-radius:9px;
+      transition:color .18s ease, background-color .18s ease;}
+    .nav-links a:not(.nav-cta):hover{color:var(--blue) !important;background-color:rgba(0,102,204,0.10);}
+    .nav-cta{transition:background-color .18s ease, transform .12s ease;}
+    .nav-cta:hover{background:var(--blue-focus) !important;}
+    footer a{transition:color .18s ease;}
+    footer a:hover{color:var(--blue) !important;}
 
     /* 회칙 아코디언 */
     .chap{border:1px solid var(--hairline);border-radius:14px;background:var(--white);overflow:hidden;}
@@ -108,15 +110,15 @@
   <nav style="position:sticky;top:44px;z-index:55;background:rgba(245,245,247,0.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,0.08);">
     <div style="max-width:1024px;margin:0 auto;height:52px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
       <a href="#top" style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);white-space:nowrap;">삼기연</a>
-      <div class="nav-links" style="display:flex;align-items:center;gap:22px;">
+      <div class="nav-links" style="display:flex;align-items:center;gap:6px;">
         <a href="#about" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">소개</a>
-        <a href="#bylaws" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">회칙</a>
         <a href="#work" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">활동</a>
         <a href="#org" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">임원</a>
         <a href="#schedule" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">일정</a>
         <a href="#churches" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">소속교회</a>
         <a href="#march" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">3·1만세</a>
         <a href="#gallery" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">갤러리</a>
+        <a href="#bylaws" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">회칙</a>
         <a href="#join" class="press nav-cta" style="display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 16px;border-radius:9999px;background:var(--blue);color:#fff;font-size:14px;font-weight:400;letter-spacing:-0.01em;">가입 안내</a>
       </div>
     </div>
@@ -158,125 +160,6 @@
         <h3 style="margin:0 0 10px;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">교회 부흥과 다음 세대</h3>
         <p style="margin:0;font-size:17px;line-height:1.47;color:var(--muted);">작은 교회를 함께 일으키고 장학사업과 음악회로 다음 세대를 격려합니다.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- ===================== BYLAWS / 회칙 (parchment) ===================== -->
-  <section id="bylaws" class="section" style="scroll-margin-top:96px;background:var(--parchment);padding:96px 24px;">
-    <div style="max-width:860px;margin:0 auto;">
-      <div style="text-align:center;">
-        <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">삼괴지역기독교연합회 회칙</h2>
-        <p style="margin:18px auto 0;max-width:560px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">2010년 11월 23일 제정 · 2026년 1월 11일 개정</p>
-        <p style="margin:14px auto 0;max-width:560px;font-size:16px;line-height:1.5;color:var(--muted);">각 장의 제목을 누르시면 전문을 펼쳐 보실 수 있습니다.</p>
-      </div>
-
-      <div style="margin-top:48px;display:flex;flex-direction:column;gap:14px;">
-
-        <details class="chap" open>
-          <summary>제1장 총칙</summary>
-          <div class="body">
-            <div class="art"><h4>제1조 (명칭)</h4><p>본 회는 “삼괴지역 기독교 연합회”라 칭한다.</p></div>
-            <div class="art"><h4>제2조 (위치)</h4><p>본 회의 사무실 위치는 회장 목사가 시무하는 교회에 둔다.</p></div>
-            <div class="art"><h4>제3조 (목적)</h4><p>본 회는 삼괴지역 교회들로 예수 그리스도 안에서 한 형제 된 목회자 간에 친목을 도모하고 교회 화합과 지역 복음화 및 교회부흥 발전과 지역 발전을 위해 협력함을 목적으로 한다.</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제2장 회원</summary>
-          <div class="body">
-            <div class="art"><h4>제4조 (회원의 자격)</h4><p>삼괴지역(우정읍과 장안면)에 소재한 정통교단 교회를 담임하는 자로 한다.</p></div>
-            <div class="art"><h4>제5조 (임·역원)</h4><p>본회 임원은 역원은 다음과 같이 구성한다.
-회장 1인, 상임부회장 1인, 부회장 다수(교단별안배), 총무 1인, 부총무 1인, 서기 1인, 부서기 1인, 회계 1인, 부회계 1인, 위원 2인 이상으로 한다.</p></div>
-            <div class="art"><h4>제6조 (임원의 임무)</h4><p>1) 회장: 본회의 업무를 총괄하고 본회를 대표하여 산하 단체를 지도 감독한다.
-2) 상임부회장: 회장을 보좌하며 회장 유고시 그 직을 대행한다.
-3) 부회장: 본 회의 사업을 함께 추진하며, 소속 교단 회원을 관리한다.
-4) 사무총장: 본 회의 제반 사업을 총괄한다.
-5) 부사무총장: 총무를 보좌하며 유고시 그 직무를 대행한다.
-6) 서기: 본회의 기록과 서류 일체와 제반문서 수발 비치하며 관리 보관한다.
-7) 부서기: 서기를 보좌하며 유고시 그 직무를 대행한다.
-8) 회계: 본회의 재정 출납에 관한 일체를 담당한다.
-9) 부회계: 회계를 보좌하며 유고시 그 직무를 대행한다.
-10) 위원: 위원회의 역할을 담당한다.</p></div>
-            <div class="art"><h4>제7조 (위원회)</h4><p>본회의 사업을 효과적으로 수행하기 위하여 임원회에서 위원회를 조직하여 활동할 수 있다.
-① 기도위원회: ‘지역 살리기 매월 첫 주 수요기도회’를 계획하고 진행하여 지속적인 기도운동을 전개한다.
-② 복지선교위원회: 회원 교회의 복지선교사업을 돕고 지역의 복지관련 사업과 협업하는 일을 담당한다.</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제3장 회의</summary>
-          <div class="body">
-            <div class="art"><h4>제8조 (정기총회)</h4><p>매년 11월 중에 개최하여 결산, 예산, 사업계획을 심의 통과하고 임원을 선출한다.</p></div>
-            <div class="art"><h4>제9조 (임시총회)</h4><p>회원 5인 이상의 발의로 회장이 필요시 소집한다.</p></div>
-            <div class="art"><h4>제10조 (조찬기도회)</h4><p>본 회는 영적 성장과 교제를 위하여 매월 첫 주 수요일 조찬기도회를 갖는다.</p></div>
-            <div class="art"><h4>제11조 (월례회)</h4><p>격월로 하되 조찬기도회로 대체할 수 있고 필요시 별도 회의를 소집할 수 있다.</p></div>
-            <div class="art"><h4>제12조 (임원회 및 임역원회)</h4><p>회장이 소집한다.</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제4장 임원선출</summary>
-          <div class="body">
-            <div class="art"><h4>제13조 (임원의 자격)</h4><p>본회의 임원의 자격은 회원의 의무수행에 모범된 자라야 한다.</p></div>
-            <div class="art"><h4>제14조 (임원임기)</h4><p>임원의 임기는 다음과 같다.
-1) 회장의 임기는 2년으로 하되 1회에 한하여 연임할 수 있다.
-2) 기타 임원은 연임할 수 있다.</p></div>
-            <div class="art"><h4>제15조 (선거)</h4><p>1) 회장: 지난 회기 상임부회장이 특별한 사건이 없는 한 회장직을 승계한다.
-2) 상임 부회장: 총회에서 선출한다.
-3) 부회장: 회원 중에서 교단별로 대표를 정하여 회장단이 총회 후 선임한다.</p></div>
-            <div class="art"><h4>제16조 (기타임원)</h4><p>총무 이하 임원은 총회 후 회장과 상임 부회장이 추천하여 선임한다.</p></div>
-            <div class="art"><h4>제17조 (고문)</h4><p>본회의 고문은 증경 회장단 중 증경회장단 회비를 납부한 이로 한다.</p></div>
-            <div class="art"><h4>제18조 (감사)</h4><p>본회의 감사는 전임과 전전임 증경회장으로 하되 임기는 2년으로 하고 본회의 사업 및 재정 일체를 감사하여 총회시 보고한다.</p></div>
-            <div class="art"><h4>제19조 (증경회장단)</h4><p>회장을 역임한 이로 교회를 담임하고 만 70세 이하인 이들로 구성한다.</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제5장 회원의무 및 권리</summary>
-          <div class="body">
-            <div class="art"><h4>제20조 (의무)</h4><p>회원은 각종 회의에 참석하며 결의되어 시행하는 각종 사업에 적극 동참하고 협조할 의무를 가진다.</p></div>
-            <div class="art"><h4>제21조 (권리)</h4><p>회원은 선거권, 피선거권, 발언권, 결의권이 있으며 불이익을 받지 않으며 복리 사업에서 혜택을 받을 권리가 있다.</p></div>
-            <div class="art"><h4>제22조 (상벌)</h4><p>1) 본회에 공헌한 회원에게는 임원회의 결의로 회장이 이를 포상할 수 있다.
-2) 본회의 명예에 손상을 준 자 또는 회의나 집회에 2년 이상 참석치 못하거나 회원의 의무를 감당하지 못할 시는 회원 자격이 자연 상실되며 의무 이행시 임원회의 결의를 거쳐 자격이 복구된다.</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제6장 재정 및 회비</summary>
-          <div class="body">
-            <div class="art"><h4>제23조 (재정)</h4><p>본 회의 재정은 회원들의 회비와 각 교회의 찬조와 헌금, 후원금으로 한다.
-1) 회비는 회장은 월 10만원, 상임 부회장은 월 3만원, 부회장 및 임원단은 월 2만원, 증경회장은 연 10만원, 일반회원은 연 5만원으로 한다.
-2) 행사 찬조 및 후원금은 회비로 대체할 수도 있다.</p></div>
-            <div class="art"><h4>제24조 (예산집행)</h4><p>본회의 재정지출은 임원회의 결의로 한다.</p></div>
-            <div class="art"><h4>제25조 (회계년도)</h4><p>본 회의 회계년도는 본회 행정년도로 한다.</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제7장 경조사</summary>
-          <div class="body">
-            <div class="art"><h4>제26조</h4><p>다음 각 항에 해당할 때, 조화나 화환, 축의금을 보낸다. 그 금액은 10만원을 넘길 수 없다.
-1) 회원의 직계가족 중 배우자, 부친, 모친, 자녀가 상을 당했을 때 (장모, 장인 제외)
-2) 자녀가 결혼을 했을 때
-3) 은퇴, 부임</p></div>
-          </div>
-        </details>
-
-        <details class="chap">
-          <summary>제8장 부칙</summary>
-          <div class="body">
-            <div class="art"><h4>제27조 (회칙개정)</h4><p>회칙 개정은 총회에서 참석 과반 수 이상의 동의를 얻어 개정할 수 있다.</p></div>
-            <div class="art"><h4>제28조</h4><p>본회 회칙의 미비 된 사항은 만국통상 관례에 따른다.</p></div>
-            <div class="art"><h4>제29조</h4><p>본회 회칙은 통과 시부터 그 효력을 발생한다.</p></div>
-          </div>
-        </details>
-
-      </div>
-
-      <p style="margin:32px auto 0;text-align:center;font-size:14px;line-height:1.8;color:var(--muted);">
-        제정 2010. 11. 23. · 개정 2011. 11. 28. · 개정 2012. 11. 29. · 개정 2021. 03. 16.<br>
-        개정 2022. 12. 13. · 개정 2025. 01. 12. · 개정 2026. 01. 11.
-      </p>
     </div>
   </section>
 
@@ -591,6 +474,126 @@
       <img src="assets/img/map.webp" alt="삼괴지역 기독교 연합회 약도 · 사무실" class="ph ph-rounded" style="display:block;width:100%;min-height:360px;height:100%;box-shadow:var(--shadow);" />
     </div>
   </section>
+
+  <!-- ===================== BYLAWS / 회칙 (white) — 페이지 끝 ===================== -->
+  <section id="bylaws" class="section" style="scroll-margin-top:96px;background:var(--white);padding:96px 24px;">
+    <div style="max-width:860px;margin:0 auto;">
+      <div style="text-align:center;">
+        <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">삼괴지역기독교연합회 회칙</h2>
+        <p style="margin:18px auto 0;max-width:560px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">2010년 11월 23일 제정 · 2026년 1월 11일 개정</p>
+        <p style="margin:14px auto 0;max-width:560px;font-size:16px;line-height:1.5;color:var(--muted);">각 장의 제목을 누르시면 전문을 펼쳐 보실 수 있습니다.</p>
+      </div>
+
+      <div style="margin-top:48px;display:flex;flex-direction:column;gap:14px;">
+
+        <details class="chap" open>
+          <summary>제1장 총칙</summary>
+          <div class="body">
+            <div class="art"><h4>제1조 (명칭)</h4><p>본 회는 “삼괴지역 기독교 연합회”라 칭한다.</p></div>
+            <div class="art"><h4>제2조 (위치)</h4><p>본 회의 사무실 위치는 회장 목사가 시무하는 교회에 둔다.</p></div>
+            <div class="art"><h4>제3조 (목적)</h4><p>본 회는 삼괴지역 교회들로 예수 그리스도 안에서 한 형제 된 목회자 간에 친목을 도모하고 교회 화합과 지역 복음화 및 교회부흥 발전과 지역 발전을 위해 협력함을 목적으로 한다.</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제2장 회원</summary>
+          <div class="body">
+            <div class="art"><h4>제4조 (회원의 자격)</h4><p>삼괴지역(우정읍과 장안면)에 소재한 정통교단 교회를 담임하는 자로 한다.</p></div>
+            <div class="art"><h4>제5조 (임·역원)</h4><p>본회 임원은 역원은 다음과 같이 구성한다.
+회장 1인, 상임부회장 1인, 부회장 다수(교단별안배), 총무 1인, 부총무 1인, 서기 1인, 부서기 1인, 회계 1인, 부회계 1인, 위원 2인 이상으로 한다.</p></div>
+            <div class="art"><h4>제6조 (임원의 임무)</h4><p>1) 회장: 본회의 업무를 총괄하고 본회를 대표하여 산하 단체를 지도 감독한다.
+2) 상임부회장: 회장을 보좌하며 회장 유고시 그 직을 대행한다.
+3) 부회장: 본 회의 사업을 함께 추진하며, 소속 교단 회원을 관리한다.
+4) 사무총장: 본 회의 제반 사업을 총괄한다.
+5) 부사무총장: 총무를 보좌하며 유고시 그 직무를 대행한다.
+6) 서기: 본회의 기록과 서류 일체와 제반문서 수발 비치하며 관리 보관한다.
+7) 부서기: 서기를 보좌하며 유고시 그 직무를 대행한다.
+8) 회계: 본회의 재정 출납에 관한 일체를 담당한다.
+9) 부회계: 회계를 보좌하며 유고시 그 직무를 대행한다.
+10) 위원: 위원회의 역할을 담당한다.</p></div>
+            <div class="art"><h4>제7조 (위원회)</h4><p>본회의 사업을 효과적으로 수행하기 위하여 임원회에서 위원회를 조직하여 활동할 수 있다.
+① 기도위원회: ‘지역 살리기 매월 첫 주 수요기도회’를 계획하고 진행하여 지속적인 기도운동을 전개한다.
+② 복지선교위원회: 회원 교회의 복지선교사업을 돕고 지역의 복지관련 사업과 협업하는 일을 담당한다.</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제3장 회의</summary>
+          <div class="body">
+            <div class="art"><h4>제8조 (정기총회)</h4><p>매년 11월 중에 개최하여 결산, 예산, 사업계획을 심의 통과하고 임원을 선출한다.</p></div>
+            <div class="art"><h4>제9조 (임시총회)</h4><p>회원 5인 이상의 발의로 회장이 필요시 소집한다.</p></div>
+            <div class="art"><h4>제10조 (조찬기도회)</h4><p>본 회는 영적 성장과 교제를 위하여 매월 첫 주 수요일 조찬기도회를 갖는다.</p></div>
+            <div class="art"><h4>제11조 (월례회)</h4><p>격월로 하되 조찬기도회로 대체할 수 있고 필요시 별도 회의를 소집할 수 있다.</p></div>
+            <div class="art"><h4>제12조 (임원회 및 임역원회)</h4><p>회장이 소집한다.</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제4장 임원선출</summary>
+          <div class="body">
+            <div class="art"><h4>제13조 (임원의 자격)</h4><p>본회의 임원의 자격은 회원의 의무수행에 모범된 자라야 한다.</p></div>
+            <div class="art"><h4>제14조 (임원임기)</h4><p>임원의 임기는 다음과 같다.
+1) 회장의 임기는 2년으로 하되 1회에 한하여 연임할 수 있다.
+2) 기타 임원은 연임할 수 있다.</p></div>
+            <div class="art"><h4>제15조 (선거)</h4><p>1) 회장: 지난 회기 상임부회장이 특별한 사건이 없는 한 회장직을 승계한다.
+2) 상임 부회장: 총회에서 선출한다.
+3) 부회장: 회원 중에서 교단별로 대표를 정하여 회장단이 총회 후 선임한다.</p></div>
+            <div class="art"><h4>제16조 (기타임원)</h4><p>총무 이하 임원은 총회 후 회장과 상임 부회장이 추천하여 선임한다.</p></div>
+            <div class="art"><h4>제17조 (고문)</h4><p>본회의 고문은 증경 회장단 중 증경회장단 회비를 납부한 이로 한다.</p></div>
+            <div class="art"><h4>제18조 (감사)</h4><p>본회의 감사는 전임과 전전임 증경회장으로 하되 임기는 2년으로 하고 본회의 사업 및 재정 일체를 감사하여 총회시 보고한다.</p></div>
+            <div class="art"><h4>제19조 (증경회장단)</h4><p>회장을 역임한 이로 교회를 담임하고 만 70세 이하인 이들로 구성한다.</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제5장 회원의무 및 권리</summary>
+          <div class="body">
+            <div class="art"><h4>제20조 (의무)</h4><p>회원은 각종 회의에 참석하며 결의되어 시행하는 각종 사업에 적극 동참하고 협조할 의무를 가진다.</p></div>
+            <div class="art"><h4>제21조 (권리)</h4><p>회원은 선거권, 피선거권, 발언권, 결의권이 있으며 불이익을 받지 않으며 복리 사업에서 혜택을 받을 권리가 있다.</p></div>
+            <div class="art"><h4>제22조 (상벌)</h4><p>1) 본회에 공헌한 회원에게는 임원회의 결의로 회장이 이를 포상할 수 있다.
+2) 본회의 명예에 손상을 준 자 또는 회의나 집회에 2년 이상 참석치 못하거나 회원의 의무를 감당하지 못할 시는 회원 자격이 자연 상실되며 의무 이행시 임원회의 결의를 거쳐 자격이 복구된다.</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제6장 재정 및 회비</summary>
+          <div class="body">
+            <div class="art"><h4>제23조 (재정)</h4><p>본 회의 재정은 회원들의 회비와 각 교회의 찬조와 헌금, 후원금으로 한다.
+1) 회비는 회장은 월 10만원, 상임 부회장은 월 3만원, 부회장 및 임원단은 월 2만원, 증경회장은 연 10만원, 일반회원은 연 5만원으로 한다.
+2) 행사 찬조 및 후원금은 회비로 대체할 수도 있다.</p></div>
+            <div class="art"><h4>제24조 (예산집행)</h4><p>본회의 재정지출은 임원회의 결의로 한다.</p></div>
+            <div class="art"><h4>제25조 (회계년도)</h4><p>본 회의 회계년도는 본회 행정년도로 한다.</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제7장 경조사</summary>
+          <div class="body">
+            <div class="art"><h4>제26조</h4><p>다음 각 항에 해당할 때, 조화나 화환, 축의금을 보낸다. 그 금액은 10만원을 넘길 수 없다.
+1) 회원의 직계가족 중 배우자, 부친, 모친, 자녀가 상을 당했을 때 (장모, 장인 제외)
+2) 자녀가 결혼을 했을 때
+3) 은퇴, 부임</p></div>
+          </div>
+        </details>
+
+        <details class="chap">
+          <summary>제8장 부칙</summary>
+          <div class="body">
+            <div class="art"><h4>제27조 (회칙개정)</h4><p>회칙 개정은 총회에서 참석 과반 수 이상의 동의를 얻어 개정할 수 있다.</p></div>
+            <div class="art"><h4>제28조</h4><p>본회 회칙의 미비 된 사항은 만국통상 관례에 따른다.</p></div>
+            <div class="art"><h4>제29조</h4><p>본회 회칙은 통과 시부터 그 효력을 발생한다.</p></div>
+          </div>
+        </details>
+
+      </div>
+
+      <p style="margin:32px auto 0;text-align:center;font-size:14px;line-height:1.8;color:var(--muted);">
+        제정 2010. 11. 23. · 개정 2011. 11. 28. · 개정 2012. 11. 29. · 개정 2021. 03. 16.<br>
+        개정 2022. 12. 13. · 개정 2025. 01. 12. · 개정 2026. 01. 11.
+      </p>
+    </div>
+  </section>
+
 
   <!-- ===================== FOOTER ===================== -->
   <footer style="background:var(--parchment);border-top:1px solid var(--hairline);padding:56px 24px 40px;">
