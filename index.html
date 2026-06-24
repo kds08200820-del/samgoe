@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>삼괴지역 기독교 연합회 (삼기연)</title>
+  <meta name="description" content="화성특례시 우정읍·장안면 49개 교회가 함께하는 삼괴지역 목회자들의 연합 공동체 「삼기연」 공식 홈페이지." />
+  <meta property="og:title" content="삼괴지역 기독교 연합회 (삼기연)" />
+  <meta property="og:description" content="한 형제처럼, 한 마음으로 — 우정읍·장안면 49개 교회가 함께하는 연합 공동체" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/img/hero.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --blue:#0066cc; --blue-focus:#0071e3; --sky:#2997ff;
+      --ink:#1d1d1f; --muted:#6e6e73;
+      --parchment:#f5f5f7; --pearl:#fafafc; --white:#ffffff;
+      --tile1:#272729; --tile3:#252527; --black:#000000;
+      --hairline:#e0e0e0; --divider:#f0f0f0;
+      --ondark:#ffffff; --ondark-muted:#a1a1a6;
+      --shadow:0 3px 30px 5px rgba(0,0,0,0.22);
+    }
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{margin:0;background:var(--white);color:var(--ink);
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      font-feature-settings:"ss03";-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+    ::selection{background:var(--blue);color:#fff;}
+    a{color:inherit;text-decoration:none;}
+    img{display:block;}
+
+    /* Tap/click press feedback — replaces the prototype's style-active="transform:scale(0.96)" */
+    .press{transition:transform .12s ease;}
+    .press:active{transform:scale(0.96);}
+
+    /* Image fills — replaces the prototype's <image-slot> placeholders */
+    .ph{background:var(--parchment);object-fit:cover;}
+    .ph-circle{border-radius:50%;}
+    .ph-rounded{border-radius:18px;}
+
+    /* Responsive layout */
+    @media (max-width:900px){
+      .grid-4{grid-template-columns:repeat(2,1fr) !important;row-gap:36px !important;}
+      .grid-3{grid-template-columns:1fr 1fr !important;}
+      .join-grid{grid-template-columns:1fr !important;}
+      .hero-h1{font-size:44px !important;}
+      .hero-sub{font-size:23px !important;}
+      .sec-h2{font-size:34px !important;}
+    }
+    @media (max-width:720px){
+      .nav-links{gap:14px !important;}
+      .nav-links a:not(.nav-cta){display:none;}
+      .grid-2,.grid-3{grid-template-columns:1fr !important;}
+      .churches-list{grid-template-columns:1fr !important;gap:40px !important;}
+      .gallery-grid{grid-template-columns:1fr 1fr !important;grid-auto-rows:180px !important;}
+      .contact-grid{grid-template-columns:1fr !important;}
+      .section{padding-left:20px !important;padding-right:20px !important;}
+      .hero-h1{font-size:36px !important;}
+      .hero-sub{font-size:20px !important;}
+      .sec-h2{font-size:30px !important;}
+    }
+    @media (max-width:480px){
+      .grid-4{grid-template-columns:1fr 1fr !important;}
+      .gallery-grid{grid-template-columns:1fr !important;}
+    }
+  </style>
+</head>
+<body>
+<div style="width:100%;overflow-x:hidden;">
+
+  <!-- ===================== GLOBAL NAV ===================== -->
+  <header style="position:sticky;top:0;z-index:60;background:var(--black);height:44px;">
+    <div style="max-width:1024px;margin:0 auto;height:44px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="#top" style="font-size:13px;font-weight:500;letter-spacing:-0.01em;color:rgba(255,255,255,0.92);">삼괴지역 기독교 연합회</a>
+      <a href="tel:01042715090" style="font-size:12px;font-weight:400;letter-spacing:-0.01em;color:rgba(255,255,255,0.72);">010-4271-5090</a>
+    </div>
+  </header>
+
+  <!-- ===================== SUB NAV (frosted) ===================== -->
+  <nav style="position:sticky;top:44px;z-index:55;background:rgba(245,245,247,0.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,0.08);">
+    <div style="max-width:1024px;margin:0 auto;height:52px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <a href="#top" style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);white-space:nowrap;">삼기연</a>
+      <div class="nav-links" style="display:flex;align-items:center;gap:22px;">
+        <a href="#about" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">소개</a>
+        <a href="#work" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">활동</a>
+        <a href="#org" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">임원</a>
+        <a href="#schedule" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">일정</a>
+        <a href="#churches" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">소속교회</a>
+        <a href="#march" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">3·1만세</a>
+        <a href="#gallery" style="font-size:14px;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">갤러리</a>
+        <a href="#join" class="press nav-cta" style="display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 16px;border-radius:9999px;background:var(--blue);color:#fff;font-size:14px;font-weight:400;letter-spacing:-0.01em;">가입 안내</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO (parchment) ===================== -->
+  <section id="top" class="section" style="background:var(--parchment);padding:88px 24px 96px;text-align:center;">
+    <div style="max-width:980px;margin:0 auto;">
+      <img src="assets/logo-trans.png" alt="삼괴지역 기독교 연합회" style="height:82px;width:auto;display:block;margin:0 auto 34px;" />
+      <div style="font-size:19px;font-weight:600;letter-spacing:-0.01em;color:var(--blue);margin-bottom:14px;">화성특례시 · 삼괴지역</div>
+      <h1 class="hero-h1" style="margin:0;font-size:56px;line-height:1.07;font-weight:600;letter-spacing:-0.03em;color:var(--ink);">한 형제처럼, 한 마음으로</h1>
+      <p class="hero-sub" style="margin:20px auto 0;max-width:680px;font-size:28px;line-height:1.18;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">우정읍·장안면 49개 교회가 함께하는 연합 공동체</p>
+      <div style="display:flex;gap:18px;justify-content:center;margin-top:30px;flex-wrap:wrap;">
+        <a href="#about" class="press" style="display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 24px;border-radius:9999px;background:var(--blue);color:#fff;font-size:17px;font-weight:400;letter-spacing:-0.01em;">연합회 소개</a>
+        <a href="#contact" class="press" style="display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 24px;border-radius:9999px;background:transparent;border:1px solid var(--blue);color:var(--blue);font-size:17px;font-weight:400;letter-spacing:-0.01em;">오시는 길</a>
+      </div>
+      <p style="margin:30px auto 0;max-width:620px;font-size:17px;line-height:1.5;color:var(--muted);">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고” — 시편 133 : 1</p>
+      <img src="assets/img/hero.webp" alt="삼괴지역 기독교 연합회 대표 사진" class="ph ph-rounded" style="display:block;width:100%;max-width:900px;height:460px;margin:48px auto 0;box-shadow:var(--shadow);" />
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT (white) ===================== -->
+  <section id="about" class="section" style="scroll-margin-top:96px;background:var(--white);padding:96px 24px;text-align:center;">
+    <div style="max-width:820px;margin:0 auto;">
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">예수 그리스도 안에서 한 형제 된 공동체</h2>
+      <p style="margin:18px auto 0;max-width:560px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">2010년 설립 · 약칭 삼기연 · 12개 교단 49개 교회</p>
+      <p style="margin:32px auto 0;max-width:680px;font-size:19px;line-height:1.55;font-weight:400;letter-spacing:-0.01em;color:var(--ink);">화성특례시 삼괴지역기독교연합회는 우정읍과 장안면에서 교회를 섬기는 목회자들이 교파를 넘어 한 형제처럼 모인 작은 연합 공동체입니다. 화려한 행사가 아니라, 작은 교회와 큰 교회가 한 식탁에 둘러앉아 손을 맞잡는 자리가 곧 우리 지역 복음의 통로라 믿습니다.</p>
+    </div>
+    <div class="grid-3" style="max-width:980px;margin:64px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:40px;">
+      <div>
+        <h3 style="margin:0 0 10px;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">친목과 화합</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--muted);">교파와 규모를 넘어 매월 함께 기도하고 식탁에서 마음을 나눕니다.</p>
+      </div>
+      <div>
+        <h3 style="margin:0 0 10px;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">지역 복음화</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--muted);">우정·장안 지역 영혼을 향한 부담을 함께 짊어지고 복음의 향기를 흘려보냅니다.</p>
+      </div>
+      <div>
+        <h3 style="margin:0 0 10px;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">교회 부흥과 다음 세대</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--muted);">작은 교회를 함께 일으키고 장학사업과 음악회로 다음 세대를 격려합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== WORK (dark tile) ===================== -->
+  <section id="work" class="section" style="scroll-margin-top:96px;background:var(--tile1);color:var(--ondark);padding:96px 24px;text-align:center;">
+    <div style="max-width:820px;margin:0 auto;">
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;">한 해를 함께 걷는 연합의 발걸음</h2>
+      <p style="margin:18px auto 0;max-width:560px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--ondark-muted);">예배와 기도, 친교와 섬김으로 이어지는 연중 활동을 통해 삼괴지역 교회가 하나 됩니다.</p>
+    </div>
+    <div class="grid-2" style="max-width:1000px;margin:60px auto 0;display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.1);">
+      <div style="background:var(--tile1);padding:38px 36px;text-align:left;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);margin-bottom:12px;">매월 수요일 07시</div>
+        <h3 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.02em;">월례 조찬기도회</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--ondark-muted);">회원교회를 순회하며 그 교회와 지역, 한국교회를 위해 함께 기도합니다.</p>
+      </div>
+      <div style="background:var(--tile1);padding:38px 36px;text-align:left;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);margin-bottom:12px;">4월 · 부활주일</div>
+        <h3 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.02em;">부활절 연합예배</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--ondark-muted);">49개 교회가 함께 주님을 찬양하고 헌금을 모아 작은 교회와 지역 선교에 나눕니다.</p>
+      </div>
+      <div style="background:var(--tile1);padding:38px 36px;text-align:left;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);margin-bottom:12px;">봄</div>
+        <h3 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.02em;">목회자·사모 야유회</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--ondark-muted);">사역의 무게를 잠시 내려놓고 목사님과 사모님이 서로의 안부를 묻는 쉼의 시간입니다.</p>
+      </div>
+      <div style="background:var(--tile1);padding:38px 36px;text-align:left;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);margin-bottom:12px;">10월 3주 주일</div>
+        <h3 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.02em;">3·1만세길 걷기대회</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--ondark-muted);">우정읍 화수리에서 시작된 만세운동의 발자취를 화성시·교계·시민이 함께 걷습니다.</p>
+      </div>
+      <div style="background:var(--tile1);padding:38px 36px;text-align:left;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);margin-bottom:12px;">2월</div>
+        <h3 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.02em;">3·1절 기념 공감음악회</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--ondark-muted);">회원교회 성가대와 찬양팀이 함께 무대에 서는 음악회입니다.</p>
+      </div>
+      <div style="background:var(--tile1);padding:38px 36px;text-align:left;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);margin-bottom:12px;">연중</div>
+        <h3 style="margin:0 0 8px;font-size:24px;font-weight:600;letter-spacing:-0.02em;">장학사업 · 작은 교회 후원</h3>
+        <p style="margin:0;font-size:17px;line-height:1.47;color:var(--ondark-muted);">회원교회 자녀와 작은 교회 사역자를 위한 장학금·후원금을 운영합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ORG (parchment) ===================== -->
+  <section id="org" class="section" style="scroll-margin-top:96px;background:var(--parchment);padding:96px 24px;text-align:center;">
+    <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">연합회를 섬기는 사람들</h2>
+    <p style="margin:18px auto 0;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">제19회기 · 2026년 임원진</p>
+
+    <div class="grid-2" style="max-width:920px;margin:56px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 32px;display:flex;align-items:center;gap:22px;text-align:left;">
+        <img src="assets/img/ofc-1.webp" alt="회장 장명희 목사" class="ph ph-circle" style="flex:none;display:block;width:88px;height:88px;" />
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--blue);">회장</div>
+          <div style="margin-top:6px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">장명희 목사</div>
+          <div style="margin-top:4px;font-size:15px;color:var(--muted);">조암신흥교회 · 예장(통합)</div>
+        </div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 32px;display:flex;align-items:center;gap:22px;text-align:left;">
+        <img src="assets/img/ofc-2.webp" alt="부회장 이정렬 목사" class="ph ph-circle" style="flex:none;display:block;width:88px;height:88px;" />
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--blue);">부회장</div>
+          <div style="margin-top:6px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">이정렬 목사</div>
+          <div style="margin-top:4px;font-size:15px;color:var(--muted);">엘바람교회 · 연합오순절</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3" style="max-width:920px;margin:20px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 24px;">
+        <img src="assets/img/ofc-3.webp" alt="사무총장 김낭주 목사" class="ph ph-circle" style="display:block;width:80px;height:80px;margin:0 auto;" />
+        <div style="margin-top:16px;font-size:14px;font-weight:600;color:var(--blue);">사무총장</div>
+        <div style="margin-top:6px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">김낭주 목사</div>
+        <div style="margin-top:4px;font-size:14px;color:var(--muted);">시은소교회 · 기감</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 24px;">
+        <img src="assets/img/ofc-4.webp" alt="부사무총장 조영애 목사" class="ph ph-circle" style="display:block;width:80px;height:80px;margin:0 auto;" />
+        <div style="margin-top:16px;font-size:14px;font-weight:600;color:var(--blue);">부사무총장</div>
+        <div style="margin-top:6px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">조영애 목사</div>
+        <div style="margin-top:4px;font-size:14px;color:var(--muted);">브니엘교회 · 예장(개혁)</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 24px;">
+        <img src="assets/img/ofc-5.webp" alt="서기 김동석 목사" class="ph ph-circle" style="display:block;width:80px;height:80px;margin:0 auto;" />
+        <div style="margin-top:16px;font-size:14px;font-weight:600;color:var(--blue);">서기</div>
+        <div style="margin-top:6px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">김동석 목사</div>
+        <div style="margin-top:4px;font-size:14px;color:var(--muted);">운평장로교회 · 예장(합동)</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 24px;">
+        <img src="assets/img/ofc-6.webp" alt="회계 김두희 목사" class="ph ph-circle" style="display:block;width:80px;height:80px;margin:0 auto;" />
+        <div style="margin-top:16px;font-size:14px;font-weight:600;color:var(--blue);">회계</div>
+        <div style="margin-top:6px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">김두희 목사</div>
+        <div style="margin-top:4px;font-size:14px;color:var(--muted);">장안제일교회 · 예장(통합)</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 24px;">
+        <img src="assets/img/ofc-7.webp" alt="증경회장 최현재 목사" class="ph ph-circle" style="display:block;width:80px;height:80px;margin:0 auto;" />
+        <div style="margin-top:16px;font-size:14px;font-weight:600;color:var(--blue);">증경회장</div>
+        <div style="margin-top:6px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">최현재 목사</div>
+        <div style="margin-top:4px;font-size:14px;color:var(--muted);">석천교회 · 기감</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--hairline);border-radius:18px;padding:30px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="font-size:15px;line-height:1.5;color:var(--muted);">연합회 관련 문의는<br>사무총장께 연락 주세요.</div>
+        <a href="tel:01042715090" class="press" style="margin-top:14px;display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 20px;border-radius:9999px;background:var(--blue);color:#fff;font-size:15px;font-weight:400;letter-spacing:-0.01em;">010-4271-5090</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCHEDULE (white) ===================== -->
+  <section id="schedule" class="section" style="scroll-margin-top:96px;background:var(--white);padding:96px 24px;text-align:center;">
+    <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">연중 연합 일정</h2>
+    <p style="margin:18px auto 0;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">한 해 동안 삼괴지역 교회가 함께 모이는 자리</p>
+    <div style="max-width:760px;margin:48px auto 0;text-align:left;">
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:600;color:var(--blue);">매월 수요일 07시</div>
+        <div><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">월례 조찬기도회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">회원교회를 순회하며 지역과 한국교회를 위해 기도합니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:600;color:var(--blue);">2월</div>
+        <div><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">3·1절 기념 공감음악회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">회원교회 성가대와 찬양팀이 함께 무대에 서는 음악회입니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:600;color:var(--blue);">부활주일</div>
+        <div><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">부활절 연합예배 · 임원수련회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">부활하신 주님을 함께 찬양하고, 새 회기 임원들이 비전을 다집니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:600;color:var(--blue);">봄</div>
+        <div><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">목회자·사모 야유회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">목회자 가정이 함께 쉼과 교제를 누립니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:600;color:var(--blue);">10월 3주 주일</div>
+        <div><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">3·1만세길 걷기대회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">삼괴지역 3·1만세운동의 길을 함께 걸으며 그 정신을 기립니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:600;color:var(--blue);">11월</div>
+        <div><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">정기총회 · 임원선출</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">한 해의 사업과 회계를 결산하고 새 회기의 임원을 선출합니다.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CHURCHES (parchment) ===================== -->
+  <section id="churches" class="section" style="scroll-margin-top:96px;background:var(--parchment);padding:96px 24px;">
+    <div style="text-align:center;">
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">삼괴지역 49개 교회가 함께합니다</h2>
+      <p style="margin:18px auto 0;max-width:560px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">우정읍과 장안면 곳곳의 교회가 교파를 넘어 한 형제로 연합합니다.</p>
+    </div>
+    <div class="grid-4" style="max-width:900px;margin:52px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;">
+      <div><div style="font-size:52px;font-weight:600;letter-spacing:-0.03em;color:var(--ink);line-height:1;">49</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">회원교회</div></div>
+      <div><div style="font-size:52px;font-weight:600;letter-spacing:-0.03em;color:var(--ink);line-height:1;">31</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">우정읍</div></div>
+      <div><div style="font-size:52px;font-weight:600;letter-spacing:-0.03em;color:var(--ink);line-height:1;">18</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">장안면</div></div>
+      <div><div style="font-size:52px;font-weight:600;letter-spacing:-0.03em;color:var(--ink);line-height:1;">12</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">참여 교단</div></div>
+    </div>
+
+    <div style="max-width:1000px;margin:64px auto 0;">
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:24px;flex-wrap:wrap;">
+        <h3 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">회원교회 명단</h3>
+        <span style="font-size:15px;color:var(--muted);">가나다순 · 담임목사 · 교단</span>
+      </div>
+      <div class="churches-list" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:600;color:var(--blue);">우정읍</span><span style="font-size:14px;color:var(--muted);">31 교회</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">고온교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">심상훈 목사 · 예수교성결</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">굳프랜드교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">오동길 목사 · 예장(백석)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">매향교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">정진학 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">복지교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">오대석 목사 · 선교침례</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">새화수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한길용 목사 · 나사렛성결</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">생명나무교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박상현 목사 · 예장(개혁)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">석천교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">최현재 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">성은교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">황권선 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">순복음조암영광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김정서 목사 · 기하성</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">신흥비전교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김선미 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">엘바람교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이정렬 목사 · 연합오순절</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">염광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한준용 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">영광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김경진 목사 · 독립</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">예손교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용훈 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">우정교회(감리)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">양봉국 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">우정교회(침례)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조인상 목사 · 침례</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">운평장로교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김동석 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">율리교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박현정 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">이화교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김지웅 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">인자교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용구 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">조암교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조대흥 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">조암신흥교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">장명희 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">조암중앙교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">제재호 목사 · 침례</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">주공교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김종호 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">향원교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">우종현 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">호곡교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박성규 목사 · 나사렛성결</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">화산교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">유승용 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">화성권능교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">류성원 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">화성소망교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용태 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">화수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">남용남 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">활빈교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">권오현 목사 · 예장(통합)</span></div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:600;color:var(--blue);">장안면</span><span style="font-size:14px;color:var(--muted);">18 교회</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">길벗교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">정한숙 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">꽃밭교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">남기훈 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">노진교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">손병민 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">노진제일교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박종덕 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">덕성교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이상철 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">독정교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김동천 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">브니엘교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조영애 목사 · 예장(개혁)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">생수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이영이 목사 · 기하성</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">석포교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박주환 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">시은소교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김낭주 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">예수정안교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이성범 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">장안교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한민규 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">장안제일교회(기감)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김요한 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">장안제일교회(통합)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김두희 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">조암제일교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김재도 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">주사랑교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이우성 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">축복교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박창대 목사 · 예장(백석)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);">한마음교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김광옥 목사 · 기하성</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3.1 MARCH (dark tile) ===================== -->
+  <section id="march" class="section" style="scroll-margin-top:96px;background:var(--tile3);color:var(--ondark);padding:96px 24px;text-align:center;">
+    <div style="max-width:820px;margin:0 auto;">
+      <div style="font-size:14px;font-weight:600;letter-spacing:0.04em;color:var(--sky);margin-bottom:16px;">3·1 만세운동본부</div>
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.12;font-weight:600;letter-spacing:-0.02em;">믿음의 선조가 걸었던 그 길 위에서</h2>
+      <p style="margin:26px auto 0;max-width:680px;font-size:19px;line-height:1.55;color:var(--ondark-muted);">우정읍과 장안면은 1919년 3·1독립만세운동이 뜨겁게 일어났던 역사의 현장입니다. 삼괴지역 기독교 연합회 3·1만세운동본부는 그 정신을 기억하고 계승하며, 매년 우정읍 화수리에서 시작된 만세길을 화성시·교계·시민과 함께 걷습니다.</p>
+    </div>
+    <div class="grid-3" style="max-width:980px;margin:56px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.1);">
+      <div style="background:var(--tile3);padding:34px 30px;text-align:left;"><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">역사를 기억하다</div><p style="margin:0;font-size:16px;line-height:1.47;color:var(--ondark-muted);">삼괴지역에서 일어난 3·1만세운동의 발자취를 기리고 알립니다.</p></div>
+      <div style="background:var(--tile3);padding:34px 30px;text-align:left;"><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">함께 걷다</div><p style="margin:0;font-size:16px;line-height:1.47;color:var(--ondark-muted);">교회와 지역 주민이 함께 만세길을 걸으며 그 정신을 되새깁니다.</p></div>
+      <div style="background:var(--tile3);padding:34px 30px;text-align:left;"><div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">정신을 계승하다</div><p style="margin:0;font-size:16px;line-height:1.47;color:var(--ondark-muted);">다음 세대에게 신앙과 나라 사랑의 정신을 전합니다.</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== GALLERY (black) ===================== -->
+  <section id="gallery" class="section" style="scroll-margin-top:96px;background:var(--black);color:var(--ondark);padding:96px 24px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;">함께한 순간들</h2>
+      <p style="margin:16px auto 0;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--ondark-muted);">연합의 발자취</p>
+    </div>
+    <div class="gallery-grid" style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:240px;gap:14px;">
+      <img src="assets/img/g1.webp" alt="연합 행사 사진" class="ph ph-rounded" style="display:block;grid-row:span 2;width:100%;height:100%;" />
+      <img src="assets/img/g2.webp" alt="연합 행사 사진" class="ph ph-rounded" style="display:block;width:100%;height:100%;" />
+      <img src="assets/img/g3.webp" alt="연합 행사 사진" class="ph ph-rounded" style="display:block;width:100%;height:100%;" />
+      <img src="assets/img/g4.webp" alt="연합 행사 사진" class="ph ph-rounded" style="display:block;width:100%;height:100%;" />
+      <img src="assets/img/g5.webp" alt="연합 행사 사진" class="ph ph-rounded" style="display:block;grid-column:span 2;width:100%;height:100%;" />
+    </div>
+  </section>
+
+  <!-- ===================== JOIN (white) ===================== -->
+  <section id="join" class="section" style="scroll-margin-top:96px;background:var(--white);padding:96px 24px;">
+    <div style="text-align:center;">
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">가입 · 회비 안내</h2>
+      <p style="margin:18px auto 0;max-width:560px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:-0.01em;color:var(--blue);">우정읍·장안면에서 교회를 섬기시는 목사님이라면 언제든 함께하실 수 있습니다.</p>
+    </div>
+    <div class="grid-3" style="max-width:1000px;margin:52px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+      <div style="background:var(--parchment);border-radius:18px;padding:32px 28px;">
+        <div style="font-size:15px;font-weight:600;color:var(--blue);">STEP 1</div>
+        <h3 style="margin:14px 0 8px;font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">서기·사무총장께 연락</h3>
+        <p style="margin:0;font-size:16px;line-height:1.47;color:var(--muted);">가입 의사를 전해 주시면 가까운 임원회의에서 회원교회로 받아들이는 절차가 진행됩니다.</p>
+      </div>
+      <div style="background:var(--parchment);border-radius:18px;padding:32px 28px;">
+        <div style="font-size:15px;font-weight:600;color:var(--blue);">STEP 2</div>
+        <h3 style="margin:14px 0 8px;font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">월례 조찬기도회 참석</h3>
+        <p style="margin:0;font-size:16px;line-height:1.47;color:var(--muted);">매월 수요일 오전 7시 조찬기도회에 참석만 하셔도 동역자들과 인사를 나누실 수 있습니다.</p>
+      </div>
+      <div style="background:var(--parchment);border-radius:18px;padding:32px 28px;">
+        <div style="font-size:15px;font-weight:600;color:var(--blue);">STEP 3</div>
+        <h3 style="margin:14px 0 8px;font-size:21px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">연 회비 납부 (정회원)</h3>
+        <p style="margin:0;font-size:16px;line-height:1.47;color:var(--muted);">정기총회 1개월 전까지 회비를 납부하시면 다음 회기부터 정회원으로 참여하실 수 있습니다.</p>
+      </div>
+    </div>
+    <div class="join-grid" style="max-width:1000px;margin:20px auto 0;display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch;">
+      <div style="border:1px solid var(--hairline);border-radius:18px;padding:8px 4px;">
+        <div style="display:flex;align-items:center;padding:14px 28px;border-bottom:1px solid var(--hairline);"><div style="flex:1;font-size:14px;font-weight:600;color:var(--muted);">구분</div><div style="flex:none;width:130px;text-align:right;font-size:14px;font-weight:600;color:var(--muted);">금액</div><div style="flex:none;width:80px;text-align:right;font-size:14px;font-weight:600;color:var(--muted);">주기</div></div>
+        <div style="display:flex;align-items:center;padding:16px 28px;border-bottom:1px solid var(--hairline);"><div style="flex:1;font-size:17px;font-weight:600;color:var(--ink);">일반회원</div><div style="flex:none;width:130px;text-align:right;font-size:17px;font-weight:600;color:var(--ink);">₩ 50,000</div><div style="flex:none;width:80px;text-align:right;font-size:15px;color:var(--muted);">연 1회</div></div>
+        <div style="display:flex;align-items:center;padding:16px 28px;border-bottom:1px solid var(--hairline);"><div style="flex:1;font-size:17px;font-weight:600;color:var(--ink);">부회장·임원</div><div style="flex:none;width:130px;text-align:right;font-size:17px;font-weight:600;color:var(--ink);">₩ 20,000</div><div style="flex:none;width:80px;text-align:right;font-size:15px;color:var(--muted);">월 1회</div></div>
+        <div style="display:flex;align-items:center;padding:16px 28px;border-bottom:1px solid var(--hairline);"><div style="flex:1;font-size:17px;font-weight:600;color:var(--ink);">상임부회장</div><div style="flex:none;width:130px;text-align:right;font-size:17px;font-weight:600;color:var(--ink);">₩ 30,000</div><div style="flex:none;width:80px;text-align:right;font-size:15px;color:var(--muted);">월 1회</div></div>
+        <div style="display:flex;align-items:center;padding:16px 28px;border-bottom:1px solid var(--hairline);"><div style="flex:1;font-size:17px;font-weight:600;color:var(--ink);">회장</div><div style="flex:none;width:130px;text-align:right;font-size:17px;font-weight:600;color:var(--ink);">₩ 100,000</div><div style="flex:none;width:80px;text-align:right;font-size:15px;color:var(--muted);">월 1회</div></div>
+        <div style="display:flex;align-items:center;padding:16px 28px;"><div style="flex:1;font-size:17px;font-weight:600;color:var(--ink);">증경회장</div><div style="flex:none;width:130px;text-align:right;font-size:17px;font-weight:600;color:var(--ink);">₩ 100,000</div><div style="flex:none;width:80px;text-align:right;font-size:15px;color:var(--muted);">연 1회</div></div>
+      </div>
+      <div style="background:var(--tile1);border-radius:18px;padding:34px 32px;color:var(--ondark);display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:14px;font-weight:600;letter-spacing:0.02em;color:var(--sky);">입금 계좌</div>
+        <div style="margin-top:14px;font-size:24px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;">농협 355-0074-8148-33</div>
+        <div style="margin-top:10px;font-size:16px;color:var(--ondark-muted);">예금주 · 삼괴지역기독교연합회</div>
+        <div style="margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.16);font-size:15px;line-height:1.6;color:var(--ondark-muted);">회비·헌금·후원 문의는 회계 김두희 목사(장안제일교회)께 연락 주세요.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT (parchment) ===================== -->
+  <section id="contact" class="section" style="scroll-margin-top:96px;background:var(--parchment);padding:96px 24px;">
+    <div class="contact-grid" style="max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
+      <div>
+        <h2 class="sec-h2" style="margin:0 0 28px;font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">오시는 길</h2>
+        <div style="display:flex;flex-direction:column;gap:22px;">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--muted);">사무총장 · 행사 · 연락 창구</div>
+            <div style="margin-top:4px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">김낭주 목사 · 시은소교회</div>
+            <a href="tel:01042715090" style="margin-top:4px;display:inline-block;font-size:19px;font-weight:600;color:var(--blue);">010-4271-5090</a>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--muted);">서기 · 문서 접수</div>
+            <div style="margin-top:4px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">김동석 목사 · 운평장로교회</div>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--muted);">회계 · 재정 문의</div>
+            <div style="margin-top:4px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">김두희 목사 · 장안제일교회</div>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--muted);">사무실</div>
+            <div style="margin-top:4px;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);">조암신흥교회</div>
+            <div style="margin-top:2px;font-size:15px;color:var(--muted);">제19회기 회장 시무교회</div>
+          </div>
+        </div>
+      </div>
+      <img src="assets/img/map.webp" alt="삼괴지역 기독교 연합회 약도 · 사무실" class="ph ph-rounded" style="display:block;width:100%;min-height:360px;height:100%;box-shadow:var(--shadow);" />
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer style="background:var(--parchment);border-top:1px solid var(--hairline);padding:56px 24px 40px;">
+    <div style="max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;">
+      <div>
+        <div style="display:inline-flex;background:#fff;border:1px solid var(--hairline);border-radius:11px;padding:12px 16px;">
+          <img src="assets/logo.png" alt="삼괴지역 기독교 연합회" style="height:30px;width:auto;display:block;" />
+        </div>
+        <p style="margin:18px 0 0;font-size:15px;line-height:1.5;color:var(--muted);max-width:340px;">화성특례시 우정읍·장안면 49개 교회가 함께하는<br>삼괴지역 목회자들의 연합 공동체 「삼기연」</p>
+      </div>
+      <div style="display:flex;gap:60px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;">바로가기</div>
+          <div style="display:flex;flex-direction:column;">
+            <a href="#about" style="font-size:15px;line-height:2.2;color:var(--muted);">연합회 소개</a>
+            <a href="#work" style="font-size:15px;line-height:2.2;color:var(--muted);">함께하는 활동</a>
+            <a href="#churches" style="font-size:15px;line-height:2.2;color:var(--muted);">소속 교회</a>
+            <a href="#march" style="font-size:15px;line-height:2.2;color:var(--muted);">3·1만세운동본부</a>
+            <a href="#join" style="font-size:15px;line-height:2.2;color:var(--muted);">가입 · 회비 안내</a>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:14px;">연락처</div>
+          <div style="display:flex;flex-direction:column;">
+            <div style="font-size:15px;line-height:2.2;color:var(--muted);">사무총장 김낭주 목사</div>
+            <a href="tel:01042715090" style="font-size:15px;line-height:2.2;color:var(--muted);">010-4271-5090</a>
+            <div style="font-size:15px;line-height:2.2;color:var(--muted);">사무실 · 조암신흥교회</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1000px;margin:36px auto 0;padding-top:22px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="font-size:12px;color:var(--muted);">© 2026 삼괴지역 기독교 연합회 · Christian Council of Hwaseong (Samgoe)</div>
+      <div style="font-size:12px;color:var(--muted);">시편 133 : 1</div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
