@@ -91,6 +91,15 @@
     @media (max-width:900px){ .pp-grid{grid-template-columns:repeat(3,1fr) !important;} }
     @media (max-width:560px){ .pp-grid{grid-template-columns:repeat(2,1fr) !important;} }
 
+    /* 회원교회 명단 — 자동 스크롤(위로) + 가장자리 페이드 + 호버 정지 + 드래그 이동 */
+    .church-viewport{position:relative;height:600px;overflow-y:auto;overflow-x:hidden;cursor:grab;
+      -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 56px,#000 calc(100% - 56px),transparent 100%);
+      mask-image:linear-gradient(to bottom,transparent 0,#000 56px,#000 calc(100% - 56px),transparent 100%);
+      scrollbar-width:thin;scrollbar-color:var(--hairline-strong) transparent;}
+    .church-viewport::-webkit-scrollbar{width:6px;}
+    .church-viewport::-webkit-scrollbar-thumb{background:var(--hairline-strong);}
+    @media (max-width:720px){ .church-viewport{height:460px;} }
+
     /* 회칙 아코디언 (사각형) */
     .chap{border:1px solid var(--hairline);background:var(--canvas);overflow:hidden;}
     .chap > summary{list-style:none;cursor:pointer;padding:20px 24px;font-size:19px;font-weight:700;
@@ -396,6 +405,7 @@
         <h3 style="margin:0;font-size:24px;font-weight:700;letter-spacing:0;color:var(--ink);">회원교회 명단</h3>
         <span style="font-size:15px;color:var(--muted);">가나다순 · 담임목사 · 교단</span>
       </div>
+      <div class="church-viewport" id="churchViewport">
       <div class="churches-list" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
         <div>
           <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:700;color:var(--blue);">우정읍</span><span style="font-size:14px;color:var(--muted);">31 교회</span></div>
@@ -452,6 +462,7 @@
           <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">축복교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박창대 목사 · 예장(백석)</span></div>
           <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">한마음교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김광옥 목사 · 기하성</span></div>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -700,5 +711,30 @@
   </footer>
 
 </div>
+<script>
+(function(){
+  var vp=document.getElementById('churchViewport');
+  if(!vp) return;
+  var grid=vp.querySelector('.churches-list');
+  if(!grid) return;
+  // 끊김 없는 반복을 위해 명단을 한 벌 복제해 아래에 이어 붙임
+  var clone=grid.cloneNode(true); clone.setAttribute('aria-hidden','true'); vp.appendChild(clone);
+  var paused=false, isDown=false, startY=0, startTop=0, last=null;
+  vp.addEventListener('mouseenter',function(){paused=true;});   // 마우스 올리면 정지
+  vp.addEventListener('mouseleave',function(){paused=false;});  // 벗어나면 다시 흐름
+  vp.addEventListener('pointerdown',function(e){isDown=true;startY=e.clientY;startTop=vp.scrollTop;try{vp.setPointerCapture(e.pointerId);}catch(_){ } vp.style.cursor='grabbing';});
+  vp.addEventListener('pointermove',function(e){if(!isDown)return;vp.scrollTop=startTop-(e.clientY-startY);}); // 드래그로 위아래 이동
+  function up(){isDown=false;vp.style.cursor='grab';}
+  vp.addEventListener('pointerup',up); vp.addEventListener('pointercancel',up);
+  function step(t){
+    if(last===null)last=t; var dt=t-last; last=t; if(dt>50)dt=50;
+    if(!paused && !isDown){ vp.scrollTop += dt*0.028; }   // 약 28px/초, 천천히 위로
+    var h=grid.offsetHeight;
+    if(h>0){ if(vp.scrollTop>=h){vp.scrollTop-=h;} else if(vp.scrollTop<0){vp.scrollTop+=h;} }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
 </body>
 </html>
