@@ -72,13 +72,24 @@
     .ofc-card{background:var(--canvas);border:1px solid var(--hairline);
       transition:transform .25s ease,border-color .25s ease;overflow:hidden;}
     .ofc-card:hover{transform:translateY(-8px);border-color:var(--primary);}
-    .ofc-photo{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--surface-card);display:block;}
+    /* 4:5 세로 비율 + 위쪽 정렬 → 인물 머리가 잘리지 않음 */
+    .ofc-photo{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center top;background:var(--surface-card);display:block;}
     .ofc-body{padding:20px;}
     .ofc-role{font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);}
     .ofc-name{margin-top:8px;font-size:18px;font-weight:700;color:var(--ink);}
     .ofc-aff{margin-top:4px;font-size:14px;font-weight:300;color:var(--muted);}
     .ofc-bar{height:3px;background:var(--primary);width:0;transition:width .25s ease;}
     .ofc-card:hover .ofc-bar{width:100%;}
+
+    /* 증경회장단 — 이름만, 카드 섹션 (다크 밴드) */
+    .pp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:1100px;margin:44px auto 0;}
+    .pp-card{background:var(--dark-elevated);border:1px solid rgba(255,255,255,0.10);padding:30px 16px;
+      text-align:center;transition:transform .25s ease,border-color .25s ease;}
+    .pp-card:hover{transform:translateY(-6px);border-color:var(--primary);}
+    .pp-order{font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--sky);}
+    .pp-name{margin-top:10px;font-size:18px;font-weight:700;color:#fff;}
+    @media (max-width:900px){ .pp-grid{grid-template-columns:repeat(3,1fr) !important;} }
+    @media (max-width:560px){ .pp-grid{grid-template-columns:repeat(2,1fr) !important;} }
 
     /* 회칙 아코디언 (사각형) */
     .chap{border:1px solid var(--hairline);background:var(--canvas);overflow:hidden;}
@@ -319,6 +330,19 @@
         </div>
       </div>
       <p style="margin:36px auto 0;font-size:15px;font-weight:300;color:var(--muted);">연합회 관련 문의는 사무총장 <a href="tel:01042715090" style="color:var(--primary);font-weight:700;">010-4271-5090</a> 으로 연락 주세요.</p>
+    </div>
+  </section>
+
+  <!-- ===================== 증경회장단 (dark band) ===================== -->
+  <section id="past-presidents" class="section" style="scroll-margin-top:96px;background:var(--dark);color:var(--on-dark);padding:80px 24px;text-align:center;">
+    <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:700;color:#fff;">증경회장단</h2>
+    <p style="margin:16px auto 0;font-size:18px;line-height:1.5;font-weight:300;color:var(--on-dark-soft);">연합회를 이끌어 오신 역대 회장단</p>
+    <div class="pp-grid">
+      <div class="pp-card"><div class="pp-name">김충현 목사</div></div>
+      <div class="pp-card"><div class="pp-name">이명식 목사</div></div>
+      <div class="pp-card"><div class="pp-name">최현재 목사</div></div>
+      <div class="pp-card"><div class="pp-name">류성원 목사</div></div>
+      <div class="pp-card"><div class="pp-name">김동천 목사</div></div>
     </div>
   </section>
 
