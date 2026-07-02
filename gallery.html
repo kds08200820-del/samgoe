@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>갤러리 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--surface-card:#fafafa;--dark:#1a2129;--error:#dc2626;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1180px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:1180px;margin:0 auto;padding:44px 24px 90px;}
+    .head{text-align:center;margin-bottom:8px;}
+    .title{margin:0;font-weight:700;font-size:34px;letter-spacing:0;color:var(--ink);}
+    .sub{margin:12px 0 0;font-size:16px;color:var(--muted);}
+    /* 업로드 영역 */
+    .uploader{margin:34px 0 10px;}
+    .drop{border:2px dashed var(--hairline-strong);background:var(--canvas);padding:38px 24px;text-align:center;
+      cursor:pointer;transition:border-color .15s ease,background .15s ease;}
+    .drop.over{border-color:var(--primary);background:#eef5ff;}
+    .drop .big{font-size:16px;font-weight:700;color:var(--ink);}
+    .drop .small{font-size:13px;color:var(--muted);margin-top:6px;}
+    .drop u{color:var(--primary);}
+    .cap{width:100%;height:44px;margin-top:12px;padding:0 14px;border:1px solid var(--hairline-strong);background:#fff;
+      font-size:15px;font-family:inherit;font-weight:300;border-radius:0;color:var(--ink);}
+    .cap:focus{outline:none;border:2px solid var(--ink);}
+    .prog{margin-top:12px;font-size:13px;color:var(--muted);min-height:18px;}
+    .notice{margin:34px 0 10px;padding:16px 18px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;font-size:14px;line-height:1.6;}
+    .notice a{color:var(--primary);font-weight:700;}
+    /* 사진 그리드 */
+    .grid{margin-top:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+    .cardp{background:var(--canvas);border:1px solid var(--hairline);overflow:hidden;position:relative;}
+    .cardp img{width:100%;height:200px;object-fit:cover;display:block;background:var(--surface-card);cursor:pointer;}
+    .cardp .meta{padding:10px 12px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;}
+    .cardp .meta b{color:var(--ink);font-weight:700;}
+    .cardp .del{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;background:rgba(0,0,0,0.55);color:#fff;
+      font-size:16px;line-height:1;cursor:pointer;display:none;}
+    .cardp:hover .del{display:block;}
+    .empty{margin-top:40px;text-align:center;color:var(--muted);font-size:15px;}
+    .home{display:inline-block;margin-top:34px;font-size:14px;color:var(--primary);font-weight:700;}
+    #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
+    #main{display:none;}
+    @media (max-width:900px){ .grid{grid-template-columns:repeat(3,1fr);} }
+    @media (max-width:620px){ .grid{grid-template-columns:repeat(2,1fr);} .cardp img{height:150px;} }
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+
+  <div id="loading">확인 중…</div>
+
+  <div class="wrap" id="main">
+    <div class="head">
+      <h1 class="title">갤러리 게시판</h1>
+      <p class="sub">함께한 순간들을 나눠 주세요 · 정회원이면 사진을 올릴 수 있습니다.</p>
+    </div>
+
+    <!-- 정회원: 업로드 영역 -->
+    <div class="uploader" id="uploader" style="display:none;">
+      <div class="drop" id="drop">
+        <div class="big">사진을 여기로 끌어다 놓으세요</div>
+        <div class="small">또는 <u>클릭해서 선택</u> · 여러 장 가능 · 올릴 때 자동으로 웹 크기로 줄여 저장됩니다</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden />
+      <input type="text" id="captionInput" class="cap" placeholder="설명(선택) — 예: 2026 부활절 연합예배" />
+      <div class="prog" id="prog"></div>
+    </div>
+
+    <!-- 비회원/일반회원 안내 -->
+    <div class="notice" id="guestNotice" style="display:none;"></div>
+
+    <!-- 사진 그리드 -->
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none;">아직 올라온 사진이 없습니다.</div>
+
+    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=2"></script>
+  <script src="auth.js?v=2"></script>
+  <script>
+    var me = null, myProfile = null, isAdminUser = false;
+
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+
+    // 이미지 → 웹 사이즈(최대 1600px) webp 축소
+    async function resizeImage(file, maxDim, quality){
+      maxDim = maxDim || 1600; quality = quality || 0.82;
+      var bitmap = await createImageBitmap(file);
+      try{
+        var scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+        var w = Math.max(1, Math.round(bitmap.width*scale)), h = Math.max(1, Math.round(bitmap.height*scale));
+        var canvas = document.createElement('canvas'); canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(bitmap,0,0,w,h);
+        return await new Promise(function(res){ canvas.toBlob(function(b){ res(b); }, 'image/webp', quality); });
+      } finally { if(bitmap.close) bitmap.close(); }
+    }
+
+    async function loadGrid(){
+      var grid = document.getElementById('grid'), empty = document.getElementById('empty');
+      var res = await window.sb.from('gallery_photos').select('*').order('created_at', { ascending: false });
+      if(res.error){ grid.innerHTML=''; empty.style.display='block'; empty.textContent='불러오기 오류: '+res.error.message+' (갤러리 DB 설정(gallery-setup.sql)이 필요할 수 있습니다.)'; return; }
+      var rows = res.data || [];
+      if(!rows.length){ grid.innerHTML=''; empty.style.display='block'; empty.textContent='아직 올라온 사진이 없습니다.'; return; }
+      empty.style.display='none';
+      grid.innerHTML = rows.map(function(r){
+        var canDel = me && (r.uploader_id === me.id || isAdminUser);
+        var d=''; try{ if(r.created_at) d=new Date(r.created_at).toLocaleDateString('ko-KR'); }catch(_){}
+        return '<div class="cardp">' +
+          (canDel ? '<button class="del" data-id="'+r.id+'" data-path="'+esc(r.path)+'" title="삭제">×</button>' : '') +
+          '<img src="'+esc(r.url)+'" loading="lazy" onclick="window.open(this.src,\'_blank\')" alt="'+esc(r.caption||'갤러리 사진')+'" />' +
+          '<div class="meta"><b>'+esc(r.uploader_name||'회원')+'</b><span>'+esc(d)+'</span></div>' +
+          (r.caption ? '<div class="meta" style="padding-top:0"><span>'+esc(r.caption)+'</span></div>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    async function handleFiles(files){
+      var prog = document.getElementById('prog');
+      var caption = document.getElementById('captionInput').value.trim();
+      var list = Array.prototype.slice.call(files).filter(function(f){ return f.type.indexOf('image/')===0; });
+      if(!list.length){ prog.textContent='이미지 파일만 올릴 수 있습니다.'; return; }
+      var done=0, fail=0;
+      for(var i=0;i<list.length;i++){
+        prog.textContent = '올리는 중… ('+(i+1)+'/'+list.length+')';
+        try{
+          var blob = await resizeImage(list[i]);
+          if(!blob) throw new Error('이미지 변환 실패');
+          var path = me.id + '/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.webp';
+          var up = await window.sb.storage.from('gallery').upload(path, blob, { contentType:'image/webp', upsert:false });
+          if(up.error) throw up.error;
+          var pub = window.sb.storage.from('gallery').getPublicUrl(path);
+          var url = pub.data.publicUrl;
+          var ins = await window.sb.from('gallery_photos').insert({
+            path: path, url: url, caption: caption || null,
+            uploader_id: me.id, uploader_name: (myProfile && myProfile.name) || (me.email||'회원')
+          });
+          if(ins.error) throw ins.error;
+          done++;
+        }catch(e){ fail++; console.error(e); prog.textContent = '오류: ' + (e.message||e); }
+      }
+      prog.textContent = done+'장 업로드 완료' + (fail? (' · '+fail+'장 실패') : '');
+      document.getElementById('captionInput').value='';
+      await loadGrid();
+      setTimeout(function(){ if(prog.textContent.indexOf('완료')>=0) prog.textContent=''; }, 4000);
+    }
+
+    (async function(){
+      // 로그인/프로필 확인 (비로그인도 갤러리는 볼 수 있음)
+      if(window.sb){
+        try{
+          var s = await window.sb.auth.getSession();
+          me = s.data && s.data.session ? s.data.session.user : null;
+          if(me){ myProfile = await window.getMyProfile(); isAdminUser = window.isAdmin(me); }
+        }catch(e){}
+      }
+      document.getElementById('loading').style.display='none';
+      document.getElementById('main').style.display='block';
+
+      var isFull = myProfile && myProfile.member_type === '정회원';
+      if(isFull){
+        document.getElementById('uploader').style.display='block';
+      } else {
+        var n = document.getElementById('guestNotice');
+        n.style.display='block';
+        if(!me) n.innerHTML = '사진을 올리려면 <a href="login.html">로그인</a>이 필요합니다. (정회원만 업로드 가능)';
+        else n.innerHTML = '사진 업로드는 <b>정회원</b>만 가능합니다. 회원 구분은 마이페이지에서 확인/수정할 수 있습니다.';
+      }
+
+      await loadGrid();
+
+      // ---- 업로드 이벤트 (정회원만) ----
+      if(isFull){
+        var drop = document.getElementById('drop'), input = document.getElementById('fileInput');
+        drop.addEventListener('click', function(){ input.click(); });
+        input.addEventListener('change', function(){ if(input.files.length) handleFiles(input.files); input.value=''; });
+        ['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); e.stopPropagation(); drop.classList.add('over'); }); });
+        ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); e.stopPropagation(); drop.classList.remove('over'); }); });
+        drop.addEventListener('drop', function(e){ var f = e.dataTransfer && e.dataTransfer.files; if(f && f.length) handleFiles(f); });
+      }
+
+      // ---- 삭제 ----
+      document.getElementById('grid').addEventListener('click', async function(e){
+        var b = e.target.closest ? e.target.closest('.del') : null;
+        if(!b) return;
+        if(!confirm('이 사진을 삭제할까요?')) return;
+        var id = b.getAttribute('data-id'), path = b.getAttribute('data-path');
+        try{
+          await window.sb.storage.from('gallery').remove([path]);
+          var del = await window.sb.from('gallery_photos').delete().eq('id', id);
+          if(del.error) throw del.error;
+          await loadGrid();
+        }catch(err){ alert('삭제 실패: ' + (err.message||err)); }
+      });
+    })();
+  </script>
+</body>
+</html>
