@@ -28,12 +28,22 @@
     return m || '알 수 없는 오류가 발생했습니다.';
   };
 
+  // 관리자 이메일 목록 (여기에 추가하면 관리자 권한 부여)
+  window.ADMIN_EMAILS = ['kds08200820@gmail.com'];
+  window.isAdmin = function (user) {
+    return !!(user && user.email && window.ADMIN_EMAILS.indexOf(String(user.email).toLowerCase()) >= 0);
+  };
+
   // 상단 바의 로그인/마이페이지 영역 렌더링
   function renderAuth(user) {
     var el = document.getElementById('authArea');
     if (!el) return;
     if (user) {
-      el.innerHTML =
+      var adminLink = window.isAdmin(user)
+        ? '<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>' +
+          '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>'
+        : '';
+      el.innerHTML = adminLink +
         '<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>' +
         '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>' +
         '<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>';
@@ -77,5 +87,17 @@
       return false;
     }
     return r.data.session.user;
+  };
+
+  // 관리자 전용 페이지 가드 — 로그인 + 관리자 이메일이어야 통과
+  window.requireAdmin = async function () {
+    var user = await window.requireAuth();
+    if (!user) return false;
+    if (!window.isAdmin(user)) {
+      alert('관리자 전용 페이지입니다.');
+      location.href = 'index.html';
+      return false;
+    }
+    return user;
   };
 })();

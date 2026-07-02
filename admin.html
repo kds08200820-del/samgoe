@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      -webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
+    .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .badge{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:var(--primary);padding:5px 10px;}
+    .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
+    .who{margin:10px 0 32px;font-size:15px;color:var(--muted);}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .tile{background:var(--canvas);border:1px solid var(--hairline);padding:26px 24px;transition:transform .2s ease,border-color .2s ease;}
+    .tile:hover{transform:translateY(-4px);border-color:var(--primary);}
+    .tile h3{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:0;}
+    .tile p{margin:0;font-size:14px;line-height:1.55;color:var(--muted);}
+    .soon{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--hairline-strong);padding:3px 8px;}
+    .home{display:inline-block;margin-top:32px;font-size:14px;color:var(--primary);font-weight:700;}
+    #content{display:none;}
+    #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
+    @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+
+  <div id="loading">확인 중…</div>
+
+  <div class="wrap" id="content">
+    <div class="head"><span class="badge">관리자</span><h1 class="title">관리자 페이지</h1></div>
+    <p class="who">로그인 계정: <b id="adminEmail"></b></p>
+
+    <div class="grid">
+      <div class="tile">
+        <h3>공지 · 소식 관리</h3>
+        <p>홈페이지 공지사항과 '걸어온 길' 활동 기록을 추가·수정합니다.</p>
+        <span class="soon">준비 중</span>
+      </div>
+      <div class="tile">
+        <h3>임원 · 회원 관리</h3>
+        <p>임원 명단, 회원 교회 정보를 관리합니다.</p>
+        <span class="soon">준비 중</span>
+      </div>
+      <div class="tile">
+        <h3>자료실</h3>
+        <p>회칙·안내서 등 회원 전용 문서를 올리고 관리합니다.</p>
+        <span class="soon">준비 중</span>
+      </div>
+    </div>
+
+    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    (async function () {
+      var user = await window.requireAdmin(); // 로그인 + 관리자 아니면 차단
+      if (!user) return;
+      document.getElementById('adminEmail').textContent = user.email || '';
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    })();
+  </script>
+</body>
+</html>
