@@ -9,13 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;}
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
-      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-      -webkit-font-smoothing:antialiased;}
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
-    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
     .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
     #authArea{font-size:12px;}
@@ -25,65 +24,174 @@
     .sub{margin:12px 0 28px;font-size:16px;color:var(--muted);}
     .row{display:flex;justify-content:space-between;gap:16px;padding:16px 0;border-top:1px solid var(--hairline);font-size:15px;}
     .row .k{color:var(--muted);font-weight:700;}
-    .row .v{color:var(--ink);}
+    .row .v{color:var(--ink);text-align:right;}
+    label{display:block;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--ink);margin:16px 0 6px;}
+    input{width:100%;height:48px;padding:0 14px;border:1px solid var(--hairline-strong);background:#fff;
+      font-size:16px;font-family:inherit;font-weight:300;color:var(--ink);border-radius:0;}
+    input:focus{outline:none;border:2px solid var(--ink);}
+    .acWrap{position:relative;}
+    .ac-list{position:absolute;left:0;right:0;top:100%;z-index:10;background:#fff;border:1px solid var(--hairline-strong);
+      border-top:0;max-height:230px;overflow-y:auto;display:none;}
+    .ac-item{padding:11px 14px;font-size:14px;cursor:pointer;border-top:1px solid var(--hairline);}
+    .ac-item:first-child{border-top:0;}
+    .ac-item:hover{background:var(--surface-soft);}
+    .ac-item b{color:var(--ink);font-weight:700;}
+    .ac-item span{color:var(--muted);font-size:12px;margin-left:6px;}
+    .memberTag{display:none;margin-top:8px;font-size:13px;font-weight:700;padding:8px 12px;}
+    .memberTag.full{display:block;background:#eaf3ff;border:1px solid #b9d6ff;color:var(--primary);}
+    .memberTag.general{display:block;background:var(--surface-soft);border:1px solid var(--hairline-strong);color:var(--muted);}
     .btn{width:100%;height:48px;border:0;border-radius:0;background:var(--primary);color:#fff;font-size:15px;
-      font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:28px;font-family:inherit;transition:background .15s ease;}
+      font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:14px;font-family:inherit;transition:background .15s ease;}
     .btn:hover{background:var(--primary-active);}
+    .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+    .btn.ghost:hover{background:var(--surface-soft);}
+    .err{display:none;margin-top:14px;padding:12px 14px;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);font-size:14px;}
     .home{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--muted);}
     #content{display:none;}
+    #editMode{display:none;}
     #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
   </style>
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
-
   <div id="loading">확인 중…</div>
 
   <div class="wrap" id="content">
     <div class="card">
       <h1 class="title">마이페이지</h1>
       <p class="sub">삼기연 홈페이지에 로그인하셨습니다. 환영합니다. 🙏</p>
-      <div class="row"><span class="k">이름</span><span class="v" id="pName">—</span></div>
-      <div class="row"><span class="k">교회</span><span class="v" id="pChurch">—</span></div>
-      <div class="row"><span class="k">회원 구분</span><span class="v" id="pType">—</span></div>
-      <div class="row"><span class="k">직책</span><span class="v" id="pRole">—</span></div>
-      <div class="row"><span class="k">전화번호</span><span class="v" id="pPhone">—</span></div>
-      <div class="row"><span class="k">주소</span><span class="v" id="pAddr">—</span></div>
-      <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
-      <button class="btn" id="logout">로그아웃</button>
+
+      <!-- 보기 모드 -->
+      <div id="viewMode">
+        <div class="row"><span class="k">이름</span><span class="v" id="pName">—</span></div>
+        <div class="row"><span class="k">교회</span><span class="v" id="pChurch">—</span></div>
+        <div class="row"><span class="k">회원 구분</span><span class="v" id="pType">—</span></div>
+        <div class="row"><span class="k">직책</span><span class="v" id="pRole">—</span></div>
+        <div class="row"><span class="k">전화번호</span><span class="v" id="pPhone">—</span></div>
+        <div class="row"><span class="k">주소</span><span class="v" id="pAddr">—</span></div>
+        <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
+        <button class="btn" id="editBtn">정보 수정</button>
+        <button class="btn ghost" id="logout">로그아웃</button>
+      </div>
+
+      <!-- 수정 모드 -->
+      <div id="editMode">
+        <label for="eName">이름</label>
+        <input id="eName" type="text" placeholder="홍길동" />
+        <label for="eChurch">교회명 <span style="font-weight:400;color:var(--muted)">(검색)</span></label>
+        <div class="acWrap">
+          <input id="eChurch" type="text" placeholder="교회 이름을 입력하면 검색됩니다" autocomplete="off" />
+          <div class="ac-list" id="eChurchList"></div>
+        </div>
+        <div class="memberTag" id="eMemberTag"></div>
+        <label for="ePhone">전화번호</label>
+        <input id="ePhone" type="tel" placeholder="010-0000-0000" />
+        <label for="eAddr">주소</label>
+        <input id="eAddr" type="text" placeholder="예) 화성시 우정읍 ○○로 00" />
+        <div class="err" id="eErr"></div>
+        <button class="btn" id="saveBtn">저장</button>
+        <button class="btn ghost" id="cancelBtn">취소</button>
+      </div>
     </div>
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
+  <script src="churches.js?v=2"></script>
   <script src="auth.js?v=2"></script>
   <script>
+    function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
+    var CH = window.CHURCHES || [];
+    var meUser = null, meProfile = null;
+
+    function fill(p){
+      document.getElementById('pName').textContent = (p && p.name) || '—';
+      document.getElementById('pChurch').textContent = (p && p.church) || '—';
+      document.getElementById('pType').textContent = (p && p.member_type) || '—';
+      document.getElementById('pRole').textContent = (p && p.officer_role) || '— (일반 회원)';
+      document.getElementById('pPhone').textContent = (p && p.phone) || '—';
+      document.getElementById('pAddr').textContent = (p && p.address) || '—';
+    }
+
     (async function () {
-      var user = await window.requireAuth(); // 미로그인 시 안내 후 login.html 로 이동
+      var user = await window.requireAuth();
       if (!user) return;
+      meUser = user;
       document.getElementById('userEmail').textContent = user.email || '';
-      // 먼저 화면을 보여주고 (로그인 확인은 즉시 끝남)
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
       document.getElementById('logout').addEventListener('click', async function () {
         if (window.sb) { try { await window.sb.auth.signOut(); } catch (_) {} }
         location.href = 'index.html';
       });
-      // 프로필 정보는 뒤에서 채움 (지연/실패/구버전이어도 페이지는 정상 표시)
       try {
-        if (typeof window.getMyProfile === 'function') {
-          var p = await window.getMyProfile();
-          if (p) {
-            document.getElementById('pName').textContent = p.name || '—';
-            document.getElementById('pChurch').textContent = p.church || '—';
-            document.getElementById('pType').textContent = p.member_type || '—';
-            document.getElementById('pRole').textContent = p.officer_role || '— (일반 회원)';
-            document.getElementById('pPhone').textContent = p.phone || '—';
-            document.getElementById('pAddr').textContent = p.address || '—';
-          }
-        }
+        if (typeof window.getMyProfile === 'function') { meProfile = await window.getMyProfile(); fill(meProfile); }
       } catch (e) {}
+
+      // ----- 수정 모드 -----
+      var view = document.getElementById('viewMode'), edit = document.getElementById('editMode');
+      var eName = document.getElementById('eName'), eChurch = document.getElementById('eChurch');
+      var ePhone = document.getElementById('ePhone'), eAddr = document.getElementById('eAddr');
+      var eErr = document.getElementById('eErr'), tag = document.getElementById('eMemberTag');
+      var list = document.getElementById('eChurchList');
+
+      function updateTag(){
+        var nm = norm(eName.value);
+        var rec = CH.find(function(c){ return c.name === eChurch.value.trim(); });
+        tag.className = 'memberTag';
+        if(!nm || !eChurch.value.trim()){ tag.textContent=''; return; }
+        if(rec && norm(rec.pastor) === nm){ tag.textContent = '✓ 회원교회 담임목사로 확인됩니다 — 정회원'; tag.classList.add('full'); }
+        else { tag.textContent = '일반회원으로 저장됩니다.'; tag.classList.add('general'); }
+      }
+      function renderList(q){
+        q = q.trim(); list.innerHTML = '';
+        if(!q){ list.style.display='none'; return; }
+        var m = CH.filter(function(c){ return c.name.indexOf(q) >= 0; }).slice(0, 8);
+        if(!m.length){ list.style.display='none'; return; }
+        m.forEach(function(c){
+          var d = document.createElement('div'); d.className='ac-item';
+          d.innerHTML = '<b>'+c.name+'</b><span>'+c.region+' · '+c.pastor+' 목사</span>';
+          d.addEventListener('mousedown', function(ev){ ev.preventDefault(); eChurch.value=c.name; list.style.display='none'; updateTag(); });
+          list.appendChild(d);
+        });
+        list.style.display='block';
+      }
+      eChurch.addEventListener('input', function(){ renderList(eChurch.value); updateTag(); });
+      eChurch.addEventListener('focus', function(){ renderList(eChurch.value); });
+      eChurch.addEventListener('blur', function(){ setTimeout(function(){ list.style.display='none'; }, 150); });
+      eName.addEventListener('input', updateTag);
+
+      document.getElementById('editBtn').addEventListener('click', function(){
+        eName.value = (meProfile && meProfile.name) || '';
+        eChurch.value = (meProfile && meProfile.church) || '';
+        ePhone.value = (meProfile && meProfile.phone) || '';
+        eAddr.value = (meProfile && meProfile.address) || '';
+        eErr.style.display='none'; updateTag();
+        view.style.display='none'; edit.style.display='block';
+      });
+      document.getElementById('cancelBtn').addEventListener('click', function(){
+        edit.style.display='none'; view.style.display='block';
+      });
+      document.getElementById('saveBtn').addEventListener('click', async function(){
+        eErr.style.display='none';
+        var name = eName.value.trim(), church = eChurch.value.trim(), phone = ePhone.value.trim(), addr = eAddr.value.trim();
+        if(!name || !church){ eErr.textContent='이름과 교회명을 입력해 주세요.'; eErr.style.display='block'; return; }
+        if(!window.sb){ eErr.textContent='서버 연결이 준비되지 않았습니다.'; eErr.style.display='block'; return; }
+        var rec = CH.find(function(c){ return c.name === church; });
+        var memberType = (rec && norm(rec.pastor) === norm(name)) ? '정회원' : '일반회원';
+        var btn = document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='저장 중...';
+        var up = await window.sb.from('profiles')
+          .update({ name: name, church: church, phone: phone, address: addr, member_type: memberType })
+          .eq('id', meUser.id);
+        btn.disabled=false; btn.textContent='저장';
+        if(up.error){ eErr.textContent='저장 실패: ' + up.error.message; eErr.style.display='block'; return; }
+        meProfile = meProfile || {};
+        meProfile.name=name; meProfile.church=church; meProfile.phone=phone; meProfile.address=addr; meProfile.member_type=memberType;
+        fill(meProfile);
+        edit.style.display='none'; view.style.display='block';
+      });
     })();
   </script>
 </body>

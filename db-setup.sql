@@ -60,6 +60,24 @@ drop policy if exists "admin_update" on public.profiles;
 create policy "admin_update" on public.profiles
   for update using ( (auth.jwt() ->> 'email') = 'kds08200820@gmail.com' );
 
+-- 본인 프로필 수정 (이름/주소/전화/교회)
+drop policy if exists "own_update" on public.profiles;
+create policy "own_update" on public.profiles
+  for update using ( auth.uid() = id ) with check ( auth.uid() = id );
+
+-- 직책(officer_role)은 관리자만 변경 가능 — 일반 회원이 본인 정보를 수정해도 직책은 그대로 보존
+create or replace function public.protect_officer_role()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if coalesce((auth.jwt() ->> 'email'), '') <> 'kds08200820@gmail.com' then
+    new.officer_role := old.officer_role;
+  end if;
+  return new;
+end $$;
+drop trigger if exists trg_protect_officer on public.profiles;
+create trigger trg_protect_officer before update on public.profiles
+  for each row execute function public.protect_officer_role();
+
 -- (INSERT는 위 트리거가 security definer로 처리하므로 별도 정책 불필요)
 
 -- 4) 이미 가입한 계정 백필 — 트리거는 '신규 가입'에만 동작하므로,
