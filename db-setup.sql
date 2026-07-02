@@ -58,3 +58,15 @@ create policy "admin_update" on public.profiles
   for update using ( (auth.jwt() ->> 'email') = 'kds08200820@gmail.com' );
 
 -- (INSERT는 위 트리거가 security definer로 처리하므로 별도 정책 불필요)
+
+-- 4) 이미 가입한 계정 백필 — 트리거는 '신규 가입'에만 동작하므로,
+--    이 SQL을 실행하기 전에 가입한 계정들(관리자 포함)의 프로필을 만들어 줍니다.
+insert into public.profiles (id, email, name, address, phone, church, member_type)
+select id, email,
+       raw_user_meta_data ->> 'name',
+       raw_user_meta_data ->> 'address',
+       raw_user_meta_data ->> 'phone',
+       raw_user_meta_data ->> 'church',
+       coalesce(raw_user_meta_data ->> 'member_type', '일반회원')
+from auth.users
+on conflict (id) do nothing;
