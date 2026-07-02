@@ -6,4 +6,4 @@
 //     (anon public 키는 공개되어도 안전한 키입니다. Row Level Security로 데이터가 보호됩니다.)
 // ============================================================
 window.SUPABASE_URL = 'https://xurdgazbcoxjaqkvlqff.supabase.co';
-window.SUPABASE_ANON_KEY = ''; // ← 여기에 anon public 키를 붙여넣으세요. 예: 'eyJhbGciOi...'
+window.SUPABASE_ANON_KEY = 'sb_publishable_nBJeoClbq0p5Z62_YQx3hg_0Ahhlw_v'; // Supabase Publishable key (브라우저 공개 안전 키)
