@@ -84,7 +84,7 @@
       if (!window.sb) { showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase Anon Key 입력 필요)'); return; }
       var btn = f.querySelector('.btn'); btn.disabled = true; btn.textContent = '가입 중...';
       try {
-        var res = await window.sb.auth.signUp({ email: email, password: pw });
+        var res = await window.sb.auth.signUp({ email: email, password: pw, options: { emailRedirectTo: location.origin + '/login.html' } });
         if (res.error) { showErr(window.krErr(res.error.message)); btn.disabled = false; btn.textContent = '회원가입'; return; }
         if (res.data && res.data.session) { location.href = 'index.html'; return; } // 이메일 확인 꺼진 경우 즉시 로그인
         // 이메일 확인이 켜진 경우
