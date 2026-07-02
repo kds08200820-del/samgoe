@@ -56,28 +56,34 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="auth.js"></script>
+  <script src="supabase-config.js?v=2"></script>
+  <script src="auth.js?v=2"></script>
   <script>
     (async function () {
       var user = await window.requireAuth(); // 미로그인 시 안내 후 login.html 로 이동
       if (!user) return;
       document.getElementById('userEmail').textContent = user.email || '';
-      var p = await window.getMyProfile();
-      if (p) {
-        document.getElementById('pName').textContent = p.name || '—';
-        document.getElementById('pChurch').textContent = p.church || '—';
-        document.getElementById('pType').textContent = p.member_type || '—';
-        document.getElementById('pRole').textContent = p.officer_role || '— (일반 회원)';
-        document.getElementById('pPhone').textContent = p.phone || '—';
-        document.getElementById('pAddr').textContent = p.address || '—';
-      }
+      // 먼저 화면을 보여주고 (로그인 확인은 즉시 끝남)
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
       document.getElementById('logout').addEventListener('click', async function () {
         if (window.sb) { try { await window.sb.auth.signOut(); } catch (_) {} }
         location.href = 'index.html';
       });
+      // 프로필 정보는 뒤에서 채움 (지연/실패/구버전이어도 페이지는 정상 표시)
+      try {
+        if (typeof window.getMyProfile === 'function') {
+          var p = await window.getMyProfile();
+          if (p) {
+            document.getElementById('pName').textContent = p.name || '—';
+            document.getElementById('pChurch').textContent = p.church || '—';
+            document.getElementById('pType').textContent = p.member_type || '—';
+            document.getElementById('pRole').textContent = p.officer_role || '— (일반 회원)';
+            document.getElementById('pPhone').textContent = p.phone || '—';
+            document.getElementById('pAddr').textContent = p.address || '—';
+          }
+        }
+      } catch (e) {}
     })();
   </script>
 </body>
