@@ -1,0 +1,16 @@
+{
+  "name": "삼괴지역 기독교 연합회",
+  "short_name": "삼기연",
+  "description": "화성특례시 우정읍·장안면 49개 교회가 함께하는 삼괴지역 목회자 연합 공동체",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1c69d4",
+  "lang": "ko",
+  "icons": [
+    { "src": "assets/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

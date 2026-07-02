@@ -32,6 +32,8 @@
       font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:26px;font-family:inherit;transition:background .15s ease;}
     .btn:hover{background:var(--primary-active);}
     .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .remember{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:14px;font-weight:400;color:var(--bodytext);cursor:pointer;letter-spacing:0;}
+    .remember input{width:18px;height:18px;flex:0 0 18px;margin:0;accent-color:var(--primary);cursor:pointer;}
     .err{display:none;margin-top:18px;padding:12px 14px;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);font-size:14px;line-height:1.5;}
     .foot{text-align:center;margin-top:24px;font-size:14px;color:var(--muted);}
     .foot a{color:var(--primary);font-weight:700;}
@@ -50,6 +52,7 @@
         <input id="email" type="email" required autocomplete="email" placeholder="you@example.com" />
         <label for="pw">비밀번호</label>
         <input id="pw" type="password" required autocomplete="current-password" placeholder="비밀번호" />
+        <label class="remember"><input type="checkbox" id="remember" checked /> <span>로그인 정보 저장 <span style="color:var(--muted);font-weight:400">(다음부터 자동 로그인)</span></span></label>
         <div class="err" id="err"></div>
         <button class="btn" type="submit">로그인</button>
       </form>
@@ -60,18 +63,34 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
-  <script src="auth.js?v=3"></script>
+  <script src="auth.js?v=4"></script>
   <script>
     var f = document.getElementById('loginForm');
     var err = document.getElementById('err');
+    var rememberBox = document.getElementById('remember');
     function showErr(m){ err.textContent = m; err.style.display = 'block'; }
+
+    // 저장해 둔 이메일/설정 불러오기 (편의)
+    try {
+      var savedEmail = localStorage.getItem('sam_email');
+      if (savedEmail) document.getElementById('email').value = savedEmail;
+      rememberBox.checked = (localStorage.getItem('sam_remember') !== '0');
+    } catch (_) {}
+
     f.addEventListener('submit', async function (e) {
       e.preventDefault(); err.style.display = 'none';
       if (!window.sb) { showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase Anon Key 입력 필요)'); return; }
+      var email = document.getElementById('email').value.trim();
+      // 로그인 정보 저장 여부 반영 (세션 저장 위치 + 이메일 기억)
+      if (window.setRemember) window.setRemember(rememberBox.checked);
+      try {
+        if (rememberBox.checked) localStorage.setItem('sam_email', email);
+        else localStorage.removeItem('sam_email');
+      } catch (_) {}
       var btn = f.querySelector('.btn'); btn.disabled = true; btn.textContent = '로그인 중...';
       try {
         var res = await window.sb.auth.signInWithPassword({
-          email: document.getElementById('email').value.trim(),
+          email: email,
           password: document.getElementById('pw').value
         });
         if (res.error) { showErr(window.krErr(res.error.message)); }

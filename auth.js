@@ -15,9 +15,20 @@
   var hasSDK = !!(window.supabase && window.supabase.createClient);
   var ready = hasSDK && URL && KEY;
 
+  // "로그인 정보 저장(자동 로그인)" — 체크 시 localStorage(브라우저를 닫아도 유지),
+  //   해제 시 sessionStorage(탭/브라우저를 닫으면 로그아웃)에 세션을 저장합니다.
+  //   기본값은 '저장'(자동 로그인)입니다.
+  function rememberOn() { try { return localStorage.getItem('sam_remember') !== '0'; } catch (_) { return true; } }
+  var authStorage = {
+    getItem: function (k) { try { return (rememberOn() ? window.localStorage : window.sessionStorage).getItem(k); } catch (_) { return null; } },
+    setItem: function (k, v) { try { (rememberOn() ? window.localStorage : window.sessionStorage).setItem(k, v); } catch (_) {} },
+    removeItem: function (k) { try { window.localStorage.removeItem(k); window.sessionStorage.removeItem(k); } catch (_) {} }
+  };
+  window.setRemember = function (on) { try { localStorage.setItem('sam_remember', on ? '1' : '0'); } catch (_) {} };
+
   // Anon Key가 아직 비어 있으면 client를 만들지 않고 게스트 모드로 동작 (사이트는 정상)
   window.sb = ready
-    ? window.supabase.createClient(URL, KEY, { auth: { persistSession: true, autoRefreshToken: true } })
+    ? window.supabase.createClient(URL, KEY, { auth: { persistSession: true, autoRefreshToken: true, storage: authStorage } })
     : null;
 
   // Supabase 영문 에러 메시지를 한국어로 변환

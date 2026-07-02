@@ -11,6 +11,16 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="assets/img/hero.webp" />
 
+  <!-- 스마트폰 홈 화면 앱 설치 (PWA) -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#1c69d4" />
+  <link rel="icon" type="image/svg+xml" href="assets/app-icon.svg" />
+  <link rel="apple-touch-icon" href="assets/app-icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="삼기연" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -810,7 +820,7 @@ window.initGalleryMarquee = function(){
 <!-- ===================== 로그인(Supabase) ===================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=3"></script>
-<script src="auth.js?v=3"></script>
+<script src="auth.js?v=4"></script>
 <script>
 // 갤러리 마퀴 — 게시판에 올라온 최신 사진으로 채우기 (없으면 기본 사진 유지)
 (async function(){
@@ -830,6 +840,12 @@ window.initGalleryMarquee = function(){
   }catch(e){}
   if(window.initGalleryMarquee) window.initGalleryMarquee();
 })();
+// 앱 설치(PWA) — 서비스 워커 등록
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
 </script>
 </body>
 </html>
