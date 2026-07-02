@@ -11,4 +11,4 @@ window.SUPABASE_ANON_KEY = 'sb_publishable_nBJeoClbq0p5Z62_YQx3hg_0Ahhlw_v'; // 
 // 갤러리 사진 저장소 — Cloudflare R2 Worker 주소.
 // 비워두면 Supabase Storage(1GB)에 저장, 채우면 Cloudflare R2(10GB)에 저장합니다.
 // Worker 배포 후 그 주소(https://xxxx.workers.dev)를 아래 따옴표 안에 붙여넣으세요.
-window.R2_WORKER_URL = '';
+window.R2_WORKER_URL = 'https://samgoe-gallery.kds08200820.workers.dev';

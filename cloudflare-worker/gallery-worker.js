@@ -4,16 +4,18 @@
  * 브라우저(정적 사이트)에서 R2로 직접 업로드하면 비밀키가 노출되므로,
  * 이 Worker가 중간에서 ①로그인·정회원 검증 ②R2 저장 ③이미지 서빙을 담당합니다.
  *
- * ▣ 배포 방법 (Cloudflare 대시보드)
- *   1) R2 활성화: 좌측 메뉴 R2 → 버킷 생성 (이름: samgoe-gallery)
- *   2) Workers & Pages → Create → Worker 만들고 이 파일 내용을 붙여넣기 → Deploy
- *   3) 그 Worker의 Settings 에서:
+ * ▣ 배포 방법 (Cloudflare 대시보드) — 삼괴 전용으로 새로 생성 (운평 리소스와 분리)
+ *   ※ 운평(k-logos.com)용 church-files / church-uploads 는 절대 건드리지 말 것.
+ *   1) R2 → Create bucket → 이름: samgoe-gallery
+ *   2) Workers & Pages → Create → Worker → 이름: samgoe-gallery → Deploy
+ *      → Edit code 에 이 파일 내용 전체 붙여넣기 → Deploy
+ *   3) 이 새 Worker → Settings 에서:
  *      · Variables and Secrets 에 추가:
  *          SUPABASE_URL       = https://xurdgazbcoxjaqkvlqff.supabase.co
  *          SUPABASE_ANON_KEY  = sb_publishable_nBJeoClbq0p5Z62_YQx3hg_0Ahhlw_v
  *          ADMIN_EMAIL        = kds08200820@gmail.com
- *      · Bindings → R2 bucket 추가:  Variable name = BUCKET,  Bucket = samgoe-gallery
- *   4) 저장 후 재배포. Worker 주소(https://xxxx.workers.dev)를 복사해
+ *      · Bindings → R2 bucket 추가:  Variable name = BUCKET,  R2 bucket = samgoe-gallery
+ *   4) 저장 후 재배포. Worker 주소(https://samgoe-gallery.<계정>.workers.dev)를 복사해
  *      사이트의 supabase-config.js 의 R2_WORKER_URL 에 넣으면 연동 완료.
  */
 
