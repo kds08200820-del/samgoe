@@ -59,7 +59,8 @@
     <div id="setup" class="setup"></div>
 
     <h2 class="title" style="font-size:22px;margin:8px 0 6px;">가입 회원 관리</h2>
-    <p class="who" style="margin:0 0 14px;">구분(정회원·일반회원)과 임원 직책을 관리자가 직접 지정·변경할 수 있습니다. 정회원으로 가입했더라도 문제가 있으면 일반회원으로 내릴 수 있습니다.</p>
+    <p class="who" style="margin:0 0 14px;">구분(정회원·일반회원)을 직접 지정·변경할 수 있습니다. 정회원으로 가입했더라도 문제가 있으면 일반회원으로 내릴 수 있습니다.</p>
+    <p class="who" id="roleNote" style="display:none;margin:0 0 14px;padding:12px 14px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;">임원 직책 지정(회장 선정 포함)은 <b>최고관리자만</b> 할 수 있습니다. 회장님은 회원 구분 관리와 갤러리 관리를 하실 수 있습니다.</p>
     <div class="tblwrap">
       <table>
         <thead><tr>
@@ -87,14 +88,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="churches.js?v=2"></script>
-  <script src="auth.js?v=2"></script>
+  <script src="auth.js?v=3"></script>
   <script>
     (async function () {
       var user = await window.requireAdmin();
       if (!user) return;
-      document.getElementById('adminEmail').textContent = user.email || '';
+      var isSuper = window.isSuperAdmin(user);
+      document.getElementById('adminEmail').textContent = (user.email || '') + (isSuper ? ' (최고관리자)' : ' (회장)');
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
+      if (!isSuper) {
+        var rn = document.getElementById('roleNote');
+        if (rn) rn.style.display = 'block';
+      }
 
       var ROLES = window.OFFICER_ROLES || [];
       var msg = document.getElementById('msg');
@@ -130,13 +136,16 @@
           var opts = '<option value="">— 없음 —</option>' + ROLES.map(function(role){
             return '<option value="' + role + '"' + (r.officer_role === role ? ' selected' : '') + '>' + role + '</option>';
           }).join('');
+          var roleCell = isSuper
+            ? '<select data-id="' + r.id + '" class="roleSel">' + opts + '</select>'
+            : '<span>' + (r.officer_role ? esc(r.officer_role) : '<span style="color:var(--hairline-strong)">—</span>') + '</span>';
           var since = '';
           try { if (r.created_at) since = new Date(r.created_at).toLocaleDateString('ko-KR'); } catch(_) {}
           tr.innerHTML =
             '<td class="nm">' + esc(r.name) + '</td>' +
             '<td>' + esc(r.church) + '</td>' +
             '<td><select data-id="' + r.id + '" class="typeSel">' + typeOpts + '</select></td>' +
-            '<td><select data-id="' + r.id + '" class="roleSel">' + opts + '</select></td>' +
+            '<td>' + roleCell + '</td>' +
             '<td>' + esc(r.phone) + '</td>' +
             '<td style="color:var(--muted)">' + esc(r.email) + '</td>' +
             '<td style="color:var(--muted)">' + esc(since) + '</td>';
@@ -160,6 +169,7 @@
               flash(mtVal === '정회원' ? '정회원으로 변경했습니다.' : '일반회원으로 변경했습니다.');
             }
           } else if (sel.classList.contains('roleSel')) {
+            if (!isSuper) { flash('임원 직책 지정은 최고관리자만 가능합니다.'); return; }
             var val = sel.value || null;
             sel.disabled = true;
             var up = await window.sb.from('profiles').update({ officer_role: val }).eq('id', id);

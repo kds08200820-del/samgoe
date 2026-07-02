@@ -33,10 +33,16 @@
     return m || '알 수 없는 오류가 발생했습니다.';
   };
 
-  // 관리자 이메일 목록 (여기에 추가하면 관리자 권한 부여)
+  // 최고관리자 이메일 (회장 선정 등 최상위 권한 — 이 계정만 임원 직책을 지정할 수 있음)
   window.ADMIN_EMAILS = ['kds08200820@gmail.com'];
-  window.isAdmin = function (user) {
+  window.isSuperAdmin = function (user) {
     return !!(user && user.email && window.ADMIN_EMAILS.indexOf(String(user.email).toLowerCase()) >= 0);
+  };
+  // 관리자 = 최고관리자(이메일) 또는 회장(officer_role='회장')
+  //   최고관리자가 회장을 선정하면 회장도 관리자 권한(회원관리·갤러리 관리)을 갖습니다.
+  window.isAdmin = function (user, profile) {
+    if (window.isSuperAdmin(user)) return true;
+    return !!(profile && profile.officer_role === '회장');
   };
 
   // 현재 로그인 사용자의 프로필(이름/교회/구분/직책) 조회
@@ -59,7 +65,7 @@
     if (user) {
       var sep = '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>';
       var parts = [];
-      if (window.isAdmin(user)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
+      if (window.isAdmin(user, profile)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
       if (profile && profile.officer_role) parts.push('<a href="officer.html" style="color:#8fc0ff;font-weight:700">임원실</a>');
       parts.push('<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>');
       parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
@@ -109,11 +115,12 @@
     return r.data.session.user;
   };
 
-  // 관리자 전용 페이지 가드 — 로그인 + 관리자 이메일이어야 통과
+  // 관리자 전용 페이지 가드 — 로그인 + (최고관리자 또는 회장)이어야 통과
   window.requireAdmin = async function () {
     var user = await window.requireAuth();
     if (!user) return false;
-    if (!window.isAdmin(user)) {
+    var profile = await window.getMyProfile();
+    if (!window.isAdmin(user, profile)) {
       alert('관리자 전용 페이지입니다.');
       location.href = 'index.html';
       return false;
@@ -129,11 +136,12 @@
     var user = await window.requireAuth();
     if (!user) return false;
     var profile = await window.getMyProfile();
-    if (!profile || !profile.officer_role) {
-      alert('임원 전용 페이지입니다.');
+    var allowed = (profile && profile.officer_role) || window.isSuperAdmin(user);
+    if (!allowed) {
+      alert('임원만 이용할 수 있습니다.');
       location.href = 'index.html';
       return false;
     }
-    return { user: user, profile: profile };
+    return { user: user, profile: profile || {} };
   };
 })();

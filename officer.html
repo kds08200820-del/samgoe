@@ -3,65 +3,392 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>임원실 | 삼괴지역 기독교 연합회</title>
+  <title>임원방 | 삼괴지역 기독교 연합회</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;}
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--surface-card:#fafafa;--dark:#1a2129;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
       font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
-    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:30;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
     .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
     #authArea{font-size:12px;}
-    .wrap{max-width:900px;margin:0 auto;padding:48px 24px 80px;}
+    .wrap{max-width:1024px;margin:0 auto;padding:44px 24px 90px;}
     .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
     .badge{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:var(--dark);padding:5px 10px;}
     .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
-    .who{margin:10px 0 32px;font-size:15px;color:var(--muted);}
+    .who{margin:10px 0 26px;font-size:15px;color:var(--muted);}
     .who b{color:var(--ink);}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
-    .tile{background:var(--canvas);border:1px solid var(--hairline);padding:26px 24px;}
-    .tile h3{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:0;}
-    .tile p{margin:0;font-size:14px;line-height:1.55;color:var(--muted);}
-    .soon{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--hairline-strong);padding:3px 8px;}
-    .home{display:inline-block;margin-top:32px;font-size:14px;color:var(--primary);font-weight:700;}
-    #content{display:none;}
+    .tabs{display:flex;gap:0;border-bottom:2px solid var(--hairline);margin-bottom:28px;}
+    .tab{padding:13px 22px;font-size:16px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;}
+    .tab.on{color:var(--primary);border-bottom-color:var(--primary);}
+    .pane{display:none;} .pane.on{display:block;}
+    /* 글쓰기/업로드 */
+    .writeBox{background:var(--canvas);border:1px solid var(--hairline);padding:22px 24px;margin-bottom:24px;}
+    .writeBox h3{margin:0 0 14px;font-size:16px;font-weight:700;color:var(--ink);}
+    .fld{margin-bottom:12px;}
+    .fld label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .fld input, .fld textarea{width:100%;padding:11px 13px;border:1px solid var(--hairline-strong);background:#fff;
+      font-size:15px;font-family:inherit;font-weight:300;border-radius:0;color:var(--ink);}
+    .fld input:focus, .fld textarea:focus{outline:none;border:2px solid var(--ink);}
+    .fld textarea{min-height:96px;resize:vertical;line-height:1.6;}
+    .frow{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
+    .btn{height:44px;padding:0 20px;border:0;border-radius:0;background:var(--primary);color:#fff;font-size:14px;
+      font-weight:700;letter-spacing:0.5px;cursor:pointer;font-family:inherit;transition:background .15s ease;}
+    .btn:hover{background:var(--primary-active);}
+    .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+    .btn.ghost:hover{background:var(--surface-soft);}
+    .btn.sm{height:34px;padding:0 13px;font-size:13px;}
+    .btn.danger{background:#fff;color:var(--error);border:1px solid #f3c7c3;}
+    .btn.danger:hover{background:#fdecea;}
+    .prog{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px;}
+    .drop{border:2px dashed var(--hairline-strong);background:var(--surface-soft);padding:30px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;}
+    .drop.over{border-color:var(--primary);background:#eef5ff;}
+    .drop .big{font-size:15px;font-weight:700;color:var(--ink);}
+    .drop .small{font-size:12px;color:var(--muted);margin-top:5px;}
+    .drop u{color:var(--primary);}
+    .picked{margin-top:10px;font-size:13px;}
+    .picked .f{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--hairline);}
+    .picked .f:first-child{border-top:0;}
+    .picked .f button{border:0;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;font-size:12px;}
+    /* 목록 */
+    .list{background:var(--canvas);border:1px solid var(--hairline);}
+    .row{display:flex;align-items:center;gap:14px;padding:16px 20px;border-top:1px solid var(--hairline);cursor:pointer;}
+    .row:first-child{border-top:0;}
+    .row:hover{background:var(--surface-soft);}
+    .row .ic{font-size:22px;flex:0 0 auto;}
+    .row .main{flex:1;min-width:0;}
+    .row .t{font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .row .m{font-size:13px;color:var(--muted);margin-top:3px;}
+    .row .side{flex:0 0 auto;display:flex;align-items:center;gap:8px;}
+    .empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:15px;}
+    .home{display:inline-block;margin-top:30px;font-size:14px;color:var(--primary);font-weight:700;}
+    .notice{margin-bottom:18px;padding:14px 16px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;font-size:13px;line-height:1.6;}
     #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
-    @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+    #content{display:none;}
+    /* 모달 */
+    .overlay{position:fixed;inset:0;background:rgba(20,24,30,0.55);z-index:40;display:none;overflow-y:auto;padding:40px 16px;}
+    .overlay.on{display:block;}
+    .modal{max-width:680px;margin:0 auto;background:var(--canvas);}
+    .mhead{padding:22px 24px 16px;border-bottom:1px solid var(--hairline);position:relative;}
+    .mclose{position:absolute;top:14px;right:16px;width:34px;height:34px;border:0;background:none;font-size:26px;color:var(--muted);cursor:pointer;}
+    .mclose:hover{color:var(--ink);}
+    .modal h2{margin:0 30px 6px 0;font-size:22px;font-weight:700;color:var(--ink);line-height:1.3;}
+    .mmeta{font-size:13px;color:var(--muted);}
+    .mbody{padding:20px 24px;}
+    .desc{font-size:15px;line-height:1.75;color:var(--bodytext);white-space:pre-wrap;margin:0 0 18px;}
+    .cmts{margin-top:8px;border-top:1px solid var(--hairline);padding-top:16px;}
+    .cmts h4{margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink);}
+    .cmt{padding:11px 0;border-top:1px solid var(--hairline);font-size:14px;}
+    .cmt:first-of-type{border-top:0;}
+    .cmt .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+    .cmt .who2{font-weight:700;color:var(--ink);}
+    .cmt .when{font-size:12px;color:var(--muted);}
+    .cmt .txt{margin:4px 0 0;line-height:1.6;white-space:pre-wrap;}
+    .cmt .rm{border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;}
+    .cmt .rm:hover{color:var(--error);}
+    .cmtForm{display:flex;gap:8px;margin-top:12px;}
+    .cmtForm textarea{flex:1;min-height:42px;padding:10px 12px;border:1px solid var(--hairline-strong);font-size:14px;font-family:inherit;font-weight:300;resize:vertical;line-height:1.5;}
+    .cmtForm textarea:focus{outline:none;border:2px solid var(--ink);}
+    .mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+    @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
   </style>
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
   <div id="loading">확인 중…</div>
+
   <div class="wrap" id="content">
-    <div class="head"><span class="badge">임원 전용</span><h1 class="title">임원실</h1></div>
+    <div class="head"><span class="badge">임원 전용</span><h1 class="title">임원방</h1></div>
     <p class="who"><b id="ofcName"></b> <b id="ofcRole" style="color:var(--primary)"></b> · <span id="ofcChurch"></span></p>
-    <div class="grid">
-      <div class="tile"><h3>임원 회의 자료</h3><p>임원회·정기총회 안건과 회의록을 공유합니다.</p><span class="soon">준비 중</span></div>
-      <div class="tile"><h3>재정 · 회비 현황</h3><p>회비 납부 현황과 재정 보고를 확인합니다.</p><span class="soon">준비 중</span></div>
-      <div class="tile"><h3>행사 계획</h3><p>연합예배·걷기대회 등 행사 계획을 준비합니다.</p><span class="soon">준비 중</span></div>
-      <div class="tile"><h3>공지 발송</h3><p>회원 교회에 공지·안내를 전달합니다.</p><span class="soon">준비 중</span></div>
+
+    <div class="tabs">
+      <div class="tab on" data-tab="meeting">임원회의 게시판</div>
+      <div class="tab" data-tab="files">임원 자료방</div>
     </div>
+
+    <!-- 임원회의 게시판 -->
+    <div class="pane on" id="paneMeeting">
+      <div class="writeBox">
+        <h3>회의 글 작성</h3>
+        <div class="frow">
+          <div class="fld"><label>제목</label><input id="mTitle" type="text" maxlength="100" placeholder="예: 3월 임원회의 안건" /></div>
+          <div class="fld"><label>회의 날짜</label><input id="mDate" type="date" /></div>
+        </div>
+        <div class="fld"><label>내용</label><textarea id="mBody" maxlength="4000" placeholder="안건·회의록·공지 내용을 적어 주세요."></textarea></div>
+        <div style="display:flex;align-items:center;gap:12px;"><button class="btn" id="mSubmit">등록</button><span class="prog" id="mProg"></span></div>
+      </div>
+      <div class="list" id="meetingList"></div>
+      <div class="empty" id="meetingEmpty" style="display:none;">아직 등록된 회의 글이 없습니다.</div>
+    </div>
+
+    <!-- 임원 자료방 -->
+    <div class="pane" id="paneFiles">
+      <div class="notice" id="fileNotice" style="display:none;"></div>
+      <div class="writeBox">
+        <h3>자료 올리기</h3>
+        <div class="fld"><label>제목 <span style="font-weight:400;color:var(--muted)">(선택)</span></label><input id="fTitle" type="text" maxlength="100" placeholder="예: 2026 상반기 예산안" /></div>
+        <div class="fld">
+          <label>파일</label>
+          <div class="drop" id="fDrop"><div class="big">파일을 여기로 끌어다 놓으세요</div><div class="small">또는 <u>클릭해서 선택</u> · 여러 개 가능 · 개당 25MB까지</div></div>
+          <input type="file" id="fInput" multiple hidden />
+          <div class="picked" id="fPicked"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;"><button class="btn" id="fSubmit">업로드</button><span class="prog" id="fProg"></span></div>
+      </div>
+      <div class="list" id="fileList"></div>
+      <div class="empty" id="fileEmpty" style="display:none;">아직 올라온 자료가 없습니다.</div>
+    </div>
+
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
+  <!-- 상세 모달 (회의 글) -->
+  <div class="overlay" id="detailOverlay"><div class="modal" id="detailModal"></div></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=2"></script>
-  <script src="auth.js?v=2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=3"></script>
   <script>
-    (async function () {
-      var res = await window.requireOfficer(); // 로그인 + 임원 직책 아니면 차단
-      if (!res) return;
-      document.getElementById('ofcName').textContent = res.profile.name || '';
-      document.getElementById('ofcRole').textContent = res.profile.officer_role || '';
-      document.getElementById('ofcChurch').textContent = res.profile.church || '';
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('content').style.display = 'block';
+    var me = null, myProfile = null, isAdminUser = false;
+    var MPOSTS = [], MC = {}, FILES = [];
+    var pickedFiles = [];
+
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+    function fmtDate(d){ if(!d) return ''; try{ var x=new Date(d+'T00:00:00'); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2); }catch(_){ return d; } }
+    function fmtDT(ts){ if(!ts) return ''; try{ var x=new Date(ts); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2)+' '+('0'+x.getHours()).slice(-2)+':'+('0'+x.getMinutes()).slice(-2); }catch(_){ return ''; } }
+    function todayStr(){ var x=new Date(); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
+    function fmtSize(n){ n=Number(n)||0; if(n<1024) return n+' B'; if(n<1048576) return (n/1024).toFixed(0)+' KB'; return (n/1048576).toFixed(1)+' MB'; }
+    function fileIcon(name){ var e=(name||'').split('.').pop().toLowerCase();
+      if(['pdf'].indexOf(e)>=0) return '📕'; if(['doc','docx','hwp','hwpx','txt'].indexOf(e)>=0) return '📄';
+      if(['xls','xlsx','csv'].indexOf(e)>=0) return '📊'; if(['ppt','pptx'].indexOf(e)>=0) return '📑';
+      if(['jpg','jpeg','png','gif','webp','heic'].indexOf(e)>=0) return '🖼'; if(['zip','rar','7z'].indexOf(e)>=0) return '🗜'; return '📎'; }
+
+    // ---------- 탭 ----------
+    document.querySelectorAll('.tab').forEach(function(t){
+      t.addEventListener('click', function(){
+        document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+        document.querySelectorAll('.pane').forEach(function(x){ x.classList.remove('on'); });
+        t.classList.add('on');
+        document.getElementById(t.getAttribute('data-tab')==='meeting'?'paneMeeting':'paneFiles').classList.add('on');
+      });
+    });
+
+    // ---------- 데이터 로드 ----------
+    async function loadMeetings(){
+      var r = await Promise.all([
+        window.sb.from('officer_posts').select('*').order('meeting_date',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}),
+        window.sb.from('officer_comments').select('*').order('created_at',{ascending:true})
+      ]);
+      var list = document.getElementById('meetingList'), empty = document.getElementById('meetingEmpty');
+      if(r[0].error){ list.innerHTML=''; empty.style.display='block'; empty.innerHTML='불러오기 오류 — 관리자: <b>officer-room-setup.sql</b> 실행이 필요할 수 있습니다.<br><span style="font-size:12px">('+esc(r[0].error.message)+')</span>'; return; }
+      MPOSTS = r[0].data||[]; MC={}; (r[1].data||[]).forEach(function(c){ (MC[c.post_id]=MC[c.post_id]||[]).push(c); });
+      if(!MPOSTS.length){ list.innerHTML=''; empty.style.display='block'; empty.textContent='아직 등록된 회의 글이 없습니다.'; return; }
+      empty.style.display='none';
+      list.innerHTML = MPOSTS.map(function(p){
+        var n=(MC[p.id]||[]).length;
+        return '<div class="row" data-id="'+p.id+'"><div class="ic">📝</div><div class="main">'+
+          '<div class="t">'+esc(p.title)+'</div>'+
+          '<div class="m">'+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · 댓글 '+n+'</div></div>'+
+          '<div class="side"><span class="m" style="color:var(--muted)">'+fmtDT(p.created_at)+'</span></div></div>';
+      }).join('');
+    }
+    async function loadFiles(){
+      var r = await window.sb.from('officer_files').select('*').order('created_at',{ascending:false});
+      var list = document.getElementById('fileList'), empty = document.getElementById('fileEmpty');
+      if(r.error){ list.innerHTML=''; empty.style.display='block'; empty.innerHTML='불러오기 오류 — 관리자: <b>officer-room-setup.sql</b> 실행이 필요할 수 있습니다.<br><span style="font-size:12px">('+esc(r.error.message)+')</span>'; return; }
+      FILES = r.data||[];
+      if(!FILES.length){ list.innerHTML=''; empty.style.display='block'; empty.textContent='아직 올라온 자료가 없습니다.'; return; }
+      empty.style.display='none';
+      list.innerHTML = FILES.map(function(f){
+        var canRm = me && (f.author_id===me.id || isAdminUser);
+        return '<div class="row" style="cursor:default"><div class="ic">'+fileIcon(f.name)+'</div><div class="main">'+
+          '<div class="t">'+esc(f.title||f.name)+'</div>'+
+          '<div class="m">'+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'임원')+' · '+fmtDT(f.created_at)+'</div></div>'+
+          '<div class="side"><a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>'+
+          (canRm?'<button class="btn danger sm delFile" data-id="'+f.id+'" data-key="'+esc(f.path)+'">삭제</button>':'')+'</div></div>';
+      }).join('');
+    }
+
+    // ---------- 회의 글 작성 ----------
+    async function submitMeeting(){
+      var prog=document.getElementById('mProg');
+      var title=document.getElementById('mTitle').value.trim();
+      var date=document.getElementById('mDate').value||null;
+      var body=document.getElementById('mBody').value.trim();
+      if(!title){ prog.textContent='제목을 입력해 주세요.'; return; }
+      var btn=document.getElementById('mSubmit'); btn.disabled=true;
+      var ins=await window.sb.from('officer_posts').insert({
+        title:title, meeting_date:date, body:body||null,
+        author_id:me.id, author_name:(myProfile&&myProfile.name)||(me.email||'임원')
+      });
+      btn.disabled=false;
+      if(ins.error){ prog.textContent='등록 실패: '+ins.error.message; return; }
+      document.getElementById('mTitle').value=''; document.getElementById('mBody').value=''; document.getElementById('mDate').value=todayStr();
+      prog.textContent='등록되었습니다.'; setTimeout(function(){ if(prog.textContent.indexOf('등록')>=0) prog.textContent=''; },3000);
+      await loadMeetings();
+    }
+
+    // ---------- 히스토리(뒤로가기) 모달 ----------
+    var modalOpen=false;
+    function openDetail(id){ curId=id; renderDetail(); document.getElementById('detailOverlay').classList.add('on'); document.body.style.overflow='hidden'; modalOpen=true; history.pushState({m:1},''); }
+    function hideDetail(){ document.getElementById('detailOverlay').classList.remove('on'); document.body.style.overflow=''; modalOpen=false; curId=null; }
+    function requestClose(){ if(modalOpen) history.back(); }
+    window.addEventListener('popstate', function(){ if(modalOpen) hideDetail(); });
+
+    var curId=null;
+    function renderDetail(){
+      var p=MPOSTS.find(function(x){return x.id===curId;}); if(!p){ requestClose(); return; }
+      var comments=MC[p.id]||[];
+      var isOwner=me&&p.author_id===me.id, canEdit=me&&(isOwner||isAdminUser);
+      var cmtsHtml=comments.map(function(c){
+        var canRm=me&&(c.author_id===me.id||isAdminUser);
+        return '<div class="cmt"><div class="top"><span><span class="who2">'+esc(c.author_name||'임원')+'</span> <span class="when">'+fmtDT(c.created_at)+'</span></span>'+(canRm?'<button class="rm" data-cmt="'+c.id+'">삭제</button>':'')+'</div><div class="txt">'+esc(c.body)+'</div></div>';
+      }).join('');
+      document.getElementById('detailModal').innerHTML=
+        '<div class="mhead"><button class="mclose" id="dClose">×</button><h2>'+esc(p.title)+'</h2>'+
+        '<div class="mmeta">'+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · '+fmtDT(p.created_at)+'</div></div>'+
+        '<div class="mbody">'+(p.body?'<p class="desc">'+esc(p.body)+'</p>':'')+
+          '<div class="cmts"><h4>댓글 '+comments.length+'</h4>'+cmtsHtml+
+          '<div class="cmtForm"><textarea id="cmtBox" placeholder="의견을 남겨 주세요."></textarea><button class="btn" id="cmtSend">등록</button></div></div>'+
+          (canEdit?'<div class="mactions">'+(isOwner?'<button class="btn ghost sm" id="editM">수정</button>':'')+'<button class="btn danger sm" id="delM">삭제</button></div>':'')+
+        '</div>';
+      document.getElementById('dClose').onclick=requestClose;
+      document.getElementById('cmtSend').onclick=function(){ addComment(p.id); };
+      document.querySelectorAll('#detailModal .cmt .rm').forEach(function(b){ b.onclick=function(){ delComment(b.getAttribute('data-cmt')); }; });
+      var em=document.getElementById('editM'); if(em) em.onclick=function(){ openEditM(p); };
+      var dm=document.getElementById('delM'); if(dm) dm.onclick=function(){ delMeeting(p); };
+    }
+    function openEditM(p){
+      document.getElementById('detailModal').innerHTML=
+        '<div class="mhead"><button class="mclose" id="dClose">×</button><h2>회의 글 수정</h2></div>'+
+        '<div class="mbody">'+
+          '<div class="frow"><div class="fld"><label>제목</label><input id="eT" type="text" maxlength="100" value="'+esc(p.title)+'" /></div>'+
+          '<div class="fld"><label>회의 날짜</label><input id="eD" type="date" value="'+esc(p.meeting_date||'')+'" /></div></div>'+
+          '<div class="fld"><label>내용</label><textarea id="eB" maxlength="4000">'+esc(p.body||'')+'</textarea></div>'+
+          '<div class="prog" id="eP"></div>'+
+          '<div class="mactions"><button class="btn ghost sm" id="eCancel">취소</button><button class="btn sm" id="eSave">저장</button></div>'+
+        '</div>';
+      document.getElementById('dClose').onclick=requestClose;
+      document.getElementById('eCancel').onclick=renderDetail;
+      document.getElementById('eSave').onclick=async function(){
+        var t=document.getElementById('eT').value.trim(); if(!t){ document.getElementById('eP').textContent='제목을 입력해 주세요.'; return; }
+        this.disabled=true;
+        var up=await window.sb.from('officer_posts').update({ title:t, meeting_date:document.getElementById('eD').value||null, body:document.getElementById('eB').value.trim()||null }).eq('id',p.id);
+        if(up.error){ document.getElementById('eP').textContent='저장 실패: '+up.error.message; this.disabled=false; return; }
+        await loadMeetings(); curId=p.id; renderDetail();
+      };
+    }
+    async function addComment(postId){
+      var box=document.getElementById('cmtBox'); if(!box) return; var text=box.value.trim(); if(!text) return;
+      var ins=await window.sb.from('officer_comments').insert({ post_id:postId, author_id:me.id, author_name:(myProfile&&myProfile.name)||(me.email||'임원'), body:text });
+      if(ins.error){ alert('댓글 등록 실패: '+ins.error.message); return; }
+      var cc=await window.sb.from('officer_comments').select('*').order('created_at',{ascending:true});
+      MC={}; (cc.data||[]).forEach(function(c){ (MC[c.post_id]=MC[c.post_id]||[]).push(c); });
+      var lp=document.getElementById('meetingList'); if(lp) await loadMeetings(); renderDetail();
+    }
+    async function delComment(id){
+      if(!confirm('댓글을 삭제할까요?')) return;
+      var d=await window.sb.from('officer_comments').delete().eq('id',id);
+      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+      var cc=await window.sb.from('officer_comments').select('*').order('created_at',{ascending:true});
+      MC={}; (cc.data||[]).forEach(function(c){ (MC[c.post_id]=MC[c.post_id]||[]).push(c); });
+      await loadMeetings(); renderDetail();
+    }
+    async function delMeeting(p){
+      if(!confirm('“'+p.title+'” 글을 삭제할까요?')) return;
+      var d=await window.sb.from('officer_posts').delete().eq('id',p.id);
+      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+      requestClose(); await loadMeetings();
+    }
+
+    // ---------- 자료방 업로드 ----------
+    function drawPicked(){
+      document.getElementById('fPicked').innerHTML = pickedFiles.map(function(f,i){
+        return '<div class="f"><span>'+esc(f.name)+' <span style="color:var(--muted)">('+fmtSize(f.size)+')</span></span><button data-i="'+i+'">빼기</button></div>';
+      }).join('');
+    }
+    async function submitFiles(){
+      var prog=document.getElementById('fProg');
+      var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
+      if(!r2){ prog.textContent='파일 저장소(Cloudflare) 설정이 필요합니다.'; return; }
+      if(!pickedFiles.length){ prog.textContent='파일을 선택해 주세요.'; return; }
+      var title=document.getElementById('fTitle').value.trim();
+      var btn=document.getElementById('fSubmit'); btn.disabled=true;
+      var ok=0,fail=0;
+      for(var i=0;i<pickedFiles.length;i++){
+        var file=pickedFiles[i];
+        prog.textContent='업로드 중… ('+(i+1)+'/'+pickedFiles.length+') '+file.name;
+        try{
+          var sess=await window.sb.auth.getSession();
+          var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
+          var resp=await fetch(r2+'/file',{ method:'POST', headers:{ 'Authorization':'Bearer '+token, 'Content-Type':file.type||'application/octet-stream', 'X-Filename':encodeURIComponent(file.name) }, body:file });
+          var j=await resp.json().catch(function(){return {};});
+          if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
+          var ins=await window.sb.from('officer_files').insert({
+            title:title||null, name:file.name, path:j.key, url:j.url, size:j.size, mime:j.mime,
+            author_id:me.id, author_name:(myProfile&&myProfile.name)||(me.email||'임원')
+          });
+          if(ins.error) throw ins.error;
+          ok++;
+        }catch(e){ fail++; console.error(e); }
+      }
+      btn.disabled=false;
+      pickedFiles=[]; drawPicked(); document.getElementById('fTitle').value='';
+      prog.textContent=ok+'개 업로드 완료'+(fail?(' · '+fail+'개 실패'):'');
+      await loadFiles();
+      setTimeout(function(){ if(prog.textContent.indexOf('완료')>=0) prog.textContent=''; },4000);
+    }
+
+    // ---------- 초기화 ----------
+    (async function(){
+      var res = await window.requireOfficer();
+      if(!res) return;
+      me = res.user; myProfile = res.profile;
+      isAdminUser = window.isAdmin ? window.isAdmin(me, myProfile) : false;
+      document.getElementById('ofcName').textContent = myProfile.name || '';
+      document.getElementById('ofcRole').textContent = myProfile.officer_role || '';
+      document.getElementById('ofcChurch').textContent = myProfile.church || '';
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      document.getElementById('mDate').value = todayStr();
+      if(!(window.R2_WORKER_URL||'')){ var fn=document.getElementById('fileNotice'); fn.style.display='block'; fn.innerHTML='⚠️ 파일 저장소(Cloudflare) 주소가 설정되지 않아 업로드가 비활성화됩니다. (관리자 설정 필요)'; }
+
+      await loadMeetings();
+      await loadFiles();
+
+      document.getElementById('mSubmit').addEventListener('click', submitMeeting);
+      document.getElementById('meetingList').addEventListener('click', function(e){ var row=e.target.closest&&e.target.closest('.row'); if(row&&row.getAttribute('data-id')) openDetail(row.getAttribute('data-id')); });
+      document.getElementById('detailOverlay').addEventListener('click', function(e){ if(e.target===this) requestClose(); });
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape') requestClose(); });
+
+      // 자료방 업로드 이벤트
+      var fDrop=document.getElementById('fDrop'), fInput=document.getElementById('fInput');
+      fDrop.addEventListener('click', function(){ fInput.click(); });
+      fInput.addEventListener('change', function(){ Array.prototype.slice.call(fInput.files).forEach(function(f){ pickedFiles.push(f); }); fInput.value=''; drawPicked(); });
+      ['dragenter','dragover'].forEach(function(ev){ fDrop.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();fDrop.classList.add('over');}); });
+      ['dragleave','drop'].forEach(function(ev){ fDrop.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();fDrop.classList.remove('over');}); });
+      fDrop.addEventListener('drop', function(e){ var f=e.dataTransfer&&e.dataTransfer.files; if(f) Array.prototype.slice.call(f).forEach(function(x){ pickedFiles.push(x); }); drawPicked(); });
+      document.getElementById('fPicked').addEventListener('click', function(e){ var b=e.target.closest&&e.target.closest('[data-i]'); if(!b)return; pickedFiles.splice(parseInt(b.getAttribute('data-i'),10),1); drawPicked(); });
+      document.getElementById('fSubmit').addEventListener('click', submitFiles);
+      document.getElementById('fileList').addEventListener('click', async function(e){
+        var b=e.target.closest&&e.target.closest('.delFile'); if(!b) return;
+        if(!confirm('이 자료를 삭제할까요?')) return;
+        var id=b.getAttribute('data-id'), key=b.getAttribute('data-key');
+        try{
+          var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
+          if(r2){ var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:''; await fetch(r2+'/file-delete',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({key:key})}); }
+          var d=await window.sb.from('officer_files').delete().eq('id',id);
+          if(d.error) throw d.error;
+          await loadFiles();
+        }catch(err){ alert('삭제 실패: '+(err.message||err)); }
+      });
     })();
   </script>
 </body>

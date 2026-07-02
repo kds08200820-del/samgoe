@@ -195,7 +195,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
-  <script src="auth.js?v=2"></script>
+  <script src="auth.js?v=3"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isFull = false;
     var POSTS = [], PH = {}, CM = {}, RX = {};  // maps keyed by post_id
@@ -408,7 +408,7 @@
           photosHtml +
           '<div class="rxbar">'+rxHtml+'</div>'+
           '<div class="cmts"><h4>댓글 '+comments.length+'</h4>'+cmtsHtml+cmtInput+'</div>'+
-          (canDeletePost?'<div class="mactions">'+(isOwner?'<button class="btn ghost sm" id="editPost">수정</button>':'')+'<button class="btn danger sm" id="delPost">게시글 삭제</button></div>':'')+
+          (canDeletePost?'<div class="mactions">'+((isOwner||isAdminUser)?'<button class="btn ghost sm" id="editPost">수정</button>':'')+'<button class="btn danger sm" id="delPost">게시글 삭제</button></div>':'')+
         '</div>';
 
       // 이벤트 바인딩
@@ -564,7 +564,7 @@
         try{
           var s = await window.sb.auth.getSession();
           me = s.data && s.data.session ? s.data.session.user : null;
-          if(me){ if(typeof window.getMyProfile==='function') myProfile = await window.getMyProfile(); isAdminUser = window.isAdmin ? window.isAdmin(me) : (me.email===ADMIN_EMAIL); }
+          if(me){ if(typeof window.getMyProfile==='function') myProfile = await window.getMyProfile(); isAdminUser = window.isAdmin ? window.isAdmin(me, myProfile) : (me.email===ADMIN_EMAIL); }
         }catch(e){}
       }
       document.getElementById('loading').style.display='none';
