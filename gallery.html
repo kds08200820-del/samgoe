@@ -136,11 +136,24 @@
         try{
           var blob = await resizeImage(list[i]);
           if(!blob) throw new Error('이미지 변환 실패');
-          var path = me.id + '/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.webp';
-          var up = await window.sb.storage.from('gallery').upload(path, blob, { contentType:'image/webp', upsert:false });
-          if(up.error) throw up.error;
-          var pub = window.sb.storage.from('gallery').getPublicUrl(path);
-          var url = pub.data.publicUrl;
+          var path, url;
+          var r2 = (window.R2_WORKER_URL || '').replace(/\/$/, '');
+          if(r2){
+            // Cloudflare R2 (Worker 경유)
+            var sess = await window.sb.auth.getSession();
+            var token = sess.data && sess.data.session ? sess.data.session.access_token : '';
+            var resp = await fetch(r2 + '/upload', { method:'POST', headers:{ 'Authorization':'Bearer '+token, 'Content-Type':'image/webp' }, body: blob });
+            var j = await resp.json().catch(function(){ return {}; });
+            if(!resp.ok) throw new Error(j.error || ('업로드 실패 ('+resp.status+')'));
+            url = j.url; path = 'r2:' + j.key;
+          } else {
+            // Supabase Storage (R2 미설정 시 대체)
+            var p = me.id + '/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.webp';
+            var up = await window.sb.storage.from('gallery').upload(p, blob, { contentType:'image/webp', upsert:false });
+            if(up.error) throw up.error;
+            url = window.sb.storage.from('gallery').getPublicUrl(p).data.publicUrl;
+            path = p;
+          }
           var ins = await window.sb.from('gallery_photos').insert({
             path: path, url: url, caption: caption || null,
             uploader_id: me.id, uploader_name: (myProfile && myProfile.name) || (me.email||'회원')
@@ -196,7 +209,14 @@
         if(!confirm('이 사진을 삭제할까요?')) return;
         var id = b.getAttribute('data-id'), path = b.getAttribute('data-path');
         try{
-          await window.sb.storage.from('gallery').remove([path]);
+          if(path.indexOf('r2:') === 0){
+            var r2 = (window.R2_WORKER_URL || '').replace(/\/$/, '');
+            var sess = await window.sb.auth.getSession();
+            var token = sess.data && sess.data.session ? sess.data.session.access_token : '';
+            await fetch(r2 + '/delete', { method:'POST', headers:{ 'Authorization':'Bearer '+token, 'Content-Type':'application/json' }, body: JSON.stringify({ key: path.slice(3) }) });
+          } else {
+            await window.sb.storage.from('gallery').remove([path]);
+          }
           var del = await window.sb.from('gallery_photos').delete().eq('id', id);
           if(del.error) throw del.error;
           await loadGrid();
