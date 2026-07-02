@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>마이페이지 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      -webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:560px;margin:0 auto;padding:56px 24px 80px;}
+    .card{background:var(--canvas);border:1px solid var(--hairline);padding:44px 36px;}
+    .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
+    .sub{margin:12px 0 28px;font-size:16px;color:var(--muted);}
+    .row{display:flex;justify-content:space-between;gap:16px;padding:16px 0;border-top:1px solid var(--hairline);font-size:15px;}
+    .row .k{color:var(--muted);font-weight:700;}
+    .row .v{color:var(--ink);}
+    .btn{width:100%;height:48px;border:0;border-radius:0;background:var(--primary);color:#fff;font-size:15px;
+      font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:28px;font-family:inherit;transition:background .15s ease;}
+    .btn:hover{background:var(--primary-active);}
+    .home{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--muted);}
+    #content{display:none;}
+    #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+
+  <div id="loading">확인 중…</div>
+
+  <div class="wrap" id="content">
+    <div class="card">
+      <h1 class="title">마이페이지</h1>
+      <p class="sub">삼기연 홈페이지에 로그인하셨습니다. 환영합니다. 🙏</p>
+      <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
+      <div class="row"><span class="k">가입일</span><span class="v" id="userSince"></span></div>
+      <button class="btn" id="logout">로그아웃</button>
+    </div>
+    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    (async function () {
+      var user = await window.requireAuth(); // 미로그인 시 안내 후 login.html 로 이동
+      if (!user) return;
+      document.getElementById('userEmail').textContent = user.email || '';
+      try {
+        if (user.created_at) document.getElementById('userSince').textContent = new Date(user.created_at).toLocaleDateString('ko-KR');
+      } catch (_) {}
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      document.getElementById('logout').addEventListener('click', async function () {
+        if (window.sb) { try { await window.sb.auth.signOut(); } catch (_) {} }
+        location.href = 'index.html';
+      });
+    })();
+  </script>
+</body>
+</html>

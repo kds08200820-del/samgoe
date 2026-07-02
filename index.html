@@ -164,6 +164,7 @@
   <header style="position:sticky;top:0;z-index:60;background:var(--black);height:44px;">
     <div style="max-width:1024px;margin:0 auto;height:44px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;">
       <a href="#top" style="font-size:13px;font-weight:700;letter-spacing:0;color:rgba(255,255,255,0.92);">삼괴지역 기독교 연합회</a>
+      <span id="authArea" style="font-size:12px;letter-spacing:0;"></span>
     </div>
   </header>
 
@@ -799,5 +800,9 @@
   requestAnimationFrame(step);
 })();
 </script>
+<!-- ===================== 로그인(Supabase) ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>
