@@ -49,15 +49,18 @@
   }
   window.renderAuth = renderAuth;
 
+  // 항상 먼저 '로그인'(게스트)으로 즉시 표시 — Supabase 응답 전/실패해도 링크가 보이도록
+  renderAuth(null);
+
   if (ready) {
-    window.sb.auth.getSession().then(function (r) {
-      renderAuth(r.data.session ? r.data.session.user : null);
-    });
-    window.sb.auth.onAuthStateChange(function (_e, session) {
-      renderAuth(session ? session.user : null);
-    });
-  } else {
-    renderAuth(null); // 게스트로 표시
+    try {
+      window.sb.auth.getSession().then(function (r) {
+        renderAuth(r.data && r.data.session ? r.data.session.user : null);
+      }).catch(function () {});
+      window.sb.auth.onAuthStateChange(function (_e, session) {
+        renderAuth(session ? session.user : null);
+      });
+    } catch (e) { /* 게스트 유지 */ }
   }
 
   // 보호 페이지용 가드 — 로그인 안 했으면 로그인 페이지로 강제 이동
