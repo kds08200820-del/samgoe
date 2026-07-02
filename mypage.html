@@ -48,6 +48,9 @@
     .btn.ghost:hover{background:var(--surface-soft);}
     .err{display:none;margin-top:14px;padding:12px 14px;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);font-size:14px;}
     .home{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--muted);}
+    .danger-link{display:block;text-align:center;margin-top:26px;font-size:13px;color:var(--muted);
+      text-decoration:underline;cursor:pointer;background:none;border:0;width:100%;font-family:inherit;font-weight:300;}
+    .danger-link:hover{color:var(--error);}
     #content{display:none;}
     #editMode{display:none;}
     #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
@@ -73,6 +76,7 @@
         <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
         <button class="btn" id="editBtn">정보 수정</button>
         <button class="btn ghost" id="logout">로그아웃</button>
+        <button class="danger-link" id="deleteBtn">회원 탈퇴</button>
       </div>
 
       <!-- 수정 모드 -->
@@ -125,6 +129,27 @@
       document.getElementById('logout').addEventListener('click', async function () {
         if (window.sb) { try { await window.sb.auth.signOut(); } catch (_) {} }
         location.href = 'index.html';
+      });
+
+      // ----- 회원 탈퇴 -----
+      document.getElementById('deleteBtn').addEventListener('click', async function () {
+        if (!window.sb) return;
+        if (!confirm('정말 회원을 탈퇴하시겠습니까?\n\n탈퇴하면 회원 정보가 즉시 삭제되며 되돌릴 수 없습니다.')) return;
+        if (!confirm('마지막 확인입니다.\n\n탈퇴를 진행하려면 [확인]을 눌러 주세요.')) return;
+        var btn = this; btn.disabled = true; btn.textContent = '탈퇴 처리 중...';
+        try {
+          var r = await window.sb.rpc('delete_own_account');
+          if (r.error) {
+            alert('탈퇴 처리 중 오류가 발생했습니다: ' + r.error.message + '\n\n관리자에게 문의해 주세요.');
+            btn.disabled = false; btn.textContent = '회원 탈퇴'; return;
+          }
+          try { await window.sb.auth.signOut(); } catch (_) {}
+          alert('회원 탈퇴가 완료되었습니다. 그동안 함께해 주셔서 감사합니다. 🙏');
+          location.href = 'index.html';
+        } catch (ex) {
+          alert('탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+          btn.disabled = false; btn.textContent = '회원 탈퇴';
+        }
       });
       try {
         if (typeof window.getMyProfile === 'function') { meProfile = await window.getMyProfile(); fill(meProfile); }

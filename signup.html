@@ -44,6 +44,12 @@
       font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:26px;font-family:inherit;transition:background .15s ease;}
     .btn:hover{background:var(--primary-active);}
     .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .agree{margin-top:24px;border:1px solid var(--hairline-strong);background:var(--surface-soft);padding:14px 16px;}
+    .chk{display:flex;align-items:flex-start;gap:9px;margin:0;font-size:14px;font-weight:400;color:var(--bodytext);cursor:pointer;letter-spacing:0;}
+    .chk input{width:18px;height:18px;flex:0 0 18px;margin:1px 0 0;accent-color:var(--primary);cursor:pointer;}
+    .chk.all{font-weight:700;color:var(--ink);padding-bottom:12px;margin-bottom:10px;border-bottom:1px solid var(--hairline-strong);}
+    .chk.item{margin-top:9px;}
+    .chk a{color:var(--primary);font-weight:700;text-decoration:underline;}
     .err{display:none;margin-top:18px;padding:12px 14px;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);font-size:14px;line-height:1.5;}
     .foot{text-align:center;margin-top:24px;font-size:14px;color:var(--muted);}
     .foot a{color:var(--primary);font-weight:700;}
@@ -82,6 +88,12 @@
 
         <label for="pw2">비밀번호 확인</label>
         <input id="pw2" type="password" required autocomplete="new-password" placeholder="비밀번호를 한 번 더 입력" />
+
+        <div class="agree">
+          <label class="chk all"><input type="checkbox" id="agreeAll" /> 약관에 모두 동의합니다.</label>
+          <label class="chk item"><input type="checkbox" id="agreeTerms" /> <span><a href="terms.html#terms" target="_blank" rel="noopener">이용약관</a>에 동의합니다. <b style="color:var(--primary)">(필수)</b></span></label>
+          <label class="chk item"><input type="checkbox" id="agreePrivacy" /> <span><a href="terms.html#privacy" target="_blank" rel="noopener">개인정보 수집·이용</a>에 동의합니다. <b style="color:var(--primary)">(필수)</b></span></label>
+        </div>
 
         <div class="err" id="err"></div>
         <button class="btn" type="submit">회원가입</button>
@@ -144,6 +156,18 @@
     churchInput.addEventListener('blur', function(){ setTimeout(function(){ churchList.style.display='none'; }, 150); });
     document.getElementById('name').addEventListener('input', updateMemberTag);
 
+    // ---- 약관 동의 체크박스 ----
+    var agreeAll = document.getElementById('agreeAll');
+    var agreeTerms = document.getElementById('agreeTerms');
+    var agreePrivacy = document.getElementById('agreePrivacy');
+    agreeAll.addEventListener('change', function(){
+      agreeTerms.checked = agreeAll.checked;
+      agreePrivacy.checked = agreeAll.checked;
+    });
+    function syncAll(){ agreeAll.checked = agreeTerms.checked && agreePrivacy.checked; }
+    agreeTerms.addEventListener('change', syncAll);
+    agreePrivacy.addEventListener('change', syncAll);
+
     // ---- 회원가입 제출 ----
     var f = document.getElementById('signupForm');
     f.addEventListener('submit', async function (e) {
@@ -159,6 +183,7 @@
       if(!name || !church || !phone || !address || !email){ showErr('모든 항목을 입력해 주세요.'); return; }
       if(pw.length < 6){ showErr('비밀번호는 6자 이상이어야 합니다.'); return; }
       if(pw !== pw2){ showErr('비밀번호가 일치하지 않습니다.'); return; }
+      if(!agreeTerms.checked || !agreePrivacy.checked){ showErr('이용약관과 개인정보 수집·이용에 동의해 주세요.'); return; }
       if(!window.sb){ showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase 설정 필요)'); return; }
 
       // 정회원 판별: 이름 == 해당 교회 담임목사
