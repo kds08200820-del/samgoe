@@ -58,21 +58,35 @@
 
     <div id="setup" class="setup"></div>
 
+    <h2 class="title" style="font-size:22px;margin:8px 0 6px;">가입 회원 관리</h2>
+    <p class="who" style="margin:0 0 14px;">구분(정회원·일반회원)과 임원 직책을 관리자가 직접 지정·변경할 수 있습니다. 정회원으로 가입했더라도 문제가 있으면 일반회원으로 내릴 수 있습니다.</p>
     <div class="tblwrap">
       <table>
         <thead><tr>
-          <th>이름</th><th>교회</th><th>구분</th><th>임원 직책</th><th>연락처</th><th>이메일</th><th>가입일</th>
+          <th>이름</th><th>교회</th><th>구분(변경)</th><th>임원 직책</th><th>연락처</th><th>이메일</th><th>가입일</th>
         </tr></thead>
         <tbody id="memberRows"><tr><td colspan="7" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
       </table>
     </div>
     <div class="msg" id="msg"></div>
 
+    <h2 class="title" style="font-size:22px;margin:44px 0 6px;">등록 교회 명단 · <span id="chCount">49</span></h2>
+    <p class="who" style="margin:0 0 14px;">삼기연 회원교회와 담임목사 명단입니다. 가입한 회원은 자동으로 연결되어 표시됩니다. (담임목사 명단과 일치하는 정회원은 <span class="pill full">정회원</span>)</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>교회</th><th>지역</th><th>담임목사</th><th>가입</th><th>구분</th><th>연락처</th>
+        </tr></thead>
+        <tbody id="churchRows"><tr><td colspan="7" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="churches.js?v=2"></script>
   <script src="auth.js?v=2"></script>
   <script>
     (async function () {
@@ -96,50 +110,107 @@
         return;
       }
       var rows = res.data || [];
-      document.getElementById('cTotal').textContent = rows.length;
-      document.getElementById('cFull').textContent = rows.filter(function(r){ return r.member_type === '정회원'; }).length;
-      document.getElementById('cOfficer').textContent = rows.filter(function(r){ return r.officer_role; }).length;
+      function refreshStats(){
+        document.getElementById('cTotal').textContent = rows.length;
+        document.getElementById('cFull').textContent = rows.filter(function(r){ return r.member_type === '정회원'; }).length;
+        document.getElementById('cOfficer').textContent = rows.filter(function(r){ return r.officer_role; }).length;
+      }
+      refreshStats();
 
       var tbody = document.getElementById('memberRows');
-      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">아직 가입한 회원이 없습니다.</td></tr>'; return; }
-      tbody.innerHTML = '';
-      rows.forEach(function (r) {
-        var tr = document.createElement('tr');
-        var mt = r.member_type || '일반회원';
-        var pill = mt === '정회원' ? '<span class="pill full">정회원</span>' : '<span class="pill gen">일반회원</span>';
-        var opts = '<option value="">— 없음 —</option>' + ROLES.map(function(role){
-          return '<option value="' + role + '"' + (r.officer_role === role ? ' selected' : '') + '>' + role + '</option>';
-        }).join('');
-        var since = '';
-        try { if (r.created_at) since = new Date(r.created_at).toLocaleDateString('ko-KR'); } catch(_) {}
-        tr.innerHTML =
-          '<td class="nm">' + esc(r.name) + '</td>' +
-          '<td>' + esc(r.church) + '</td>' +
-          '<td>' + pill + '</td>' +
-          '<td><select data-id="' + r.id + '" class="roleSel">' + opts + '</select></td>' +
-          '<td>' + esc(r.phone) + '</td>' +
-          '<td style="color:var(--muted)">' + esc(r.email) + '</td>' +
-          '<td style="color:var(--muted)">' + esc(since) + '</td>';
-        tbody.appendChild(tr);
-      });
+      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">아직 가입한 회원이 없습니다.</td></tr>'; }
+      else {
+        tbody.innerHTML = '';
+        rows.forEach(function (r) {
+          var tr = document.createElement('tr');
+          var mt = r.member_type || '일반회원';
+          var typeOpts = ['정회원','일반회원'].map(function(t){
+            return '<option value="' + t + '"' + (mt === t ? ' selected' : '') + '>' + t + '</option>';
+          }).join('');
+          var opts = '<option value="">— 없음 —</option>' + ROLES.map(function(role){
+            return '<option value="' + role + '"' + (r.officer_role === role ? ' selected' : '') + '>' + role + '</option>';
+          }).join('');
+          var since = '';
+          try { if (r.created_at) since = new Date(r.created_at).toLocaleDateString('ko-KR'); } catch(_) {}
+          tr.innerHTML =
+            '<td class="nm">' + esc(r.name) + '</td>' +
+            '<td>' + esc(r.church) + '</td>' +
+            '<td><select data-id="' + r.id + '" class="typeSel">' + typeOpts + '</select></td>' +
+            '<td><select data-id="' + r.id + '" class="roleSel">' + opts + '</select></td>' +
+            '<td>' + esc(r.phone) + '</td>' +
+            '<td style="color:var(--muted)">' + esc(r.email) + '</td>' +
+            '<td style="color:var(--muted)">' + esc(since) + '</td>';
+          tbody.appendChild(tr);
+        });
 
-      // 임원 직책 지정/해제
-      tbody.addEventListener('change', async function (e) {
-        var sel = e.target;
-        if (!sel.classList.contains('roleSel')) return;
-        var id = sel.getAttribute('data-id');
-        var val = sel.value || null;
-        sel.disabled = true;
-        var up = await window.sb.from('profiles').update({ officer_role: val }).eq('id', id);
-        sel.disabled = false;
-        if (up.error) { flash('저장 실패: ' + up.error.message); }
-        else {
-          flash('저장되었습니다.');
-          document.getElementById('cOfficer').textContent =
-            document.querySelectorAll('.roleSel').length -
-            Array.prototype.filter.call(document.querySelectorAll('.roleSel'), function(s){ return !s.value; }).length;
-        }
-      });
+        // 구분(정회원/일반회원) · 임원 직책 변경
+        tbody.addEventListener('change', async function (e) {
+          var sel = e.target;
+          var id = sel.getAttribute('data-id');
+          if (!id) return;
+          if (sel.classList.contains('typeSel')) {
+            var mtVal = sel.value;
+            sel.disabled = true;
+            var upt = await window.sb.from('profiles').update({ member_type: mtVal }).eq('id', id);
+            sel.disabled = false;
+            if (upt.error) { flash('구분 변경 실패: ' + upt.error.message); }
+            else {
+              var rec = rows.find(function(x){ return x.id === id; }); if (rec) rec.member_type = mtVal;
+              refreshStats(); renderChurches();
+              flash(mtVal === '정회원' ? '정회원으로 변경했습니다.' : '일반회원으로 변경했습니다.');
+            }
+          } else if (sel.classList.contains('roleSel')) {
+            var val = sel.value || null;
+            sel.disabled = true;
+            var up = await window.sb.from('profiles').update({ officer_role: val }).eq('id', id);
+            sel.disabled = false;
+            if (up.error) { flash('저장 실패: ' + up.error.message); }
+            else {
+              var rc = rows.find(function(x){ return x.id === id; }); if (rc) rc.officer_role = val;
+              refreshStats();
+              flash('저장되었습니다.');
+            }
+          }
+        });
+      }
+
+      // ----- 등록 49개 교회 명단 · 가입현황 -----
+      function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
+      function renderChurches(){
+        var CH = window.CHURCHES || [];
+        document.getElementById('chCount').textContent = CH.length;
+        var crows = document.getElementById('churchRows');
+        if (!CH.length) { crows.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">교회 명단을 불러오지 못했습니다.</td></tr>'; return; }
+        crows.innerHTML = CH.map(function(c, i){
+          // 이 교회로 가입한 회원들
+          var members = rows.filter(function(r){ return (r.church || '').trim() === c.name; });
+          // 담임목사 본인(이름 일치)을 우선 표시
+          var lead = members.find(function(r){ return norm(r.name) === norm(c.pastor); }) || members[0];
+          var joined, typeCell, phoneCell;
+          if (lead) {
+            joined = '<span class="pill full" style="background:#e9f7ee;color:#0f7b3f">가입</span>';
+            typeCell = lead.member_type === '정회원'
+              ? '<span class="pill full">정회원</span>'
+              : '<span class="pill gen">일반회원</span>';
+            phoneCell = esc(lead.phone || '');
+          } else {
+            joined = '<span class="pill gen">미가입</span>';
+            typeCell = '<span style="color:var(--hairline-strong)">—</span>';
+            phoneCell = '<span style="color:var(--hairline-strong)">—</span>';
+          }
+          var extra = members.length > 1 ? ' <span style="color:var(--muted);font-size:12px">외 ' + (members.length - 1) + '명</span>' : '';
+          return '<tr>' +
+            '<td style="color:var(--muted)">' + (i + 1) + '</td>' +
+            '<td class="nm">' + esc(c.name) + '</td>' +
+            '<td style="color:var(--muted)">' + esc(c.region || '') + '</td>' +
+            '<td>' + esc(c.pastor || '') + ' 목사' + extra + '</td>' +
+            '<td>' + joined + '</td>' +
+            '<td>' + typeCell + '</td>' +
+            '<td style="color:var(--muted)">' + phoneCell + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+      renderChurches();
     })();
   </script>
 </body>
