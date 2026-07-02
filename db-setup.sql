@@ -48,12 +48,15 @@ create trigger on_auth_user_created
 
 -- 3) 접근 권한 (RLS) — 재귀를 피하려고 관리자는 JWT의 email로 판별
 --    ▶ 관리자를 추가/변경하려면 아래 이메일 부분을 바꾸세요.
+drop policy if exists "own_select" on public.profiles;
 create policy "own_select" on public.profiles
   for select using ( auth.uid() = id );
 
+drop policy if exists "admin_select" on public.profiles;
 create policy "admin_select" on public.profiles
   for select using ( (auth.jwt() ->> 'email') = 'kds08200820@gmail.com' );
 
+drop policy if exists "admin_update" on public.profiles;
 create policy "admin_update" on public.profiles
   for update using ( (auth.jwt() ->> 'email') = 'kds08200820@gmail.com' );
 
