@@ -5,6 +5,11 @@
 //  - window.sb (Supabase client), window.krErr, window.requireAuth 제공
 // ============================================================
 (function () {
+  // 보안: http로 접속하면 https로 자동 전환 (로그인 비밀번호 보호)
+  if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+    return;
+  }
   var URL = window.SUPABASE_URL;
   var KEY = window.SUPABASE_ANON_KEY;
   var hasSDK = !!(window.supabase && window.supabase.createClient);
@@ -34,19 +39,31 @@
     return !!(user && user.email && window.ADMIN_EMAILS.indexOf(String(user.email).toLowerCase()) >= 0);
   };
 
-  // 상단 바의 로그인/마이페이지 영역 렌더링
-  function renderAuth(user) {
+  // 현재 로그인 사용자의 프로필(이름/교회/구분/직책) 조회
+  window.getMyProfile = async function () {
+    if (!window.sb) return null;
+    try {
+      var r = await window.sb.auth.getUser();
+      var u = r.data && r.data.user;
+      if (!u) return null;
+      var p = await window.sb.from('profiles').select('*').eq('id', u.id).maybeSingle();
+      if (p.error) return null;
+      return p.data || null;
+    } catch (e) { return null; }
+  };
+
+  // 상단 바의 로그인/마이페이지 영역 렌더링 (profile로 관리자·임원 메뉴 결정)
+  function renderAuth(user, profile) {
     var el = document.getElementById('authArea');
     if (!el) return;
     if (user) {
-      var adminLink = window.isAdmin(user)
-        ? '<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>' +
-          '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>'
-        : '';
-      el.innerHTML = adminLink +
-        '<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>' +
-        '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>' +
-        '<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>';
+      var sep = '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>';
+      var parts = [];
+      if (window.isAdmin(user)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
+      if (profile && profile.officer_role) parts.push('<a href="officer.html" style="color:#8fc0ff;font-weight:700">임원실</a>');
+      parts.push('<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>');
+      parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
+      el.innerHTML = parts.join(sep);
       var lo = document.getElementById('logoutBtn');
       if (lo) lo.addEventListener('click', async function (e) {
         e.preventDefault();
@@ -62,15 +79,18 @@
   // 항상 먼저 '로그인'(게스트)으로 즉시 표시 — Supabase 응답 전/실패해도 링크가 보이도록
   renderAuth(null);
 
-  if (ready) {
+  async function refreshNav() {
     try {
-      window.sb.auth.getSession().then(function (r) {
-        renderAuth(r.data && r.data.session ? r.data.session.user : null);
-      }).catch(function () {});
-      window.sb.auth.onAuthStateChange(function (_e, session) {
-        renderAuth(session ? session.user : null);
-      });
-    } catch (e) { /* 게스트 유지 */ }
+      var s = await window.sb.auth.getSession();
+      var user = s.data && s.data.session ? s.data.session.user : null;
+      if (!user) { renderAuth(null); return; }
+      var profile = await window.getMyProfile();
+      renderAuth(user, profile);
+    } catch (e) { renderAuth(null); }
+  }
+  if (ready) {
+    refreshNav();
+    window.sb.auth.onAuthStateChange(function () { refreshNav(); });
   }
 
   // 보호 페이지용 가드 — 로그인 안 했으면 로그인 페이지로 강제 이동
@@ -99,5 +119,21 @@
       return false;
     }
     return user;
+  };
+
+  // 임원 직책 목록
+  window.OFFICER_ROLES = ['회장', '부회장', '증경회장', '사무총장', '서기', '부서기', '회계', '실무위원'];
+
+  // 임원 전용 페이지 가드 — 로그인 + 임원 직책이 지정되어 있어야 통과
+  window.requireOfficer = async function () {
+    var user = await window.requireAuth();
+    if (!user) return false;
+    var profile = await window.getMyProfile();
+    if (!profile || !profile.officer_role) {
+      alert('임원 전용 페이지입니다.');
+      location.href = 'index.html';
+      return false;
+    }
+    return { user: user, profile: profile };
   };
 })();

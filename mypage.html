@@ -43,8 +43,13 @@
     <div class="card">
       <h1 class="title">마이페이지</h1>
       <p class="sub">삼기연 홈페이지에 로그인하셨습니다. 환영합니다. 🙏</p>
+      <div class="row"><span class="k">이름</span><span class="v" id="pName">—</span></div>
+      <div class="row"><span class="k">교회</span><span class="v" id="pChurch">—</span></div>
+      <div class="row"><span class="k">회원 구분</span><span class="v" id="pType">—</span></div>
+      <div class="row"><span class="k">직책</span><span class="v" id="pRole">—</span></div>
+      <div class="row"><span class="k">전화번호</span><span class="v" id="pPhone">—</span></div>
+      <div class="row"><span class="k">주소</span><span class="v" id="pAddr">—</span></div>
       <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
-      <div class="row"><span class="k">가입일</span><span class="v" id="userSince"></span></div>
       <button class="btn" id="logout">로그아웃</button>
     </div>
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
@@ -58,9 +63,15 @@
       var user = await window.requireAuth(); // 미로그인 시 안내 후 login.html 로 이동
       if (!user) return;
       document.getElementById('userEmail').textContent = user.email || '';
-      try {
-        if (user.created_at) document.getElementById('userSince').textContent = new Date(user.created_at).toLocaleDateString('ko-KR');
-      } catch (_) {}
+      var p = await window.getMyProfile();
+      if (p) {
+        document.getElementById('pName').textContent = p.name || '—';
+        document.getElementById('pChurch').textContent = p.church || '—';
+        document.getElementById('pType').textContent = p.member_type || '—';
+        document.getElementById('pRole').textContent = p.officer_role || '— (일반 회원)';
+        document.getElementById('pPhone').textContent = p.phone || '—';
+        document.getElementById('pAddr').textContent = p.address || '—';
+      }
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
       document.getElementById('logout').addEventListener('click', async function () {

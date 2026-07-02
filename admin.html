@@ -12,56 +12,61 @@
       --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
-      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-      -webkit-font-smoothing:antialiased;}
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
-    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
-    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1180px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
     .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
     #authArea{font-size:12px;}
-    .wrap{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
+    .wrap{max-width:1180px;margin:0 auto;padding:44px 24px 80px;}
     .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
     .badge{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:var(--primary);padding:5px 10px;}
-    .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
-    .who{margin:10px 0 32px;font-size:15px;color:var(--muted);}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-    .tile{background:var(--canvas);border:1px solid var(--hairline);padding:26px 24px;transition:transform .2s ease,border-color .2s ease;}
-    .tile:hover{transform:translateY(-4px);border-color:var(--primary);}
-    .tile h3{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:0;}
-    .tile p{margin:0;font-size:14px;line-height:1.55;color:var(--muted);}
-    .soon{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--hairline-strong);padding:3px 8px;}
-    .home{display:inline-block;margin-top:32px;font-size:14px;color:var(--primary);font-weight:700;}
+    .title{margin:0;font-weight:700;font-size:30px;letter-spacing:0;color:var(--ink);}
+    .who{margin:10px 0 22px;font-size:14px;color:var(--muted);}
+    .stats{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 24px;}
+    .stat b{font-size:26px;font-weight:700;color:var(--ink);}
+    .stat span{font-size:13px;color:var(--muted);margin-left:6px;}
+    .tblwrap{background:var(--canvas);border:1px solid var(--hairline);overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;min-width:820px;}
+    th,td{text-align:left;padding:13px 14px;font-size:14px;border-bottom:1px solid var(--hairline);white-space:nowrap;}
+    th{font-weight:700;color:var(--muted);background:var(--surface-soft);font-size:12px;letter-spacing:0.5px;text-transform:uppercase;}
+    td .nm{font-weight:700;color:var(--ink);}
+    select{height:36px;border:1px solid var(--hairline-strong);background:#fff;font-family:inherit;font-size:14px;padding:0 8px;border-radius:0;color:var(--ink);}
+    .pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;}
+    .pill.full{background:#eaf3ff;color:var(--primary);}
+    .pill.gen{background:var(--surface-soft);color:var(--muted);}
+    .msg{margin-top:14px;font-size:13px;color:var(--muted);min-height:18px;}
+    .home{display:inline-block;margin-top:28px;font-size:14px;color:var(--primary);font-weight:700;}
     #content{display:none;}
     #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
-    @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+    .setup{margin-top:16px;padding:16px 18px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;font-size:13px;line-height:1.6;display:none;}
   </style>
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
-
   <div id="loading">확인 중…</div>
 
   <div class="wrap" id="content">
-    <div class="head"><span class="badge">관리자</span><h1 class="title">관리자 페이지</h1></div>
+    <div class="head"><span class="badge">관리자</span><h1 class="title">회원 관리</h1></div>
     <p class="who">로그인 계정: <b id="adminEmail"></b></p>
 
-    <div class="grid">
-      <div class="tile">
-        <h3>공지 · 소식 관리</h3>
-        <p>홈페이지 공지사항과 '걸어온 길' 활동 기록을 추가·수정합니다.</p>
-        <span class="soon">준비 중</span>
-      </div>
-      <div class="tile">
-        <h3>임원 · 회원 관리</h3>
-        <p>임원 명단, 회원 교회 정보를 관리합니다.</p>
-        <span class="soon">준비 중</span>
-      </div>
-      <div class="tile">
-        <h3>자료실</h3>
-        <p>회칙·안내서 등 회원 전용 문서를 올리고 관리합니다.</p>
-        <span class="soon">준비 중</span>
-      </div>
+    <div class="stats">
+      <div class="stat"><b id="cTotal">0</b><span>전체 회원</span></div>
+      <div class="stat"><b id="cFull">0</b><span>정회원</span></div>
+      <div class="stat"><b id="cOfficer">0</b><span>임원</span></div>
     </div>
+
+    <div id="setup" class="setup"></div>
+
+    <div class="tblwrap">
+      <table>
+        <thead><tr>
+          <th>이름</th><th>교회</th><th>구분</th><th>임원 직책</th><th>연락처</th><th>이메일</th><th>가입일</th>
+        </tr></thead>
+        <tbody id="memberRows"><tr><td colspan="7" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="msg" id="msg"></div>
 
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
@@ -71,11 +76,70 @@
   <script src="auth.js"></script>
   <script>
     (async function () {
-      var user = await window.requireAdmin(); // 로그인 + 관리자 아니면 차단
+      var user = await window.requireAdmin();
       if (!user) return;
       document.getElementById('adminEmail').textContent = user.email || '';
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
+
+      var ROLES = window.OFFICER_ROLES || [];
+      var msg = document.getElementById('msg');
+      function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
+      function flash(t){ msg.textContent = t; setTimeout(function(){ if (msg.textContent === t) msg.textContent = ''; }, 2500); }
+
+      var res = await window.sb.from('profiles').select('*').order('created_at', { ascending: true });
+      if (res.error) {
+        var setup = document.getElementById('setup');
+        setup.style.display = 'block';
+        setup.innerHTML = '⚠️ 회원 테이블(profiles)이 아직 없습니다. Supabase → <b>SQL Editor</b> 에서 저장소의 <b>db-setup.sql</b> 내용을 한 번 실행해 주세요. (' + esc(res.error.message) + ')';
+        document.getElementById('memberRows').innerHTML = '<tr><td colspan="7" style="color:var(--muted)">데이터 없음</td></tr>';
+        return;
+      }
+      var rows = res.data || [];
+      document.getElementById('cTotal').textContent = rows.length;
+      document.getElementById('cFull').textContent = rows.filter(function(r){ return r.member_type === '정회원'; }).length;
+      document.getElementById('cOfficer').textContent = rows.filter(function(r){ return r.officer_role; }).length;
+
+      var tbody = document.getElementById('memberRows');
+      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">아직 가입한 회원이 없습니다.</td></tr>'; return; }
+      tbody.innerHTML = '';
+      rows.forEach(function (r) {
+        var tr = document.createElement('tr');
+        var mt = r.member_type || '일반회원';
+        var pill = mt === '정회원' ? '<span class="pill full">정회원</span>' : '<span class="pill gen">일반회원</span>';
+        var opts = '<option value="">— 없음 —</option>' + ROLES.map(function(role){
+          return '<option value="' + role + '"' + (r.officer_role === role ? ' selected' : '') + '>' + role + '</option>';
+        }).join('');
+        var since = '';
+        try { if (r.created_at) since = new Date(r.created_at).toLocaleDateString('ko-KR'); } catch(_) {}
+        tr.innerHTML =
+          '<td class="nm">' + esc(r.name) + '</td>' +
+          '<td>' + esc(r.church) + '</td>' +
+          '<td>' + pill + '</td>' +
+          '<td><select data-id="' + r.id + '" class="roleSel">' + opts + '</select></td>' +
+          '<td>' + esc(r.phone) + '</td>' +
+          '<td style="color:var(--muted)">' + esc(r.email) + '</td>' +
+          '<td style="color:var(--muted)">' + esc(since) + '</td>';
+        tbody.appendChild(tr);
+      });
+
+      // 임원 직책 지정/해제
+      tbody.addEventListener('change', async function (e) {
+        var sel = e.target;
+        if (!sel.classList.contains('roleSel')) return;
+        var id = sel.getAttribute('data-id');
+        var val = sel.value || null;
+        sel.disabled = true;
+        var up = await window.sb.from('profiles').update({ officer_role: val }).eq('id', id);
+        sel.disabled = false;
+        if (up.error) { flash('저장 실패: ' + up.error.message); }
+        else {
+          flash('저장되었습니다.');
+          document.getElementById('cOfficer').textContent =
+            document.querySelectorAll('.roleSel').length -
+            Array.prototype.filter.call(document.querySelectorAll('.roleSel'), function(s){ return !s.value; }).length;
+        }
+      });
     })();
   </script>
 </body>

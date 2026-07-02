@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>임원실 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:900px;margin:0 auto;padding:48px 24px 80px;}
+    .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .badge{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:var(--dark);padding:5px 10px;}
+    .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
+    .who{margin:10px 0 32px;font-size:15px;color:var(--muted);}
+    .who b{color:var(--ink);}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+    .tile{background:var(--canvas);border:1px solid var(--hairline);padding:26px 24px;}
+    .tile h3{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:0;}
+    .tile p{margin:0;font-size:14px;line-height:1.55;color:var(--muted);}
+    .soon{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--hairline-strong);padding:3px 8px;}
+    .home{display:inline-block;margin-top:32px;font-size:14px;color:var(--primary);font-weight:700;}
+    #content{display:none;}
+    #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
+    @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <div id="loading">확인 중…</div>
+  <div class="wrap" id="content">
+    <div class="head"><span class="badge">임원 전용</span><h1 class="title">임원실</h1></div>
+    <p class="who"><b id="ofcName"></b> <b id="ofcRole" style="color:var(--primary)"></b> · <span id="ofcChurch"></span></p>
+    <div class="grid">
+      <div class="tile"><h3>임원 회의 자료</h3><p>임원회·정기총회 안건과 회의록을 공유합니다.</p><span class="soon">준비 중</span></div>
+      <div class="tile"><h3>재정 · 회비 현황</h3><p>회비 납부 현황과 재정 보고를 확인합니다.</p><span class="soon">준비 중</span></div>
+      <div class="tile"><h3>행사 계획</h3><p>연합예배·걷기대회 등 행사 계획을 준비합니다.</p><span class="soon">준비 중</span></div>
+      <div class="tile"><h3>공지 발송</h3><p>회원 교회에 공지·안내를 전달합니다.</p><span class="soon">준비 중</span></div>
+    </div>
+    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    (async function () {
+      var res = await window.requireOfficer(); // 로그인 + 임원 직책 아니면 차단
+      if (!res) return;
+      document.getElementById('ofcName').textContent = res.profile.name || '';
+      document.getElementById('ofcRole').textContent = res.profile.officer_role || '';
+      document.getElementById('ofcChurch').textContent = res.profile.church || '';
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    })();
+  </script>
+</body>
+</html>

@@ -9,34 +9,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;}
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;--ok:#0f7b3f;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
       font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
       -webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
-    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
     .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
     #authArea{font-size:12px;}
-    .wrap{max-width:430px;margin:0 auto;padding:56px 24px 80px;}
-    .card{background:var(--canvas);border:1px solid var(--hairline);padding:44px 34px;}
-    .logo{height:42px;width:auto;display:block;margin:0 auto 22px;}
+    .wrap{max-width:470px;margin:0 auto;padding:48px 24px 80px;}
+    .card{background:var(--canvas);border:1px solid var(--hairline);padding:40px 34px;}
+    .logo{height:40px;width:auto;display:block;margin:0 auto 20px;}
     .title{margin:0;font-weight:700;font-size:28px;letter-spacing:0;color:var(--ink);text-align:center;}
-    .sub{margin:8px 0 30px;font-size:15px;color:var(--muted);text-align:center;line-height:1.5;}
-    label{display:block;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--ink);margin:18px 0 6px;}
+    .sub{margin:8px 0 26px;font-size:15px;color:var(--muted);text-align:center;line-height:1.5;}
+    label{display:block;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--ink);margin:16px 0 6px;}
     input{width:100%;height:48px;padding:0 14px;border:1px solid var(--hairline-strong);background:#fff;
       font-size:16px;font-family:inherit;font-weight:300;color:var(--ink);border-radius:0;}
     input:focus{outline:none;border:2px solid var(--ink);}
     .hint{margin:6px 0 0;font-size:12px;color:var(--muted);}
+    .acWrap{position:relative;}
+    .ac-list{position:absolute;left:0;right:0;top:100%;z-index:10;background:#fff;border:1px solid var(--hairline-strong);
+      border-top:0;max-height:230px;overflow-y:auto;display:none;}
+    .ac-item{padding:11px 14px;font-size:14px;cursor:pointer;border-top:1px solid var(--hairline);}
+    .ac-item:first-child{border-top:0;}
+    .ac-item:hover,.ac-item.active{background:var(--surface-soft);}
+    .ac-item b{color:var(--ink);font-weight:700;}
+    .ac-item span{color:var(--muted);font-size:12px;margin-left:6px;}
+    .memberTag{display:none;margin-top:8px;font-size:13px;font-weight:700;padding:8px 12px;}
+    .memberTag.full{display:block;background:#eaf3ff;border:1px solid #b9d6ff;color:var(--primary);}
+    .memberTag.general{display:block;background:var(--surface-soft);border:1px solid var(--hairline-strong);color:var(--muted);}
     .btn{width:100%;height:48px;border:0;border-radius:0;background:var(--primary);color:#fff;font-size:15px;
       font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:26px;font-family:inherit;transition:background .15s ease;}
     .btn:hover{background:var(--primary-active);}
     .btn:disabled{background:var(--hairline-strong);cursor:default;}
-    .kakao{width:100%;height:48px;border:0;border-radius:0;background:#FEE500;color:#191600;font-size:15px;
-      font-weight:700;cursor:pointer;margin-top:12px;font-family:inherit;}
-    .divider{display:flex;align-items:center;gap:12px;margin:26px 0 2px;color:var(--muted);font-size:13px;}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--hairline);}
     .err{display:none;margin-top:18px;padding:12px 14px;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);font-size:14px;line-height:1.5;}
     .foot{text-align:center;margin-top:24px;font-size:14px;color:var(--muted);}
     .foot a{color:var(--primary);font-weight:700;}
@@ -49,19 +56,36 @@
     <div class="card" id="card">
       <img class="logo" src="assets/logo-trans.png" alt="삼기연" />
       <h1 class="title">회원가입</h1>
-      <p class="sub">삼기연 홈페이지 계정을 만듭니다.</p>
+      <p class="sub">삼기연 홈페이지 회원 정보를 입력해 주세요.</p>
       <form id="signupForm" novalidate>
+        <label for="name">이름</label>
+        <input id="name" type="text" required placeholder="홍길동" autocomplete="name" />
+
+        <label for="church">교회명 <span style="font-weight:400;color:var(--muted)">(검색)</span></label>
+        <div class="acWrap">
+          <input id="church" type="text" required placeholder="교회 이름을 입력하면 검색됩니다" autocomplete="off" />
+          <div class="ac-list" id="churchList"></div>
+        </div>
+        <div class="memberTag" id="memberTag"></div>
+
+        <label for="phone">전화번호</label>
+        <input id="phone" type="tel" required placeholder="010-0000-0000" autocomplete="tel" />
+
+        <label for="address">주소</label>
+        <input id="address" type="text" required placeholder="예) 화성시 우정읍 ○○로 00" autocomplete="street-address" />
+
         <label for="email">이메일</label>
         <input id="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+
         <label for="pw">비밀번호</label>
         <input id="pw" type="password" required autocomplete="new-password" placeholder="비밀번호 (6자 이상)" />
+
         <label for="pw2">비밀번호 확인</label>
         <input id="pw2" type="password" required autocomplete="new-password" placeholder="비밀번호를 한 번 더 입력" />
+
         <div class="err" id="err"></div>
         <button class="btn" type="submit">회원가입</button>
       </form>
-      <div class="divider">또는</div>
-      <button class="kakao" id="kakaoBtn" type="button">카카오로 시작하기</button>
       <div class="foot">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
     </div>
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
@@ -69,38 +93,95 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="churches.js"></script>
   <script src="auth.js"></script>
   <script>
-    var f = document.getElementById('signupForm');
     var err = document.getElementById('err');
     function showErr(m){ err.textContent = m; err.style.display = 'block'; }
+    function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
+
+    // ---- 교회명 검색 자동완성 ----
+    var churchInput = document.getElementById('church');
+    var churchList = document.getElementById('churchList');
+    var memberTag = document.getElementById('memberTag');
+    var CH = window.CHURCHES || [];
+
+    function updateMemberTag(){
+      var nm = norm(document.getElementById('name').value);
+      var rec = CH.find(function(c){ return c.name === churchInput.value.trim(); });
+      memberTag.className = 'memberTag';
+      if(!nm || !churchInput.value.trim()){ memberTag.textContent=''; return; }
+      if(rec && norm(rec.pastor) === nm){
+        memberTag.textContent = '✓ 회원교회 담임목사로 확인됩니다 — 정회원으로 가입됩니다.';
+        memberTag.classList.add('full');
+      } else {
+        memberTag.textContent = '일반회원으로 가입됩니다. (회원교회 담임목사 명단과 일치 시 정회원)';
+        memberTag.classList.add('general');
+      }
+    }
+    function renderList(q){
+      q = q.trim();
+      churchList.innerHTML = '';
+      if(!q){ churchList.style.display='none'; return; }
+      var matches = CH.filter(function(c){ return c.name.indexOf(q) >= 0; }).slice(0, 8);
+      if(!matches.length){ churchList.style.display='none'; return; }
+      matches.forEach(function(c){
+        var d = document.createElement('div');
+        d.className = 'ac-item';
+        d.innerHTML = '<b>'+c.name+'</b><span>'+c.region+' · '+c.pastor+' 목사</span>';
+        d.addEventListener('mousedown', function(e){
+          e.preventDefault();
+          churchInput.value = c.name;
+          churchList.style.display='none';
+          updateMemberTag();
+        });
+        churchList.appendChild(d);
+      });
+      churchList.style.display='block';
+    }
+    churchInput.addEventListener('input', function(){ renderList(churchInput.value); updateMemberTag(); });
+    churchInput.addEventListener('focus', function(){ renderList(churchInput.value); });
+    churchInput.addEventListener('blur', function(){ setTimeout(function(){ churchList.style.display='none'; }, 150); });
+    document.getElementById('name').addEventListener('input', updateMemberTag);
+
+    // ---- 회원가입 제출 ----
+    var f = document.getElementById('signupForm');
     f.addEventListener('submit', async function (e) {
-      e.preventDefault(); err.style.display = 'none';
+      e.preventDefault(); err.style.display='none';
+      var name = document.getElementById('name').value.trim();
+      var church = churchInput.value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var address = document.getElementById('address').value.trim();
       var email = document.getElementById('email').value.trim();
       var pw = document.getElementById('pw').value;
       var pw2 = document.getElementById('pw2').value;
-      if (pw.length < 6) { showErr('비밀번호는 6자 이상이어야 합니다.'); return; }
-      if (pw !== pw2) { showErr('비밀번호가 일치하지 않습니다.'); return; }
-      if (!window.sb) { showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase Anon Key 입력 필요)'); return; }
+
+      if(!name || !church || !phone || !address || !email){ showErr('모든 항목을 입력해 주세요.'); return; }
+      if(pw.length < 6){ showErr('비밀번호는 6자 이상이어야 합니다.'); return; }
+      if(pw !== pw2){ showErr('비밀번호가 일치하지 않습니다.'); return; }
+      if(!window.sb){ showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase 설정 필요)'); return; }
+
+      // 정회원 판별: 이름 == 해당 교회 담임목사
+      var rec = CH.find(function(c){ return c.name === church; });
+      var memberType = (rec && norm(rec.pastor) === norm(name)) ? '정회원' : '일반회원';
+
       var btn = f.querySelector('.btn'); btn.disabled = true; btn.textContent = '가입 중...';
       try {
-        var res = await window.sb.auth.signUp({ email: email, password: pw, options: { emailRedirectTo: location.origin + '/login.html' } });
-        if (res.error) { showErr(window.krErr(res.error.message)); btn.disabled = false; btn.textContent = '회원가입'; return; }
-        if (res.data && res.data.session) { location.href = 'index.html'; return; } // 이메일 확인 꺼진 경우 즉시 로그인
-        // 이메일 확인이 켜진 경우
+        var res = await window.sb.auth.signUp({
+          email: email, password: pw,
+          options: {
+            data: { name: name, address: address, phone: phone, church: church, member_type: memberType },
+            emailRedirectTo: location.origin + '/login.html'
+          }
+        });
+        if(res.error){ showErr(window.krErr(res.error.message)); btn.disabled=false; btn.textContent='회원가입'; return; }
+        if(res.data && res.data.session){ location.href = 'index.html'; return; }
         document.getElementById('card').innerHTML =
           '<h1 class="title">가입 신청 완료</h1>' +
-          '<p class="sub">입력하신 이메일로 인증 메일을 보냈습니다.<br>메일에서 인증을 완료한 뒤 로그인해 주세요.</p>' +
+          '<p class="sub">입력하신 이메일(<b>'+email+'</b>)로 인증 메일을 보냈습니다.<br>메일에서 인증을 완료한 뒤 로그인해 주세요.</p>' +
+          '<p class="sub" style="font-size:13px">가입 구분: <b>'+memberType+'</b></p>' +
           '<a class="btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="login.html">로그인하러 가기</a>';
-      } catch (ex) { showErr(window.krErr(ex && ex.message)); btn.disabled = false; btn.textContent = '회원가입'; }
-    });
-    document.getElementById('kakaoBtn').addEventListener('click', async function () {
-      err.style.display = 'none';
-      if (!window.sb) { showErr('로그인 설정이 아직 완료되지 않았습니다.'); return; }
-      try {
-        var res = await window.sb.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: location.origin } });
-        if (res.error) showErr('카카오 로그인은 준비 중입니다. (Supabase에서 Kakao provider 설정이 필요합니다.)');
-      } catch (ex) { showErr('카카오 로그인은 준비 중입니다. (Supabase에서 Kakao provider 설정이 필요합니다.)'); }
+      } catch(ex){ showErr(window.krErr(ex && ex.message)); btn.disabled=false; btn.textContent='회원가입'; }
     });
   </script>
 </body>
