@@ -97,6 +97,18 @@
     .cmtForm textarea{flex:1;min-height:42px;padding:10px 12px;border:1px solid var(--hairline-strong);font-size:14px;font-family:inherit;font-weight:300;resize:vertical;line-height:1.5;}
     .cmtForm textarea:focus{outline:none;border:2px solid var(--ink);}
     .mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+    /* 아카이브 */
+    .arcSec{margin-bottom:26px;}
+    .arcSec h3{margin:0 0 4px;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;}
+    .arcSec .cnt{font-size:12px;font-weight:400;color:var(--muted);}
+    .arcSec .cap{margin:0 0 10px;font-size:12px;color:var(--muted);}
+    .arcList{background:var(--canvas);border:1px solid var(--hairline);}
+    .arcItem{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--hairline);font-size:14px;color:var(--ink);}
+    .arcItem:first-child{border-top:0;}
+    .arcItem:hover{background:var(--surface-soft);}
+    .arcItem .ic{flex:0 0 auto;}
+    .arcItem .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .arcItem .go{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--primary);}
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
   </style>
 </head>
@@ -111,6 +123,7 @@
     <div class="tabs">
       <div class="tab on" data-tab="meeting">임원회의 게시판</div>
       <div class="tab" data-tab="files">임원 자료방</div>
+      <div class="tab" data-tab="archive">역사 자료 아카이브</div>
     </div>
 
     <!-- 임원회의 게시판 -->
@@ -146,6 +159,13 @@
       <div class="empty" id="fileEmpty" style="display:none;">아직 올라온 자료가 없습니다.</div>
     </div>
 
+    <!-- 역사 자료 아카이브 -->
+    <div class="pane" id="paneArchive">
+      <p class="who" style="margin:0 0 8px;">삼기연이 보관해 온 회의록·순서지 등 역사 문서입니다. 제목을 누르면 문서가 열립니다.<br><span style="font-size:12px;">※ 계좌·개인정보가 포함된 회계·공문 자료는 공개 노출을 막기 위해 여기에 두지 않았습니다. 그런 자료는 위 <b>임원 자료방</b>에 직접 올려 보관하세요.</span></p>
+      <input id="archiveSearch" type="text" placeholder="문서 제목 검색…" style="width:100%;padding:11px 13px;border:1px solid var(--hairline-strong);font-size:14px;font-family:inherit;margin-bottom:18px;" />
+      <div id="archiveWrap"></div>
+    </div>
+
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
@@ -154,6 +174,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
+  <script src="archive-list.js?v=1"></script>
   <script src="auth.js?v=4"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false;
@@ -176,9 +197,38 @@
         document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
         document.querySelectorAll('.pane').forEach(function(x){ x.classList.remove('on'); });
         t.classList.add('on');
-        document.getElementById(t.getAttribute('data-tab')==='meeting'?'paneMeeting':'paneFiles').classList.add('on');
+        var tab = t.getAttribute('data-tab');
+        var paneId = tab==='meeting'?'paneMeeting':(tab==='files'?'paneFiles':'paneArchive');
+        document.getElementById(paneId).classList.add('on');
+        if(tab==='archive') renderArchive();
       });
     });
+
+    // ---------- 역사 자료 아카이브 ----------
+    var archiveRendered = false;
+    function renderArchive(filter){
+      var wrap = document.getElementById('archiveWrap');
+      var A = window.ARCHIVE || {};
+      var q = (filter||'').trim();
+      var order = ['minutes','worship','reports','official'];
+      var caps = {
+        minutes:'내부 회의 기록입니다.', worship:'연합예배·행사 순서지입니다.',
+        reports:'재정·결산 등 민감 자료입니다. 취급에 주의하세요.', official:'대외 발송 공문입니다.'
+      };
+      var html = order.filter(function(k){ return A[k]; }).map(function(k){
+        var items = A[k].items.filter(function(it){ return !q || it.name.indexOf(q) >= 0; });
+        if(!items.length) return '';
+        var rows = items.map(function(it){
+          var href = it.file.split('/').map(encodeURIComponent).join('/');
+          return '<a class="arcItem" href="'+href+'" target="_blank" rel="noopener"><span class="ic">📄</span><span class="nm">'+esc(it.name)+'</span><span class="go">열기 ›</span></a>';
+        }).join('');
+        return '<div class="arcSec"><h3>'+esc(A[k].label)+' <span class="cnt">'+items.length+'건</span></h3>'+
+          '<p class="cap">'+esc(caps[k]||'')+'</p><div class="arcList">'+rows+'</div></div>';
+      }).join('');
+      wrap.innerHTML = html || '<div class="empty">검색 결과가 없습니다.</div>';
+      archiveRendered = true;
+    }
+    (function(){ var s=document.getElementById('archiveSearch'); if(s) s.addEventListener('input', function(){ renderArchive(this.value); }); })();
 
     // ---------- 데이터 로드 ----------
     async function loadMeetings(){

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>삼기연이 걸어온 길 | 삼괴지역 기독교 연합회</title>
+  <meta name="description" content="삼괴지역기독교연합회(삼기연)가 걸어온 길 — 3·1 만세운동의 뿌리에서 오늘까지의 역사 기록." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--blue:#1c69d4;--primary-active:#0653b6;--ink:#1a1a1a;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f6f7f9;--parchment:#f3f1ea;--dark:#1a2129;--on-dark:#e8ebef;--on-dark-soft:#a7b0bd;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--canvas);color:var(--bodytext);font-weight:300;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:30;}
+    .bar .in{max-width:1080px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    /* 히어로 */
+    .hero{background:linear-gradient(180deg,var(--parchment),#fff);padding:76px 24px 60px;text-align:center;border-bottom:1px solid var(--hairline);}
+    .hero .kicker{font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--primary);}
+    .hero h1{margin:16px 0 0;font-size:52px;line-height:1.08;font-weight:700;letter-spacing:-0.5px;color:var(--ink);}
+    .hero p{margin:20px auto 0;max-width:640px;font-size:19px;line-height:1.6;font-weight:300;color:var(--bodytext);}
+    .stats{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin:44px auto 0;max-width:760px;border:1px solid var(--hairline);background:#fff;}
+    .stat{flex:1;min-width:140px;padding:24px 16px;border-left:1px solid var(--hairline);}
+    .stat:first-child{border-left:0;}
+    .stat b{display:block;font-size:34px;font-weight:700;color:var(--primary);letter-spacing:-0.5px;}
+    .stat span{display:block;margin-top:4px;font-size:13px;color:var(--muted);font-weight:400;}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+    .section{padding:72px 0;}
+    .sec-h2{margin:0 0 8px;font-size:32px;font-weight:700;letter-spacing:-0.5px;color:var(--ink);text-align:center;}
+    .sec-sub{margin:0 auto 48px;font-size:16px;color:var(--muted);text-align:center;max-width:600px;line-height:1.6;}
+    /* 타임라인 */
+    .tl{position:relative;max-width:900px;margin:0 auto;}
+    .tl::before{content:'';position:absolute;left:50%;top:6px;bottom:6px;width:2px;background:var(--hairline);transform:translateX(-50%);}
+    .ev{position:relative;width:50%;padding:0 44px 40px;}
+    .ev:nth-child(odd){left:0;text-align:right;}
+    .ev:nth-child(even){left:50%;text-align:left;}
+    .ev .dot{position:absolute;top:4px;width:15px;height:15px;border-radius:50%;background:var(--primary);border:3px solid #fff;box-shadow:0 0 0 1px var(--hairline-strong);}
+    .ev:nth-child(odd) .dot{right:-8px;}
+    .ev:nth-child(even) .dot{left:-8px;}
+    .ev .yr{font-size:13px;font-weight:700;letter-spacing:1.5px;color:var(--primary);}
+    .ev h3{margin:7px 0 8px;font-size:21px;font-weight:700;letter-spacing:-0.3px;color:var(--ink);line-height:1.3;}
+    .ev p{margin:0;font-size:15px;line-height:1.65;color:var(--muted);font-weight:300;}
+    .ev.big h3{color:var(--primary);}
+    /* 정기 행사 */
+    .events{background:var(--surface-soft);}
+    .egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto;}
+    .ecard{background:#fff;border:1px solid var(--hairline);padding:24px 22px;}
+    .ecard .em{font-size:26px;}
+    .ecard h4{margin:12px 0 6px;font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-0.3px;}
+    .ecard p{margin:0;font-size:14px;line-height:1.55;color:var(--muted);}
+    /* 증경회장단 */
+    .presidents{background:var(--dark);color:var(--on-dark);text-align:center;}
+    .presidents .sec-h2{color:#fff;}
+    .presidents .sec-sub{color:var(--on-dark-soft);}
+    .pp{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;max-width:820px;margin:0 auto;}
+    .pp .p{border:1px solid rgba(255,255,255,0.18);padding:18px 26px;font-size:17px;font-weight:700;color:#fff;background:rgba(255,255,255,0.04);}
+    /* 닫기 */
+    .closing{text-align:center;padding:72px 24px 90px;}
+    .closing h2{margin:0 0 14px;font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-0.5px;}
+    .closing p{margin:0 auto;max-width:560px;font-size:17px;line-height:1.7;color:var(--bodytext);}
+    .verse{margin:26px auto 0;font-size:15px;color:var(--muted);font-style:italic;}
+    .home{display:inline-block;margin-top:34px;font-size:14px;color:var(--primary);font-weight:700;}
+    .note{max-width:900px;margin:0 auto;padding:14px 18px;background:var(--parchment);border:1px solid var(--hairline);font-size:13px;color:var(--muted);line-height:1.6;text-align:center;}
+    @media (max-width:720px){
+      .hero h1{font-size:38px;}
+      .tl::before{left:9px;}
+      .ev{width:100%;left:0 !important;text-align:left !important;padding:0 0 34px 34px;}
+      .ev .dot{left:2px !important;right:auto !important;}
+      .egrid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+
+  <section class="hero">
+    <div class="kicker">삼기연이 걸어온 길</div>
+    <h1>한 형제처럼, 한 마음으로<br>걸어온 발자취</h1>
+    <p>3·1 만세운동의 뿌리 위에서, 우정읍·장안면의 교회들이 교파를 넘어 한 형제로 모여 걸어온 삼괴지역기독교연합회의 역사입니다.</p>
+    <div class="stats">
+      <div class="stat"><b>1919</b><span>3·1운동의 뿌리</span></div>
+      <div class="stat"><b>12</b><span>교단</span></div>
+      <div class="stat"><b>49</b><span>회원 교회</span></div>
+    </div>
+  </section>
+
+  <!-- 타임라인 -->
+  <section class="section wrap">
+    <h2 class="sec-h2">연혁</h2>
+    <p class="sec-sub">삼괴지역 교회가 함께 걸어온 주요 발자취입니다.</p>
+    <div class="tl" id="timeline">
+      <div class="ev big"><span class="dot"></span><div class="yr">1919</div><h3>3·1 만세운동의 뿌리</h3><p>우정읍·장안면 화수리에서 일어난 3·1 만세운동. 삼괴지역 교회가 기억하고 이어가는 신앙과 나라 사랑의 뿌리입니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">오랜 뿌리</div><h3>교파를 넘어 한 형제로</h3><p>삼괴지역에서 교회를 섬기는 목회자들이 교단을 넘어 연합해 왔습니다. 2009년에 이미 열 분의 증경회장을 모실 만큼, 오랜 세월 함께 걸어온 공동체입니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2009</div><h3>정기총회 · 회칙 정비</h3><p>정기총회에서 회칙을 개정하고 협동총무 등 조직을 정비하며, 연합 사역의 틀을 새롭게 다졌습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2010</div><h3>절기 연합예배 · 신년 성회 정착</h3><p>신년축복성회, 3·1절 기념 연합기도회, 부활절 연합예배로 지역 교회가 한자리에 모이는 자리가 자리 잡았습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2011</div><h3>나라를 위한 연합기도</h3><p>6·25 상기 · 8·15 광복절 기념 연합기도회를 드리고, 봄·가을 목회자 단합대회로 서로를 격려했습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2012</div><h3>지역민과 함께한 신년축복성회</h3><p>지역민을 초청한 은혜의 집회에 300여 명이 함께 모여, 지역과 소통하는 연합회로 나아갔습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2013</div><h3>부활주일 연합예배 · 정기총회</h3><p>지역 기관과 함께한 부활절 연합예배를 드리고, 한 해의 사역을 총회로 정리했습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2014</div><h3>투명한 재정 · 결산과 감사</h3><p>연간 결산과 재정 감사를 정착시켜, 회원 교회 앞에 책임 있게 운영해 왔습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2016</div><h3>다음 세대 장학사업</h3><p>지역의 학생들에게 장학금과 장학증서를 수여하며, 교회와 지역의 다음 세대를 함께 세웠습니다.</p></div>
+      <div class="ev"><span class="dot"></span><div class="yr">2018</div><h3>활발한 연합 활동</h3><p>신년 조찬기도회, 부활절 연합예배(헌금으로 이웃 섬김), 목회자 부부 수양회, 8·15 광복절 연합예배, 정기총회로 한 해를 채웠습니다. 화성시 기독교총연합회와도 함께했습니다.</p></div>
+      <div class="ev big"><span class="dot"></span><div class="yr">2026</div><h3>오늘의 삼기연</h3><p>목회자 부부 야유회, 지방선거 정책질의, 공식 홈페이지·앱 개설 등 지역과 소통하며 새로운 걸음을 이어갑니다.</p></div>
+    </div>
+    <div class="note">※ 연혁은 삼기연이 보관해 온 회의록·순서지·보고서 등 실제 역사 기록을 바탕으로 정리했습니다. 창립 연도는 기록에 명시되어 있지 않으며, 세부 내용은 계속 보완됩니다.</div>
+  </section>
+
+  <!-- 정기 연합 행사 -->
+  <section class="section events">
+    <div class="wrap">
+      <h2 class="sec-h2">해마다 함께한 자리</h2>
+      <p class="sec-sub">삼기연이 매년 이어온 정기 연합 사역입니다.</p>
+      <div class="egrid">
+        <div class="ecard"><div class="em">🙏</div><h4>월례 조찬기도회</h4><p>매월 회원교회를 순회하며 지역과 한국교회를 위해 기도합니다.</p></div>
+        <div class="ecard"><div class="em">🕊️</div><h4>3·1절 기념 연합예배</h4><p>3·1 만세운동의 정신을 기리며 나라와 민족을 위해 함께 예배합니다.</p></div>
+        <div class="ecard"><div class="em">✝️</div><h4>부활절 연합예배</h4><p>지역 교회가 한자리에 모여 그리스도의 부활을 함께 기념합니다.</p></div>
+        <div class="ecard"><div class="em">🇰🇷</div><h4>8·15 광복절 연합예배</h4><p>광복의 은혜를 기억하며 나라를 위한 감사의 예배를 드립니다.</p></div>
+        <div class="ecard"><div class="em">🎗️</div><h4>6·25 상기 연합예배</h4><p>민족의 아픔을 기억하고 평화와 통일을 위해 기도합니다.</p></div>
+        <div class="ecard"><div class="em">🎵</div><h4>신년축복성회 · 신년하례</h4><p>새해를 열며 함께 예배하고 한 해의 사역을 준비합니다.</p></div>
+        <div class="ecard"><div class="em">🌿</div><h4>목회자 부부 야유회</h4><p>목회자 부부가 함께 모여 쉼과 교제의 시간을 나눕니다.</p></div>
+        <div class="ecard"><div class="em">👟</div><h4>3·1 만세길 걷기대회</h4><p>화성시·교계·시민과 함께 만세운동의 발자취를 걷습니다.</p></div>
+        <div class="ecard"><div class="em">🎓</div><h4>장학사업</h4><p>지역의 다음 세대를 격려하며 장학금을 지원합니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 증경회장단 -->
+  <section class="section presidents">
+    <div class="wrap">
+      <h2 class="sec-h2">연합회를 이끌어 오신 분들</h2>
+      <p class="sec-sub">삼기연을 섬겨 오신 증경회장단께 감사드립니다.</p>
+      <div class="pp">
+        <div class="p">김충현 목사</div>
+        <div class="p">이명식 목사</div>
+        <div class="p">최현재 목사</div>
+        <div class="p">류성원 목사</div>
+        <div class="p">김동천 목사</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 닫기 -->
+  <section class="closing">
+    <h2>걸어온 길 위에, 함께 걸어갈 길</h2>
+    <p>작은 교회와 큰 교회가 한 식탁에 둘러앉아 손을 맞잡는 자리 — 그 자리가 곧 삼괴지역 복음의 통로였습니다. 지나온 발자취를 기억하며, 다음 세대와 함께 걸어갈 길을 준비합니다.</p>
+    <p class="verse">"보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고" — 시편 133 : 1</p>
+    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=4"></script>
+</body>
+</html>
