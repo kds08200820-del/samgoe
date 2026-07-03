@@ -237,6 +237,12 @@
     @media (max-width:900px){ .dash-grid{grid-template-columns:repeat(6,1fr);} }
     @media (max-width:560px){ .dash-grid{grid-template-columns:repeat(2,1fr);gap:12px;} .col-12,.col-8,.col-6,.col-4,.col-3{grid-column:span 2 !important;} }
     .col-3{grid-column:span 3;} .col-4{grid-column:span 4;} .col-6{grid-column:span 6;} .col-8{grid-column:span 8;} .col-12{grid-column:span 12;}
+    /* 언론 코너 */
+    .press-feat{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;margin-top:44px;}
+    @media (max-width:720px){ .press-feat{grid-template-columns:1fr;} }
+    .press-more a:hover{background:var(--surface-soft);}
+    .press-more .pm-date{flex:0 0 auto;width:150px;font-size:13px;font-weight:700;color:var(--slate-deep);}
+    @media (max-width:560px){ .press-more a{flex-wrap:wrap;} .press-more .pm-date{width:100%;} }
     @media (max-width:900px) and (min-width:561px){ .col-3{grid-column:span 3;} .col-4{grid-column:span 3;} .col-6{grid-column:span 3;} .col-8{grid-column:span 6;} .col-12{grid-column:span 6;} }
 
     /* ---- 공지사항 ---- */
@@ -308,6 +314,7 @@
         <a href="#schedule" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">일정</a>
         <a href="#churches" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">소속교회</a>
         <a href="#gallery" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">갤러리</a>
+        <a href="#press" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">언론</a>
         <a href="history.html" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">걸어온 길</a>
         <a href="#bylaws" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">회칙</a>
         <a href="officer.html" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">임원방</a>
@@ -380,6 +387,14 @@
         <div class="dc-label">걸어온 길</div>
         <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;color:var(--navy-deep);">삼기연의 발자취</div>
         <span class="dash-arrow" style="margin-top:12px;">연혁 보기 →</span>
+      </a>
+      <a href="#press" class="dash-card col-12" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;text-align:left;gap:20px;flex-wrap:wrap;">
+        <div>
+          <div class="dc-label">Press · 언론</div>
+          <div class="dc-title serif" style="margin:8px 0 0;font-size:24px;color:var(--navy-deep);">언론 속 삼기연 — 보도 모음</div>
+          <div class="dc-sub" style="margin-top:4px;font-size:14px;">3·1 만세길 걷기 · 3·1절 공감음악회 등 삼괴지역 교회 활동이 언론에 소개되었습니다.</div>
+        </div>
+        <span class="dash-arrow">언론 보도 보기 →</span>
       </a>
     </div>
   </section>
@@ -569,6 +584,77 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 언론 (Press) ===================== -->
+  <section id="press" class="section" style="scroll-margin-top:96px;background:var(--white);padding:80px 24px;">
+    <div style="max-width:1160px;margin:0 auto;">
+      <div style="text-align:center;">
+        <div class="eyebrow" style="justify-content:center;">Press</div>
+        <h2 class="sec-h2" style="margin:12px 0 0;font-size:40px;line-height:1.1;color:var(--ink);">언론 속 삼기연</h2>
+        <p style="margin:14px auto 0;max-width:620px;font-size:17px;line-height:1.6;color:var(--muted);">삼괴지역 교회들이 함께한 활동이 언론에 보도된 기록입니다.<br>삼기연은 화성특례시기독교총연합회를 이루는 5개 지역연합회 중 하나입니다.</p>
+      </div>
+
+      <!-- 대표 보도 (사진) -->
+      <div class="press-feat">
+        <article style="border:1px solid var(--hairline);background:var(--canvas);display:flex;flex-direction:column;">
+          <a href="http://www.m-i.kr/news/articleView.html?idxno=1170303" target="_blank" rel="noopener" style="display:block;">
+            <img src="assets/press/mansegil-2024.jpg" alt="화성 3·1운동 만세길 걷기행사" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;" />
+          </a>
+          <div style="padding:22px 24px 22px;">
+            <div style="font-size:12.5px;font-weight:700;letter-spacing:0.5px;color:var(--slate-deep);">매일일보 · 2024.10.22</div>
+            <h3 style="margin:8px 0 0;font-size:21px;font-weight:700;color:var(--ink);line-height:1.35;">화성 3·1운동 만세길 걷기행사 개최</h3>
+            <p style="margin:10px 0 0;font-size:15.5px;line-height:1.7;color:var(--muted);">우정·장안 3·1 만세운동의 정신을 기리는 걷기행사에 삼괴기독교연합회가 지역단체와 협업했습니다. 400여 명의 시민이 태극기를 들고 만세길을 함께 걸었습니다.</p>
+            <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+              <span style="font-size:12px;color:var(--muted-soft);">사진 · 매일일보</span>
+              <a href="http://www.m-i.kr/news/articleView.html?idxno=1170303" target="_blank" rel="noopener" class="press" style="font-size:13px;font-weight:700;color:var(--blue);">기사 보기 ›</a>
+            </div>
+          </div>
+        </article>
+        <article style="border:1px solid var(--hairline);background:var(--canvas);display:flex;flex-direction:column;">
+          <a href="https://www.goodnews1.com/news/articleView.html?idxno=444917" target="_blank" rel="noopener" style="display:block;">
+            <img src="assets/press/music-2025.jpg" alt="3·1절 기념 공감음악회 · 삼괴지역 교회 워십" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;" />
+          </a>
+          <div style="padding:22px 24px 22px;">
+            <div style="font-size:12.5px;font-weight:700;letter-spacing:0.5px;color:var(--slate-deep);">데일리굿뉴스 · 2025.02.27</div>
+            <h3 style="margin:8px 0 0;font-size:21px;font-weight:700;color:var(--ink);line-height:1.35;">106주년 3·1절 기념 공감음악회</h3>
+            <p style="margin:10px 0 0;font-size:15.5px;line-height:1.7;color:var(--muted);">화성특례시기독교총연합회 3·1절 기념 음악회에서 조암신흥교회(장명희 목사)를 중심으로 한 삼괴지역 교회들이 워십 공연을 선보이며 나라사랑의 의미를 함께 나눴습니다.</p>
+            <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+              <span style="font-size:12px;color:var(--muted-soft);">사진 · 데일리굿뉴스</span>
+              <a href="https://www.goodnews1.com/news/articleView.html?idxno=444917" target="_blank" rel="noopener" class="press" style="font-size:13px;font-weight:700;color:var(--blue);">기사 보기 ›</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 그 외 보도 -->
+      <div class="press-more" style="margin-top:44px;">
+        <h3 class="serif" style="margin:0 0 6px;font-size:20px;color:var(--ink);">그 외 삼기연 관련 보도</h3>
+        <div style="border-top:1px solid var(--hairline-strong);">
+          <a href="https://www.kgnews.co.kr/news/article.html?no=783190" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
+            <span class="pm-date">경기신문 · 2024.02.26</span>
+            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">화성시기독교총연합회 ‘3·1운동 105주년 기념식’ 참석 — 삼괴기독교연합회 등 5개 지역연합회</span>
+            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
+          </a>
+          <a href="https://n.news.naver.com/mnews/article/005/0000555593?sid=103" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
+            <span class="pm-date">국민일보 · 2013.05.27</span>
+            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">화성기독총련 ‘사랑나눔 축제’ 성료 — 삼괴 등 5개 지역연합회 4,000여 명 참여</span>
+            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
+          </a>
+          <a href="http://www.pckworld.com/news/articleView.html?idxno=71337" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
+            <span class="pm-date">한국기독공보 · 2016.06.21</span>
+            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">“목회와 사회봉사는 분리될 수 없습니다” — 삼괴지역 3·1운동 기념사업·삼괴도서관 조성</span>
+            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
+          </a>
+          <a href="http://www.nspna.com/news/?mode=view&newsid=551331" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
+            <span class="pm-date">NSP통신 · 2022.01.24</span>
+            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">화성시기독교총연합회 대표회장 취임 — 삼괴기독교연합회 포함 5개 지역연합회</span>
+            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
+          </a>
+        </div>
+        <p style="margin:14px 2px 0;font-size:13px;line-height:1.6;color:var(--muted-soft);">※ 각 기사는 해당 언론사 지면으로 연결되며, 사진의 저작권은 각 언론사에 있습니다.</p>
       </div>
     </div>
   </section>
