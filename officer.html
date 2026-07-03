@@ -115,8 +115,8 @@
     .arcItem .nm:hover{color:var(--primary);text-decoration:underline;}
     .arcItem .yb{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--primary);}
     .arcItem .go{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--primary);}
-    .arcItem .arcDel{flex:0 0 auto;border:0;background:none;cursor:pointer;font-size:15px;line-height:1;padding:2px 4px;opacity:.55;}
-    .arcItem .arcDel:hover{opacity:1;}
+    .arcItem .arcDel,.arcItem .arcEdit{flex:0 0 auto;border:0;background:none;cursor:pointer;font-size:15px;line-height:1;padding:2px 4px;opacity:.55;}
+    .arcItem .arcDel:hover,.arcItem .arcEdit:hover{opacity:1;}
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
   </style>
 </head>
@@ -194,6 +194,7 @@
     var MPOSTS = [], MC = {}, FILES = [];
     var pickedFiles = [];
     var HIDDEN = {};  // 삭제(숨김) 처리된 아카이브 문서 경로
+    var TITLES = {};  // 관리자가 수정한 아카이브 제목 (path → title)
 
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
     function fmtDate(d){ if(!d) return ''; try{ var x=new Date(d+'T00:00:00'); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2); }catch(_){ return d; } }
@@ -241,14 +242,15 @@
       var t = document.getElementById('arcType').value;
       var y = document.getElementById('arcYear').value;
       var q = (document.getElementById('archiveSearch').value||'').trim();
+      function titleOf(d){ return TITLES[d.file] || d.name; }
       var res = docs.filter(function(d){
         if(t && d.type!==t) return false;
         if(y==='__none' && d.year) return false;
         if(y && y!=='__none' && d.year!==y) return false;
-        if(q && d.name.indexOf(q)<0) return false;
+        if(q && titleOf(d).indexOf(q)<0) return false;
         return true;
       });
-      document.getElementById('archiveMeta').textContent = '총 '+docs.length+'건 중 '+res.length+'건' + (isSuper ? ' · 관리자는 🗑 로 삭제할 수 있습니다' : '');
+      document.getElementById('archiveMeta').textContent = '총 '+docs.length+'건 중 '+res.length+'건' + (isSuper ? ' · 관리자는 ✏️ 수정 · 🗑 삭제할 수 있습니다' : '');
       var wrap = document.getElementById('archiveWrap');
       if(!res.length){ wrap.innerHTML = '<div class="empty">조건에 맞는 문서가 없습니다.</div>'; return; }
       // 유형별로 묶어 표시 (유형 순서 → 연도 내림차순)
@@ -259,10 +261,11 @@
         var rows = group.map(function(d){
           var href = d.file.split('/').map(encodeURIComponent).join('/');
           var yr = d.year ? '<span class="yb">'+d.year+'</span>' : '';
+          var edit = isSuper ? '<button class="arcEdit" data-path="'+esc(d.file)+'" title="제목 수정">✏️</button>' : '';
           var del = isSuper ? '<button class="arcDel" data-path="'+esc(d.file)+'" title="삭제">🗑</button>' : '';
           return '<div class="arcItem"><span class="ic">'+(TYPE_ICON[tp]||'📄')+'</span>'+
-            '<a class="nm" href="'+href+'" target="_blank" rel="noopener">'+esc(d.name)+'</a>'+yr+
-            '<a class="go" href="'+href+'" target="_blank" rel="noopener">열기 ›</a>'+del+'</div>';
+            '<a class="nm" href="'+href+'" target="_blank" rel="noopener">'+esc(titleOf(d))+'</a>'+yr+
+            '<a class="go" href="'+href+'" target="_blank" rel="noopener">열기 ›</a>'+edit+del+'</div>';
         }).join('');
         return '<div class="arcSec"><h3>'+esc(tp)+' <span class="cnt">'+group.length+'건</span></h3><div class="arcList">'+rows+'</div></div>';
       }).join('');
@@ -276,6 +279,26 @@
       var ins = await window.sb.from('archive_hidden').insert({ path: path, hidden_by: me.id });
       if(ins.error){ alert('삭제 실패: ' + ins.error.message + '\n(관리자: archive-hidden-setup.sql 실행이 필요할 수 있습니다.)'); return; }
       HIDDEN[path] = true; renderArchive();
+    }
+    // 아카이브 제목 수정 — 최고관리자만
+    async function editArchive(path){
+      if(!isSuper) return;
+      var doc = (window.ARCHIVE_DOCS||[]).find(function(d){ return d.file===path; });
+      var cur = TITLES[path] || (doc ? doc.name : '');
+      var val = window.prompt('제목을 수정하세요.\n(비우고 확인하면 원래 제목으로 되돌립니다)', cur);
+      if(val === null) return;                 // 취소
+      val = val.trim();
+      if(val === '' || (doc && val === doc.name)){
+        // 원래(자동) 제목으로 초기화
+        var del = await window.sb.from('archive_titles').delete().eq('path', path);
+        if(del.error){ alert('저장 실패: ' + del.error.message + '\n(관리자: archive-titles-setup.sql 실행이 필요할 수 있습니다.)'); return; }
+        delete TITLES[path];
+      } else {
+        var up = await window.sb.from('archive_titles').upsert({ path:path, title:val, updated_by:me.id }, { onConflict:'path' });
+        if(up.error){ alert('저장 실패: ' + up.error.message + '\n(관리자: archive-titles-setup.sql 실행이 필요할 수 있습니다.)'); return; }
+        TITLES[path] = val;
+      }
+      renderArchive();
     }
 
     // ---------- 데이터 로드 ----------
@@ -452,6 +475,7 @@
       isAdminUser = window.isAdmin ? window.isAdmin(me, myProfile) : false;
       isSuper = window.isSuperAdmin ? window.isSuperAdmin(me) : false;
       try{ var hd = await window.sb.from('archive_hidden').select('path'); if(!hd.error && hd.data) hd.data.forEach(function(r){ HIDDEN[r.path]=true; }); }catch(_){ }
+      try{ var td = await window.sb.from('archive_titles').select('path,title'); if(!td.error && td.data) td.data.forEach(function(r){ TITLES[r.path]=r.title; }); }catch(_){ }
       document.getElementById('ofcName').textContent = myProfile.name || '';
       document.getElementById('ofcRole').textContent = myProfile.officer_role || '';
       document.getElementById('ofcChurch').textContent = myProfile.church || '';
@@ -468,10 +492,12 @@
       document.getElementById('detailOverlay').addEventListener('click', function(e){ if(e.target===this) requestClose(); });
       document.addEventListener('keydown', function(e){ if(e.key==='Escape') requestClose(); });
 
-      // 아카이브 삭제(🗑) — 최고관리자만
+      // 아카이브 수정(✏️)·삭제(🗑) — 최고관리자만
       document.getElementById('archiveWrap').addEventListener('click', function(e){
-        var b = e.target.closest && e.target.closest('.arcDel');
-        if(b){ e.preventDefault(); e.stopPropagation(); deleteArchive(b.getAttribute('data-path')); }
+        var del = e.target.closest && e.target.closest('.arcDel');
+        if(del){ e.preventDefault(); e.stopPropagation(); deleteArchive(del.getAttribute('data-path')); return; }
+        var ed = e.target.closest && e.target.closest('.arcEdit');
+        if(ed){ e.preventDefault(); e.stopPropagation(); editArchive(ed.getAttribute('data-path')); }
       });
 
       // 자료방 업로드 이벤트
