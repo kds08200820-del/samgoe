@@ -206,9 +206,40 @@ export default {
       let published = '';
       if (dateRaw) { const d = new Date(dateRaw); if (!isNaN(d.getTime())) published = d.getFullYear() + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + ('0' + d.getDate()).slice(-2); }
       if (!published) { const m2 = html.match(/(20[0-2]\d)[.\-\/](\d{1,2})[.\-\/](\d{1,2})/); if (m2 && +m2[2] >= 1 && +m2[2] <= 12 && +m2[3] >= 1 && +m2[3] <= 31) published = m2[1] + '.' + ('0' + (+m2[2])).slice(-2) + '.' + ('0' + (+m2[3])).slice(-2); }
+      // 대표 이미지: og:image → link rel=image_src → 본문 첫 이미지(아이콘/픽셀 제외)
+      let image = meta(['og:image', 'og:image:url', 'twitter:image', 'twitter:image:src']);
+      if (!image) { const lm = html.match(/<link[^>]+rel=["']image_src["'][^>]*>/i); if (lm) { const c = lm[0].match(/href=["']([^"']+)["']/i); if (c) image = c[1]; } }
+      if (!image) {
+        const tags = html.match(/<img[^>]+>/ig) || [];
+        for (const tag of tags) {
+          const c = tag.match(/(?:data-src|data-original|data-lazy-src|src)=["']([^"']+)["']/i); if (!c) continue;
+          let s = c[1]; if (!s || /^data:/i.test(s)) continue;
+          if (/(sprite|icon|logo|blank|pixel|1x1|spacer|avatar|profile|btn_|button|emoticon|loading|share|sns_|badge|favicon)/i.test(s)) continue;
+          try { s = new URL(s, target).href; } catch (_) { continue; }
+          if (!/^https?:\/\//i.test(s)) continue;
+          image = s; break;
+        }
+      }
+      if (image) { try { image = new URL(image, target).href; } catch (_) {} }
+      // 찾은 이미지를 R2에 저장해 항상 표시(핫링크 차단 사이트 대응). 실패 시 원본 URL 그대로 반환.
+      let imageOut = image || '';
+      if (image) {
+        try {
+          const ir = await fetch(image, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SamgoeBot/1.0)', 'Referer': target, 'Accept': 'image/*' }, redirect: 'follow' });
+          const ct = (ir.headers.get('content-type') || '').toLowerCase();
+          if (ir.ok && ct.indexOf('image/') === 0) {
+            const buf = await ir.arrayBuffer();
+            if (buf.byteLength > 800 && buf.byteLength <= 8 * 1024 * 1024) {
+              const key = 'press/' + Date.now() + '_' + Math.random().toString(36).slice(2);
+              await env.BUCKET.put(key, buf, { httpMetadata: { contentType: ct } });
+              imageOut = new URL(request.url).origin + '/i/' + key;
+            }
+          }
+        } catch (_) {}
+      }
       return json({
         title: title,
-        image: meta(['og:image', 'twitter:image', 'twitter:image:src']),
+        image: imageOut,
         summary: meta(['og:description', 'twitter:description', 'description']),
         source: meta(['og:site_name']) || host,
         published: published,
