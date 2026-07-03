@@ -49,8 +49,13 @@
       word-break:keep-all;overflow-wrap:break-word;}
     ::selection{background:var(--primary);color:#fff;}
     /* 걸어온 길 세로 자동 스크롤 */
-    .path-viewport{height:452px;overflow:hidden;position:relative;border:1px solid var(--hairline);background:var(--canvas);}
+    .path-viewport{height:452px;overflow:hidden;position:relative;border:1px solid var(--hairline);background:var(--canvas);cursor:grab;touch-action:none;}
+    .path-viewport.drag{cursor:grabbing;}
     .path-viewport::after{content:'';position:absolute;left:0;right:0;bottom:0;height:44px;background:linear-gradient(transparent,var(--canvas));pointer-events:none;}
+    .path-nav{position:absolute;left:50%;transform:translateX(-50%);z-index:6;width:40px;height:26px;border:0;border-radius:13px;background:rgba(28,105,212,0.9);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.18);}
+    .path-nav:hover{background:var(--primary-active,#0653b6);}
+    .path-nav.up{top:8px;} .path-nav.down{bottom:8px;}
+    @media (hover:hover) and (pointer:fine){ .path-nav{display:flex;} }
     .path-item{display:flex;align-items:center;gap:11px;padding:14px 18px;border-top:1px solid var(--hairline);font-size:14px;color:var(--ink);text-decoration:none;}
     .path-item:first-child{border-top:0;}
     .path-item .ic{flex:0 0 auto;}
@@ -325,7 +330,11 @@
         <div>
           <h3 style="margin:0;font-size:28px;font-weight:700;letter-spacing:0;color:var(--ink);word-break:keep-all;">삼기연이 걸어온 길</h3>
           <p style="margin:12px 0 20px;font-size:15px;line-height:1.5;color:var(--muted);">해마다 기록해 온 삼기연의 발자취입니다.</p>
-          <div class="path-viewport" id="pathViewport"><div class="path-list" id="pathList"></div></div>
+          <div class="path-viewport" id="pathViewport">
+            <button class="path-nav up" id="pathUp" aria-label="위로">▲</button>
+            <div class="path-list" id="pathList"></div>
+            <button class="path-nav down" id="pathDown" aria-label="아래로">▼</button>
+          </div>
         </div>
         <!-- 오른쪽: 2026년 활동 -->
         <div>
@@ -884,24 +893,59 @@ if ('serviceWorker' in navigator) {
   var vp=document.getElementById('pathViewport'), list=document.getElementById('pathList');
   if(!vp||!list) return;
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
-  var ALLOW={'총회자료':1,'순서지':1};  // 총회·기도회·연합예배(순서지)만 · 회의/월례 제외
+  // 제목에서 '순서지' 등 군더더기를 빼고 행사명만 남깁니다.
+  function eventName(n){
+    var dm=n.match(/^(\d{4})\.(\d{2})\.(\d{2})/);
+    var date=dm?(dm[1]+'.'+dm[2]+'.'+dm[3]):'';
+    var cm=n.match(/[’'‘]([^’'‘]*)['’‘]/);
+    var body=cm?cm[1]:n.replace(/^\d{4}\.\d{2}\.\d{2}\s*/,'');
+    body=body.replace(/[’‘'"]/g,'')
+      .replace(/포스터|홍보문|순서지|준비자료|완성본|완성|완본/g,'')
+      .replace(/순서$/,'').replace(/자료$/,'')
+      .replace(/\(\s*\d+\s*\)/g,'').replace(/_\d+/g,'')
+      .replace(/\b20\d\d\b/g,'').replace(/\(\s*\)/g,'')
+      .replace(/\s+/g,' ').trim();
+    body=body.replace(/^8[.\s]?15/,'8·15 ').replace(/^6[.\s]?25/,'6·25 ').replace(/^3[.,\s]?1절/,'3·1절 ');
+    var MAP=[[/신년하례및조찬기도회/,'신년하례 및 조찬기도회'],[/신년연합축복성회/,'신년 축복성회'],[/신년축복성회/,'신년 축복성회'],
+      [/광복절\s*연합예배/,'광복절 연합예배'],[/광복절\s*연합기도회/,'광복절 연합기도회'],[/부활절\s*연합예배/,'부활절 연합예배'],
+      [/부활주일\s*연합예배/,'부활주일 연합예배'],[/부활절\s*집회/,'부활절 집회'],[/3·1절\s*기념\s*연합\s*기도회/,'3·1절 기념 연합기도회'],
+      [/3·1절\s*기념\s*연합/,'3·1절 기념 연합예배'],[/3·1절\s*집회/,'3·1절 집회'],[/6·25\s*상기\s*연합/,'6·25 상기 연합기도회'],
+      [/6·25\s*집회/,'6·25 집회'],[/추계\s*연합집?회?/,'추계 연합집회'],[/가을\s*연합\s*기도회/,'가을 연합기도회'],
+      [/삼기연\s*총회/,'삼기연 총회'],[/축부활/,'축 부활']];
+    MAP.forEach(function(p){ body=body.replace(p[0],p[1]); });
+    body=body.replace(/\s\d+$/,'').replace(/\s+/g,' ').trim();
+    return (date?date+' ':'')+body;
+  }
+  var ALLOW={'총회자료':1,'순서지':1};  // 총회·기도회·연합예배만 · 회의/월례 제외
   var docs=(window.ARCHIVE_DOCS||[]).filter(function(d){ return ALLOW[d.type] && !/월례|회의|간담/.test(d.name); }).sort(function(a,b){
     var d=(parseInt(b.year||'0',10)||0)-(parseInt(a.year||'0',10)||0); if(d) return d; return a.name<b.name?-1:1;
   });
   if(!docs.length){ list.innerHTML='<div style="padding:22px;color:var(--muted);font-size:14px;">기록을 준비 중입니다.</div>'; return; }
-  var TI={'총회자료':'📋','회의록':'📝','월례·임원회의':'🗓️','보고서':'📊','순서지':'📄'};
   var rowHtml=docs.map(function(d){
-    return '<div class="path-item"><span class="ic">'+(TI[d.type]||'📄')+'</span><span class="pt">'+esc(d.name)+'</span>'+(d.year?'<span class="pyr">'+esc(d.year)+'</span>':'')+'</div>';
+    return '<div class="path-item"><span class="ic" style="color:var(--primary);">•</span><span class="pt">'+esc(eventName(d.name))+'</span></div>';
   }).join('');
   list.innerHTML=rowHtml+rowHtml;  // 반복 스크롤용 복제
-  var paused=false;
-  vp.addEventListener('mouseenter',function(){paused=true;});
-  vp.addEventListener('mouseleave',function(){paused=false;});
+
+  function wrap(){ var half=list.scrollHeight/2; if(half>0){ if(vp.scrollTop>=half) vp.scrollTop-=half; else if(vp.scrollTop<0) vp.scrollTop+=half; } }
+  var paused=false, dragging=false, startY=0, startTop=0;
+  vp.addEventListener('mouseenter',function(){ paused=true; });
+  vp.addEventListener('mouseleave',function(){ if(!dragging) paused=false; });
+  // 스와이프/드래그로 방향대로 넘기기 (모바일·PC 공통)
+  vp.addEventListener('pointerdown',function(e){ dragging=true; paused=true; startY=e.clientY; startTop=vp.scrollTop; vp.classList.add('drag'); try{vp.setPointerCapture(e.pointerId);}catch(_){ } });
+  vp.addEventListener('pointermove',function(e){ if(!dragging) return; vp.scrollTop=startTop-(e.clientY-startY); wrap(); });
+  function endDrag(){ if(!dragging) return; dragging=false; vp.classList.remove('drag'); setTimeout(function(){ paused=false; },700); }
+  vp.addEventListener('pointerup',endDrag); vp.addEventListener('pointercancel',endDrag);
+  // PC 위/아래 화살표 버튼
+  function nudge(dir){ paused=true; vp.scrollBy({top:dir*180, behavior:'smooth'}); setTimeout(function(){ paused=false; },900); }
+  var up=document.getElementById('pathUp'), dn=document.getElementById('pathDown');
+  if(up) up.addEventListener('click',function(){ nudge(-1); });
+  if(dn) dn.addEventListener('click',function(){ nudge(1); });
+
   var last=null;
   function step(t){
     if(last===null)last=t; var dt=t-last; last=t; if(dt>50)dt=50;
-    if(!paused){ vp.scrollTop += dt*0.028; }
-    var half=list.scrollHeight/2; if(half>0 && vp.scrollTop>=half){ vp.scrollTop-=half; }
+    if(!paused && !dragging){ vp.scrollTop += dt*0.028; }
+    wrap();
     requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
