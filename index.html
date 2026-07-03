@@ -277,6 +277,12 @@
     .press-form .pf-btn{height:38px;padding:0 16px;background:var(--blue);color:#fff;border:0;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;}
     .press-form .pf-btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
     .press-carousel{margin-top:36px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;}
+    .pc-wrap{position:relative;margin-top:36px;}
+    .pc-wrap .press-carousel{margin-top:0;}
+    .pc-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;border:0;background:rgba(20,30,42,0.6);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding-bottom:3px;box-shadow:0 2px 10px rgba(0,0,0,0.2);transition:background .15s ease;}
+    .pc-nav:hover{background:rgba(20,30,42,0.88);}
+    .pc-nav.prev{left:8px;} .pc-nav.next{right:8px;}
+    @media (max-width:560px){ .pc-nav{width:38px;height:38px;font-size:22px;} }
     .press-carousel::-webkit-scrollbar{display:none;}
     .pc-track{display:flex;gap:24px;width:max-content;padding:2px;}
     .pc-card{flex:0 0 360px;width:360px;border:1px solid var(--hairline);background:var(--canvas);display:flex;flex-direction:column;position:relative;}
@@ -732,8 +738,12 @@
         <span id="prFetchMsg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--muted);"></span>
       </div>
 
-      <!-- 자동 회전 캐러셀 -->
-      <div class="press-carousel" id="pressCarousel"><div class="pc-track" id="pressTrack"></div></div>
+      <!-- 자동 회전 캐러셀 (좌우 버튼) -->
+      <div class="pc-wrap">
+        <button class="pc-nav prev" id="pcPrev" type="button" aria-label="이전 기사">‹</button>
+        <div class="press-carousel" id="pressCarousel"><div class="pc-track" id="pressTrack"></div></div>
+        <button class="pc-nav next" id="pcNext" type="button" aria-label="다음 기사">›</button>
+      </div>
 
       <!-- 그 외 보도 -->
       <div class="press-more" style="margin-top:44px;">
@@ -1598,6 +1608,18 @@ if ('serviceWorker' in navigator) {
   carousel.addEventListener('mouseleave', function(){ paused=false; });
   carousel.addEventListener('pointerdown', function(){ paused=true; });
   window.addEventListener('pointerup', function(){ setTimeout(function(){ paused=false; }, 1200); });
+  function pcNav(dir){
+    paused=true;
+    var card=track.querySelector('.pc-card'); var step=card?(card.offsetWidth+24):360;
+    var half=track.scrollWidth/2;
+    if(dir>0 && half>0 && carousel.scrollLeft>=half) carousel.scrollLeft-=half;
+    if(dir<0 && half>0 && carousel.scrollLeft<step) carousel.scrollLeft+=half;
+    carousel.scrollBy({left:dir*step, behavior:'smooth'});
+    setTimeout(function(){ paused=false; }, 1500);
+  }
+  var pcPrev=document.getElementById('pcPrev'), pcNext=document.getElementById('pcNext');
+  if(pcPrev) pcPrev.addEventListener('click', function(){ pcNav(-1); });
+  if(pcNext) pcNext.addEventListener('click', function(){ pcNav(1); });
   track.addEventListener('click', function(e){
     var ed=e.target.closest&&e.target.closest('[data-edit]'); if(ed){ e.preventDefault(); e.stopPropagation(); startEditPress(ed.getAttribute('data-edit')); return; }
     var b=e.target.closest&&e.target.closest('[data-del]'); if(b){ e.preventDefault(); e.stopPropagation(); delArticle(b.getAttribute('data-del')); }
