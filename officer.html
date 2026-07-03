@@ -185,7 +185,7 @@
       <div class="arcAdd" id="arcAdd" style="display:none;">
         <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">＋ 자료 추가 <span style="font-weight:400;color:var(--muted);font-size:12px">· .docx / .hwpx 는 변환되어, .pdf 는 원본 그대로 목록에 추가됩니다</span></div>
         <div style="margin-bottom:10px;"><span style="font-size:13px;color:var(--muted);margin-right:8px;">유형</span>
-          <select id="arcAddType"><option value="총회자료">총회자료</option><option value="회의록">회의록</option><option value="월례·임원회의">월례·임원회의</option><option value="보고서">보고서</option><option value="순서지" selected>순서지</option></select></div>
+          <select id="arcAddType"><option value="총회자료">총회자료</option><option value="회의록">회의록</option><option value="월례·임원회의">월례·임원회의</option><option value="보고서">보고서</option><option value="공문">공문</option><option value="순서지" selected>순서지</option></select></div>
         <div class="drop" id="arcDrop" style="padding:22px;"><div class="big">파일을 여기로 끌어다 놓으세요</div><div class="small">.docx · .hwpx · .pdf · 여러 개 가능 · <u>클릭해서 선택</u>도 됩니다</div></div>
         <input type="file" id="arcFile" accept=".docx,.hwpx,.pdf" multiple hidden />
         <div class="prog" id="arcAddProg"></div>
@@ -248,8 +248,8 @@
     });
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------
-    var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','보고서','순서지'];
-    var TYPE_ICON = {'총회자료':'📋','회의록':'📝','월례·임원회의':'🗓️','보고서':'📊','순서지':'📄'};
+    var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','보고서','공문','순서지'];
+    var TYPE_ICON = {'총회자료':'📋','회의록':'📝','월례·임원회의':'🗓️','보고서':'📊','공문':'📨','순서지':'📄'};
 
     function mergedDocs(){
       var out = [];
