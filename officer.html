@@ -399,6 +399,28 @@
       m=t.match(/(20[0-2]\d)/); if(m) return { y:m[1], s:m[1] };
       return { y:'', s:'' };
     }
+    // 문서 자체의 '생성 날짜'(메타데이터) — 올린 날짜가 아니라 문서가 만들어진 날짜
+    //   docx: docProps/core.xml 의 dcterms:created / hwpx: Contents/content.hpf 의 dc:date
+    async function getCreatedInfo(file){
+      try{
+        var ext=(file.name.split('.').pop()||'').toLowerCase();
+        var buf=await file.arrayBuffer();
+        var zip=await window.JSZip.loadAsync(buf);
+        var iso='';
+        if(ext==='docx'){
+          var core=zip.file('docProps/core.xml');
+          if(core){ var xml=await core.async('string');
+            var m=xml.match(/<dcterms:created[^>]*>([^<]+)<\/dcterms:created>/i); if(m) iso=m[1]; }
+        } else if(ext==='hwpx'){
+          var hpf=zip.file('Contents/content.hpf');
+          if(hpf){ var x=await hpf.async('string');
+            var m=x.match(/<dc:date[^>]*>([^<]+)<\/dc:date>/i); if(m) iso=m[1]; }
+        }
+        if(iso){ var d=new Date(iso);
+          if(!isNaN(d)) return { y:String(d.getFullYear()), s:d.getFullYear()+'.'+padN(d.getMonth()+1)+'.'+padN(d.getDate()) }; }
+      }catch(_){ }
+      return null;
+    }
     function wrapDoc(title, inner){
       return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title>'+
         '<style>body{max-width:1040px;margin:0 auto;padding:26px 20px;background:#f4f4f2;font-family:\'Malgun Gothic\',\'맑은 고딕\',sans-serif;color:#222;line-height:1.85;}'+
@@ -447,7 +469,8 @@
           var inner=await convertFile(file);
           if(!inner || !inner.replace(/<[^>]*>/g,'').trim()) throw new Error('내용 없음');
           var base=cleanBaseName(file.name);
-          var di=findDateInfo(inner.replace(/<[^>]*>/g,' ')+' '+file.name);
+          // 제목 날짜는 '문서가 생성된 날짜'(메타데이터) 우선, 없으면 내용/파일명에서 추출
+          var di=(await getCreatedInfo(file)) || findDateInfo(inner.replace(/<[^>]*>/g,' ')+' '+file.name);
           var title=(di.s?di.s+' ':'')+"'"+base+"'";
           var html=wrapDoc(base, inner);
           var ins=await window.sb.from('archive_docs').insert({ type:type, title:title, year:di.y||null, html:html, uploaded_by:me.id });
