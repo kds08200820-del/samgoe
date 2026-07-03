@@ -35,7 +35,7 @@
   window.krErr = function (m) {
     m = String(m || '');
     if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
-    if (/Email not confirmed/i.test(m)) return '이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.';
+    if (/Email not confirmed/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
     if (/already registered|already been registered|User already/i.test(m)) return '이미 가입된 이메일입니다.';
     if (/Password should be at least/i.test(m)) return '비밀번호는 6자 이상이어야 합니다.';
     if (/valid email|Unable to validate email|invalid.*email/i.test(m)) return '올바른 이메일 형식이 아닙니다.';
@@ -54,6 +54,12 @@
   window.isAdmin = function (user, profile) {
     if (window.isSuperAdmin(user)) return true;
     return !!(profile && profile.officer_role === '회장');
+  };
+
+  // 사모/사부(목회자 배우자) 여부 — 사모 게시판 접근용
+  window.isSamo = function (user, profile) {
+    if (window.isSuperAdmin(user)) return true;
+    return !!(profile && (profile.member_kind === '사모' || profile.member_kind === '사부'));
   };
 
   // 현재 로그인 사용자의 프로필(이름/교회/구분/직책) 조회
@@ -150,6 +156,19 @@
     var allowed = (profile && profile.officer_role) || window.isSuperAdmin(user);
     if (!allowed) {
       alert('임원만 이용할 수 있습니다.');
+      location.href = 'index.html';
+      return false;
+    }
+    return { user: user, profile: profile || {} };
+  };
+
+  // 사모 게시판 전용 가드 — 로그인 + 사모/사부(또는 최고관리자)여야 통과
+  window.requireSamo = async function () {
+    var user = await window.requireAuth();
+    if (!user) return false;
+    var profile = await window.getMyProfile();
+    if (!window.isSamo(user, profile)) {
+      alert('사모·사부(목회자 배우자) 전용 게시판입니다.');
       location.href = 'index.html';
       return false;
     }

@@ -40,6 +40,13 @@
     .memberTag{display:none;margin-top:8px;font-size:13px;font-weight:700;padding:8px 12px;}
     .memberTag.full{display:block;background:#eaf3ff;border:1px solid #b9d6ff;color:var(--primary);}
     .memberTag.general{display:block;background:var(--surface-soft);border:1px solid var(--hairline-strong);color:var(--muted);}
+    .kinds{display:flex;gap:8px;margin-top:6px;}
+    .kind{flex:1;position:relative;}
+    .kind input{position:absolute;opacity:0;width:0;height:0;}
+    .kind span{display:block;text-align:center;padding:12px 6px;border:1px solid var(--hairline-strong);background:#fff;
+      font-size:14px;font-weight:400;color:var(--bodytext);cursor:pointer;line-height:1.35;}
+    .kind span small{display:block;font-size:11px;color:var(--muted);margin-top:2px;}
+    .kind input:checked + span{border:2px solid var(--ink);color:var(--ink);font-weight:700;background:#f4f8ff;}
     .btn{width:100%;height:48px;border:0;border-radius:0;background:var(--primary);color:#fff;font-size:15px;
       font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:26px;font-family:inherit;transition:background .15s ease;}
     .btn:hover{background:var(--primary-active);}
@@ -71,6 +78,13 @@
         <div class="acWrap">
           <input id="church" type="text" required placeholder="교회 이름을 입력하면 검색됩니다" autocomplete="off" />
           <div class="ac-list" id="churchList"></div>
+        </div>
+
+        <label>가입 구분</label>
+        <div class="kinds">
+          <label class="kind"><input type="radio" name="kind" value="담임목사" checked /><span>담임목사<small>본인이 담임목사</small></span></label>
+          <label class="kind"><input type="radio" name="kind" value="사모" /><span>사모<small>목사님의 아내</small></span></label>
+          <label class="kind"><input type="radio" name="kind" value="사부" /><span>사부<small>목사님의 남편</small></span></label>
         </div>
         <div class="memberTag" id="memberTag"></div>
 
@@ -106,7 +120,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
   <script src="churches.js?v=2"></script>
-  <script src="auth.js?v=5"></script>
+  <script src="auth.js?v=6"></script>
   <script>
     var err = document.getElementById('err');
     function showErr(m){ err.textContent = m; err.style.display = 'block'; }
@@ -118,11 +132,23 @@
     var memberTag = document.getElementById('memberTag');
     var CH = window.CHURCHES || [];
 
+    function getKind(){
+      var r = document.querySelector('input[name="kind"]:checked');
+      return r ? r.value : '담임목사';
+    }
     function updateMemberTag(){
+      var kind = getKind();
       var nm = norm(document.getElementById('name').value);
       var rec = CH.find(function(c){ return c.name === churchInput.value.trim(); });
       memberTag.className = 'memberTag';
-      if(!nm || !churchInput.value.trim()){ memberTag.textContent=''; return; }
+      if(!churchInput.value.trim()){ memberTag.textContent=''; return; }
+      if(kind === '사모' || kind === '사부'){
+        var who = kind === '사모' ? '사모님' : '사부님';
+        memberTag.textContent = '담임목사님이 먼저 정회원으로 가입돼 있고 주소가 같으면 ' + who + '도 정회원으로 가입됩니다. (가입 후 자동 확인)';
+        memberTag.classList.add('full');
+        return;
+      }
+      if(!nm){ memberTag.textContent=''; return; }
       if(rec && norm(rec.pastor) === nm){
         memberTag.textContent = '✓ 회원교회 담임목사로 확인됩니다 — 정회원으로 가입됩니다.';
         memberTag.classList.add('full');
@@ -131,6 +157,9 @@
         memberTag.classList.add('general');
       }
     }
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="kind"]'), function(r){
+      r.addEventListener('change', updateMemberTag);
+    });
     function renderList(q){
       q = q.trim();
       churchList.innerHTML = '';
@@ -186,25 +215,45 @@
       if(!agreeTerms.checked || !agreePrivacy.checked){ showErr('이용약관과 개인정보 수집·이용에 동의해 주세요.'); return; }
       if(!window.sb){ showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase 설정 필요)'); return; }
 
-      // 정회원 판별: 이름 == 해당 교회 담임목사
-      var rec = CH.find(function(c){ return c.name === church; });
-      var memberType = (rec && norm(rec.pastor) === norm(name)) ? '정회원' : '일반회원';
-
+      var kind = getKind();
       var btn = f.querySelector('.btn'); btn.disabled = true; btn.textContent = '가입 중...';
+
+      // 정회원 판별
+      var memberType;
+      if(kind === '사모' || kind === '사부'){
+        // 담임목사님이 먼저 정회원으로 가입돼 있고 주소가 같아야 정회원
+        try {
+          var chk = await window.sb.rpc('spouse_member_check', { p_church: church, p_address: address });
+          memberType = (!chk.error && chk.data === true) ? '정회원' : '일반회원';
+        } catch(_) { memberType = '일반회원'; }
+      } else {
+        var rec = CH.find(function(c){ return c.name === church; });
+        memberType = (rec && norm(rec.pastor) === norm(name)) ? '정회원' : '일반회원';
+      }
+
       try {
         var res = await window.sb.auth.signUp({
           email: email, password: pw,
           options: {
-            data: { name: name, address: address, phone: phone, church: church, member_type: memberType },
-            emailRedirectTo: location.origin + '/login.html'
+            data: { name: name, address: address, phone: phone, church: church, member_type: memberType, member_kind: kind }
           }
         });
         if(res.error){ showErr(window.krErr(res.error.message)); btn.disabled=false; btn.textContent='회원가입'; return; }
+        // 이메일 인증 없이 바로 로그인 세션이 생성되면 홈으로 이동
         if(res.data && res.data.session){ location.href = 'index.html'; return; }
+        // 세션이 없으면(=자동 로그인 실패) 방금 만든 계정으로 로그인 시도
+        try {
+          var lin = await window.sb.auth.signInWithPassword({ email: email, password: pw });
+          if(lin.data && lin.data.session){ location.href = 'index.html'; return; }
+        } catch(_) {}
+        var kindNote = (kind === '사모' || kind === '사부')
+          ? '<p class="sub" style="font-size:13px">가입 구분: <b>'+kind+' · '+memberType+'</b>' +
+            (memberType === '일반회원' ? '<br><span style="color:var(--muted)">담임목사님이 정회원으로 가입돼 있고 주소가 같으면 정회원으로 처리됩니다.</span>' : '') + '</p>'
+          : '<p class="sub" style="font-size:13px">가입 구분: <b>'+memberType+'</b></p>';
         document.getElementById('card').innerHTML =
-          '<h1 class="title">가입 신청 완료</h1>' +
-          '<p class="sub">입력하신 이메일(<b>'+email+'</b>)로 인증 메일을 보냈습니다.<br>메일에서 인증을 완료한 뒤 로그인해 주세요.</p>' +
-          '<p class="sub" style="font-size:13px">가입 구분: <b>'+memberType+'</b></p>' +
+          '<h1 class="title">가입 완료</h1>' +
+          '<p class="sub">회원가입이 완료되었습니다.<br>이제 로그인해 이용하실 수 있습니다.</p>' +
+          kindNote +
           '<a class="btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="login.html">로그인하러 가기</a>';
       } catch(ex){ showErr(window.krErr(ex && ex.message)); btn.disabled=false; btn.textContent='회원가입'; }
     });
