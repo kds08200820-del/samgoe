@@ -41,12 +41,13 @@ alter table public.prayer_meetings enable row level security;
 
 drop policy if exists "pm_read" on public.prayer_meetings;
 create policy "pm_read" on public.prayer_meetings for select to anon, authenticated using ( true );
+-- 기도회 일정 등록·수정·삭제: 임원(officer_role 보유자·회장·최고관리자)
 drop policy if exists "pm_insert" on public.prayer_meetings;
-create policy "pm_insert" on public.prayer_meetings for insert to authenticated with check ( public.is_admin() );
+create policy "pm_insert" on public.prayer_meetings for insert to authenticated with check ( public.is_officer() );
 drop policy if exists "pm_update" on public.prayer_meetings;
-create policy "pm_update" on public.prayer_meetings for update to authenticated using ( public.is_admin() ) with check ( public.is_admin() );
+create policy "pm_update" on public.prayer_meetings for update to authenticated using ( public.is_officer() ) with check ( public.is_officer() );
 drop policy if exists "pm_delete" on public.prayer_meetings;
-create policy "pm_delete" on public.prayer_meetings for delete to authenticated using ( public.is_admin() );
+create policy "pm_delete" on public.prayer_meetings for delete to authenticated using ( public.is_officer() );
 
 -- 조회 정렬용 인덱스
 create index if not exists announcements_created_idx on public.announcements (created_at desc);

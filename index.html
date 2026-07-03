@@ -1336,7 +1336,7 @@ if ('serviceWorker' in navigator) {
     }catch(_){}
     // 공지사항: 임원(직책 보유자·회장·최고관리자) 노출 / 수요조찬기도회: 관리자만 노출
     if(isOfficerUser){ ['noticeAddBtn','noticeForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
-    if(isAdminUser){ ['prayerAddBtn','prayerForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
+    if(isOfficerUser){ ['prayerAddBtn','prayerForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
   })();
 
   // ---------- 공지사항 ----------
@@ -1456,7 +1456,7 @@ if ('serviceWorker' in navigator) {
       }
     }
     if(listEl){
-      if(!rows.length){ listEl.innerHTML='<div style="padding:26px 0;color:var(--muted);font-size:15px;">등록된 기도회 일정이 없습니다.'+(isAdminUser?' 위의 ‘＋ 기도회 일정 등록’으로 추가하세요.':'')+'</div>'; return; }
+      if(!rows.length){ listEl.innerHTML='<div style="padding:26px 0;color:var(--muted);font-size:15px;">등록된 기도회 일정이 없습니다.'+(isOfficerUser?' 위의 ‘＋ 기도회 일정 등록’으로 추가하세요.':'')+'</div>'; return; }
       listEl.innerHTML=rows.map(function(m){
         var past=m.meet_date<today;
         var detail=(m.topic?'<div class="pr-topic">🙏 '+esc(m.topic)+'</div>':'')+
@@ -1471,7 +1471,7 @@ if ('serviceWorker' in navigator) {
             '</div>'+
             '<div id="pd-'+m.id+'" style="display:none;margin-top:7px;">'+detail+'</div>'+
           '</div>'+
-          (isAdminUser?'<span class="pray-edit" data-pedit="'+m.id+'">수정</span><span class="pray-del" data-pdel="'+m.id+'">삭제</span>':'')+
+          (isOfficerUser?'<span class="pray-edit" data-pedit="'+m.id+'">수정</span><span class="pray-del" data-pdel="'+m.id+'">삭제</span>':'')+
         '</div>';
       }).join('');
       Array.prototype.forEach.call(listEl.querySelectorAll('[data-ptoggle]'),function(h){
@@ -1481,7 +1481,7 @@ if ('serviceWorker' in navigator) {
           var c=h.querySelector('.pr-caret'); if(c) c.textContent=open?'− 접기':'＋ 자세히';
         });
       });
-      if(isAdminUser){
+      if(isOfficerUser){
         Array.prototype.forEach.call(listEl.querySelectorAll('[data-pdel]'),function(a){ a.addEventListener('click',function(){ delPrayer(a.getAttribute('data-pdel')); }); });
         Array.prototype.forEach.call(listEl.querySelectorAll('[data-pedit]'),function(a){ a.addEventListener('click',function(){ startEditPrayer(a.getAttribute('data-pedit')); }); });
       }
