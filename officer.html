@@ -331,21 +331,29 @@
         d.head.appendChild(st);
       }catch(e){ /* 교차출처 등 접근 불가 시 무시 */ }
     }
-    var curBlobUrl = null;
+    var curBlobUrl = null, curDocBlobUrl = null;
+    // iframe에 src/srcdoc를 직접 넣으면 브라우저 히스토리가 쌓여 뒤로가기가 꼬임 →
+    // location.replace 로 로드해 히스토리를 남기지 않는다(닫기·뒤로가기 한 번에 닫힘).
+    function loadFrame(f, target){ try{ f.contentWindow.location.replace(target); }catch(e){ f.src = target; } }
     function openDoc(o){
       var f = document.getElementById('docFrame');
       if(curBlobUrl){ try{ URL.revokeObjectURL(curBlobUrl); }catch(_){ } }
       curBlobUrl = o.blob || null;
+      if(curDocBlobUrl){ try{ URL.revokeObjectURL(curDocBlobUrl); }catch(_){ } curDocBlobUrl=null; }
       f.onload = function(){ injectUniformStyle(f); };
-      if(o.src){ f.removeAttribute('srcdoc'); f.src = o.src; }
-      else { f.removeAttribute('src'); f.srcdoc = o.html || ''; }
+      f.removeAttribute('srcdoc');
+      var target;
+      if(o.src){ target = o.src; }
+      else { curDocBlobUrl = URL.createObjectURL(new Blob([o.html||''], {type:'text/html;charset=utf-8'})); target = curDocBlobUrl; }
+      loadFrame(f, target);
       document.getElementById('docTitle').textContent = o.title || '';
       document.getElementById('docOv').classList.add('on'); document.body.style.overflow='hidden';
       docOpen = true; history.pushState({doc:1}, '');
     }
     function hideDoc(){
-      var f = document.getElementById('docFrame'); f.removeAttribute('srcdoc'); f.src = 'about:blank';
+      var f = document.getElementById('docFrame'); loadFrame(f, 'about:blank');
       if(curBlobUrl){ try{ URL.revokeObjectURL(curBlobUrl); }catch(_){ } curBlobUrl=null; }
+      if(curDocBlobUrl){ try{ URL.revokeObjectURL(curDocBlobUrl); }catch(_){ } curDocBlobUrl=null; }
       document.getElementById('docOv').classList.remove('on'); if(!modalOpen) document.body.style.overflow='';
       docOpen = false;
     }
