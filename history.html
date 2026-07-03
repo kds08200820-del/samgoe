@@ -227,8 +227,12 @@
     function seedRow(e, i){ return { badge:(e.badge||null), title:e.title, body:(e.body||null), big:!!e.big, sort:(i+1)*10 }; }
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
 
+    // 연혁 배지에서 연도(4자리) 추출 — 없으면 맨 앞(오래된 것)으로
+    function evYear(e){ var m=String(e && e.badge!=null ? e.badge : '').match(/(1[89]\d\d|20\d\d)/); return m?parseInt(m[1],10):-1; }
     function render(){
       var tl = document.getElementById('timeline');
+      // 연도 기준 자동 정렬(같은 연도는 sort 값으로 정렬)
+      EVENTS.sort(function(a,b){ var ya=evYear(a), yb=evYear(b); if(ya!==yb) return ya-yb; return (a.sort!=null?a.sort:0)-(b.sort!=null?b.sort:0); });
       if(!EVENTS.length){ tl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">아직 등록된 연혁이 없습니다.</div>'; return; }
       tl.innerHTML = EVENTS.map(function(e, i){
         var adm = isAdmin ? '<div class="adm"><button class="admBtn hEdit" data-idx="'+i+'">수정</button><button class="admBtn hDel" data-idx="'+i+'">삭제</button></div>' : '';
