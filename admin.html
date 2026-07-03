@@ -71,14 +71,26 @@
     </div>
     <div class="msg" id="msg"></div>
 
-    <h2 class="title" style="font-size:22px;margin:44px 0 6px;">등록 교회 명단 · <span id="chCount">49</span></h2>
-    <p class="who" style="margin:0 0 14px;">삼기연 회원교회와 담임목사 명단입니다. 가입한 회원은 자동으로 연결되어 표시됩니다. (담임목사 명단과 일치하는 정회원은 <span class="pill full">정회원</span>)</p>
+    <h2 class="title" style="font-size:22px;margin:44px 0 6px;">임원 명단 <span style="font-size:14px;font-weight:400;color:var(--muted)">· 따로 관리</span></h2>
+    <p class="who" style="margin:0 0 14px;">현재 지정된 임원입니다. 아래 <b>등록 교회 명단</b>에서 미리 직책을 지정해두면, 그 교회 담임목사가 가입(정회원)할 때 <b>자동으로 임원 자격</b>이 부여됩니다.</p>
     <div class="tblwrap">
       <table>
         <thead><tr>
-          <th>#</th><th>교회</th><th>지역</th><th>담임목사</th><th>가입</th><th>구분</th><th>연락처</th>
+          <th>직책</th><th>이름 / 담임목사</th><th>교회</th><th>연락처</th><th>상태</th><th>변경</th>
         </tr></thead>
-        <tbody id="churchRows"><tr><td colspan="7" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
+        <tbody id="officerRows"><tr><td colspan="6" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="msg" id="msg2"></div>
+
+    <h2 class="title" style="font-size:22px;margin:44px 0 6px;">등록 교회 명단 · <span id="chCount">49</span></h2>
+    <p class="who" style="margin:0 0 14px;">삼기연 회원교회와 담임목사 명단입니다. <b>임원 직책</b>을 미리 지정할 수 있고(최고관리자), 가입한 회원은 자동으로 연결됩니다.</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>교회</th><th>지역</th><th>담임목사</th><th>가입</th><th>구분</th><th>임원 직책(지정)</th><th>연락처</th>
+        </tr></thead>
+        <tbody id="churchRows"><tr><td colspan="8" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
       </table>
     </div>
 
@@ -122,6 +134,15 @@
         document.getElementById('cOfficer').textContent = rows.filter(function(r){ return r.officer_role; }).length;
       }
       refreshStats();
+
+      // 교회별 사전지정 임원 직책 로드 (church_officers)
+      var CO = {};
+      try {
+        var coRes = await window.sb.from('church_officers').select('*');
+        if (!coRes.error && coRes.data) coRes.data.forEach(function(c){ if (c.officer_role) CO[c.church] = c.officer_role; });
+      } catch(_) {}
+      var msg2 = document.getElementById('msg2');
+      function flash2(t){ msg2.textContent = t; setTimeout(function(){ if (msg2.textContent === t) msg2.textContent = ''; }, 2500); }
 
       var tbody = document.getElementById('memberRows');
       if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">아직 가입한 회원이 없습니다.</td></tr>'; }
@@ -177,36 +198,42 @@
             if (up.error) { flash('저장 실패: ' + up.error.message); }
             else {
               var rc = rows.find(function(x){ return x.id === id; }); if (rc) rc.officer_role = val;
-              refreshStats();
+              refreshStats(); renderChurches(); renderOfficers();
               flash('저장되었습니다.');
             }
           }
         });
       }
 
-      // ----- 등록 49개 교회 명단 · 가입현황 -----
+      // ----- 등록 49개 교회 명단 · 가입현황 · 직책 지정 -----
       function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
+      function leadOf(church, pastor){ return rows.find(function(r){ return (r.church||'').trim()===church && norm(r.name)===norm(pastor); }); }
+
       function renderChurches(){
         var CH = window.CHURCHES || [];
         document.getElementById('chCount').textContent = CH.length;
         var crows = document.getElementById('churchRows');
-        if (!CH.length) { crows.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">교회 명단을 불러오지 못했습니다.</td></tr>'; return; }
+        if (!CH.length) { crows.innerHTML = '<tr><td colspan="8" style="color:var(--muted)">교회 명단을 불러오지 못했습니다.</td></tr>'; return; }
         crows.innerHTML = CH.map(function(c, i){
-          // 이 교회로 가입한 회원들
           var members = rows.filter(function(r){ return (r.church || '').trim() === c.name; });
-          // 담임목사 본인(이름 일치)을 우선 표시
-          var lead = members.find(function(r){ return norm(r.name) === norm(c.pastor); }) || members[0];
+          var lead = leadOf(c.name, c.pastor) || members[0];
           var joined, typeCell, phoneCell;
           if (lead) {
             joined = '<span class="pill full" style="background:#e9f7ee;color:#0f7b3f">가입</span>';
-            typeCell = lead.member_type === '정회원'
-              ? '<span class="pill full">정회원</span>'
-              : '<span class="pill gen">일반회원</span>';
+            typeCell = lead.member_type === '정회원' ? '<span class="pill full">정회원</span>' : '<span class="pill gen">일반회원</span>';
             phoneCell = esc(lead.phone || '');
           } else {
             joined = '<span class="pill gen">미가입</span>';
             typeCell = '<span style="color:var(--hairline-strong)">—</span>';
             phoneCell = '<span style="color:var(--hairline-strong)">—</span>';
+          }
+          var curRole = (lead && lead.officer_role) || CO[c.name] || '';
+          var roleCell;
+          if (isSuper) {
+            var opts = '<option value="">— 지정 —</option>' + ROLES.map(function(role){ return '<option value="'+role+'"'+(curRole===role?' selected':'')+'>'+role+'</option>'; }).join('');
+            roleCell = '<select class="churchRoleSel" data-church="'+esc(c.name)+'" data-pastor="'+esc(c.pastor)+'">'+opts+'</select>';
+          } else {
+            roleCell = curRole ? esc(curRole) : '<span style="color:var(--hairline-strong)">—</span>';
           }
           var extra = members.length > 1 ? ' <span style="color:var(--muted);font-size:12px">외 ' + (members.length - 1) + '명</span>' : '';
           return '<tr>' +
@@ -216,11 +243,61 @@
             '<td>' + esc(c.pastor || '') + ' 목사' + extra + '</td>' +
             '<td>' + joined + '</td>' +
             '<td>' + typeCell + '</td>' +
+            '<td>' + roleCell + '</td>' +
             '<td style="color:var(--muted)">' + phoneCell + '</td>' +
           '</tr>';
         }).join('');
       }
+
+      // ----- 임원 명단 (따로 관리) -----
+      function renderOfficers(){
+        var CH = window.CHURCHES || [];
+        var list = [], seen = {};
+        CH.forEach(function(c){
+          var lead = leadOf(c.name, c.pastor);
+          var role = (lead && lead.officer_role) || CO[c.name] || '';
+          if (!role) return;
+          seen[c.name] = true;
+          list.push({ church:c.name, pastor:c.pastor, role:role, joined:!!lead, phone: lead?lead.phone:'', name: lead?lead.name:c.pastor });
+        });
+        rows.forEach(function(r){
+          if (!r.officer_role || seen[(r.church||'').trim()]) return;
+          list.push({ church:r.church, pastor:r.name, role:r.officer_role, joined:true, phone:r.phone, name:r.name });
+        });
+        list.sort(function(a,b){ var d=ROLES.indexOf(a.role)-ROLES.indexOf(b.role); return d!==0?d:(a.church<b.church?-1:1); });
+        var ob = document.getElementById('officerRows');
+        if (!list.length) { ob.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">아직 지정된 임원이 없습니다. 아래 교회 명단에서 직책을 지정하세요.</td></tr>'; return; }
+        ob.innerHTML = list.map(function(o){
+          var opts = '<option value="">— 해제 —</option>' + ROLES.map(function(role){ return '<option value="'+role+'"'+(o.role===role?' selected':'')+'>'+role+'</option>'; }).join('');
+          var change = isSuper ? '<select class="churchRoleSel" data-church="'+esc(o.church)+'" data-pastor="'+esc(o.pastor)+'">'+opts+'</select>' : '<span style="color:var(--hairline-strong)">—</span>';
+          var status = o.joined ? '<span class="pill full" style="background:#e9f7ee;color:#0f7b3f">가입완료</span>' : '<span class="pill gen">가입대기</span>';
+          return '<tr><td><b style="color:var(--primary)">'+esc(o.role)+'</b></td><td class="nm">'+esc(o.name)+'</td><td>'+esc(o.church)+'</td><td style="color:var(--muted)">'+esc(o.phone||'—')+'</td><td>'+status+'</td><td>'+change+'</td></tr>';
+        }).join('');
+      }
+
+      // ----- 교회 직책 지정/변경 (최고관리자) -----
+      async function setChurchRole(church, pastor, role){
+        var up = await window.sb.from('church_officers').upsert({ church:church, officer_role: role||null, pastor:pastor }, { onConflict:'church' });
+        if (up.error) { flash2('지정 실패: ' + up.error.message + ' (roster-roles-setup.sql 실행이 필요할 수 있습니다.)'); return; }
+        if (role) CO[church] = role; else delete CO[church];
+        var lead = leadOf(church, pastor);
+        if (lead) { var pu = await window.sb.from('profiles').update({ officer_role: role||null }).eq('id', lead.id); if (!pu.error) lead.officer_role = role||null; }
+        refreshStats(); renderChurches(); renderOfficers();
+        flash2(role ? ('“'+church+'” 담임목사를 '+role+'(으)로 지정했습니다.') : ('“'+church+'” 임원 직책을 해제했습니다.'));
+      }
+      async function onRoleSelChange(e){
+        var sel = e.target;
+        if (!sel.classList || !sel.classList.contains('churchRoleSel')) return;
+        if (!isSuper) { flash2('임원 직책은 최고관리자만 지정할 수 있습니다.'); return; }
+        sel.disabled = true;
+        await setChurchRole(sel.getAttribute('data-church'), sel.getAttribute('data-pastor'), sel.value);
+        sel.disabled = false;
+      }
+
       renderChurches();
+      renderOfficers();
+      document.getElementById('churchRows').addEventListener('change', onRoleSelChange);
+      document.getElementById('officerRows').addEventListener('change', onRoleSelChange);
     })();
   </script>
 </body>
