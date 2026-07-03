@@ -248,6 +248,9 @@
     .notice-pin{font-size:11px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--navy);padding:2px 8px;}
     .notice-body{margin:8px 0 0;font-size:15.5px;line-height:1.7;color:var(--muted);white-space:pre-wrap;}
     .notice-del{flex:0 0 auto;font-size:12px;color:var(--muted-soft);text-decoration:underline;cursor:pointer;padding-top:5px;}
+    .notice-edit,.pray-edit{flex:0 0 auto;font-size:12px;color:var(--slate-deep);text-decoration:underline;cursor:pointer;padding-top:5px;margin-right:12px;}
+    .notice-caret,.pr-caret{font-size:13px;font-weight:400;color:var(--muted-soft);}
+    .notice-head:hover .notice-caret,.pr-host:hover .pr-caret{color:var(--navy);}
 
     /* ---- 수요조찬기도회 ---- */
     .pray-next{background:var(--navy);color:#fff;padding:40px 40px;display:flex;gap:40px;align-items:center;flex-wrap:wrap;}
@@ -1169,6 +1172,7 @@ if ('serviceWorker' in navigator) {
   function todayStr(){ var t=new Date(); return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2); }
 
   var isAdminUser=false, me=null, myProfile=null;
+  var NOTICES=[], PRAYERS=[], editNoticeId=null, editPrayerId=null;
 
   // 관리자면 인라인 편집 UI 노출
   (async function initAdmin(){
@@ -1189,7 +1193,7 @@ if ('serviceWorker' in navigator) {
     try{ r=await window.sb.from('announcements').select('*').order('pinned',{ascending:false}).order('created_at',{ascending:false}); }
     catch(e){ r={error:e}; }
     if(!r || r.error || !r.data){ if(listEl) listEl.innerHTML='<div style="padding:30px 0;text-align:center;color:var(--muted);">공지를 불러오지 못했습니다.</div>'; return; }
-    var rows=r.data;
+    var rows=r.data; NOTICES=rows;
     if(!rows.length){
       if(listEl) listEl.innerHTML='<div style="padding:40px 0;text-align:center;color:var(--muted);font-size:15px;">아직 등록된 공지가 없습니다.</div>';
       if(dashEl) dashEl.innerHTML='<div class="dc-sub" style="font-size:15px;">등록된 공지가 없습니다.</div>';
@@ -1197,18 +1201,30 @@ if ('serviceWorker' in navigator) {
     }
     if(listEl){
       listEl.innerHTML=rows.map(function(n){
+        var hasBody=!!(n.body && n.body.trim());
         return '<div class="notice-item">'+
           '<div class="notice-date">'+fdate(n.created_at)+'</div>'+
           '<div class="notice-main">'+
-            '<div class="notice-title">'+(n.pinned?'<span class="notice-pin">공지</span>':'')+esc(n.title)+'</div>'+
-            (n.body?'<div class="notice-body">'+esc(n.body)+'</div>':'')+
+            '<div class="notice-head"'+(hasBody?' data-ntoggle="'+n.id+'" style="cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"':' style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"')+'>'+
+              '<span class="notice-title">'+(n.pinned?'<span class="notice-pin">공지</span>':'')+esc(n.title)+'</span>'+
+              (hasBody?'<span class="notice-caret" style="margin-left:auto;">＋ 자세히</span>':'')+
+            '</div>'+
+            (hasBody?'<div class="notice-body" id="nb-'+n.id+'" style="display:none;">'+esc(n.body)+'</div>':'')+
           '</div>'+
-          (isAdminUser?'<span class="notice-del" data-ndel="'+n.id+'">삭제</span>':'')+
+          (isAdminUser?'<span class="notice-edit" data-nedit="'+n.id+'">수정</span><span class="notice-del" data-ndel="'+n.id+'">삭제</span>':'')+
         '</div>';
       }).join('');
-      if(isAdminUser) Array.prototype.forEach.call(listEl.querySelectorAll('[data-ndel]'),function(a){
-        a.addEventListener('click',function(){ delNotice(a.getAttribute('data-ndel')); });
+      Array.prototype.forEach.call(listEl.querySelectorAll('[data-ntoggle]'),function(h){
+        h.addEventListener('click',function(){
+          var id=h.getAttribute('data-ntoggle'); var b=document.getElementById('nb-'+id); if(!b) return;
+          var open=b.style.display==='none'; b.style.display=open?'block':'none';
+          var c=h.querySelector('.notice-caret'); if(c) c.textContent=open?'− 접기':'＋ 자세히';
+        });
       });
+      if(isAdminUser){
+        Array.prototype.forEach.call(listEl.querySelectorAll('[data-ndel]'),function(a){ a.addEventListener('click',function(){ delNotice(a.getAttribute('data-ndel')); }); });
+        Array.prototype.forEach.call(listEl.querySelectorAll('[data-nedit]'),function(a){ a.addEventListener('click',function(){ startEditNotice(a.getAttribute('data-nedit')); }); });
+      }
     }
     if(dashEl){
       dashEl.innerHTML=rows.slice(0,3).map(function(n){
@@ -1226,21 +1242,33 @@ if ('serviceWorker' in navigator) {
     loadNotices();
   }
   var nAdd=document.getElementById('noticeAddBtn'), nForm=document.getElementById('noticeForm');
-  if(nAdd) nAdd.addEventListener('click',function(){ nForm.classList.toggle('open'); });
+  function resetNoticeForm(){ editNoticeId=null; document.getElementById('ntTitle').value=''; document.getElementById('ntBody').value=''; document.getElementById('ntPin').checked=false; var b=document.getElementById('ntSave'); if(b) b.textContent='등록하기'; }
+  if(nAdd) nAdd.addEventListener('click',function(){
+    if(nForm.classList.contains('open') && !editNoticeId){ nForm.classList.remove('open'); return; }
+    resetNoticeForm(); nForm.classList.add('open');
+  });
+  function startEditNotice(id){
+    var n=NOTICES.find(function(x){ return String(x.id)===String(id); }); if(!n) return;
+    editNoticeId=id;
+    document.getElementById('ntTitle').value=n.title||'';
+    document.getElementById('ntBody').value=n.body||'';
+    document.getElementById('ntPin').checked=!!n.pinned;
+    document.getElementById('ntSave').textContent='수정 저장';
+    nForm.classList.add('open');
+    nForm.scrollIntoView({behavior:'smooth',block:'center'});
+  }
   var nSave=document.getElementById('ntSave');
   if(nSave) nSave.addEventListener('click',async function(){
     var t=document.getElementById('ntTitle').value.trim();
     if(!t){ alert('공지 제목을 입력해 주세요.'); return; }
-    nSave.disabled=true; nSave.textContent='등록 중…';
-    var ins=await window.sb.from('announcements').insert({
-      title:t, body:document.getElementById('ntBody').value.trim()||null,
-      pinned:document.getElementById('ntPin').checked,
-      created_by:me?me.id:null, author_name:(myProfile&&myProfile.name)||''
-    });
-    nSave.disabled=false; nSave.textContent='등록하기';
-    if(ins.error){ alert('등록 실패: '+ins.error.message); return; }
-    document.getElementById('ntTitle').value=''; document.getElementById('ntBody').value=''; document.getElementById('ntPin').checked=false;
-    nForm.classList.remove('open'); loadNotices();
+    var payload={ title:t, body:document.getElementById('ntBody').value.trim()||null, pinned:document.getElementById('ntPin').checked };
+    nSave.disabled=true; nSave.textContent=editNoticeId?'저장 중…':'등록 중…';
+    var res;
+    if(editNoticeId){ res=await window.sb.from('announcements').update(payload).eq('id',editNoticeId); }
+    else { payload.created_by=me?me.id:null; payload.author_name=(myProfile&&myProfile.name)||''; res=await window.sb.from('announcements').insert(payload); }
+    nSave.disabled=false;
+    if(res.error){ nSave.textContent=editNoticeId?'수정 저장':'등록하기'; alert((editNoticeId?'수정':'등록')+' 실패: '+res.error.message); return; }
+    resetNoticeForm(); nForm.classList.remove('open'); loadNotices();
   });
 
   // ---------- 수요조찬기도회 ----------
@@ -1251,7 +1279,7 @@ if ('serviceWorker' in navigator) {
     try{ r=await window.sb.from('prayer_meetings').select('*').order('meet_date',{ascending:false}); }
     catch(e){ r={error:e}; }
     if(!r || r.error || !r.data){ return; }
-    var rows=r.data;
+    var rows=r.data; PRAYERS=rows;
     var today=todayStr();
     var upcoming=rows.filter(function(m){ return m.meet_date>=today; }).sort(function(a,b){ return a.meet_date<b.meet_date?-1:1; });
     var nextM=upcoming.length?upcoming[0]:null;
@@ -1277,16 +1305,32 @@ if ('serviceWorker' in navigator) {
       if(!rows.length){ listEl.innerHTML='<div style="padding:26px 0;color:var(--muted);font-size:15px;">등록된 기도회 일정이 없습니다.'+(isAdminUser?' 위의 ‘＋ 기도회 일정 등록’으로 추가하세요.':'')+'</div>'; return; }
       listEl.innerHTML=rows.map(function(m){
         var past=m.meet_date<today;
+        var detail=(m.topic?'<div class="pr-topic">🙏 '+esc(m.topic)+'</div>':'')+
+          (m.note?'<div style="margin-top:5px;font-size:14.5px;line-height:1.7;color:var(--muted);white-space:pre-wrap;">'+esc(m.note)+'</div>':'')+
+          (!m.topic&&!m.note?'<div style="font-size:14px;color:var(--muted-soft);">등록된 상세 내용이 없습니다.</div>':'');
         return '<div class="pray-row" style="'+(past?'opacity:0.6;':'')+'">'+
           '<div class="pr-date">'+fdate(m.meet_date)+'</div>'+
-          '<div style="flex:1;min-width:0;"><div class="pr-host">'+esc(m.host_church||'회원교회 순회')+(past?' <span style="font-size:12px;color:var(--muted-soft);font-weight:400;">· 지난 기도회</span>':'')+'</div>'+
-            (m.topic?'<div class="pr-topic">'+esc(m.topic)+'</div>':'')+'</div>'+
-          (isAdminUser?'<span class="pray-del" data-pdel="'+m.id+'">삭제</span>':'')+
+          '<div style="flex:1;min-width:0;">'+
+            '<div class="pr-host" data-ptoggle="'+m.id+'" style="cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
+              '<span>'+esc(m.host_church||'회원교회 순회')+(past?' <span style="font-size:12px;color:var(--muted-soft);font-weight:400;">· 지난 기도회</span>':'')+'</span>'+
+              '<span class="pr-caret" style="margin-left:auto;">＋ 자세히</span>'+
+            '</div>'+
+            '<div id="pd-'+m.id+'" style="display:none;margin-top:7px;">'+detail+'</div>'+
+          '</div>'+
+          (isAdminUser?'<span class="pray-edit" data-pedit="'+m.id+'">수정</span><span class="pray-del" data-pdel="'+m.id+'">삭제</span>':'')+
         '</div>';
       }).join('');
-      if(isAdminUser) Array.prototype.forEach.call(listEl.querySelectorAll('[data-pdel]'),function(a){
-        a.addEventListener('click',function(){ delPrayer(a.getAttribute('data-pdel')); });
+      Array.prototype.forEach.call(listEl.querySelectorAll('[data-ptoggle]'),function(h){
+        h.addEventListener('click',function(){
+          var id=h.getAttribute('data-ptoggle'); var b=document.getElementById('pd-'+id); if(!b) return;
+          var open=b.style.display==='none'; b.style.display=open?'block':'none';
+          var c=h.querySelector('.pr-caret'); if(c) c.textContent=open?'− 접기':'＋ 자세히';
+        });
       });
+      if(isAdminUser){
+        Array.prototype.forEach.call(listEl.querySelectorAll('[data-pdel]'),function(a){ a.addEventListener('click',function(){ delPrayer(a.getAttribute('data-pdel')); }); });
+        Array.prototype.forEach.call(listEl.querySelectorAll('[data-pedit]'),function(a){ a.addEventListener('click',function(){ startEditPrayer(a.getAttribute('data-pedit')); }); });
+      }
     }
   }
   async function delPrayer(id){
@@ -1296,22 +1340,35 @@ if ('serviceWorker' in navigator) {
     loadPrayer();
   }
   var pAdd=document.getElementById('prayerAddBtn'), pForm=document.getElementById('prayerForm');
-  if(pAdd) pAdd.addEventListener('click',function(){ pForm.classList.toggle('open'); });
+  function resetPrayerForm(){ editPrayerId=null; document.getElementById('pmDate').value=''; document.getElementById('pmHost').value=''; document.getElementById('pmTopic').value=''; document.getElementById('pmNote').value=''; var b=document.getElementById('pmSave'); if(b) b.textContent='등록하기'; }
+  if(pAdd) pAdd.addEventListener('click',function(){
+    if(pForm.classList.contains('open') && !editPrayerId){ pForm.classList.remove('open'); return; }
+    resetPrayerForm(); pForm.classList.add('open');
+  });
+  function startEditPrayer(id){
+    var m=PRAYERS.find(function(x){ return String(x.id)===String(id); }); if(!m) return;
+    editPrayerId=id;
+    document.getElementById('pmDate').value=m.meet_date||'';
+    document.getElementById('pmHost').value=m.host_church||'';
+    document.getElementById('pmTopic').value=m.topic||'';
+    document.getElementById('pmNote').value=m.note||'';
+    document.getElementById('pmSave').textContent='수정 저장';
+    pForm.classList.add('open');
+    pForm.scrollIntoView({behavior:'smooth',block:'center'});
+  }
   var pSave=document.getElementById('pmSave');
   if(pSave) pSave.addEventListener('click',async function(){
     var dt=document.getElementById('pmDate').value;
     if(!dt){ alert('기도회 날짜를 선택해 주세요.'); return; }
-    pSave.disabled=true; pSave.textContent='등록 중…';
-    var ins=await window.sb.from('prayer_meetings').insert({
-      meet_date:dt, host_church:document.getElementById('pmHost').value.trim()||null,
-      topic:document.getElementById('pmTopic').value.trim()||null, note:document.getElementById('pmNote').value.trim()||null,
-      created_by:me?me.id:null
-    });
-    pSave.disabled=false; pSave.textContent='등록하기';
-    if(ins.error){ alert('등록 실패: '+ins.error.message); return; }
-    document.getElementById('pmDate').value=''; document.getElementById('pmHost').value='';
-    document.getElementById('pmTopic').value=''; document.getElementById('pmNote').value='';
-    pForm.classList.remove('open'); loadPrayer();
+    var payload={ meet_date:dt, host_church:document.getElementById('pmHost').value.trim()||null,
+      topic:document.getElementById('pmTopic').value.trim()||null, note:document.getElementById('pmNote').value.trim()||null };
+    pSave.disabled=true; pSave.textContent=editPrayerId?'저장 중…':'등록 중…';
+    var res;
+    if(editPrayerId){ res=await window.sb.from('prayer_meetings').update(payload).eq('id',editPrayerId); }
+    else { payload.created_by=me?me.id:null; res=await window.sb.from('prayer_meetings').insert(payload); }
+    pSave.disabled=false;
+    if(res.error){ pSave.textContent=editPrayerId?'수정 저장':'등록하기'; alert((editPrayerId?'수정':'등록')+' 실패: '+res.error.message); return; }
+    resetPrayerForm(); pForm.classList.remove('open'); loadPrayer();
   });
 
   // 초기 로드 (관리자 판별 후 다시 렌더되도록 약간의 지연 재호출)
