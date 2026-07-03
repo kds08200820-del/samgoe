@@ -211,7 +211,7 @@
           '<td>'+esc(r.phone)+'</td>'+
           '<td style="color:var(--muted)">'+esc(r.email)+'</td>'+
           '<td style="color:var(--muted)">'+esc(since)+'</td>'+
-          '<td style="white-space:nowrap"><button class="rowbtn mEdit" data-id="'+r.id+'">수정</button> <button class="rowbtn del mDel" data-id="'+r.id+'">삭제</button></td>';
+          '<td style="white-space:nowrap"><button class="rowbtn mEdit" data-id="'+r.id+'">수정</button> <button class="rowbtn mPw" data-id="'+r.id+'" data-name="'+esc(r.name)+'">임시비밀번호</button> <button class="rowbtn del mDel" data-id="'+r.id+'">삭제</button></td>';
       }
       function renderMembers(){
         if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="color:var(--muted)">아직 등록된 회원이 없습니다. 우측 상단 <b>＋ 회원 추가</b>로 등록하세요.</td></tr>'; return; }
@@ -254,9 +254,37 @@
       tbody.addEventListener('click', function (e) {
         var ed = e.target.closest && e.target.closest('.mEdit');
         if (ed) { var r = rows.find(function(x){ return x.id === ed.getAttribute('data-id'); }); if (r) openMemberModal(r); return; }
+        var pw = e.target.closest && e.target.closest('.mPw');
+        if (pw) { setTempPw(pw.getAttribute('data-id'), pw.getAttribute('data-name') || '이 회원'); return; }
         var dl = e.target.closest && e.target.closest('.mDel');
         if (dl) { deleteMember(dl.getAttribute('data-id')); }
       });
+
+      // ----- 관리자: 회원 임시비밀번호 부여 (Cloudflare Worker + service_role) -----
+      function genTempPw(){
+        var s='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789', out='';
+        var a=new Uint32Array(8); try{ (window.crypto||{}).getRandomValues(a); }catch(_){ }
+        for(var i=0;i<8;i++){ var n=a[i]||Math.floor(Math.random()*4294967295); out+=s[n%s.length]; }
+        return out;
+      }
+      async function setTempPw(id, name){
+        var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
+        if(!r2){ alert('인증 서버(Cloudflare Worker) 주소가 설정되지 않았습니다. (관리자 설정 필요)'); return; }
+        var input = window.prompt('“'+name+'” 회원에게 부여할 임시 비밀번호를 입력하세요.\n· 비워두면 자동 생성됩니다 (8자리)\n· 직접 입력 시 6자 이상', '');
+        if(input === null) return;
+        var pw = (input||'').trim(); if(!pw) pw = genTempPw();
+        if(pw.length < 6){ alert('임시 비밀번호는 6자 이상이어야 합니다.'); return; }
+        try{
+          var sess = await window.sb.auth.getSession();
+          var token = sess.data && sess.data.session ? sess.data.session.access_token : '';
+          var resp = await fetch(r2+'/admin-set-password', { method:'POST',
+            headers:{ 'Authorization':'Bearer '+token, 'Content-Type':'application/json' },
+            body: JSON.stringify({ userId:id, password:pw }) });
+          var j = await resp.json().catch(function(){ return {}; });
+          if(!resp.ok) throw new Error(j.error || ('실패('+resp.status+')'));
+          window.prompt('“'+name+'” 회원의 임시 비밀번호가 설정되었습니다.\n아래 비밀번호를 복사해 회원에게 전달해 주세요.\n(회원은 로그인 후 비밀번호 재설정을 권장합니다)', pw);
+        }catch(err){ alert('임시 비밀번호 설정 실패: '+(err.message||err)); }
+      }
 
       // ----- 등록 49개 교회 명단 · 가입현황 · 직책 지정 -----
       function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }

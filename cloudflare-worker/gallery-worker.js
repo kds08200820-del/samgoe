@@ -143,6 +143,34 @@ export default {
       return json({ ok: true }, 200);
     }
 
+    // ---------- 관리자: 회원 임시비밀번호 부여: POST /admin-set-password ----------
+    // body: { userId, password }  ·  최고관리자(ADMIN_EMAIL) 또는 회장만 가능
+    if (request.method === 'POST' && url.pathname === '/admin-set-password') {
+      const user = await verifyUser(request, env);
+      if (!user) return json({ error: '로그인이 필요합니다.' }, 401);
+      if (!isAdmin(user, env)) return json({ error: '관리자만 사용할 수 있습니다.' }, 403);
+      if (!env.SUPABASE_SERVICE_ROLE_KEY) return json({ error: '서버에 SUPABASE_SERVICE_ROLE_KEY 가 설정되지 않았습니다. (Worker 시크릿 등록 필요)' }, 500);
+      const body = await request.json().catch(() => ({}));
+      const targetId = body.userId || '';
+      const newPw = body.password || '';
+      if (!targetId) return json({ error: '대상 회원을 찾을 수 없습니다.' }, 400);
+      if (!newPw || String(newPw).length < 6) return json({ error: '임시 비밀번호는 6자 이상이어야 합니다.' }, 400);
+      const r = await fetch(env.SUPABASE_URL + '/auth/v1/admin/users/' + encodeURIComponent(targetId), {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY,
+          'apikey': env.SUPABASE_SERVICE_ROLE_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: String(newPw) }),
+      });
+      if (!r.ok) {
+        let t = ''; try { t = await r.text(); } catch (_) {}
+        return json({ error: '비밀번호 변경 실패(' + r.status + ') ' + t.slice(0, 200) }, 502);
+      }
+      return json({ ok: true }, 200);
+    }
+
     return new Response('삼기연 R2 Worker · OK', { headers: CORS });
   },
 };
