@@ -1279,7 +1279,7 @@ if ('serviceWorker' in navigator) {
   function mdY(d){ var t=new Date(d); return isNaN(t)?'':((t.getMonth()+1)+'월 '+t.getDate()+'일'); }
   function todayStr(){ var t=new Date(); return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2); }
 
-  var isAdminUser=false, me=null, myProfile=null;
+  var isAdminUser=false, isOfficerUser=false, me=null, myProfile=null;
   var NOTICES=[], PRAYERS=[], editNoticeId=null, editPrayerId=null;
 
   // 관리자면 인라인 편집 UI 노출
@@ -1288,9 +1288,14 @@ if ('serviceWorker' in navigator) {
       if(!window.sb) return;
       var s=await window.sb.auth.getSession();
       me = s.data && s.data.session ? s.data.session.user : null;
-      if(me){ myProfile = await window.getMyProfile(); isAdminUser = window.isAdmin(me, myProfile); }
+      if(me){ myProfile = await window.getMyProfile();
+        isAdminUser = window.isAdmin(me, myProfile);
+        isOfficerUser = isAdminUser || !!(myProfile && myProfile.officer_role) || (window.isSuperAdmin && window.isSuperAdmin(me));
+      }
     }catch(_){}
-    if(isAdminUser){ Array.prototype.forEach.call(document.querySelectorAll('.adm-only'), function(el){ el.classList.remove('adm-only'); }); }
+    // 공지사항: 임원(직책 보유자·회장·최고관리자) 노출 / 수요조찬기도회: 관리자만 노출
+    if(isOfficerUser){ ['noticeAddBtn','noticeForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
+    if(isAdminUser){ ['prayerAddBtn','prayerForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
   })();
 
   // ---------- 공지사항 ----------
@@ -1319,7 +1324,7 @@ if ('serviceWorker' in navigator) {
             '</div>'+
             (hasBody?'<div class="notice-body" id="nb-'+n.id+'" style="display:none;">'+esc(n.body)+'</div>':'')+
           '</div>'+
-          (isAdminUser?'<span class="notice-edit" data-nedit="'+n.id+'">수정</span><span class="notice-del" data-ndel="'+n.id+'">삭제</span>':'')+
+          (isOfficerUser?'<span class="notice-edit" data-nedit="'+n.id+'">수정</span><span class="notice-del" data-ndel="'+n.id+'">삭제</span>':'')+
         '</div>';
       }).join('');
       Array.prototype.forEach.call(listEl.querySelectorAll('[data-ntoggle]'),function(h){
@@ -1329,7 +1334,7 @@ if ('serviceWorker' in navigator) {
           var c=h.querySelector('.notice-caret'); if(c) c.textContent=open?'− 접기':'＋ 자세히';
         });
       });
-      if(isAdminUser){
+      if(isOfficerUser){
         Array.prototype.forEach.call(listEl.querySelectorAll('[data-ndel]'),function(a){ a.addEventListener('click',function(){ delNotice(a.getAttribute('data-ndel')); }); });
         Array.prototype.forEach.call(listEl.querySelectorAll('[data-nedit]'),function(a){ a.addEventListener('click',function(){ startEditNotice(a.getAttribute('data-nedit')); }); });
       }

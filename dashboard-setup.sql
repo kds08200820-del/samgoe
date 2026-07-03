@@ -19,12 +19,13 @@ alter table public.announcements enable row level security;
 
 drop policy if exists "an_read" on public.announcements;
 create policy "an_read" on public.announcements for select to anon, authenticated using ( true );
+-- 공지사항 등록·수정·삭제: 임원(officer_role 보유자·회장·최고관리자) — is_officer() 는 officer-room-setup.sql 에 정의됨
 drop policy if exists "an_insert" on public.announcements;
-create policy "an_insert" on public.announcements for insert to authenticated with check ( public.is_admin() );
+create policy "an_insert" on public.announcements for insert to authenticated with check ( public.is_officer() );
 drop policy if exists "an_update" on public.announcements;
-create policy "an_update" on public.announcements for update to authenticated using ( public.is_admin() ) with check ( public.is_admin() );
+create policy "an_update" on public.announcements for update to authenticated using ( public.is_officer() ) with check ( public.is_officer() );
 drop policy if exists "an_delete" on public.announcements;
-create policy "an_delete" on public.announcements for delete to authenticated using ( public.is_admin() );
+create policy "an_delete" on public.announcements for delete to authenticated using ( public.is_officer() );
 
 -- 2) 수요조찬기도회 (매월 첫 주 수요일 오전 7시 — 회원교회 순회)
 create table if not exists public.prayer_meetings (
