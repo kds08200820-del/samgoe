@@ -40,6 +40,26 @@
     #content{display:none;}
     #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
     .setup{margin-top:16px;padding:16px 18px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;font-size:13px;line-height:1.6;display:none;}
+    .rowbtn{height:30px;padding:0 10px;border:1px solid var(--hairline-strong);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--ink);}
+    .rowbtn:hover{background:var(--surface-soft);}
+    .rowbtn.del{color:#dc2626;border-color:#f3c7c3;}
+    .rowbtn.del:hover{background:#fdecea;}
+    .ov{position:fixed;inset:0;background:rgba(20,24,30,0.55);z-index:50;display:none;overflow-y:auto;padding:40px 16px;}
+    .ov.on{display:block;}
+    .mdl{max-width:460px;margin:0 auto;background:#fff;padding:28px 26px;}
+    .mdl h3{margin:0 0 18px;font-size:20px;font-weight:700;color:var(--ink);}
+    .mdl label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 5px;}
+    .mdl input,.mdl select{width:100%;height:44px;padding:0 12px;border:1px solid var(--hairline-strong);background:#fff;font-size:15px;font-family:inherit;font-weight:300;border-radius:0;color:var(--ink);}
+    .mdl input:focus,.mdl select:focus{outline:none;border:2px solid var(--ink);}
+    .mdl .acWrap{position:relative;}
+    .mdl .ac{position:absolute;left:0;right:0;top:100%;z-index:5;background:#fff;border:1px solid var(--hairline-strong);border-top:0;max-height:200px;overflow-y:auto;display:none;}
+    .mdl .ac div{padding:9px 12px;font-size:14px;cursor:pointer;border-top:1px solid var(--hairline);}
+    .mdl .ac div:hover{background:var(--surface-soft);}
+    .mdlAct{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
+    .mdlAct button{height:42px;padding:0 20px;border:0;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .mdlAct .save{background:var(--primary);color:#fff;}
+    .mdlAct .cancel{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+    .mdlErr{display:none;margin-top:14px;padding:10px 12px;background:#fdecea;border:1px solid #f3c7c3;color:#dc2626;font-size:13px;}
   </style>
 </head>
 <body>
@@ -58,15 +78,18 @@
 
     <div id="setup" class="setup"></div>
 
-    <h2 class="title" style="font-size:22px;margin:8px 0 6px;">가입 회원 관리</h2>
-    <p class="who" style="margin:0 0 14px;">구분(정회원·일반회원)을 직접 지정·변경할 수 있습니다. 정회원으로 가입했더라도 문제가 있으면 일반회원으로 내릴 수 있습니다.</p>
-    <p class="who" id="roleNote" style="display:none;margin:0 0 14px;padding:12px 14px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;">임원 직책 지정(회장 선정 포함)은 <b>최고관리자만</b> 할 수 있습니다. 회장님은 회원 구분 관리와 갤러리 관리를 하실 수 있습니다.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 6px;">
+      <h2 class="title" style="font-size:22px;margin:0;">가입 회원 관리</h2>
+      <button id="addMemberBtn" style="height:38px;padding:0 16px;border:0;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">＋ 회원 추가</button>
+    </div>
+    <p class="who" style="margin:0 0 14px;">회원을 <b>추가·수정·삭제</b>할 수 있습니다. 구분(정회원·일반회원)도 직접 변경할 수 있습니다.</p>
+    <p class="who" id="roleNote" style="display:none;margin:0 0 14px;padding:12px 14px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;">임원 직책 지정(회장 선정 포함)은 <b>최고관리자만</b> 할 수 있습니다. 회장님은 회원 추가·수정·삭제와 구분 관리, 갤러리 관리를 하실 수 있습니다.</p>
     <div class="tblwrap">
       <table>
         <thead><tr>
-          <th>이름</th><th>교회</th><th>구분(변경)</th><th>임원 직책</th><th>연락처</th><th>이메일</th><th>가입일</th>
+          <th>이름</th><th>교회</th><th>구분(변경)</th><th>임원 직책</th><th>연락처</th><th>이메일</th><th>가입일</th><th>관리</th>
         </tr></thead>
-        <tbody id="memberRows"><tr><td colspan="7" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
+        <tbody id="memberRows"><tr><td colspan="8" style="color:var(--muted)">불러오는 중…</td></tr></tbody>
       </table>
     </div>
     <div class="msg" id="msg"></div>
@@ -97,6 +120,35 @@
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
+  <!-- 회원 추가/수정 모달 -->
+  <div class="ov" id="memberOv">
+    <div class="mdl">
+      <h3 id="mdlTitle">회원 추가</h3>
+      <label>이름</label>
+      <input id="mName" type="text" placeholder="홍길동" />
+      <label>교회명</label>
+      <div class="acWrap">
+        <input id="mChurch" type="text" placeholder="교회 이름" autocomplete="off" />
+        <div class="ac" id="mChurchAc"></div>
+      </div>
+      <label>구분</label>
+      <select id="mType"><option value="일반회원">일반회원</option><option value="정회원">정회원</option></select>
+      <div id="mRoleWrap"><label>임원 직책 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
+        <select id="mRole"></select></div>
+      <label>전화번호</label>
+      <input id="mPhone" type="tel" placeholder="010-0000-0000" />
+      <label>주소</label>
+      <input id="mAddr" type="text" placeholder="예) 화성시 우정읍 ○○로 00" />
+      <label>이메일 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
+      <input id="mEmail" type="email" placeholder="you@example.com" />
+      <div class="mdlErr" id="mErr"></div>
+      <div class="mdlAct">
+        <button class="cancel" id="mCancel">취소</button>
+        <button class="save" id="mSave">저장</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="churches.js?v=2"></script>
@@ -124,7 +176,7 @@
         var setup = document.getElementById('setup');
         setup.style.display = 'block';
         setup.innerHTML = '⚠️ 회원 테이블(profiles)이 아직 없습니다. Supabase → <b>SQL Editor</b> 에서 저장소의 <b>db-setup.sql</b> 내용을 한 번 실행해 주세요. (' + esc(res.error.message) + ')';
-        document.getElementById('memberRows').innerHTML = '<tr><td colspan="7" style="color:var(--muted)">데이터 없음</td></tr>';
+        document.getElementById('memberRows').innerHTML = '<tr><td colspan="8" style="color:var(--muted)">데이터 없음</td></tr>';
         return;
       }
       var rows = res.data || [];
@@ -145,65 +197,66 @@
       function flash2(t){ msg2.textContent = t; setTimeout(function(){ if (msg2.textContent === t) msg2.textContent = ''; }, 2500); }
 
       var tbody = document.getElementById('memberRows');
-      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">아직 가입한 회원이 없습니다.</td></tr>'; }
-      else {
-        tbody.innerHTML = '';
-        rows.forEach(function (r) {
-          var tr = document.createElement('tr');
-          var mt = r.member_type || '일반회원';
-          var typeOpts = ['정회원','일반회원'].map(function(t){
-            return '<option value="' + t + '"' + (mt === t ? ' selected' : '') + '>' + t + '</option>';
-          }).join('');
-          var opts = '<option value="">— 없음 —</option>' + ROLES.map(function(role){
-            return '<option value="' + role + '"' + (r.officer_role === role ? ' selected' : '') + '>' + role + '</option>';
-          }).join('');
-          var roleCell = isSuper
-            ? '<select data-id="' + r.id + '" class="roleSel">' + opts + '</select>'
-            : '<span>' + (r.officer_role ? esc(r.officer_role) : '<span style="color:var(--hairline-strong)">—</span>') + '</span>';
-          var since = '';
-          try { if (r.created_at) since = new Date(r.created_at).toLocaleDateString('ko-KR'); } catch(_) {}
-          tr.innerHTML =
-            '<td class="nm">' + esc(r.name) + '</td>' +
-            '<td>' + esc(r.church) + '</td>' +
-            '<td><select data-id="' + r.id + '" class="typeSel">' + typeOpts + '</select></td>' +
-            '<td>' + roleCell + '</td>' +
-            '<td>' + esc(r.phone) + '</td>' +
-            '<td style="color:var(--muted)">' + esc(r.email) + '</td>' +
-            '<td style="color:var(--muted)">' + esc(since) + '</td>';
-          tbody.appendChild(tr);
-        });
-
-        // 구분(정회원/일반회원) · 임원 직책 변경
-        tbody.addEventListener('change', async function (e) {
-          var sel = e.target;
-          var id = sel.getAttribute('data-id');
-          if (!id) return;
-          if (sel.classList.contains('typeSel')) {
-            var mtVal = sel.value;
-            sel.disabled = true;
-            var upt = await window.sb.from('profiles').update({ member_type: mtVal }).eq('id', id);
-            sel.disabled = false;
-            if (upt.error) { flash('구분 변경 실패: ' + upt.error.message); }
-            else {
-              var rec = rows.find(function(x){ return x.id === id; }); if (rec) rec.member_type = mtVal;
-              refreshStats(); renderChurches();
-              flash(mtVal === '정회원' ? '정회원으로 변경했습니다.' : '일반회원으로 변경했습니다.');
-            }
-          } else if (sel.classList.contains('roleSel')) {
-            if (!isSuper) { flash('임원 직책 지정은 최고관리자만 가능합니다.'); return; }
-            var val = sel.value || null;
-            sel.disabled = true;
-            var up = await window.sb.from('profiles').update({ officer_role: val }).eq('id', id);
-            sel.disabled = false;
-            if (up.error) { flash('저장 실패: ' + up.error.message); }
-            else {
-              var rc = rows.find(function(x){ return x.id === id; }); if (rc) rc.officer_role = val;
-              refreshStats(); renderChurches(); renderOfficers();
-              flash('저장되었습니다.');
-            }
-          }
-        });
+      function memberRowHtml(r){
+        var mt = r.member_type || '일반회원';
+        var typeOpts = ['정회원','일반회원'].map(function(t){ return '<option value="'+t+'"'+(mt===t?' selected':'')+'>'+t+'</option>'; }).join('');
+        var opts = '<option value="">— 없음 —</option>' + ROLES.map(function(role){ return '<option value="'+role+'"'+(r.officer_role===role?' selected':'')+'>'+role+'</option>'; }).join('');
+        var roleCell = isSuper ? '<select data-id="'+r.id+'" class="roleSel">'+opts+'</select>'
+          : '<span>' + (r.officer_role ? esc(r.officer_role) : '<span style="color:var(--hairline-strong)">—</span>') + '</span>';
+        var since=''; try{ if(r.created_at) since=new Date(r.created_at).toLocaleDateString('ko-KR'); }catch(_){}
+        return '<td class="nm">'+esc(r.name)+'</td>'+
+          '<td>'+esc(r.church)+'</td>'+
+          '<td><select data-id="'+r.id+'" class="typeSel">'+typeOpts+'</select></td>'+
+          '<td>'+roleCell+'</td>'+
+          '<td>'+esc(r.phone)+'</td>'+
+          '<td style="color:var(--muted)">'+esc(r.email)+'</td>'+
+          '<td style="color:var(--muted)">'+esc(since)+'</td>'+
+          '<td style="white-space:nowrap"><button class="rowbtn mEdit" data-id="'+r.id+'">수정</button> <button class="rowbtn del mDel" data-id="'+r.id+'">삭제</button></td>';
       }
+      function renderMembers(){
+        if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="color:var(--muted)">아직 등록된 회원이 없습니다. 우측 상단 <b>＋ 회원 추가</b>로 등록하세요.</td></tr>'; return; }
+        tbody.innerHTML = '';
+        rows.forEach(function(r){ var tr=document.createElement('tr'); tr.innerHTML=memberRowHtml(r); tbody.appendChild(tr); });
+      }
+      renderMembers();
+
+      // 구분(정회원/일반회원) · 임원 직책 변경
+      tbody.addEventListener('change', async function (e) {
+        var sel = e.target;
+        var id = sel.getAttribute('data-id');
+        if (!id) return;
+        if (sel.classList.contains('typeSel')) {
+          var mtVal = sel.value;
+          sel.disabled = true;
+          var upt = await window.sb.from('profiles').update({ member_type: mtVal }).eq('id', id);
+          sel.disabled = false;
+          if (upt.error) { flash('구분 변경 실패: ' + upt.error.message); }
+          else {
+            var rec = rows.find(function(x){ return x.id === id; }); if (rec) rec.member_type = mtVal;
+            refreshStats(); renderChurches(); renderOfficers();
+            flash(mtVal === '정회원' ? '정회원으로 변경했습니다.' : '일반회원으로 변경했습니다.');
+          }
+        } else if (sel.classList.contains('roleSel')) {
+          if (!isSuper) { flash('임원 직책 지정은 최고관리자만 가능합니다.'); return; }
+          var val = sel.value || null;
+          sel.disabled = true;
+          var up = await window.sb.from('profiles').update({ officer_role: val }).eq('id', id);
+          sel.disabled = false;
+          if (up.error) { flash('저장 실패: ' + up.error.message); }
+          else {
+            var rc = rows.find(function(x){ return x.id === id; }); if (rc) rc.officer_role = val;
+            refreshStats(); renderChurches(); renderOfficers();
+            flash('저장되었습니다.');
+          }
+        }
+      });
+      // 수정 · 삭제
+      tbody.addEventListener('click', function (e) {
+        var ed = e.target.closest && e.target.closest('.mEdit');
+        if (ed) { var r = rows.find(function(x){ return x.id === ed.getAttribute('data-id'); }); if (r) openMemberModal(r); return; }
+        var dl = e.target.closest && e.target.closest('.mDel');
+        if (dl) { deleteMember(dl.getAttribute('data-id')); }
+      });
 
       // ----- 등록 49개 교회 명단 · 가입현황 · 직책 지정 -----
       function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
@@ -293,6 +346,84 @@
         await setChurchRole(sel.getAttribute('data-church'), sel.getAttribute('data-pastor'), sel.value);
         sel.disabled = false;
       }
+
+      // ----- 회원 추가 / 수정 / 삭제 -----
+      var editingId = null;
+      function openMemberModal(r){
+        editingId = r ? r.id : null;
+        document.getElementById('mdlTitle').textContent = r ? '회원 수정' : '회원 추가';
+        document.getElementById('mName').value = r ? (r.name||'') : '';
+        document.getElementById('mChurch').value = r ? (r.church||'') : '';
+        document.getElementById('mType').value = (r && r.member_type) || '일반회원';
+        document.getElementById('mPhone').value = r ? (r.phone||'') : '';
+        document.getElementById('mAddr').value = r ? (r.address||'') : '';
+        document.getElementById('mEmail').value = r ? (r.email||'') : '';
+        var rw = document.getElementById('mRoleWrap');
+        if (isSuper) {
+          rw.style.display = 'block';
+          document.getElementById('mRole').innerHTML = '<option value="">— 없음 —</option>' +
+            ROLES.map(function(x){ return '<option value="'+x+'"'+((r&&r.officer_role===x)?' selected':'')+'>'+x+'</option>'; }).join('');
+        } else { rw.style.display = 'none'; }
+        document.getElementById('mErr').style.display = 'none';
+        document.getElementById('memberOv').classList.add('on');
+      }
+      function closeMemberModal(){ document.getElementById('memberOv').classList.remove('on'); editingId = null; }
+      async function saveMember(){
+        var err = document.getElementById('mErr');
+        var name = document.getElementById('mName').value.trim();
+        var church = document.getElementById('mChurch').value.trim();
+        if (!name || !church) { err.textContent = '이름과 교회명을 입력해 주세요.'; err.style.display = 'block'; return; }
+        var payload = {
+          name: name, church: church,
+          member_type: document.getElementById('mType').value,
+          phone: document.getElementById('mPhone').value.trim() || null,
+          address: document.getElementById('mAddr').value.trim() || null,
+          email: document.getElementById('mEmail').value.trim() || null
+        };
+        if (isSuper) payload.officer_role = document.getElementById('mRole').value || null;
+        var wasEdit = !!editingId;
+        var btn = document.getElementById('mSave'); btn.disabled = true;
+        if (wasEdit) {
+          var up = await window.sb.from('profiles').update(payload).eq('id', editingId);
+          btn.disabled = false;
+          if (up.error) { err.textContent = '저장 실패: ' + up.error.message; err.style.display = 'block'; return; }
+          var rec = rows.find(function(x){ return x.id === editingId; }); if (rec) { for (var k in payload) rec[k] = payload[k]; }
+        } else {
+          payload.id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('m-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          var ins = await window.sb.from('profiles').insert(payload).select().single();
+          btn.disabled = false;
+          if (ins.error) { err.textContent = '추가 실패: ' + ins.error.message + ' (member-admin-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display = 'block'; return; }
+          rows.push(ins.data);
+        }
+        closeMemberModal(); renderMembers(); refreshStats(); renderChurches(); renderOfficers();
+        flash(wasEdit ? '수정했습니다.' : '회원을 추가했습니다.');
+      }
+      async function deleteMember(id){
+        var r = rows.find(function(x){ return x.id === id; });
+        if (!confirm('“' + ((r && r.name) || '이 회원') + '” 회원을 삭제할까요?\n되돌릴 수 없습니다.')) return;
+        var del = await window.sb.from('profiles').delete().eq('id', id);
+        if (del.error) { flash('삭제 실패: ' + del.error.message); return; }
+        rows = rows.filter(function(x){ return x.id !== id; });
+        renderMembers(); refreshStats(); renderChurches(); renderOfficers();
+        flash('삭제했습니다.');
+      }
+      // 모달: 교회명 자동완성 + 버튼
+      (function(){
+        var mChurch = document.getElementById('mChurch'), mac = document.getElementById('mChurchAc');
+        mChurch.addEventListener('input', function(){
+          var q = mChurch.value.trim(); if (!q) { mac.style.display='none'; return; }
+          var ms = (window.CHURCHES||[]).filter(function(c){ return c.name.indexOf(q) >= 0; }).slice(0, 6);
+          if (!ms.length) { mac.style.display='none'; return; }
+          mac.innerHTML = ms.map(function(c){ return '<div data-n="'+esc(c.name)+'">'+esc(c.name)+' <span style="color:var(--muted);font-size:12px">'+esc(c.pastor)+' 목사</span></div>'; }).join('');
+          mac.style.display = 'block';
+        });
+        mChurch.addEventListener('blur', function(){ setTimeout(function(){ mac.style.display='none'; }, 150); });
+        mac.addEventListener('mousedown', function(e){ var d=e.target.closest&&e.target.closest('[data-n]'); if(!d) return; e.preventDefault(); mChurch.value=d.getAttribute('data-n'); mac.style.display='none'; });
+      })();
+      document.getElementById('addMemberBtn').addEventListener('click', function(){ openMemberModal(null); });
+      document.getElementById('mCancel').addEventListener('click', closeMemberModal);
+      document.getElementById('mSave').addEventListener('click', saveMember);
+      document.getElementById('memberOv').addEventListener('click', function(e){ if (e.target === this) closeMemberModal(); });
 
       renderChurches();
       renderOfficers();
