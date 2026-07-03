@@ -253,14 +253,18 @@
       </div>
       <p style="margin:16px auto 0;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:0;color:var(--ondark-muted);">연합의 발자취</p>
     </div>
-    <div class="gallery-viewport" id="galleryViewport">
-      <div class="gallery-row" id="galleryRow">
-        <img class="gallery-item" src="assets/img/g1.webp" alt="연합 행사 사진" />
-        <img class="gallery-item" src="assets/img/g2.webp" alt="연합 행사 사진" />
-        <img class="gallery-item" src="assets/img/g3.webp" alt="연합 행사 사진" />
-        <img class="gallery-item" src="assets/img/g4.webp" alt="연합 행사 사진" />
-        <img class="gallery-item" src="assets/img/g5.webp" alt="연합 행사 사진" />
+    <div style="position:relative;">
+      <button id="galPrev" aria-label="이전 사진" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:5;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,0.16);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;">‹</button>
+      <div class="gallery-viewport" id="galleryViewport">
+        <div class="gallery-row" id="galleryRow">
+          <img class="gallery-item" src="assets/img/g1.webp" alt="연합 행사 사진" />
+          <img class="gallery-item" src="assets/img/g2.webp" alt="연합 행사 사진" />
+          <img class="gallery-item" src="assets/img/g3.webp" alt="연합 행사 사진" />
+          <img class="gallery-item" src="assets/img/g4.webp" alt="연합 행사 사진" />
+          <img class="gallery-item" src="assets/img/g5.webp" alt="연합 행사 사진" />
+        </div>
       </div>
+      <button id="galNext" aria-label="다음 사진" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:5;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,0.16);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;">›</button>
     </div>
   </section>
 
@@ -817,6 +821,10 @@ window.initGalleryMarquee = function(){
     if(period>0){ if(vp.scrollLeft>=period){vp.scrollLeft-=period;} else if(vp.scrollLeft<0){vp.scrollLeft+=period;} }
     requestAnimationFrame(step);
   }
+  var gp=document.getElementById('galPrev'), gn=document.getElementById('galNext');
+  function nudge(dir){ var amt=Math.max(260, Math.round(vp.clientWidth*0.7)); vp.scrollBy({left:dir*amt, behavior:'smooth'}); }
+  if(gp) gp.addEventListener('click',function(){ nudge(-1); });
+  if(gn) gn.addEventListener('click',function(){ nudge(1); });
   requestAnimationFrame(step);
 };
 </script>
