@@ -69,6 +69,7 @@
   <div class="wrap" id="content">
     <div class="head"><span class="badge">관리자</span><h1 class="title">회원 관리</h1></div>
     <p class="who">로그인 계정: <b id="adminEmail"></b></p>
+    <p class="who" id="presidentBanner" style="display:none;margin:8px 0 0;padding:11px 14px;background:#eaf3ff;border:1px solid #b9d6ff;color:#1c69d4;font-weight:700;">🔑 회장님은 홈페이지 관리자입니다.</p>
 
     <div class="stats">
       <div class="stat"><b id="cTotal">0</b><span>전체 회원</span></div>
@@ -164,6 +165,8 @@
       if (!isSuper) {
         var rn = document.getElementById('roleNote');
         if (rn) rn.style.display = 'block';
+        var pb = document.getElementById('presidentBanner');
+        if (pb) pb.style.display = 'block';
       }
 
       var ROLES = window.OFFICER_ROLES || [];
