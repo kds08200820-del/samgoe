@@ -199,8 +199,10 @@
 
     /* ---- HERO (풀블리드 사진 + 네이비 오버레이 박스) ---- */
     .hero2{position:relative;min-height:640px;display:flex;align-items:center;background:var(--navy-deep);overflow:hidden;}
-    .hero2 .hero2-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(0.25) contrast(1.02);}
-    .hero2 .hero2-bg::after{content:'';position:absolute;inset:0;
+    .hero2 .hero2-slides{position:absolute;inset:0;overflow:hidden;}
+    .hero2 .hero2-slide{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(0.25) contrast(1.02);opacity:0;transition:opacity 1.6s ease-in-out;}
+    .hero2 .hero2-slide.on{opacity:1;}
+    .hero2 .hero2-slides::after{content:'';position:absolute;inset:0;z-index:2;
       background:linear-gradient(100deg,rgba(20,30,42,0.94) 0%,rgba(20,30,42,0.82) 34%,rgba(20,30,42,0.30) 62%,rgba(20,30,42,0.12) 100%);}
     .hero2 .hero2-inner{position:relative;max-width:1160px;width:100%;margin:0 auto;padding:0 40px;}
     .hero2 .hero2-box{max-width:560px;color:#fff;padding:48px 0;}
@@ -213,8 +215,8 @@
     .hero2 .hero2-cta:hover{background:#fff;color:var(--navy-deep);}
     @media (max-width:820px){
       .hero2{min-height:0;}
-      .hero2 .hero2-bg{position:relative;height:280px;}
-      .hero2 .hero2-bg::after{background:linear-gradient(180deg,rgba(20,30,42,0.25),rgba(20,30,42,0.6));}
+      .hero2 .hero2-slides{position:relative;height:280px;}
+      .hero2 .hero2-slides::after{background:linear-gradient(180deg,rgba(20,30,42,0.25),rgba(20,30,42,0.6));}
       .hero2 .hero2-inner{position:relative;margin-top:-1px;padding:0;}
       .hero2 .hero2-box{background:var(--navy-deep);max-width:none;padding:40px 24px;}
       .hero2 .hero2-box h1{font-size:42px;}
@@ -353,7 +355,7 @@
 
   <!-- ===================== HERO (네이비 오버레이) ===================== -->
   <section id="top" class="hero2">
-    <div class="hero2-bg" style="background-image:url('assets/img/hero.webp');"></div>
+    <div class="hero2-slides" id="heroSlides"></div>
     <div class="hero2-inner">
       <div class="hero2-box">
         <img src="assets/logo-trans.png?v=2" alt="삼기연" style="height:52px;width:auto;filter:brightness(0) invert(1);opacity:0.95;margin-bottom:20px;" />
@@ -368,6 +370,18 @@
       </div>
     </div>
   </section>
+  <script>
+  (function(){
+    var el=document.getElementById('heroSlides'); if(!el) return;
+    // 히어로 배경 사진 목록 (앞에서부터 순서대로 크로스페이드) — 사진 추가는 아래 배열에 경로만 넣으면 됩니다.
+    var imgs=['assets/img/hero.webp','assets/img/g1.webp','assets/img/g2.webp','assets/img/g4.webp'];
+    imgs.forEach(function(src,i){ var d=document.createElement('div'); d.className='hero2-slide'+(i===0?' on':''); d.style.backgroundImage="url('"+src+"')"; el.appendChild(d); });
+    var slides=el.querySelectorAll('.hero2-slide');
+    if(slides.length<2) return;
+    var idx=0;
+    setInterval(function(){ slides[idx].classList.remove('on'); idx=(idx+1)%slides.length; slides[idx].classList.add('on'); }, 5500);
+  })();
+  </script>
 
   <!-- ===================== 대시보드 ===================== -->
   <section id="dashboard" class="section" style="scroll-margin-top:96px;background:var(--mist);padding:72px 24px 80px;">
