@@ -326,7 +326,6 @@
           <h3 style="margin:0;font-size:28px;font-weight:700;letter-spacing:0;color:var(--ink);word-break:keep-all;">삼기연이 걸어온 길</h3>
           <p style="margin:12px 0 20px;font-size:15px;line-height:1.5;color:var(--muted);">해마다 기록해 온 삼기연의 발자취입니다.</p>
           <div class="path-viewport" id="pathViewport"><div class="path-list" id="pathList"></div></div>
-          <a href="officer.html" style="display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:var(--primary);">임원방에서 원문 보기 ›</a>
         </div>
         <!-- 오른쪽: 2026년 활동 -->
         <div>
@@ -885,7 +884,8 @@ if ('serviceWorker' in navigator) {
   var vp=document.getElementById('pathViewport'), list=document.getElementById('pathList');
   if(!vp||!list) return;
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
-  var docs=(window.ARCHIVE_DOCS||[]).slice().sort(function(a,b){
+  var ALLOW={'총회자료':1,'순서지':1};  // 총회·기도회·연합예배(순서지)만 · 회의/월례 제외
+  var docs=(window.ARCHIVE_DOCS||[]).filter(function(d){ return ALLOW[d.type] && !/월례|회의|간담/.test(d.name); }).sort(function(a,b){
     var d=(parseInt(b.year||'0',10)||0)-(parseInt(a.year||'0',10)||0); if(d) return d; return a.name<b.name?-1:1;
   });
   if(!docs.length){ list.innerHTML='<div style="padding:22px;color:var(--muted);font-size:14px;">기록을 준비 중입니다.</div>'; return; }
