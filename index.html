@@ -288,6 +288,13 @@
     .pc-foot{margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--muted-soft);}
     .pc-foot a{font-size:13px;font-weight:700;color:var(--blue);}
     .pc-del{position:absolute;top:8px;right:8px;background:rgba(20,26,32,0.72);color:#fff;border:0;font-size:12px;padding:5px 9px;cursor:pointer;}
+    .pc-adm{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:2;}
+    .pc-adm button{background:rgba(20,26,32,0.72);color:#fff;border:0;font-size:12px;padding:5px 9px;cursor:pointer;border-radius:5px;}
+    .press-form .pf-drop{border:2px dashed var(--hairline-strong);border-radius:12px;background:#fff;padding:16px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:10px;transition:border-color .15s ease,background .15s ease;}
+    .press-form .pf-drop.over{border-color:var(--blue);background:#eef5ff;}
+    .press-form .pf-drop u{color:var(--blue);}
+    .press-form #prImgPreview{margin-top:8px;}
+    .press-form #prImgPreview img{max-height:120px;border-radius:8px;display:block;margin:0 auto;}
     @media (max-width:560px){ .pc-card{flex-basis:82vw;width:82vw;} }
     /* 헤더 네비 호버 */
     .nav-links a{transition:color .15s ease, background .15s ease;}
@@ -707,7 +714,12 @@
             <input id="prSource" type="text" placeholder="언론사 (예: 경기신문)" style="flex:1;min-width:150px;" />
             <input id="prDate" type="text" placeholder="날짜 (예: 2026.03.01)" style="flex:1;min-width:130px;" />
           </div>
-          <input id="prImg" type="url" placeholder="대표 이미지 URL (선택)" />
+          <div class="pf-drop" id="prDrop">
+            <input type="file" id="prImgFile" accept="image/*" hidden />
+            <span id="prDropText">📷 대표 이미지를 여기로 끌어다 놓거나 <u>클릭해서 업로드</u></span>
+            <div id="prImgPreview"></div>
+          </div>
+          <input id="prImg" type="url" placeholder="또는 대표 이미지 URL 직접 입력 (선택)" />
           <textarea id="prSummary" placeholder="요약 (선택)"></textarea>
         </div>
         <div class="pf-row" style="justify-content:space-between;align-items:center;">
@@ -1549,8 +1561,8 @@ if ('serviceWorker' in navigator) {
     var img = a.image_url
       ? '<a href="'+escA(a.url)+'" target="_blank" rel="noopener"><img class="pc-img" src="'+escA(a.image_url)+'" alt="" loading="lazy" onerror="this.parentNode.style.display=\'none\'"></a>'
       : '<a href="'+escA(a.url)+'" target="_blank" rel="noopener" style="text-decoration:none;"><div class="pc-img" style="display:flex;align-items:center;justify-content:center;color:var(--muted-soft);font-size:13px;">기사 바로가기</div></a>';
-    var del = a._del ? '<button class="pc-del" data-del="'+escA(a.id)+'">삭제</button>' : '';
-    return '<article class="pc-card">'+img+del+
+    var adm = (a._edit||a._del) ? '<div class="pc-adm">'+(a._edit?'<button data-edit="'+escA(a.id)+'">수정</button>':'')+(a._del?'<button data-del="'+escA(a.id)+'">삭제</button>':'')+'</div>' : '';
+    return '<article class="pc-card">'+img+adm+
       '<div class="pc-body">'+
         (meta?'<div class="pc-meta">'+esc(meta)+'</div>':'')+
         '<h3 class="pc-title">'+esc(a.title||a.url)+'</h3>'+
@@ -1560,7 +1572,7 @@ if ('serviceWorker' in navigator) {
       '</div></article>';
   }
   function items(){
-    var db=DB.map(function(d){ return { id:d.id, url:d.url, title:d.title, source:d.source, published:d.published, summary:d.summary, image_url:d.image_url, credit:d.source, _del:(isAdminU || (me && d.created_by===me.id)) }; });
+    var db=DB.map(function(d){ var mine=(isAdminU || (me && d.created_by===me.id)); return { id:d.id, url:d.url, title:d.title, source:d.source, published:d.published, summary:d.summary, image_url:d.image_url, credit:d.source, _del:mine, _edit:mine }; });
     return BASE.concat(db);
   }
   function render(){
@@ -1586,7 +1598,10 @@ if ('serviceWorker' in navigator) {
   carousel.addEventListener('mouseleave', function(){ paused=false; });
   carousel.addEventListener('pointerdown', function(){ paused=true; });
   window.addEventListener('pointerup', function(){ setTimeout(function(){ paused=false; }, 1200); });
-  track.addEventListener('click', function(e){ var b=e.target.closest&&e.target.closest('[data-del]'); if(b){ e.preventDefault(); delArticle(b.getAttribute('data-del')); } });
+  track.addEventListener('click', function(e){
+    var ed=e.target.closest&&e.target.closest('[data-edit]'); if(ed){ e.preventDefault(); e.stopPropagation(); startEditPress(ed.getAttribute('data-edit')); return; }
+    var b=e.target.closest&&e.target.closest('[data-del]'); if(b){ e.preventDefault(); e.stopPropagation(); delArticle(b.getAttribute('data-del')); }
+  });
 
   async function loadDB(){ if(!window.sb) return;
     try{ var r=await window.sb.from('press_articles').select('*').order('created_at',{ascending:false}); if(!r.error && r.data) DB=r.data; }catch(_){}
@@ -1618,7 +1633,9 @@ if ('serviceWorker' in navigator) {
   if(addBtn) addBtn.addEventListener('click', function(){ form.classList.toggle('open'); });
   function prErr(m){ var e=document.getElementById('prErr'); e.textContent=m||''; e.style.display=m?'block':'none'; }
   var details=document.getElementById('prDetails');
-  function resetPressForm(){ ['prUrl','prTitle','prSource','prDate','prImg','prSummary'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; }); if(details) details.style.display='none'; var fm=document.getElementById('prFetchMsg'); if(fm) fm.textContent=''; prErr(''); }
+  var editingId=null;
+  function setImgPreview(u){ var p=document.getElementById('prImgPreview'); if(!p) return; p.innerHTML = u ? '<img src="'+escA(u)+'" alt="">' : ''; }
+  function resetPressForm(){ editingId=null; ['prUrl','prTitle','prSource','prDate','prImg','prSummary'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; }); setImgPreview(''); if(details) details.style.display='none'; var fm=document.getElementById('prFetchMsg'); if(fm) fm.textContent=''; var sb=document.getElementById('prSave'); if(sb) sb.textContent='등록'; prErr(''); }
   var cancel=document.getElementById('prCancel');
   if(cancel) cancel.addEventListener('click', function(){ form.classList.remove('open'); resetPressForm(); });
 
@@ -1643,6 +1660,57 @@ if ('serviceWorker' in navigator) {
     if(ins.error) throw new Error('등록 실패: '+ins.error.message+(/press_articles|schema cache|PGRST205/i.test(ins.error.message)?' (관리자: press-setup.sql 실행이 필요합니다)':''));
   }
 
+  // ---- 대표 이미지 드래그앤드롭 업로드 ----
+  async function resizeImg(file){
+    var bitmap=await createImageBitmap(file);
+    try{ var maxDim=1600, scale=Math.min(1, maxDim/Math.max(bitmap.width,bitmap.height));
+      var w=Math.max(1,Math.round(bitmap.width*scale)), h=Math.max(1,Math.round(bitmap.height*scale));
+      var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(bitmap,0,0,w,h);
+      return await new Promise(function(res){ c.toBlob(function(bl){res(bl);},'image/webp',0.85); });
+    } finally { if(bitmap.close) bitmap.close(); }
+  }
+  async function uploadImg(file){
+    var r2=(window.R2_WORKER_URL||'').replace(/\/$/,''); if(!r2) throw new Error('사진 저장소(Cloudflare) 설정이 필요합니다.');
+    var blob=await resizeImg(file);
+    var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
+    var resp=await fetch(r2+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'image/webp'},body:blob});
+    var j=await resp.json().catch(function(){return {};});
+    if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
+    return j.url;
+  }
+  var prDrop=document.getElementById('prDrop'), prImgFile=document.getElementById('prImgFile'), prDropText=document.getElementById('prDropText');
+  async function doImgUpload(f){
+    if(!f) return; var old=prDropText.innerHTML; prDropText.textContent='이미지 업로드 중…';
+    try{ var u=await uploadImg(f); document.getElementById('prImg').value=u; setImgPreview(u); prDropText.innerHTML=old; }
+    catch(err){ prDropText.innerHTML=old; alert('이미지 업로드 실패: '+(err.message||err)); }
+  }
+  if(prDrop){
+    prDrop.addEventListener('click', function(){ prImgFile.click(); });
+    ['dragenter','dragover'].forEach(function(ev){ prDrop.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();prDrop.classList.add('over');}); });
+    ['dragleave','drop'].forEach(function(ev){ prDrop.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();prDrop.classList.remove('over');}); });
+    prDrop.addEventListener('drop', function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; doImgUpload(f); });
+    prImgFile.addEventListener('change', function(){ var f=prImgFile.files&&prImgFile.files[0]; prImgFile.value=''; doImgUpload(f); });
+  }
+  var prImgInput=document.getElementById('prImg');
+  if(prImgInput) prImgInput.addEventListener('input', function(){ setImgPreview(this.value.trim()); });
+
+  // ---- 기존 기사 수정 ----
+  function startEditPress(id){
+    var d=DB.find(function(x){return String(x.id)===String(id);}); if(!d) return;
+    editingId=id;
+    form.classList.add('open'); details.style.display='block';
+    document.getElementById('prUrl').value=d.url||'';
+    document.getElementById('prTitle').value=d.title||'';
+    document.getElementById('prSource').value=d.source||'';
+    document.getElementById('prDate').value=d.published||'';
+    document.getElementById('prImg').value=d.image_url||'';
+    document.getElementById('prSummary').value=d.summary||'';
+    setImgPreview(d.image_url||'');
+    var sb=document.getElementById('prSave'); if(sb) sb.textContent='수정 저장';
+    var fm=document.getElementById('prFetchMsg'); if(fm) fm.textContent='';
+    prErr(''); form.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+
   var manualBtn=document.getElementById('prManual');
   if(manualBtn) manualBtn.addEventListener('click', async function(){
     details.style.display='block';
@@ -1662,6 +1730,19 @@ if ('serviceWorker' in navigator) {
     var detailsOpen = details.style.display!=='none';
     saveBtn.disabled=true;
     try{
+      if(editingId){
+        var et=document.getElementById('prTitle').value.trim();
+        if(!et){ prErr('제목을 입력해 주세요.'); saveBtn.disabled=false; saveBtn.textContent='수정 저장'; return; }
+        saveBtn.textContent='저장 중…';
+        var up=await window.sb.from('press_articles').update({ url:url, title:et,
+          source:document.getElementById('prSource').value.trim()||null,
+          published:document.getElementById('prDate').value.trim()||null,
+          summary:document.getElementById('prSummary').value.trim()||null,
+          image_url:document.getElementById('prImg').value.trim()||null }).eq('id', editingId);
+        if(up.error) throw new Error('수정 실패: '+up.error.message);
+        resetPressForm(); form.classList.remove('open'); await loadDB(); render();
+        saveBtn.disabled=false; saveBtn.textContent='등록'; return;
+      }
       if(!detailsOpen){
         saveBtn.textContent='불러오는 중…'; msg.textContent='제목·언론사·날짜·이미지·요약을 가져오는 중…';
         var j;
