@@ -11,10 +11,17 @@ create table if not exists public.archive_docs (
   type        text,                 -- 총회자료/회의록/월례·임원회의/보고서/순서지
   title       text not null,        -- 목록에 보일 제목
   year        text,                 -- 연도(필터용)
-  html        text,                 -- 변환된 문서 HTML(자체 완결형)
+  html        text,                 -- 변환된 문서 HTML(docx/hwpx 자체 완결형)
+  url         text,                 -- 원본 파일(PDF 등) 열람 URL (Cloudflare R2)
+  path        text,                 -- 원본 파일의 R2 key (삭제용)
+  mime        text,                 -- 원본 파일 MIME (예: application/pdf)
   uploaded_by uuid references auth.users(id) on delete set null,
   created_at  timestamptz default now()
 );
+-- 이미 만들어진 표에도 컬럼 추가(재실행 안전) — PDF 원본 저장 지원
+alter table public.archive_docs add column if not exists url  text;
+alter table public.archive_docs add column if not exists path text;
+alter table public.archive_docs add column if not exists mime text;
 alter table public.archive_docs enable row level security;
 
 -- 읽기: 임원

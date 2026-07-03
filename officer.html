@@ -183,11 +183,11 @@
     <div class="pane" id="paneArchive">
       <p class="who" style="margin:0 0 14px;">삼기연이 보관해 온 회의록·총회자료·순서지·보고서입니다.</p>
       <div class="arcAdd" id="arcAdd" style="display:none;">
-        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">＋ 자료 추가 <span style="font-weight:400;color:var(--muted);font-size:12px">· .docx / .hwpx 를 올리면 자동 변환되어 목록에 추가됩니다</span></div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">＋ 자료 추가 <span style="font-weight:400;color:var(--muted);font-size:12px">· .docx / .hwpx 는 변환되어, .pdf 는 원본 그대로 목록에 추가됩니다</span></div>
         <div style="margin-bottom:10px;"><span style="font-size:13px;color:var(--muted);margin-right:8px;">유형</span>
           <select id="arcAddType"><option value="총회자료">총회자료</option><option value="회의록">회의록</option><option value="월례·임원회의">월례·임원회의</option><option value="보고서">보고서</option><option value="순서지" selected>순서지</option></select></div>
-        <div class="drop" id="arcDrop" style="padding:22px;"><div class="big">파일을 여기로 끌어다 놓으세요</div><div class="small">.docx · .hwpx · 여러 개 가능 · <u>클릭해서 선택</u>도 됩니다</div></div>
-        <input type="file" id="arcFile" accept=".docx,.hwpx" multiple hidden />
+        <div class="drop" id="arcDrop" style="padding:22px;"><div class="big">파일을 여기로 끌어다 놓으세요</div><div class="small">.docx · .hwpx · .pdf · 여러 개 가능 · <u>클릭해서 선택</u>도 됩니다</div></div>
+        <input type="file" id="arcFile" accept=".docx,.hwpx,.pdf" multiple hidden />
         <div class="prog" id="arcAddProg"></div>
       </div>
       <div class="arcFilters">
@@ -312,7 +312,7 @@
     }
 
     async function loadDBDocs(){
-      try{ var r = await window.sb.from('archive_docs').select('id,type,title,year').order('created_at',{ascending:false}); if(!r.error && r.data) DBDOCS = r.data; }catch(_){ }
+      try{ var r = await window.sb.from('archive_docs').select('id,type,title,year,url,path,mime').order('created_at',{ascending:false}); if(!r.error && r.data) DBDOCS = r.data; }catch(_){ }
     }
 
     // ----- 문서 뷰어(팝업) + 뒤로가기 -----
@@ -331,8 +331,11 @@
         d.head.appendChild(st);
       }catch(e){ /* 교차출처 등 접근 불가 시 무시 */ }
     }
+    var curBlobUrl = null;
     function openDoc(o){
       var f = document.getElementById('docFrame');
+      if(curBlobUrl){ try{ URL.revokeObjectURL(curBlobUrl); }catch(_){ } }
+      curBlobUrl = o.blob || null;
       f.onload = function(){ injectUniformStyle(f); };
       if(o.src){ f.removeAttribute('srcdoc'); f.src = o.src; }
       else { f.removeAttribute('src'); f.srcdoc = o.html || ''; }
@@ -342,6 +345,7 @@
     }
     function hideDoc(){
       var f = document.getElementById('docFrame'); f.removeAttribute('srcdoc'); f.src = 'about:blank';
+      if(curBlobUrl){ try{ URL.revokeObjectURL(curBlobUrl); }catch(_){ } curBlobUrl=null; }
       document.getElementById('docOv').classList.remove('on'); if(!modalOpen) document.body.style.overflow='';
       docOpen = false;
     }
@@ -349,6 +353,13 @@
     function openArcItem(it){
       var kind=it.getAttribute('data-kind'), key=it.getAttribute('data-key'), title=it.getAttribute('data-title');
       if(kind==='db'){
+        var dbd = DBDOCS.find(function(x){ return x.id===key; });
+        if(dbd && dbd.url){   // PDF 등 원본 파일: 다운로드(attachment)를 막고 화면 안에서 보이도록 blob으로 로드
+          fetch(dbd.url).then(function(r){ return r.blob(); }).then(function(b){
+            var bu=URL.createObjectURL(b); openDoc({ src:bu, title:title, blob:bu });
+          }).catch(function(){ openDoc({ src:dbd.url, title:title }); });
+          return;
+        }
         window.sb.from('archive_docs').select('html').eq('id',key).single().then(function(r){
           if(r.error || !r.data){ alert('문서를 여는 데 실패했습니다.'); return; }
           openDoc({ html:r.data.html||'', title:title });
@@ -363,7 +374,15 @@
       if(kind==='db'){
         if(!isAdminUser) return;
         if(!confirm('이 자료를 삭제할까요?')) return;
-        window.sb.from('archive_docs').delete().eq('id',key).then(function(r){ if(r.error){ alert('삭제 실패: '+r.error.message); return; } loadDBDocs().then(renderArchive); });
+        (async function(){
+          var d = DBDOCS.find(function(x){ return x.id===key; });
+          try{  // PDF 등 원본 파일이면 R2에서도 삭제
+            if(d && d.path){ var r2=(window.R2_WORKER_URL||'').replace(/\/$/,''); if(r2){ var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:''; await fetch(r2+'/file-delete',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({key:d.path})}); } }
+          }catch(_){ }
+          var del=await window.sb.from('archive_docs').delete().eq('id',key);
+          if(del.error){ alert('삭제 실패: '+del.error.message); return; }
+          await loadDBDocs(); renderArchive();
+        })();
       } else { deleteArchive(key); }
     }
     function onArcEdit(kind,key){
@@ -472,32 +491,61 @@
       }
       throw new Error('지원하지 않는 형식');
     }
+    // PDF는 변환하지 않고 원본 저장 — 제목(파일명)과 날짜(PDF 생성일 → 없으면 파일명)만 추출
+    async function pdfCreatedInfo(file){
+      try{
+        var buf=await file.arrayBuffer(); var bytes=new Uint8Array(buf);
+        function scan(a,b){ var s=''; for(var i=a;i<b;i++) s+=String.fromCharCode(bytes[i]); return s; }
+        var tail=Math.max(0, bytes.length-262144); // 마지막 256KB(+앞 32KB)에서 Info 딕셔너리 탐색
+        var chunk=scan(tail, bytes.length)+(tail>0?scan(0, Math.min(bytes.length,32768)):'');
+        var m=chunk.match(/\/CreationDate\s*\(\s*D?:?(\d{4})(\d{2})(\d{2})/);
+        if(m){ var mo=+m[2], da=+m[3]; if(mo>=1&&mo<=12&&da>=1&&da<=31) return { y:m[1], s:m[1]+'.'+m[2]+'.'+m[3] }; }
+      }catch(_){ }
+      return null;
+    }
     async function handleArcFiles(files){
       var prog=document.getElementById('arcAddProg');
       var type=document.getElementById('arcAddType').value;
       var arr=Array.prototype.slice.call(files);
-      var list=arr.filter(function(f){ return /\.(docx|hwpx)$/i.test(f.name); });
+      var list=arr.filter(function(f){ return /\.(docx|hwpx|pdf)$/i.test(f.name); });
       var skipped=arr.length-list.length;
-      if(!list.length){ prog.textContent='.docx / .hwpx 파일만 변환할 수 있습니다.' + (skipped?' (한글 .hwp 구버전은 한글에서 hwpx로 저장해 올려주세요)':''); return; }
-      try{ prog.textContent='변환 도구 준비 중…'; await ensureLibs(); }catch(e){ prog.textContent='변환 도구를 불러오지 못했습니다. 인터넷 연결을 확인하세요.'; return; }
+      if(!list.length){ prog.textContent='.docx / .hwpx / .pdf 파일만 올릴 수 있습니다.' + (skipped?' (한글 .hwp 구버전은 한글에서 hwpx로 저장해 올려주세요)':''); return; }
+      var needConv=list.some(function(f){ return /\.(docx|hwpx)$/i.test(f.name); });
+      if(needConv){ try{ prog.textContent='변환 도구 준비 중…'; await ensureLibs(); }catch(e){ prog.textContent='변환 도구를 불러오지 못했습니다. 인터넷 연결을 확인하세요.'; return; } }
+      var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
       var ok=0, fail=0, lastErr='';
       for(var i=0;i<list.length;i++){
-        var file=list[i]; prog.textContent='변환 중… ('+(i+1)+'/'+list.length+') '+file.name;
+        var file=list[i]; var ext=(file.name.split('.').pop()||'').toLowerCase();
+        prog.textContent=(ext==='pdf'?'업로드 중… ':'변환 중… ')+'('+(i+1)+'/'+list.length+') '+file.name;
         try{
-          var inner=await convertFile(file);
-          if(!inner || !inner.replace(/<[^>]*>/g,'').trim()) throw new Error('내용 없음');
           var base=cleanBaseName(file.name);
-          // 제목 날짜는 '문서가 생성된 날짜'(메타데이터) 우선, 없으면 내용/파일명에서 추출
-          var di=(await getCreatedInfo(file)) || findDateInfo(inner.replace(/<[^>]*>/g,' ')+' '+file.name);
-          var title=(di.s?di.s+' ':'')+"'"+base+"'";
-          var html=wrapDoc(base, inner);
-          var ins=await window.sb.from('archive_docs').insert({ type:type, title:title, year:di.y||null, html:html, uploaded_by:me.id });
-          if(ins.error) throw ins.error;
-          ok++;
+          if(ext==='pdf'){
+            if(!r2) throw new Error('파일 저장소(Cloudflare) 설정이 필요합니다.');
+            var dip=(await pdfCreatedInfo(file)) || findDateInfo(file.name);
+            var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
+            var resp=await fetch(r2+'/file',{ method:'POST', headers:{ 'Authorization':'Bearer '+token, 'Content-Type':file.type||'application/pdf', 'X-Filename':encodeURIComponent(file.name) }, body:file });
+            var j=await resp.json().catch(function(){return {};});
+            if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
+            var titleP=(dip.s?dip.s+' ':'')+"'"+base+"'";
+            var insP=await window.sb.from('archive_docs').insert({ type:type, title:titleP, year:dip.y||null, url:j.url, path:j.key, mime:j.mime||'application/pdf', uploaded_by:me.id });
+            if(insP.error) throw insP.error;
+            ok++;
+          } else {
+            var inner=await convertFile(file);
+            if(!inner || !inner.replace(/<[^>]*>/g,'').trim()) throw new Error('내용 없음');
+            // 제목 날짜는 '문서가 생성된 날짜'(메타데이터) 우선, 없으면 내용/파일명에서 추출
+            var di=(await getCreatedInfo(file)) || findDateInfo(inner.replace(/<[^>]*>/g,' ')+' '+file.name);
+            var title=(di.s?di.s+' ':'')+"'"+base+"'";
+            var html=wrapDoc(base, inner);
+            var ins=await window.sb.from('archive_docs').insert({ type:type, title:title, year:di.y||null, html:html, uploaded_by:me.id });
+            if(ins.error) throw ins.error;
+            ok++;
+          }
         }catch(e){ fail++; console.error(e); lastErr=(e&&(e.message||e.error_description||e.hint))||String(e); }
       }
       var hint='';
-      if(fail && /archive_docs|schema cache|PGRST205/i.test(lastErr)) hint=' (관리자: archive-docs-setup.sql 을 Supabase에서 실행해 주세요)';
+      if(fail && /column|PGRST204|url|path|mime/i.test(lastErr) && /schema|column|find/i.test(lastErr)) hint=' (관리자: archive-docs-setup.sql 의 컬럼 추가 부분을 Supabase에서 실행해 주세요)';
+      else if(fail && /archive_docs|schema cache|PGRST205/i.test(lastErr)) hint=' (관리자: archive-docs-setup.sql 을 Supabase에서 실행해 주세요)';
       else if(fail && /row-level security|policy|permission/i.test(lastErr)) hint=' (관리자: 회장 또는 최고관리자만 자료를 추가할 수 있습니다)';
       prog.textContent=ok+'개 추가 완료'+(fail?(' · '+fail+'개 실패'+(lastErr?' — '+lastErr:'')+hint):'')+(skipped?(' · '+skipped+'개 형식 제외'):'');
       await loadDBDocs(); renderArchive();
