@@ -200,11 +200,18 @@ export default {
       let title = meta(['og:title', 'twitter:title']);
       if (!title) { const t = html.match(/<title[^>]*>([^<]*)<\/title>/i); if (t) title = dec(t[1]); }
       let host = ''; try { host = new URL(target).hostname.replace(/^www\./, ''); } catch (_) {}
+      // 보도 날짜 추출: 메타태그 → JSON-LD datePublished → 본문 날짜 패턴
+      let dateRaw = meta(['article:published_time', 'og:article:published_time', 'datePublished', 'date', 'sailthru.date', 'pubdate', 'article:modified_time']);
+      if (!dateRaw) { const m = html.match(/"datePublished"\s*:\s*"([^"]+)"/i); if (m) dateRaw = m[1]; }
+      let published = '';
+      if (dateRaw) { const d = new Date(dateRaw); if (!isNaN(d.getTime())) published = d.getFullYear() + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + ('0' + d.getDate()).slice(-2); }
+      if (!published) { const m2 = html.match(/(20[0-2]\d)[.\-\/](\d{1,2})[.\-\/](\d{1,2})/); if (m2 && +m2[2] >= 1 && +m2[2] <= 12 && +m2[3] >= 1 && +m2[3] <= 31) published = m2[1] + '.' + ('0' + (+m2[2])).slice(-2) + '.' + ('0' + (+m2[3])).slice(-2); }
       return json({
         title: title,
         image: meta(['og:image', 'twitter:image', 'twitter:image:src']),
         summary: meta(['og:description', 'twitter:description', 'description']),
         source: meta(['og:site_name']) || host,
+        published: published,
       }, 200);
     }
 
