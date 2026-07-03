@@ -202,10 +202,10 @@
     .hero2 .hero2-slides{position:absolute;inset:0;overflow:hidden;}
     .hero2 .hero2-slide{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(0.25) contrast(1.02);opacity:0;transition:opacity 1.6s ease-in-out;}
     .hero2 .hero2-slide.on{opacity:1;}
-    .hero2 .hero2-slides::after{content:'';position:absolute;inset:0;z-index:2;
-      background:linear-gradient(100deg,rgba(15,23,33,0.97) 0%,rgba(15,23,33,0.92) 32%,rgba(15,23,33,0.68) 60%,rgba(15,23,33,0.5) 100%);}
-    .hero2 .hero2-box{text-shadow:0 2px 16px rgba(0,0,0,0.55);}
-    .hero2 .hero2-inner{position:relative;max-width:1160px;width:100%;margin:0 auto;padding:0 40px;}
+    .hero2 .hero2-slides::after{content:'';position:absolute;inset:0;z-index:1;
+      background:linear-gradient(100deg,rgba(15,23,33,0.92) 0%,rgba(15,23,33,0.82) 34%,rgba(15,23,33,0.5) 66%,rgba(15,23,33,0.32) 100%);}
+    .hero2 .hero2-box{text-shadow:0 2px 18px rgba(0,0,0,0.7);}
+    .hero2 .hero2-inner{position:relative;z-index:3;max-width:1160px;width:100%;margin:0 auto;padding:0 40px;}
     .hero2 .hero2-box{max-width:560px;color:#fff;padding:48px 0;}
     .hero2 .hero2-box h1{margin:22px 0 26px;font-size:64px;line-height:1.06;color:#fff;
       font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif;font-weight:700;letter-spacing:0.01em;}
@@ -432,19 +432,20 @@
         <span class="dash-arrow" style="margin-top:14px;">공지사항 전체 보기 →</span>
       </a>
       <!-- 통계 · 바로가기 -->
-      <div class="dash-card col-3" style="align-items:flex-start;">
+      <a href="#churches" class="dash-card col-3" style="align-items:flex-start;">
         <div class="dc-label">회원교회</div>
         <div class="dc-big" style="margin:10px 0 0;font-size:54px;">49</div>
         <div class="dc-sub" style="margin-top:4px;font-size:14px;">우정읍 31 · 장안면 18</div>
-      </div>
+        <span class="dash-arrow" style="margin-top:12px;">회원교회 보기 →</span>
+      </a>
       <a href="officer.html" class="dash-card col-3" style="align-items:flex-start;">
         <div class="dc-label">임원방</div>
         <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;color:var(--navy-deep);">임원 전용 자료실</div>
         <span class="dash-arrow" style="margin-top:12px;">바로가기 →</span>
       </a>
-      <a href="gallery.html" class="dash-card col-3" style="align-items:flex-start;">
+      <a href="gallery.html" class="dash-card navy col-3" style="align-items:flex-start;">
         <div class="dc-label">갤러리</div>
-        <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;color:var(--navy-deep);">함께한 순간들</div>
+        <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;">함께한 순간들</div>
         <span class="dash-arrow" style="margin-top:12px;">사진 보기 →</span>
       </a>
       <a href="history.html" class="dash-card col-3" style="align-items:flex-start;">
