@@ -111,8 +111,12 @@
     .arcItem:first-child{border-top:0;}
     .arcItem:hover{background:var(--surface-soft);}
     .arcItem .ic{flex:0 0 auto;}
-    .arcItem .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .arcItem .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
+    .arcItem .nm:hover{color:var(--primary);text-decoration:underline;}
+    .arcItem .yb{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--primary);}
     .arcItem .go{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--primary);}
+    .arcItem .arcDel{flex:0 0 auto;border:0;background:none;cursor:pointer;font-size:15px;line-height:1;padding:2px 4px;opacity:.55;}
+    .arcItem .arcDel:hover{opacity:1;}
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
   </style>
 </head>
@@ -183,12 +187,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
-  <script src="archive-list.js?v=4"></script>
+  <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=4"></script>
   <script>
-    var me = null, myProfile = null, isAdminUser = false;
+    var me = null, myProfile = null, isAdminUser = false, isSuper = false;
     var MPOSTS = [], MC = {}, FILES = [];
     var pickedFiles = [];
+    var HIDDEN = {};  // 삭제(숨김) 처리된 아카이브 문서 경로
 
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
     function fmtDate(d){ if(!d) return ''; try{ var x=new Date(d+'T00:00:00'); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2); }catch(_){ return d; } }
@@ -232,7 +237,7 @@
     }
     function renderArchive(){
       initArchiveFilters();
-      var docs = window.ARCHIVE_DOCS || [];
+      var docs = (window.ARCHIVE_DOCS || []).filter(function(d){ return !HIDDEN[d.file]; });
       var t = document.getElementById('arcType').value;
       var y = document.getElementById('arcYear').value;
       var q = (document.getElementById('archiveSearch').value||'').trim();
@@ -243,7 +248,7 @@
         if(q && d.name.indexOf(q)<0) return false;
         return true;
       });
-      document.getElementById('archiveMeta').textContent = '총 '+docs.length+'건 중 '+res.length+'건';
+      document.getElementById('archiveMeta').textContent = '총 '+docs.length+'건 중 '+res.length+'건' + (isSuper ? ' · 관리자는 🗑 로 삭제할 수 있습니다' : '');
       var wrap = document.getElementById('archiveWrap');
       if(!res.length){ wrap.innerHTML = '<div class="empty">조건에 맞는 문서가 없습니다.</div>'; return; }
       // 유형별로 묶어 표시 (유형 순서 → 연도 내림차순)
@@ -253,12 +258,24 @@
         });
         var rows = group.map(function(d){
           var href = d.file.split('/').map(encodeURIComponent).join('/');
-          var yr = d.year ? '<span style="flex:0 0 auto;font-size:12px;color:var(--primary);font-weight:700;">'+d.year+'</span>' : '';
-          return '<a class="arcItem" href="'+href+'" target="_blank" rel="noopener"><span class="ic">'+(TYPE_ICON[tp]||'📄')+'</span><span class="nm">'+esc(d.name)+'</span>'+yr+'<span class="go">열기 ›</span></a>';
+          var yr = d.year ? '<span class="yb">'+d.year+'</span>' : '';
+          var del = isSuper ? '<button class="arcDel" data-path="'+esc(d.file)+'" title="삭제">🗑</button>' : '';
+          return '<div class="arcItem"><span class="ic">'+(TYPE_ICON[tp]||'📄')+'</span>'+
+            '<a class="nm" href="'+href+'" target="_blank" rel="noopener">'+esc(d.name)+'</a>'+yr+
+            '<a class="go" href="'+href+'" target="_blank" rel="noopener">열기 ›</a>'+del+'</div>';
         }).join('');
         return '<div class="arcSec"><h3>'+esc(tp)+' <span class="cnt">'+group.length+'건</span></h3><div class="arcList">'+rows+'</div></div>';
       }).join('');
       wrap.innerHTML = html;
+    }
+
+    // 아카이브 삭제(숨김) — 최고관리자만
+    async function deleteArchive(path){
+      if(!isSuper) return;
+      if(!confirm('이 문서를 목록에서 삭제할까요?\n(관리자만 가능하며, 필요 시 되돌릴 수 있습니다.)')) return;
+      var ins = await window.sb.from('archive_hidden').insert({ path: path, hidden_by: me.id });
+      if(ins.error){ alert('삭제 실패: ' + ins.error.message + '\n(관리자: archive-hidden-setup.sql 실행이 필요할 수 있습니다.)'); return; }
+      HIDDEN[path] = true; renderArchive();
     }
 
     // ---------- 데이터 로드 ----------
@@ -433,6 +450,8 @@
       if(!res) return;
       me = res.user; myProfile = res.profile;
       isAdminUser = window.isAdmin ? window.isAdmin(me, myProfile) : false;
+      isSuper = window.isSuperAdmin ? window.isSuperAdmin(me) : false;
+      try{ var hd = await window.sb.from('archive_hidden').select('path'); if(!hd.error && hd.data) hd.data.forEach(function(r){ HIDDEN[r.path]=true; }); }catch(_){ }
       document.getElementById('ofcName').textContent = myProfile.name || '';
       document.getElementById('ofcRole').textContent = myProfile.officer_role || '';
       document.getElementById('ofcChurch').textContent = myProfile.church || '';
@@ -448,6 +467,12 @@
       document.getElementById('meetingList').addEventListener('click', function(e){ var row=e.target.closest&&e.target.closest('.row'); if(row&&row.getAttribute('data-id')) openDetail(row.getAttribute('data-id')); });
       document.getElementById('detailOverlay').addEventListener('click', function(e){ if(e.target===this) requestClose(); });
       document.addEventListener('keydown', function(e){ if(e.key==='Escape') requestClose(); });
+
+      // 아카이브 삭제(🗑) — 최고관리자만
+      document.getElementById('archiveWrap').addEventListener('click', function(e){
+        var b = e.target.closest && e.target.closest('.arcDel');
+        if(b){ e.preventDefault(); e.stopPropagation(); deleteArchive(b.getAttribute('data-path')); }
+      });
 
       // 자료방 업로드 이벤트
       var fDrop=document.getElementById('fDrop'), fInput=document.getElementById('fInput');
