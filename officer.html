@@ -316,8 +316,24 @@
     }
 
     // ----- 문서 뷰어(팝업) + 뒤로가기 -----
+    // 자료실의 '모든' 문서(파일 기반·업로드본·신규)에 글꼴/크기를 일괄 통일 —
+    // 원본 문서 서식을 따르지 않고 뷰어에서 강제 적용(제목 16px 굵게 · 본문 15px)
+    function injectUniformStyle(f){
+      try{
+        var d = f.contentDocument || (f.contentWindow && f.contentWindow.document);
+        if(!d || !d.head || !d.body) return;
+        if(d.getElementById('samgoeUniform')) return;
+        var st = d.createElement('style'); st.id='samgoeUniform';
+        st.textContent =
+          "body,body *{font-family:'Malgun Gothic','맑은 고딕',sans-serif !important;font-size:15px !important;line-height:1.85 !important;}"+
+          "h1,h2,h3,h4,h5,h6{font-size:16px !important;font-weight:700 !important;line-height:1.5 !important;}"+
+          "table{border-collapse:collapse !important;} td,th{white-space:nowrap;vertical-align:top;word-break:keep-all;}";
+        d.head.appendChild(st);
+      }catch(e){ /* 교차출처 등 접근 불가 시 무시 */ }
+    }
     function openDoc(o){
       var f = document.getElementById('docFrame');
+      f.onload = function(){ injectUniformStyle(f); };
       if(o.src){ f.removeAttribute('srcdoc'); f.src = o.src; }
       else { f.removeAttribute('src'); f.srcdoc = o.html || ''; }
       document.getElementById('docTitle').textContent = o.title || '';
