@@ -440,7 +440,7 @@
       var skipped=arr.length-list.length;
       if(!list.length){ prog.textContent='.docx / .hwpx 파일만 변환할 수 있습니다.' + (skipped?' (한글 .hwp 구버전은 한글에서 hwpx로 저장해 올려주세요)':''); return; }
       try{ prog.textContent='변환 도구 준비 중…'; await ensureLibs(); }catch(e){ prog.textContent='변환 도구를 불러오지 못했습니다. 인터넷 연결을 확인하세요.'; return; }
-      var ok=0, fail=0;
+      var ok=0, fail=0, lastErr='';
       for(var i=0;i<list.length;i++){
         var file=list[i]; prog.textContent='변환 중… ('+(i+1)+'/'+list.length+') '+file.name;
         try{
@@ -453,9 +453,12 @@
           var ins=await window.sb.from('archive_docs').insert({ type:type, title:title, year:di.y||null, html:html, uploaded_by:me.id });
           if(ins.error) throw ins.error;
           ok++;
-        }catch(e){ fail++; console.error(e); }
+        }catch(e){ fail++; console.error(e); lastErr=(e&&(e.message||e.error_description||e.hint))||String(e); }
       }
-      prog.textContent=ok+'개 추가 완료'+(fail?(' · '+fail+'개 실패'):'')+(skipped?(' · '+skipped+'개 형식 제외'):'');
+      var hint='';
+      if(fail && /archive_docs|schema cache|PGRST205/i.test(lastErr)) hint=' (관리자: archive-docs-setup.sql 을 Supabase에서 실행해 주세요)';
+      else if(fail && /row-level security|policy|permission/i.test(lastErr)) hint=' (관리자: 회장 또는 최고관리자만 자료를 추가할 수 있습니다)';
+      prog.textContent=ok+'개 추가 완료'+(fail?(' · '+fail+'개 실패'+(lastErr?' — '+lastErr:'')+hint):'')+(skipped?(' · '+skipped+'개 형식 제외'):'');
       await loadDBDocs(); renderArchive();
       setTimeout(function(){ if(prog.textContent.indexOf('완료')>=0) prog.textContent=''; }, 5000);
     }
