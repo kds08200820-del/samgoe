@@ -223,21 +223,22 @@
       {badge:'2025', title:'함께 걷고, 함께 쉬다', body:'만세길 걷기대회를 본격적으로 준비하며 지역 기관과 손을 맞잡았고, 목회자 부부가 함께하는 야유회로 서로를 돌보았습니다. 부활절 연합예배와 임원회의 섬김도 쉼 없이 이어졌습니다.'},
       {badge:'2026', title:'오늘, 그리고 내일', body:'조암감리교회에서 드린 부활절 연합예배, 시흥갯골로 떠난 목회자 부부 야유회, 그리고 제9회 지방선거를 앞두고 삼괴지역 6대 현안을 담아 후보자들에게 전한 정책 질의·제언까지 — 공식 홈페이지·앱을 열어, 지나온 길을 기억하며 다음 세대와 함께 걸어갈 길을 준비합니다.', big:true}
     ];
-    var EVENTS = [], isAdmin = false, me = null, editingId = null;
+    var EVENTS = [], isAdmin = false, me = null, editingIndex = -1, usingDefaults = false;
+    function seedRow(e, i){ return { badge:(e.badge||null), title:e.title, body:(e.body||null), big:!!e.big, sort:(i+1)*10 }; }
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
 
     function render(){
       var tl = document.getElementById('timeline');
       if(!EVENTS.length){ tl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">아직 등록된 연혁이 없습니다.</div>'; return; }
-      tl.innerHTML = EVENTS.map(function(e){
-        var adm = isAdmin ? '<div class="adm"><button class="admBtn hEdit" data-id="'+esc(e.id||'')+'">수정</button><button class="admBtn hDel" data-id="'+esc(e.id||'')+'">삭제</button></div>' : '';
+      tl.innerHTML = EVENTS.map(function(e, i){
+        var adm = isAdmin ? '<div class="adm"><button class="admBtn hEdit" data-idx="'+i+'">수정</button><button class="admBtn hDel" data-idx="'+i+'">삭제</button></div>' : '';
         return '<div class="ev'+(e.big?' big':'')+'"><span class="dot"></span><div class="yr">'+esc(e.badge)+'</div><h3>'+esc(e.title)+'</h3>'+
           (e.body?'<p>'+esc(e.body)+'</p>':'')+adm+'</div>';
       }).join('');
     }
 
-    function openModal(ev){
-      editingId = ev ? ev.id : null;
+    function openModal(ev, idx){
+      editingIndex = (idx==null ? -1 : idx);
       document.getElementById('hTitle').textContent = ev ? '연혁 수정' : '연혁 항목 추가';
       document.getElementById('hBadge').value = ev ? (ev.badge||'') : '';
       document.getElementById('hHead').value = ev ? (ev.title||'') : '';
@@ -247,11 +248,12 @@
       document.getElementById('hErr').style.display='none';
       document.getElementById('histOv').classList.add('on');
     }
-    function closeModal(){ document.getElementById('histOv').classList.remove('on'); editingId=null; }
+    function closeModal(){ document.getElementById('histOv').classList.remove('on'); editingIndex=-1; }
 
     async function reload(){
       var r = await window.sb.from('history_events').select('*').order('sort',{ascending:true});
-      if(!r.error && r.data){ EVENTS = r.data; }
+      if(!r.error && r.data && r.data.length){ EVENTS = r.data; usingDefaults=false; }
+      else { EVENTS = DEFAULTS.slice(); usingDefaults=true; }
       render();
     }
     async function saveEvent(){
@@ -266,18 +268,33 @@
         sort: parseInt(document.getElementById('hSort').value,10) || 0
       };
       var btn = document.getElementById('hSaveBtn'); btn.disabled=true;
-      var res = editingId
-        ? await window.sb.from('history_events').update(payload).eq('id', editingId)
-        : await window.sb.from('history_events').insert(payload);
-      btn.disabled=false;
-      if(res.error){ err.textContent='저장 실패: '+res.error.message+' (관리자: history-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display='block'; return; }
-      closeModal(); await reload();
+      try{
+        if(usingDefaults){
+          // 기본 연혁을 처음 편집/추가 → 현재 목록 전체를 DB에 저장(편집 반영). 이후부터는 개별 관리.
+          var rows = EVENTS.map(function(e,i){ var r=seedRow(e,i);
+            if(i===editingIndex){ r.badge=payload.badge; r.title=payload.title; r.body=payload.body; r.big=payload.big; r.sort=payload.sort; } return r; });
+          if(editingIndex<0){ rows.push({ badge:payload.badge, title:payload.title, body:payload.body, big:payload.big, sort:payload.sort }); }
+          var ins = await window.sb.from('history_events').insert(rows); if(ins.error) throw ins.error;
+        } else if(editingIndex>=0 && EVENTS[editingIndex] && EVENTS[editingIndex].id){
+          var up = await window.sb.from('history_events').update(payload).eq('id', EVENTS[editingIndex].id); if(up.error) throw up.error;
+        } else {
+          var ins2 = await window.sb.from('history_events').insert(payload); if(ins2.error) throw ins2.error;
+        }
+        btn.disabled=false; closeModal(); await reload();
+      }catch(e){ btn.disabled=false; err.textContent='저장 실패: '+(e.message||e)+' (관리자: history-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display='block'; }
     }
-    async function delEvent(id){
+    async function delEvent(index){
       if(!confirm('이 연혁 항목을 삭제할까요?')) return;
-      var d = await window.sb.from('history_events').delete().eq('id', id);
-      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
-      await reload();
+      try{
+        if(usingDefaults){
+          var rows = EVENTS.filter(function(_,i){ return i!==index; }).map(function(e,i){ return seedRow(e,i); });
+          if(rows.length){ var ins=await window.sb.from('history_events').insert(rows); if(ins.error) throw ins.error; }
+        } else {
+          var ev = EVENTS[index]; if(!ev || !ev.id){ await reload(); return; }
+          var d = await window.sb.from('history_events').delete().eq('id', ev.id); if(d.error) throw d.error;
+        }
+        await reload();
+      }catch(e){ alert('삭제 실패: '+(e.message||e)+'\n(관리자: history-setup.sql 실행이 필요할 수 있습니다.)'); }
     }
 
     (async function(){
@@ -287,10 +304,10 @@
           me = s.data && s.data.session ? s.data.session.user : null;
           if(me && typeof window.getMyProfile==='function'){ var p = await window.getMyProfile(); isAdmin = window.isAdmin ? window.isAdmin(me, p) : false; }
           var r = await window.sb.from('history_events').select('*').order('sort',{ascending:true});
-          if(!r.error && r.data && r.data.length){ EVENTS = r.data; }
-          else { EVENTS = DEFAULTS.slice(); }
-        } else { EVENTS = DEFAULTS.slice(); }
-      }catch(e){ EVENTS = DEFAULTS.slice(); }
+          if(!r.error && r.data && r.data.length){ EVENTS = r.data; usingDefaults=false; }
+          else { EVENTS = DEFAULTS.slice(); usingDefaults=true; }
+        } else { EVENTS = DEFAULTS.slice(); usingDefaults=true; }
+      }catch(e){ EVENTS = DEFAULTS.slice(); usingDefaults=true; }
       render();
 
       if(isAdmin){
@@ -298,9 +315,9 @@
         document.getElementById('histAdd').addEventListener('click', function(){ openModal(null); });
         document.getElementById('timeline').addEventListener('click', function(e){
           var ed = e.target.closest && e.target.closest('.hEdit');
-          if(ed){ var id=ed.getAttribute('data-id'); var ev=EVENTS.find(function(x){return String(x.id)===id;}); if(ev) openModal(ev); return; }
+          if(ed){ var i=parseInt(ed.getAttribute('data-idx'),10); if(EVENTS[i]) openModal(EVENTS[i], i); return; }
           var dl = e.target.closest && e.target.closest('.hDel');
-          if(dl){ delEvent(dl.getAttribute('data-id')); }
+          if(dl){ delEvent(parseInt(dl.getAttribute('data-idx'),10)); }
         });
         document.getElementById('hCancel').addEventListener('click', closeModal);
         document.getElementById('hSaveBtn').addEventListener('click', saveEvent);
