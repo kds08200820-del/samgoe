@@ -171,6 +171,43 @@ export default {
       return json({ ok: true }, 200);
     }
 
+    // ---------- 임원: 기사 URL 메타데이터(og) 불러오기: POST /fetch-meta ----------
+    // body: { url }  ·  임원만 · 기사 페이지의 og:title/og:image/og:description/og:site_name 추출
+    if (request.method === 'POST' && url.pathname === '/fetch-meta') {
+      const user = await verifyUser(request, env);
+      if (!user) return json({ error: '로그인이 필요합니다.' }, 401);
+      if (!isOfficer(user, env)) return json({ error: '임원만 사용할 수 있습니다.' }, 403);
+      const body = await request.json().catch(() => ({}));
+      const target = (body.url || '').trim();
+      if (!/^https?:\/\//i.test(target)) return json({ error: '올바른 URL(https://…)이 아닙니다.' }, 400);
+      let res;
+      try { res = await fetch(target, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SamgoeBot/1.0)' }, redirect: 'follow' }); }
+      catch (e) { return json({ error: '기사 페이지를 불러오지 못했습니다.' }, 502); }
+      if (!res.ok) return json({ error: '기사 페이지 응답 오류(' + res.status + ')' }, 502);
+      let html = await res.text();
+      if (html.length > 800000) html = html.slice(0, 800000);
+      const dec = (s) => String(s || '')
+        .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&#x27;/gi, "'")
+        .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').trim();
+      const meta = (keys) => {
+        for (const k of keys) {
+          const re = new RegExp('<meta[^>]+(?:property|name)=["\\\']' + k + '["\\\'][^>]*>', 'i');
+          const tag = html.match(re);
+          if (tag) { const c = tag[0].match(/content=["\']([^"\']*)["\']/i); if (c && c[1]) return dec(c[1]); }
+        }
+        return '';
+      };
+      let title = meta(['og:title', 'twitter:title']);
+      if (!title) { const t = html.match(/<title[^>]*>([^<]*)<\/title>/i); if (t) title = dec(t[1]); }
+      let host = ''; try { host = new URL(target).hostname.replace(/^www\./, ''); } catch (_) {}
+      return json({
+        title: title,
+        image: meta(['og:image', 'twitter:image', 'twitter:image:src']),
+        summary: meta(['og:description', 'twitter:description', 'description']),
+        source: meta(['og:site_name']) || host,
+      }, 200);
+    }
+
     return new Response('삼기연 R2 Worker · OK', { headers: CORS });
   },
 };
