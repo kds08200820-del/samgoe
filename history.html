@@ -73,6 +73,36 @@
       .ev .dot{left:2px !important;right:auto !important;}
       .egrid{grid-template-columns:1fr;}
     }
+    /* 감성 · 관리자 편집 */
+    .opening{background:#fff;padding:60px 24px 4px;text-align:center;}
+    .opening .lead{max-width:660px;margin:0 auto;font-size:20px;line-height:1.95;color:var(--ink);font-weight:300;}
+    .opening .lead b{font-weight:700;color:var(--primary);}
+    .quote{background:var(--parchment);padding:66px 24px;text-align:center;}
+    .quote p{max-width:720px;margin:0 auto;font-size:23px;line-height:1.7;font-weight:300;color:var(--ink);font-style:italic;}
+    .quote span{display:block;margin-top:18px;font-size:13px;color:var(--muted);font-style:normal;font-weight:700;letter-spacing:1.5px;}
+    .ev .adm{margin-top:10px;display:flex;gap:8px;}
+    .ev:nth-child(odd) .adm{justify-content:flex-end;}
+    @media (max-width:720px){ .ev:nth-child(odd) .adm{justify-content:flex-start;} }
+    .admBtn{border:1px solid var(--hairline-strong);background:#fff;font-size:12px;font-weight:700;color:var(--muted);padding:4px 10px;cursor:pointer;font-family:inherit;}
+    .admBtn:hover{color:var(--primary);border-color:var(--primary);}
+    .addWrap{text-align:center;margin:6px 0 30px;}
+    .addBtn{border:1px dashed var(--primary);background:#eef5ff;color:var(--primary);font-size:14px;font-weight:700;padding:11px 22px;cursor:pointer;font-family:inherit;}
+    .hov{position:fixed;inset:0;background:rgba(20,24,30,0.55);z-index:60;display:none;overflow-y:auto;padding:40px 16px;}
+    .hov.on{display:block;}
+    .hmdl{max-width:520px;margin:0 auto;background:#fff;padding:28px 26px;}
+    .hmdl h3{margin:0 0 16px;font-size:20px;font-weight:700;color:var(--ink);}
+    .hmdl label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 5px;}
+    .hmdl input,.hmdl textarea{width:100%;padding:11px 13px;border:1px solid var(--hairline-strong);font-size:15px;font-family:inherit;font-weight:300;border-radius:0;color:var(--ink);box-sizing:border-box;}
+    .hmdl textarea{min-height:120px;resize:vertical;line-height:1.7;}
+    .hmdl input:focus,.hmdl textarea:focus{outline:none;border:2px solid var(--ink);}
+    .hmdl .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .hmdl .chk{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:14px;font-weight:400;color:var(--bodytext);cursor:pointer;}
+    .hmdl .chk input{width:18px;height:18px;accent-color:var(--primary);}
+    .hAct{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+    .hAct button{height:42px;padding:0 20px;border:0;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .hAct .save{background:var(--primary);color:#fff;}
+    .hAct .cancel{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+    .hErr{display:none;margin-top:12px;padding:10px 12px;background:#fdecea;border:1px solid #f3c7c3;color:#dc2626;font-size:13px;}
   </style>
 </head>
 <body>
@@ -89,24 +119,24 @@
     </div>
   </section>
 
-  <!-- 타임라인 -->
+  <!-- 여는 글 -->
+  <section class="opening">
+    <p class="lead">화려한 건물도, 큰 행사도 아니었습니다.<br>작은 교회와 큰 교회가 <b>한 식탁에 둘러앉아</b> 손을 맞잡고,<br>교파의 담을 넘어 <b>한 형제</b>로 함께 기도해 온 시간 —<br>그 걸음 하나하나가 삼괴지역 복음의 통로가 되었습니다.</p>
+  </section>
+
+  <!-- 타임라인 (관리자 편집 가능) -->
   <section class="section wrap">
-    <h2 class="sec-h2">연혁</h2>
-    <p class="sec-sub">삼괴지역 교회가 함께 걸어온 주요 발자취입니다.</p>
-    <div class="tl" id="timeline">
-      <div class="ev big"><span class="dot"></span><div class="yr">1919</div><h3>3·1 만세운동의 뿌리</h3><p>우정읍·장안면 화수리에서 일어난 3·1 만세운동. 삼괴지역 교회가 기억하고 이어가는 신앙과 나라 사랑의 뿌리입니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">오랜 뿌리</div><h3>교파를 넘어 한 형제로</h3><p>삼괴지역에서 교회를 섬기는 목회자들이 교단을 넘어 연합해 왔습니다. 2009년에 이미 열 분의 증경회장을 모실 만큼, 오랜 세월 함께 걸어온 공동체입니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2009</div><h3>정기총회 · 회칙 정비</h3><p>정기총회에서 회칙을 개정하고 협동총무 등 조직을 정비하며, 연합 사역의 틀을 새롭게 다졌습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2010</div><h3>절기 연합예배 · 신년 성회 정착</h3><p>신년축복성회, 3·1절 기념 연합기도회, 부활절 연합예배로 지역 교회가 한자리에 모이는 자리가 자리 잡았습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2011</div><h3>나라를 위한 연합기도</h3><p>6·25 상기 · 8·15 광복절 기념 연합기도회를 드리고, 봄·가을 목회자 단합대회로 서로를 격려했습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2012</div><h3>지역민과 함께한 신년축복성회</h3><p>지역민을 초청한 은혜의 집회에 300여 명이 함께 모여, 지역과 소통하는 연합회로 나아갔습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2013</div><h3>부활주일 연합예배 · 정기총회</h3><p>지역 기관과 함께한 부활절 연합예배를 드리고, 한 해의 사역을 총회로 정리했습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2014</div><h3>투명한 재정 · 결산과 감사</h3><p>연간 결산과 재정 감사를 정착시켜, 회원 교회 앞에 책임 있게 운영해 왔습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2016</div><h3>다음 세대 장학사업</h3><p>지역의 학생들에게 장학금과 장학증서를 수여하며, 교회와 지역의 다음 세대를 함께 세웠습니다.</p></div>
-      <div class="ev"><span class="dot"></span><div class="yr">2018</div><h3>활발한 연합 활동</h3><p>신년 조찬기도회, 부활절 연합예배(헌금으로 이웃 섬김), 목회자 부부 수양회, 8·15 광복절 연합예배, 정기총회로 한 해를 채웠습니다. 화성시 기독교총연합회와도 함께했습니다.</p></div>
-      <div class="ev big"><span class="dot"></span><div class="yr">2026</div><h3>오늘의 삼기연</h3><p>목회자 부부 야유회, 지방선거 정책질의, 공식 홈페이지·앱 개설 등 지역과 소통하며 새로운 걸음을 이어갑니다.</p></div>
-    </div>
-    <div class="note">※ 연혁은 삼기연이 보관해 온 회의록·순서지·보고서 등 실제 역사 기록을 바탕으로 정리했습니다. 창립 연도는 기록에 명시되어 있지 않으며, 세부 내용은 계속 보완됩니다.</div>
+    <h2 class="sec-h2">우리가 걸어온 길</h2>
+    <p class="sec-sub">삼기연이 보관해 온 역사 기록을 따라, 함께 걸어온 발자취를 되짚습니다.</p>
+    <div class="tl" id="timeline"><div style="text-align:center;color:var(--muted);padding:20px;">불러오는 중…</div></div>
+    <div class="addWrap" id="addWrap" style="display:none;"><button class="addBtn" id="histAdd">＋ 연혁 항목 추가</button></div>
+    <div class="note">※ 연혁은 삼기연이 보관해 온 회의록·순서지·보고서 등 실제 역사 기록을 바탕으로 정리했으며, 관리자가 언제든 이야기를 더할 수 있습니다.</div>
+  </section>
+
+  <!-- 감성 인용 -->
+  <section class="quote">
+    <p>"한 사람의 열 걸음보다, 열 사람의 한 걸음으로 —<br>우리는 함께이기에 여기까지 걸어올 수 있었습니다."</p>
+    <span>삼괴지역 기독교 연합회</span>
   </section>
 
   <!-- 정기 연합 행사 -->
@@ -151,8 +181,130 @@
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </section>
 
+  <!-- 연혁 추가/수정 모달 (관리자) -->
+  <div class="hov" id="histOv">
+    <div class="hmdl">
+      <h3 id="hTitle">연혁 항목</h3>
+      <div class="row2">
+        <div><label>연도 / 라벨</label><input id="hBadge" type="text" placeholder="예: 2010, 오랜 뿌리" /></div>
+        <div><label>정렬 순서</label><input id="hSort" type="number" placeholder="10, 20, 30 …" /></div>
+      </div>
+      <label>제목</label>
+      <input id="hHead" type="text" placeholder="예: 절기마다, 한자리에" />
+      <label>내용</label>
+      <textarea id="hBody" placeholder="이 시기의 이야기를 담아 주세요."></textarea>
+      <label class="chk"><input type="checkbox" id="hBig" /> 강조 표시 (제목을 진하게)</label>
+      <div class="hErr" id="hErr"></div>
+      <div class="hAct">
+        <button class="cancel" id="hCancel">취소</button>
+        <button class="save" id="hSaveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="auth.js?v=5"></script>
+  <script>
+  (function(){
+    var DEFAULTS = [
+      {badge:'1919', title:'3·1 만세운동의 뿌리', body:'우정읍·장안면 화수리에서 일어난 3·1 만세운동. 그 함성과 헌신은, 오늘 삼괴지역 교회가 기억하고 이어가는 신앙과 나라 사랑의 뿌리가 되었습니다.', big:true},
+      {badge:'오랜 뿌리', title:'교파를 넘어 한 형제로', body:'삼괴지역에서 교회를 섬기는 목회자들이 교단의 담을 넘어 손을 맞잡았습니다. 2009년에 이미 열 분의 증경회장을 모실 만큼, 오랜 세월 함께 걸어온 공동체입니다.'},
+      {badge:'2009', title:'정기총회 · 회칙 정비', body:'정기총회에서 회칙을 개정하고 협동총무 등 조직을 정비하며, 함께 걷는 연합 사역의 틀을 새롭게 다졌습니다.'},
+      {badge:'2010', title:'절기마다, 한자리에', body:'신년축복성회와 3·1절 기념 연합기도회, 부활절 연합예배로 지역 교회가 절기마다 한자리에 모이는 자리가 자리 잡았습니다.'},
+      {badge:'2011', title:'나라를 위한 무릎', body:'6·25 상기와 8·15 광복절 기념 연합기도회로 나라를 위해 무릎 꿇었고, 봄·가을 목회자 단합대회로 서로의 어깨를 겯었습니다.'},
+      {badge:'2012', title:'지역민과 함께한 은혜', body:'지역민을 초청한 신년축복성회에 300여 명이 함께 모여, 교회의 담을 넘어 지역과 마음을 나누는 연합회로 나아갔습니다.'},
+      {badge:'2013', title:'부활의 아침, 함께', body:'지역 기관과 함께 드린 부활주일 연합예배로 그리스도의 부활을 기념하고, 한 해의 사역을 정기총회로 정리했습니다.'},
+      {badge:'2014', title:'투명한 손길', body:'연간 결산과 재정 감사를 정착시켜, 작은 헌금 하나까지 회원 교회 앞에 책임 있고 투명하게 섬겼습니다.'},
+      {badge:'2016', title:'다음 세대를 심다', body:'지역의 학생들에게 장학금과 장학증서를 전하며, 오늘의 섬김이 내일의 열매가 되도록 다음 세대를 함께 세웠습니다.'},
+      {badge:'2018', title:'쉼 없이 이어진 걸음', body:'신년 조찬기도회, 부활절 연합예배(헌금으로 이웃 섬김), 목회자 부부 수양회, 8·15 광복절 연합예배와 정기총회로 한 해를 가득 채웠습니다.'},
+      {badge:'2026', title:'오늘, 그리고 내일', body:'목회자 부부 야유회, 지역을 향한 정책 제언, 공식 홈페이지·앱 개설 — 지나온 길을 기억하며, 다음 세대와 함께 걸어갈 길을 준비합니다.', big:true}
+    ];
+    var EVENTS = [], isAdmin = false, me = null, editingId = null;
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+
+    function render(){
+      var tl = document.getElementById('timeline');
+      if(!EVENTS.length){ tl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">아직 등록된 연혁이 없습니다.</div>'; return; }
+      tl.innerHTML = EVENTS.map(function(e){
+        var adm = isAdmin ? '<div class="adm"><button class="admBtn hEdit" data-id="'+esc(e.id||'')+'">수정</button><button class="admBtn hDel" data-id="'+esc(e.id||'')+'">삭제</button></div>' : '';
+        return '<div class="ev'+(e.big?' big':'')+'"><span class="dot"></span><div class="yr">'+esc(e.badge)+'</div><h3>'+esc(e.title)+'</h3>'+
+          (e.body?'<p>'+esc(e.body)+'</p>':'')+adm+'</div>';
+      }).join('');
+    }
+
+    function openModal(ev){
+      editingId = ev ? ev.id : null;
+      document.getElementById('hTitle').textContent = ev ? '연혁 수정' : '연혁 항목 추가';
+      document.getElementById('hBadge').value = ev ? (ev.badge||'') : '';
+      document.getElementById('hHead').value = ev ? (ev.title||'') : '';
+      document.getElementById('hBody').value = ev ? (ev.body||'') : '';
+      document.getElementById('hBig').checked = ev ? !!ev.big : false;
+      document.getElementById('hSort').value = ev ? (ev.sort!=null?ev.sort:'') : ((EVENTS.length+1)*10);
+      document.getElementById('hErr').style.display='none';
+      document.getElementById('histOv').classList.add('on');
+    }
+    function closeModal(){ document.getElementById('histOv').classList.remove('on'); editingId=null; }
+
+    async function reload(){
+      var r = await window.sb.from('history_events').select('*').order('sort',{ascending:true});
+      if(!r.error && r.data){ EVENTS = r.data; }
+      render();
+    }
+    async function saveEvent(){
+      var err = document.getElementById('hErr');
+      var title = document.getElementById('hHead').value.trim();
+      if(!title){ err.textContent='제목을 입력해 주세요.'; err.style.display='block'; return; }
+      var payload = {
+        badge: document.getElementById('hBadge').value.trim() || null,
+        title: title,
+        body: document.getElementById('hBody').value.trim() || null,
+        big: document.getElementById('hBig').checked,
+        sort: parseInt(document.getElementById('hSort').value,10) || 0
+      };
+      var btn = document.getElementById('hSaveBtn'); btn.disabled=true;
+      var res = editingId
+        ? await window.sb.from('history_events').update(payload).eq('id', editingId)
+        : await window.sb.from('history_events').insert(payload);
+      btn.disabled=false;
+      if(res.error){ err.textContent='저장 실패: '+res.error.message+' (관리자: history-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display='block'; return; }
+      closeModal(); await reload();
+    }
+    async function delEvent(id){
+      if(!confirm('이 연혁 항목을 삭제할까요?')) return;
+      var d = await window.sb.from('history_events').delete().eq('id', id);
+      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+      await reload();
+    }
+
+    (async function(){
+      try{
+        if(window.sb){
+          var s = await window.sb.auth.getSession();
+          me = s.data && s.data.session ? s.data.session.user : null;
+          if(me && typeof window.getMyProfile==='function'){ var p = await window.getMyProfile(); isAdmin = window.isAdmin ? window.isAdmin(me, p) : false; }
+          var r = await window.sb.from('history_events').select('*').order('sort',{ascending:true});
+          if(!r.error && r.data && r.data.length){ EVENTS = r.data; }
+          else { EVENTS = DEFAULTS.slice(); }
+        } else { EVENTS = DEFAULTS.slice(); }
+      }catch(e){ EVENTS = DEFAULTS.slice(); }
+      render();
+
+      if(isAdmin){
+        document.getElementById('addWrap').style.display='block';
+        document.getElementById('histAdd').addEventListener('click', function(){ openModal(null); });
+        document.getElementById('timeline').addEventListener('click', function(e){
+          var ed = e.target.closest && e.target.closest('.hEdit');
+          if(ed){ var id=ed.getAttribute('data-id'); var ev=EVENTS.find(function(x){return String(x.id)===id;}); if(ev) openModal(ev); return; }
+          var dl = e.target.closest && e.target.closest('.hDel');
+          if(dl){ delEvent(dl.getAttribute('data-id')); }
+        });
+        document.getElementById('hCancel').addEventListener('click', closeModal);
+        document.getElementById('hSaveBtn').addEventListener('click', saveEvent);
+        document.getElementById('histOv').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+      }
+    })();
+  })();
+  </script>
 </body>
 </html>
