@@ -7,12 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
       --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--surface-card:#fafafa;--dark:#1a2129;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
-      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+      font-family:"Pretendard Variable",Pretendard,'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:30;}
     .bar .in{max-width:1180px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
@@ -22,9 +23,7 @@
     .head{text-align:center;margin-bottom:8px;}
     .title{margin:0;font-weight:700;font-size:34px;letter-spacing:0;color:var(--ink);}
     .sub{margin:12px 0 0;font-size:16px;color:var(--muted);}
-    /* 글쓰기 카드 */
-    .writeBox{margin:32px 0 24px;background:var(--canvas);border:1px solid var(--hairline);border-radius:18px;padding:28px 28px 26px;box-shadow:0 4px 18px rgba(20,30,42,0.05);}
-    .writeBox h3{margin:0 0 16px;font-size:18px;font-weight:700;color:var(--ink);}
+    /* 글쓰기 폼 */
     .fld{margin-bottom:14px;}
     .fld label{display:block;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--ink);margin-bottom:6px;}
     .fld input, .fld textarea{width:100%;padding:12px 14px;border:1px solid var(--hairline);background:var(--surface-soft);
@@ -55,6 +54,11 @@
     .prog{margin-top:12px;font-size:13px;color:var(--muted);min-height:18px;}
     .notice{margin:30px 0 10px;padding:16px 18px;background:#fff8e1;border:1px solid #f5e0a3;color:#7a5b00;font-size:14px;line-height:1.6;}
     .notice a{color:var(--primary);font-weight:700;}
+    /* 글쓰기 트리거 버튼 */
+    #writeTrigger{text-align:center;margin:32px 0 8px;}
+    #writeTrigger .btn{padding:0 30px;}
+    .writeModal{max-width:640px;border-radius:16px;}
+    .writeModal .mbody{padding:22px 26px 26px;}
     /* 게시판 목록 */
     .board{margin-top:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
     .post{background:var(--canvas);border:1px solid var(--hairline);border-radius:16px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;
@@ -143,41 +147,9 @@
       <p class="sub">함께한 순간들을 나눠 주세요 · 정회원이면 글과 사진을 올릴 수 있습니다.</p>
     </div>
 
-    <!-- 정회원: 글쓰기 -->
-    <div class="writeBox" id="writeBox" style="display:none;">
-      <h3>새 게시글 올리기</h3>
-      <div class="fld">
-        <label for="pTitle">제목</label>
-        <input id="pTitle" type="text" maxlength="80" placeholder="예: 2026 3·1절 기념 공감음악회" />
-      </div>
-      <div class="frow">
-        <div class="fld">
-          <label for="pEvent">행사명 <span style="font-weight:400;color:var(--muted)">(선택 · 입력하면 다음부터 추천)</span></label>
-          <input id="pEvent" type="text" list="eventList" maxlength="60" placeholder="예: 조찬기도회" autocomplete="off" />
-          <datalist id="eventList"></datalist>
-        </div>
-        <div class="fld">
-          <label for="pDate">날짜</label>
-          <input id="pDate" type="date" />
-        </div>
-      </div>
-      <div class="fld">
-        <label for="pBody">설명 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
-        <textarea id="pBody" maxlength="1000" placeholder="행사 내용을 간단히 적어 주세요."></textarea>
-      </div>
-      <div class="fld">
-        <label>사진</label>
-        <div class="drop" id="drop">
-          <div class="big">사진을 여기로 끌어다 놓으세요</div>
-          <div class="small">또는 <u>클릭해서 선택</u> · 여러 장 가능 · 올릴 때 자동으로 웹 크기로 줄입니다</div>
-        </div>
-        <input type="file" id="fileInput" accept="image/*" multiple hidden />
-        <div class="thumbs" id="thumbs"></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-        <button class="btn" id="submitPost">게시글 등록</button>
-        <span class="prog" id="prog"></span>
-      </div>
+    <!-- 정회원: 글쓰기 버튼 -->
+    <div id="writeTrigger" style="display:none;">
+      <button class="btn" id="openWrite">＋ 게시글 등록</button>
     </div>
 
     <!-- 비회원/일반회원 안내 -->
@@ -188,6 +160,50 @@
     <div class="empty" id="empty" style="display:none;">아직 올라온 게시글이 없습니다.</div>
 
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <!-- 글쓰기 모달 -->
+  <div class="overlay" id="writeOverlay">
+    <div class="modal writeModal" id="writeModal">
+      <div class="mhead">
+        <button class="mclose" id="wClose" aria-label="닫기">×</button>
+        <h2>새 게시글 올리기</h2>
+      </div>
+      <div class="mbody">
+        <div class="fld">
+          <label for="pTitle">제목</label>
+          <input id="pTitle" type="text" maxlength="80" placeholder="예: 2026 3·1절 기념 공감음악회" />
+        </div>
+        <div class="frow">
+          <div class="fld">
+            <label for="pEvent">행사명 <span style="font-weight:400;color:var(--muted)">(선택 · 입력하면 다음부터 추천)</span></label>
+            <input id="pEvent" type="text" list="eventList" maxlength="60" placeholder="예: 조찬기도회" autocomplete="off" />
+            <datalist id="eventList"></datalist>
+          </div>
+          <div class="fld">
+            <label for="pDate">날짜</label>
+            <input id="pDate" type="date" />
+          </div>
+        </div>
+        <div class="fld">
+          <label for="pBody">설명 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
+          <textarea id="pBody" maxlength="1000" placeholder="행사 내용을 간단히 적어 주세요."></textarea>
+        </div>
+        <div class="fld">
+          <label>사진</label>
+          <div class="drop" id="drop">
+            <div class="big">사진을 여기로 끌어다 놓으세요</div>
+            <div class="small">또는 <u>클릭해서 선택</u> · 여러 장 가능 · 올릴 때 자동으로 웹 크기로 줄입니다</div>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" multiple hidden />
+          <div class="thumbs" id="thumbs"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+          <button class="btn" id="submitPost">게시글 올리기</button>
+          <span class="prog" id="prog"></span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 상세 모달 -->
@@ -372,6 +388,7 @@
         pendingFiles=[]; renderThumbs();
         prog.textContent='게시글이 등록되었습니다.'+(fail?(' ('+fail+'장 실패)'):'');
         await loadAll();
+        if(!fail) requestCloseTop();  // 성공 시 팝업 닫기
         setTimeout(function(){ if(prog.textContent.indexOf('등록')>=0) prog.textContent=''; }, 4000);
       }catch(e){
         prog.textContent='등록 실패: '+(e.message||e);
@@ -387,7 +404,12 @@
       var name = modalStack.pop();
       if(name === 'lightbox') hideLightbox();
       else if(name === 'detail') hideDetail();
+      else if(name === 'write') hideWrite();
     });
+
+    // ---------- 글쓰기 모달 ----------
+    function openWrite(){ document.getElementById('writeOverlay').classList.add('on'); document.body.style.overflow='hidden'; pushModal('write'); var t=document.getElementById('pTitle'); if(t) setTimeout(function(){ t.focus(); },50); }
+    function hideWrite(){ document.getElementById('writeOverlay').classList.remove('on'); if(!modalStack.length) document.body.style.overflow=''; }
 
     // ---------- 상세 모달 ----------
     var curPostId = null;
@@ -617,7 +639,7 @@
 
       isFull = myProfile && myProfile.member_type === '정회원';
       if(isFull){
-        document.getElementById('writeBox').style.display='block';
+        document.getElementById('writeTrigger').style.display='block';
         document.getElementById('pDate').value = todayStr();
       } else {
         var n = document.getElementById('guestNotice'); n.style.display='block';
@@ -636,6 +658,9 @@
 
       // 글쓰기 이벤트
       if(isFull){
+        document.getElementById('openWrite').addEventListener('click', openWrite);
+        document.getElementById('wClose').addEventListener('click', requestCloseTop);
+        document.getElementById('writeOverlay').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
         var drop=document.getElementById('drop'), input=document.getElementById('fileInput');
         drop.addEventListener('click', function(){ input.click(); });
         input.addEventListener('change', function(){ if(input.files.length) addFiles(input.files); input.value=''; });

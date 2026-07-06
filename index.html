@@ -12,10 +12,10 @@
   <meta property="og:image" content="assets/img/hero.webp" />
 
   <!-- 스마트폰 홈 화면 앱 설치 (PWA) -->
-  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="manifest" href="manifest.webmanifest?v=6" />
   <meta name="theme-color" content="#1c69d4" />
-  <link rel="icon" type="image/png" href="assets/app-icon.png?v=4" />
-  <link rel="apple-touch-icon" href="assets/app-icon.png?v=4" />
+  <link rel="icon" type="image/png" href="assets/app-icon-192.png?v=6" />
+  <link rel="apple-touch-icon" href="assets/app-icon-192.png?v=6" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="삼기연" />
@@ -23,7 +23,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 
   <style>
     :root{
@@ -40,12 +42,15 @@
       --tile1:#1a2129; --tile3:#1a2129; --black:#1a2129;
       --divider:#ebebeb; --ondark:#ffffff; --ondark-muted:#bbbbbb;
       --shadow:none;
+      /* 폰트 스택 — 모던 산세리프(Pretendard) */
+      --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+      --sans-latin:"Inter","Pretendard Variable",Pretendard,sans-serif;
     }
     *{box-sizing:border-box;}
     html{scroll-behavior:smooth;}
     body{margin:0;background:var(--canvas);color:var(--bodytext);
-      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-      font-weight:300;letter-spacing:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+      font-family:var(--sans);
+      font-weight:400;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
       word-break:keep-all;overflow-wrap:break-word;}
     ::selection{background:var(--primary);color:#fff;}
     /* 걸어온 길 세로 자동 스크롤 */
@@ -191,12 +196,12 @@
       --navy:#26374d; --navy-deep:#1c2a3a; --navy-soft:#33475f; --navy-line:rgba(255,255,255,0.14);
       --slate:#8ea3b2; --slate-deep:#5f7688; --mist:#e8edf0; --mist-2:#dde4e9; --gold:#c3a366;
     }
-    .serif{font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif;font-weight:700;letter-spacing:0.01em;}
-    /* 모든 섹션 제목을 세리프로 — 전체 톤을 격조있게 */
-    .sec-h2,.hero-h1{font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif !important;font-weight:700;letter-spacing:0.005em;}
+    .serif{font-family:var(--sans);font-weight:800;letter-spacing:-0.025em;}
+    /* 모든 섹션 제목을 굵은 모던 산세리프로 — 세련되고 정돈된 톤 */
+    .sec-h2,.hero-h1{font-family:var(--sans) !important;font-weight:800;letter-spacing:-0.025em;}
     /* 얇은 대문자 라벨 (— LABEL) */
     .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:12px;font-weight:700;
-      letter-spacing:2.5px;text-transform:uppercase;color:var(--slate-deep);font-family:'Inter',sans-serif;}
+      letter-spacing:2.5px;text-transform:uppercase;color:var(--slate-deep);font-family:var(--sans-latin);}
     .eyebrow::before{content:'';width:26px;height:1px;background:currentColor;flex:0 0 auto;}
     .eyebrow.on-dark{color:var(--slate);}
 
@@ -210,8 +215,8 @@
     .hero2 .hero2-box{text-shadow:0 2px 18px rgba(0,0,0,0.7);}
     .hero2 .hero2-inner{position:relative;z-index:3;max-width:1160px;width:100%;margin:0 auto;padding:0 40px;}
     .hero2 .hero2-box{max-width:560px;color:#fff;padding:48px 0;}
-    .hero2 .hero2-box h1{margin:22px 0 26px;font-size:64px;line-height:1.06;color:#fff;
-      font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif;font-weight:700;letter-spacing:0.01em;}
+    .hero2 .hero2-box h1{margin:22px 0 26px;font-size:60px;line-height:1.1;color:#fff;
+      font-family:var(--sans);font-weight:800;letter-spacing:-0.03em;}
     .hero2 .hero2-verse{margin:0 0 30px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.78);font-weight:300;max-width:440px;}
     .hero2 .hero2-cta{display:inline-flex;align-items:center;gap:10px;height:50px;padding:0 30px;
       border:1px solid rgba(255,255,255,0.55);color:#fff;font-size:14px;font-weight:700;letter-spacing:1.5px;
@@ -250,7 +255,7 @@
       display:flex;flex-direction:column;min-height:150px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;}
     a.dash-card:hover{transform:translateY(-4px);border-color:var(--navy);box-shadow:0 10px 26px rgba(28,42,58,0.10);}
     .dash-card .dc-label{font-size:11.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--slate-deep);}
-    .dash-card .dc-big{font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:700;color:var(--navy-deep);line-height:1;}
+    .dash-card .dc-big{font-family:var(--sans-latin);font-weight:800;letter-spacing:-0.02em;color:var(--navy-deep);line-height:1;}
     .dash-card.navy{background:var(--navy);border-color:var(--navy);color:#fff;}
     .dash-card.navy .dc-label{color:var(--slate);}
     .dash-card.navy .dc-big,.dash-card.navy .dc-title{color:#fff;}
@@ -328,7 +333,7 @@
     /* ---- 수요조찬기도회 ---- */
     .pray-next{background:var(--navy);color:#fff;padding:40px 40px;display:flex;gap:40px;align-items:center;flex-wrap:wrap;}
     .pray-next .pn-date{flex:0 0 auto;text-align:center;padding-right:40px;border-right:1px solid var(--navy-line);}
-    .pray-next .pn-d{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:66px;line-height:0.9;}
+    .pray-next .pn-d{font-family:var(--sans-latin);font-weight:800;letter-spacing:-0.02em;font-size:66px;line-height:0.9;}
     .pray-next .pn-m{margin-top:6px;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--slate);}
     .pray-next .pn-main{flex:1;min-width:240px;}
     .pray-row{display:flex;gap:20px;align-items:baseline;padding:16px 4px;border-top:1px solid var(--hairline);}
@@ -361,7 +366,13 @@
   <header style="position:sticky;top:0;z-index:60;background:var(--black);height:44px;">
     <div style="max-width:1024px;margin:0 auto;height:44px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;">
       <a href="#top" style="font-size:13px;font-weight:700;letter-spacing:0;color:rgba(255,255,255,0.92);">삼괴지역 기독교 연합회</a>
-      <span id="authArea" style="font-size:12px;letter-spacing:0;"></span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button id="installBtn" type="button" style="display:none;align-items:center;gap:5px;height:28px;padding:0 12px;border:0;border-radius:14px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;letter-spacing:0;cursor:pointer;font-family:inherit;line-height:1;white-space:nowrap;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="display:block;"><path d="M12 3v11m0 0 4-4m-4 4-4-4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          앱 설치
+        </button>
+        <span id="authArea" style="font-size:12px;letter-spacing:0;"></span>
+      </div>
     </div>
   </header>
 
@@ -393,7 +404,6 @@
     <div class="hero2-slides" id="heroSlides"></div>
     <div class="hero2-inner">
       <div class="hero2-box">
-        <img src="assets/logo-trans.png?v=2" alt="삼기연" style="height:52px;width:auto;filter:brightness(0) invert(1);opacity:0.95;margin-bottom:20px;" />
         <div class="eyebrow on-dark">화성특례시 · 삼괴지역</div>
         <h1>삼괴지역<br>기독교 연합회</h1>
         <p class="hero2-verse">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고”<br>— 시편 133 : 1</p>
@@ -1257,6 +1267,65 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function(){});
   });
 }
+
+// 앱 설치(PWA) — 헤더 "앱 설치" 버튼
+(function(){
+  var btn = document.getElementById('installBtn');
+  if(!btn) return;
+  var deferred = null;
+  var ua = navigator.userAgent || '';
+  function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+  var isIOS = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+  function show(){ if(!isStandalone()) btn.style.display='inline-flex'; }
+  function hide(){ btn.style.display='none'; }
+
+  // 안드로이드 크롬/엣지: 설치 가능 시 브라우저가 이 이벤트를 보냄
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferred = e;
+    show();
+  });
+  window.addEventListener('appinstalled', function(){ deferred=null; hide(); });
+
+  // iOS 사파리는 beforeinstallprompt를 지원하지 않으므로 안내 방식으로 표시
+  if(isIOS && !isStandalone()) show();
+
+  btn.addEventListener('click', function(){
+    if(deferred){
+      deferred.prompt();
+      deferred.userChoice.then(function(c){ if(c && c.outcome==='accepted') hide(); deferred=null; });
+    } else if(isIOS){
+      showIosGuide();
+    } else {
+      // 이미 설치했거나, 크롬 메뉴로 설치해야 하는 경우 안내
+      alert('브라우저 메뉴(⋮)에서 “앱 설치” 또는 “홈 화면에 추가”를 눌러 설치할 수 있어요.\n(안드로이드는 크롬으로 열면 설치 버튼이 자동으로 나타납니다.)');
+    }
+  });
+
+  function showIosGuide(){
+    if(document.getElementById('iosGuide')) { document.getElementById('iosGuide').style.display='flex'; return; }
+    var w = document.createElement('div');
+    w.id = 'iosGuide';
+    w.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(10,14,20,0.55);display:flex;align-items:flex-end;justify-content:center;';
+    w.innerHTML =
+      '<div style="background:#fff;width:100%;max-width:440px;border-radius:18px 18px 0 0;padding:24px 22px 30px;box-shadow:0 -8px 30px rgba(0,0,0,0.2);font-family:inherit;">'+
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'+
+          '<img src="assets/app-icon-192.png?v=6" alt="삼기연" style="width:44px;height:44px;border-radius:11px;" />'+
+          '<div><div style="font-size:16px;font-weight:700;color:#1a2129;">홈 화면에 앱 추가</div>'+
+          '<div style="font-size:12.5px;color:#6b6b6b;">삼기연을 앱처럼 사용하세요</div></div>'+
+        '</div>'+
+        '<ol style="margin:0 0 18px;padding-left:20px;font-size:14px;line-height:1.9;color:#3c3c3c;">'+
+          '<li>사파리 하단(또는 상단)의 <b>공유</b> 버튼 <span style="display:inline-block;vertical-align:-3px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v11" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/><path d="m8 7 4-4 4 4" stroke="#1c69d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/></svg></span> 을 누릅니다.</li>'+
+          '<li><b>“홈 화면에 추가”</b> 를 선택합니다.</li>'+
+          '<li>오른쪽 위 <b>“추가”</b> 를 누르면 완료!</li>'+
+        '</ol>'+
+        '<button type="button" id="iosGuideClose" style="width:100%;height:46px;border:0;border-radius:12px;background:#1c69d4;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">확인</button>'+
+      '</div>';
+    document.body.appendChild(w);
+    w.addEventListener('click', function(e){ if(e.target===w) w.style.display='none'; });
+    document.getElementById('iosGuideClose').addEventListener('click', function(){ w.style.display='none'; });
+  }
+})();
 </script>
 <!-- '걸어온 길' 세로 자동 스크롤 (역사 자료 아카이브 목록) -->
 <script src="archive-list.js?v=6"></script>
