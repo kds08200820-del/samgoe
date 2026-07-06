@@ -1268,7 +1268,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// 앱 설치(PWA) — 헤더 "앱 설치" 버튼
+// 앱 설치(PWA) — 헤더 "앱 설치" 버튼 (모든 환경 대응)
 (function(){
   var btn = document.getElementById('installBtn');
   if(!btn) return;
@@ -1276,54 +1276,104 @@ if ('serviceWorker' in navigator) {
   var ua = navigator.userAgent || '';
   function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
   var isIOS = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+  var isAndroid = /Android/i.test(ua);
+  // 카카오톡·네이버·페북·인스타·라인·밴드 등 인앱(웹뷰) 브라우저 — PWA 설치 불가
+  var inApp = /KAKAOTALK|NAVER\(inapp|; ?wv\)|Instagram|FBAN|FBAV|FB_IAB|Line\/|DaumApps|KAKAOSTORY|Snapchat|everytimeApp|BAND|whale\/.*inapp/i.test(ua)
+              || /NAVER/i.test(ua);
   function show(){ if(!isStandalone()) btn.style.display='inline-flex'; }
   function hide(){ btn.style.display='none'; }
 
   // 안드로이드 크롬/엣지: 설치 가능 시 브라우저가 이 이벤트를 보냄
-  window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault();
-    deferred = e;
-    show();
-  });
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; show(); });
   window.addEventListener('appinstalled', function(){ deferred=null; hide(); });
 
-  // iOS 사파리는 beforeinstallprompt를 지원하지 않으므로 안내 방식으로 표시
-  if(isIOS && !isStandalone()) show();
+  // 설치 전이면 버튼을 항상 노출 — 이벤트가 늦게 오거나 오지 않는 환경(인앱 브라우저 등)에서도
+  // 사용자가 설치 경로를 찾을 수 있게 함.
+  if(!isStandalone()) show();
 
   btn.addEventListener('click', function(){
+    // 1) 안드로이드 크롬/엣지 — 네이티브 설치창 바로
     if(deferred){
       deferred.prompt();
       deferred.userChoice.then(function(c){ if(c && c.outcome==='accepted') hide(); deferred=null; });
-    } else if(isIOS){
-      showIosGuide();
-    } else {
-      // 이미 설치했거나, 크롬 메뉴로 설치해야 하는 경우 안내
-      alert('브라우저 메뉴(⋮)에서 “앱 설치” 또는 “홈 화면에 추가”를 눌러 설치할 수 있어요.\n(안드로이드는 크롬으로 열면 설치 버튼이 자동으로 나타납니다.)');
+      return;
     }
+    // 2) 카카오/네이버 등 인앱 브라우저 — 여기선 설치 불가
+    if(inApp){
+      if(isAndroid){
+        // 안드로이드는 크롬으로 자동 열기 시도 (intent)
+        var full = 'https://' + location.host + location.pathname + location.search;
+        try{
+          location.href = 'intent://' + location.host + location.pathname + location.search +
+            '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(full) + ';end';
+        }catch(_){}
+        setTimeout(function(){ openSheet(inAppSheet(true)); }, 1200);
+      } else {
+        openSheet(inAppSheet(false)); // iOS 인앱(카카오 등) → 사파리로 열기 안내
+      }
+      return;
+    }
+    // 3) iOS 사파리 — 홈 화면에 추가 안내
+    if(isIOS){ openSheet(iosSheet()); return; }
+    // 4) 그 외(데스크톱/기타 안드로이드) — 브라우저 메뉴 안내
+    openSheet(menuSheet());
   });
 
-  function showIosGuide(){
-    if(document.getElementById('iosGuide')) { document.getElementById('iosGuide').style.display='flex'; return; }
+  // ---- 안내 시트 (하단 바텀시트) ----
+  function openSheet(inner){
+    var old = document.getElementById('installSheet'); if(old) old.remove();
     var w = document.createElement('div');
-    w.id = 'iosGuide';
+    w.id = 'installSheet';
     w.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(10,14,20,0.55);display:flex;align-items:flex-end;justify-content:center;';
-    w.innerHTML =
-      '<div style="background:#fff;width:100%;max-width:440px;border-radius:18px 18px 0 0;padding:24px 22px 30px;box-shadow:0 -8px 30px rgba(0,0,0,0.2);font-family:inherit;">'+
-        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'+
-          '<img src="assets/app-icon-192.png?v=6" alt="삼기연" style="width:44px;height:44px;border-radius:11px;" />'+
-          '<div><div style="font-size:16px;font-weight:700;color:#1a2129;">홈 화면에 앱 추가</div>'+
-          '<div style="font-size:12.5px;color:#6b6b6b;">삼기연을 앱처럼 사용하세요</div></div>'+
-        '</div>'+
-        '<ol style="margin:0 0 18px;padding-left:20px;font-size:14px;line-height:1.9;color:#3c3c3c;">'+
-          '<li>사파리 하단(또는 상단)의 <b>공유</b> 버튼 <span style="display:inline-block;vertical-align:-3px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v11" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/><path d="m8 7 4-4 4 4" stroke="#1c69d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/></svg></span> 을 누릅니다.</li>'+
-          '<li><b>“홈 화면에 추가”</b> 를 선택합니다.</li>'+
-          '<li>오른쪽 위 <b>“추가”</b> 를 누르면 완료!</li>'+
-        '</ol>'+
-        '<button type="button" id="iosGuideClose" style="width:100%;height:46px;border:0;border-radius:12px;background:#1c69d4;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">확인</button>'+
-      '</div>';
+    w.innerHTML = '<div style="background:#fff;width:100%;max-width:440px;border-radius:18px 18px 0 0;padding:24px 22px 30px;box-shadow:0 -8px 30px rgba(0,0,0,0.2);font-family:inherit;">'+ inner +
+      '<button type="button" id="installSheetClose" style="width:100%;height:46px;margin-top:6px;border:0;border-radius:12px;background:#1c69d4;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">확인</button></div>';
     document.body.appendChild(w);
-    w.addEventListener('click', function(e){ if(e.target===w) w.style.display='none'; });
-    document.getElementById('iosGuideClose').addEventListener('click', function(){ w.style.display='none'; });
+    w.addEventListener('click', function(e){ if(e.target===w) w.remove(); });
+    document.getElementById('installSheetClose').addEventListener('click', function(){ w.remove(); });
+  }
+  function head(title, sub){
+    return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'+
+      '<img src="assets/app-icon-192.png?v=6" alt="삼기연" style="width:44px;height:44px;border-radius:11px;flex:0 0 auto;" />'+
+      '<div><div style="font-size:16px;font-weight:700;color:#1a2129;">'+title+'</div>'+
+      '<div style="font-size:12.5px;color:#6b6b6b;">'+sub+'</div></div></div>';
+  }
+  function steps(arr){
+    return '<ol style="margin:0 0 18px;padding-left:20px;font-size:14px;line-height:1.9;color:#3c3c3c;">'+
+      arr.map(function(s){ return '<li>'+s+'</li>'; }).join('')+'</ol>';
+  }
+  function iosSheet(){
+    return head('홈 화면에 앱 추가','삼기연을 앱처럼 사용하세요')+
+      steps([
+        '사파리 하단(또는 상단)의 <b>공유</b> 버튼 <span style="display:inline-block;vertical-align:-3px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v11" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/><path d="m8 7 4-4 4 4" stroke="#1c69d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/></svg></span> 을 누릅니다.',
+        '<b>“홈 화면에 추가”</b> 를 선택합니다.',
+        '오른쪽 위 <b>“추가”</b> 를 누르면 완료!'
+      ]);
+  }
+  function inAppSheet(android){
+    if(android){
+      return head('크롬(Chrome)에서 열어 주세요','카카오톡·네이버 화면에서는 앱 설치가 안 돼요')+
+        '<p style="margin:0 0 14px;font-size:14px;line-height:1.7;color:#3c3c3c;">크롬으로 열리지 않았다면, 화면 <b>오른쪽 위 ⋮(더보기)</b> → <b>“다른 브라우저로 열기”</b> 를 눌러 <b>Chrome</b> 을 선택한 뒤, 크롬 화면에서 이 <b>“앱 설치”</b> 버튼을 다시 눌러 주세요.</p>';
+    }
+    return head('사파리(Safari)에서 열어 주세요','카카오톡·네이버 화면에서는 앱 설치가 안 돼요')+
+      steps([
+        '화면 오른쪽 아래/위의 <b>더보기( ⋯ / 공유 )</b> 를 누릅니다.',
+        '<b>“Safari로 열기”</b> 를 선택합니다.',
+        '사파리에서 <b>공유 → “홈 화면에 추가”</b> 로 설치합니다.'
+      ]);
+  }
+  function menuSheet(){
+    if(isAndroid){
+      return head('앱으로 설치하기','크롬 메뉴에서 설치할 수 있어요')+
+        steps([
+          '크롬 오른쪽 위 <b>⋮ (더보기)</b> 를 누릅니다.',
+          '<b>“앱 설치”</b> 또는 <b>“홈 화면에 추가”</b> 를 선택합니다.'
+        ]);
+    }
+    return head('앱으로 설치하기','크롬·엣지 브라우저에서 설치할 수 있어요')+
+      steps([
+        '주소창 오른쪽의 <b>설치 아이콘(⊕ / 모니터 모양)</b> 을 누르거나,',
+        '브라우저 <b>메뉴 → “삼기연 설치”</b> 를 선택합니다.'
+      ]);
   }
 })();
 </script>
