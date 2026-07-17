@@ -36,9 +36,12 @@
     m = String(m || '');
     if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
     if (/Email not confirmed/i.test(m)) return '이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.';
-    if (/already registered|already been registered|User already/i.test(m)) return '이미 가입된 이메일입니다.';
-    if (/Password should be at least/i.test(m)) return '비밀번호는 6자 이상이어야 합니다.';
+    if (/already registered|already been registered|User already|email address has already/i.test(m)) return '이미 가입된 이메일입니다.';
+    if (/New password should be different|different from the old/i.test(m)) return '새 비밀번호는 기존 비밀번호와 달라야 합니다.';
+    if (/Password should be at least|should contain|password.*requirement/i.test(m)) return '비밀번호는 8자 이상이며 영문과 숫자를 포함해야 합니다.';
+    if (/banned|user is banned|account.*(disabled|deactivat)/i.test(m)) return '이용약관 위반으로 계정이 정지되었습니다. 문의는 관리자에게 연락해 주세요.';
     if (/valid email|Unable to validate email|invalid.*email/i.test(m)) return '올바른 이메일 형식이 아닙니다.';
+    if (/For security purposes|after \d+ second/i.test(m)) return '보안을 위해 잠시 후 다시 시도해 주세요.';
     if (/rate limit|too many requests/i.test(m)) return '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.';
     if (/network|fetch/i.test(m)) return '네트워크 오류입니다. 연결 상태를 확인해 주세요.';
     return m || '알 수 없는 오류가 발생했습니다.';
@@ -62,6 +65,11 @@
     return !!(profile && (profile.member_kind === '사모' || profile.member_kind === '사부'));
   };
 
+  // 관리자 콘솔 등급
+  //  최고관리자(대표) = 이메일 / 일반관리자(상담원) = profile.admin_role === 'staff'
+  window.isStaffAdmin = function (profile) { return !!(profile && profile.admin_role === 'staff'); };
+  window.isConsoleAdmin = function (user, profile) { return window.isSuperAdmin(user) || window.isStaffAdmin(profile); };
+
   // 현재 로그인 사용자의 프로필(이름/교회/구분/직책) 조회
   window.getMyProfile = async function () {
     if (!window.sb) return null;
@@ -82,6 +90,8 @@
     if (user) {
       var sep = '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>';
       var parts = [];
+      if (window.isConsoleAdmin(user, profile)) parts.push('<a href="operator.html" style="color:#ffd479;font-weight:700">운영관리</a>');
+      parts.push('<a href="inquiry.html" style="color:rgba(255,255,255,0.9)">문의</a>');
       if (window.isAdmin(user, profile)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
       if (profile && profile.officer_role) parts.push('<a href="officer.html" style="color:#8fc0ff;font-weight:700">임원실</a>');
       if (window.isSamo(user, profile)) parts.push('<a href="samo.html" style="color:#f6b6d0;font-weight:700">사모 게시판</a>');
@@ -144,6 +154,31 @@
       return false;
     }
     return user;
+  };
+
+  // 최고관리자 전용 페이지 가드 — 로그인 + 최고관리자(이메일)여야 통과
+  window.requireSuperAdmin = async function () {
+    var user = await window.requireAuth();
+    if (!user) return false;
+    if (!window.isSuperAdmin(user)) {
+      alert('최고관리자 전용 페이지입니다.');
+      location.href = 'index.html';
+      return false;
+    }
+    return user;
+  };
+
+  // 관리자 콘솔 가드 — 로그인 + (최고관리자 또는 일반관리자)여야 통과. profile 반환.
+  window.requireConsoleAdmin = async function () {
+    var user = await window.requireAuth();
+    if (!user) return false;
+    var profile = await window.getMyProfile();
+    if (!window.isConsoleAdmin(user, profile)) {
+      alert('관리자 전용 페이지입니다.');
+      location.href = 'index.html';
+      return false;
+    }
+    return { user: user, profile: profile || {}, isSuper: window.isSuperAdmin(user) };
   };
 
   // 임원 직책 목록

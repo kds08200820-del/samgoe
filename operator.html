@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 콘솔 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;--muted-soft:#9a9a9a;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--navy:#26374d;
+      --error:#dc2626;--ok:#0f7b3f;--amber:#b45309;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:30;}
+    .bar .in{max-width:1180px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:1180px;margin:0 auto;padding:34px 22px 60px;}
+    .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .title{margin:0;font-weight:700;font-size:28px;color:var(--ink);}
+    .rolechip{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
+    .rolechip.super{background:#fff7e6;color:var(--amber);border:1px solid #f0d190;}
+    .rolechip.staff{background:#eaf3ff;color:var(--primary);border:1px solid #b9d6ff;}
+    .sub{margin:8px 0 22px;font-size:14px;color:var(--muted);}
+    .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hairline-strong);margin-bottom:24px;flex-wrap:wrap;}
+    .tab{padding:12px 18px;font-size:15px;font-weight:700;color:var(--muted);cursor:pointer;background:none;border:0;border-bottom:2px solid transparent;font-family:inherit;}
+    .tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+    .panel{display:none;} .panel.show{display:block;}
+
+    /* 대시보드 카드 */
+    .dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+    .dcard{background:var(--canvas);border:1px solid var(--hairline);padding:22px 20px;}
+    .dcard .lab{font-size:12px;font-weight:700;letter-spacing:0.5px;color:var(--muted);}
+    .dcard .num{margin-top:8px;font-size:38px;font-weight:700;color:var(--ink);line-height:1;}
+    .dcard .num.warn{color:var(--error);} .dcard .num.blue{color:var(--primary);} .dcard .num.ok{color:var(--ok);}
+    .dcard .sfx{font-size:14px;color:var(--muted);margin-left:4px;font-weight:400;}
+    @media (max-width:900px){ .dgrid{grid-template-columns:repeat(2,1fr);} }
+
+    /* 툴바/검색 */
+    .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+    .search{position:relative;flex:1;min-width:240px;max-width:440px;}
+    .search input{width:100%;height:44px;padding:0 14px 0 40px;border:1px solid var(--hairline-strong);background:#fff;font-size:15px;font-family:inherit;font-weight:300;border-radius:0;}
+    .search input:focus{outline:none;border:2px solid var(--ink);}
+    .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted-soft);}
+    .count{font-size:14px;color:var(--muted);}
+    .hint{font-size:12px;color:var(--muted-soft);}
+
+    .tablewrap{background:var(--canvas);border:1px solid var(--hairline);overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;min-width:760px;}
+    th,td{padding:12px 14px;text-align:left;font-size:14px;border-bottom:1px solid var(--hairline);vertical-align:middle;}
+    th{background:var(--surface-soft);font-weight:700;color:var(--ink);white-space:nowrap;}
+    td .em{font-weight:700;color:var(--ink);}
+    .mask{font-family:ui-monospace,Menlo,monospace;letter-spacing:0.3px;}
+    .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:4px;}
+    .chip.staff{background:#eaf3ff;color:var(--primary);}
+    .badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+    .badge.active{background:#eafaf0;color:var(--ok);border:1px solid #bfe6cd;}
+    .badge.suspended{background:#fdecea;color:var(--error);border:1px solid #f3c7c3;}
+    .badge.deleted{background:#fff4e5;color:var(--amber);border:1px solid #f0d190;}
+    .badge.withdrawn{background:var(--surface-soft);color:var(--muted);border:1px solid var(--hairline-strong);}
+    .reason{margin-top:4px;font-size:12px;color:var(--muted);}
+    .rowacts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+    .b{height:32px;padding:0 12px;border:1px solid var(--hairline-strong);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;color:var(--bodytext);}
+    .b:hover{background:var(--surface-soft);}
+    .b.red{color:var(--error);border-color:#f3c7c3;} .b.red:hover{background:#fdecea;}
+    .b.blue{color:var(--primary);border-color:#b9d6ff;} .b.blue:hover{background:#eaf3ff;}
+    .b.amber{color:var(--amber);border-color:#f0d190;} .b.amber:hover{background:#fff7e6;}
+    .dash{color:var(--muted-soft);}
+    .empty{padding:44px 20px;text-align:center;color:var(--muted);font-size:15px;}
+
+    /* 문의 */
+    .iq{background:var(--canvas);border:1px solid var(--hairline);padding:20px 22px;margin-bottom:14px;}
+    .iq .iqtop{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;}
+    .iq .subj{font-size:17px;font-weight:700;color:var(--ink);}
+    .iq .meta{font-size:12px;color:var(--muted);}
+    .iq .body{margin:10px 0 0;font-size:15px;line-height:1.7;color:var(--bodytext);white-space:pre-wrap;}
+    .iq .ans{margin-top:12px;padding:12px 14px;background:var(--surface-soft);border-left:3px solid var(--primary);font-size:14px;line-height:1.7;white-space:pre-wrap;}
+    .iq textarea{width:100%;min-height:72px;margin-top:10px;padding:10px 12px;border:1px solid var(--hairline-strong);font-family:inherit;font-size:14px;font-weight:300;resize:vertical;line-height:1.6;}
+    .iq textarea:focus{outline:none;border:2px solid var(--ink);}
+
+    /* 감사로그 */
+    .logrow td{font-size:13px;}
+    .act-view{color:var(--muted);} .act-danger{color:var(--error);font-weight:700;} .act-role{color:var(--primary);font-weight:700;}
+
+    /* 모달 */
+    .ov{position:fixed;inset:0;background:rgba(20,25,32,0.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+    .ov.open{display:flex;}
+    .modal{background:#fff;max-width:440px;width:100%;padding:26px;border:1px solid var(--hairline);max-height:88vh;overflow:auto;}
+    .modal h3{margin:0 0 6px;font-size:20px;color:var(--ink);}
+    .modal p{margin:0 0 14px;font-size:14px;color:var(--muted);line-height:1.6;}
+    .modal .kv{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--hairline);font-size:14px;}
+    .modal .kv:first-of-type{border-top:0;} .modal .kv .k{width:70px;color:var(--muted);font-weight:700;flex:0 0 auto;}
+    .modal .kv .v{color:var(--ink);word-break:break-all;}
+    .modal textarea{width:100%;min-height:76px;padding:11px 13px;border:1px solid var(--hairline-strong);font-family:inherit;font-size:15px;font-weight:300;resize:vertical;line-height:1.6;}
+    .modal textarea:focus{outline:none;border:2px solid var(--ink);}
+    .chkline{display:flex;align-items:flex-start;gap:9px;margin-top:14px;font-size:14px;color:var(--bodytext);cursor:pointer;}
+    .chkline input{width:18px;height:18px;margin:1px 0 0;flex:0 0 18px;cursor:pointer;}
+    .mrow{display:flex;gap:10px;margin-top:18px;}
+    .mrow button{flex:1;height:44px;border:0;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .mrow .go{background:var(--error);color:#fff;} .mrow .go:disabled{background:var(--hairline-strong);cursor:default;}
+    .mrow .cancel{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+
+    #loading{padding:80px;text-align:center;color:var(--muted);}
+    #content{display:none;}
+    footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;margin-top:40px;}
+    footer a{color:rgba(255,255,255,0.85);font-weight:700;}
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <div id="loading">확인 중…</div>
+
+  <div class="wrap" id="content">
+    <div class="head">
+      <h1 class="title">관리자 콘솔</h1>
+      <span class="rolechip" id="roleChip"></span>
+    </div>
+    <p class="sub" id="subLine">회원 데이터를 안전하게 운영합니다.</p>
+
+    <div class="tabs">
+      <button class="tab active" data-p="dash">대시보드</button>
+      <button class="tab" data-p="members">회원 관리</button>
+      <button class="tab" data-p="inq">문의</button>
+      <button class="tab" data-p="audit">감사 로그</button>
+    </div>
+
+    <!-- 대시보드 -->
+    <section class="panel show" id="p-dash">
+      <div class="dgrid" id="dashGrid"><div class="dcard"><div class="lab">불러오는 중…</div></div></div>
+    </section>
+
+    <!-- 회원 관리 -->
+    <section class="panel" id="p-members">
+      <div class="toolbar">
+        <div class="search">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="q" type="text" placeholder="이메일 또는 이름 일부로 검색" autocomplete="off" />
+        </div>
+        <span class="count" id="mcount"></span>
+        <span class="hint">· 전화·이메일·주소는 마스킹 표시. ‘전체보기’ 시 원본 열람(기록됨)</span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>이름</th><th>이메일</th><th>전화번호</th><th>교회</th><th>상태</th><th style="text-align:right;">관리</th></tr></thead>
+          <tbody id="mbody"><tr><td colspan="6" class="empty">불러오는 중…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 문의 -->
+    <section class="panel" id="p-inq">
+      <div class="toolbar"><span class="count" id="icount"></span><span class="hint">· 미답변 문의가 위에 표시됩니다.</span></div>
+      <div id="iqlist"><div class="empty">불러오는 중…</div></div>
+    </section>
+
+    <!-- 감사 로그 -->
+    <section class="panel" id="p-audit">
+      <div class="toolbar"><span class="count">관리자 행동 기록 (읽기 전용 · 수정·삭제 불가)</span></div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>일시</th><th>관리자</th><th>행동</th><th>대상</th><th>내용</th></tr></thead>
+          <tbody id="abody"><tr><td colspan="5" class="empty">불러오는 중…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <a style="display:inline-block;margin-top:24px;font-size:13px;color:var(--muted);" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <!-- 전체보기 모달 -->
+  <div class="ov" id="ovView">
+    <div class="modal">
+      <h3>회원 상세 (원본)</h3>
+      <p>이 열람은 감사 로그에 기록되었습니다.</p>
+      <div class="kv"><span class="k">이름</span><span class="v" id="vName"></span></div>
+      <div class="kv"><span class="k">이메일</span><span class="v" id="vEmail"></span></div>
+      <div class="kv"><span class="k">전화</span><span class="v" id="vPhone"></span></div>
+      <div class="kv"><span class="k">주소</span><span class="v" id="vAddr"></span></div>
+      <div class="mrow"><button class="cancel" id="vClose" type="button" style="flex:1;">닫기</button></div>
+    </div>
+  </div>
+
+  <!-- 정지/삭제 모달 (사유 + 확인 체크박스) -->
+  <div class="ov" id="ovAct">
+    <div class="modal">
+      <h3 id="actTitle">계정 정지</h3>
+      <p id="actDesc"></p>
+      <textarea id="actReason" placeholder="사유를 입력해 주세요."></textarea>
+      <label class="chkline"><input type="checkbox" id="actChk" /> <span id="actChkLabel">위 내용을 확인했으며 처리에 동의합니다.</span></label>
+      <div class="mrow">
+        <button class="cancel" id="actCancel" type="button">취소</button>
+        <button class="go" id="actGo" type="button" disabled>처리</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp;
+    <a href="terms.html#terms">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy">개인정보처리방침</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=9"></script>
+  <script>
+    var me=null, isSuper=false;
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+    function fdate(d){ if(!d) return '—'; var t=new Date(d); if(isNaN(t)) return '—'; return t.getFullYear()+'.'+('0'+(t.getMonth()+1)).slice(-2)+'.'+('0'+t.getDate()).slice(-2); }
+    function ftime(d){ if(!d) return ''; var t=new Date(d); if(isNaN(t)) return ''; return fdate(d)+' '+('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2); }
+    var ST={active:['가입중','active'],suspended:['정지','suspended'],deleted:['삭제됨','deleted'],withdrawn:['탈퇴','withdrawn']};
+    var ACTKO={view_full:'전체보기',suspend:'정지',unsuspend:'정지해제',soft_delete:'삭제',restore:'복구',set_role:'등급변경',answer_inquiry:'문의답변'};
+
+    (async function(){
+      var g = await window.requireConsoleAdmin();
+      if(!g) return;
+      me=g.user; isSuper=g.isSuper;
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      var chip=document.getElementById('roleChip');
+      chip.className='rolechip '+(isSuper?'super':'staff'); chip.textContent=(isSuper?'최고관리자(대표)':'관리자');
+      document.getElementById('subLine').textContent = isSuper
+        ? '회원 조회·문의 응대·정지/삭제 등 모든 운영 기능을 사용할 수 있습니다.'
+        : '회원 조회와 문의 응대를 할 수 있습니다. (정지·삭제는 최고관리자 전용)';
+
+      // 탭
+      Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){
+        t.addEventListener('click', function(){
+          Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(x){ x.classList.toggle('active', x===t); });
+          var p=t.getAttribute('data-p');
+          Array.prototype.forEach.call(document.querySelectorAll('.panel'), function(x){ x.classList.toggle('show', x.id==='p-'+p); });
+          if(p==='members' && !mLoaded){ loadMembers(''); }
+          if(p==='inq' && !iLoaded){ loadInquiries(); }
+          if(p==='audit' && !aLoaded){ loadAudit(); }
+        });
+      });
+      var q=document.getElementById('q'), timer=null;
+      q.addEventListener('input', function(){ clearTimeout(timer); timer=setTimeout(function(){ loadMembers(q.value.trim()); }, 300); });
+      document.getElementById('vClose').addEventListener('click', function(){ document.getElementById('ovView').classList.remove('open'); });
+      document.getElementById('actCancel').addEventListener('click', closeAct);
+      document.getElementById('actChk').addEventListener('change', function(){ document.getElementById('actGo').disabled = !this.checked; });
+      document.getElementById('actGo').addEventListener('click', runAct);
+
+      loadDashboard();
+    })();
+
+    // ---------- 대시보드 ----------
+    async function loadDashboard(){
+      var el=document.getElementById('dashGrid');
+      var r; try{ r=await window.sb.rpc('admin_dashboard'); }catch(e){ r={error:e}; }
+      if(!r || r.error){ el.innerHTML='<div class="dcard"><div class="lab">불러오지 못했습니다</div></div>'; return; }
+      var d=r.data||{};
+      function card(lab,num,cls,sfx){ return '<div class="dcard"><div class="lab">'+lab+'</div><div class="num '+(cls||'')+'">'+num+(sfx?'<span class="sfx">'+sfx+'</span>':'')+'</div></div>'; }
+      el.innerHTML =
+        card('신규 문의', d.new_inquiries||0, (d.new_inquiries>0?'warn':''), '건') +
+        card('정지된 회원', d.suspended||0, (d.suspended>0?'warn':''), '명') +
+        card('삭제된 회원(복구가능)', d.deleted||0, 'amber', '명') +
+        card('최근 7일 가입', d.recent_signups||0, 'blue', '명') +
+        card('활성 회원', d.active_members||0, 'ok', '명') +
+        card('자진 탈퇴', d.withdrawn||0, '', '명') +
+        card('일반 관리자', d.staff_admins||0, '', '명') +
+        card('전체 문의', d.total_inquiries||0, '', '건');
+    }
+
+    // ---------- 회원 관리 ----------
+    var mLoaded=false;
+    async function loadMembers(search){
+      mLoaded=true;
+      var tb=document.getElementById('mbody');
+      tb.innerHTML='<tr><td colspan="6" class="empty">불러오는 중…</td></tr>';
+      var r; try{ r=await window.sb.rpc('admin_list_members',{p_search:search||null}); }catch(e){ r={error:e}; }
+      if(!r || r.error){ tb.innerHTML='<tr><td colspan="6" class="empty">불러오지 못했습니다.<br>'+esc((r&&r.error&&r.error.message)||'')+'</td></tr>'; return; }
+      var rows=r.data||[]; document.getElementById('mcount').textContent='총 '+rows.length+'명';
+      if(!rows.length){ tb.innerHTML='<tr><td colspan="6" class="empty">검색 결과가 없습니다.</td></tr>'; return; }
+      tb.innerHTML=rows.map(mrow).join(''); mbind();
+    }
+    function mrow(m){
+      var st=ST[m.status]||ST.active;
+      var roleChip = m.admin_role==='staff' ? '<span class="chip staff">관리자</span>' : '';
+      var reason = (m.status==='suspended' && m.suspend_reason) ? '<div class="reason">사유: '+esc(m.suspend_reason)+'</div>' : '';
+      var acts = ['<button class="b" data-view="'+m.id+'">전체보기</button>'];
+      if(isSuper && m.id!==me.id){
+        if(m.status==='active'){
+          acts.push('<button class="b red" data-suspend="'+m.id+'" data-nm="'+esc(m.name||'')+'">정지</button>');
+          acts.push('<button class="b amber" data-del="'+m.id+'" data-nm="'+esc(m.name||'')+'">삭제</button>');
+          acts.push('<button class="b blue" data-role="'+m.id+'" data-staff="'+(m.admin_role==='staff'?'1':'0')+'">'+(m.admin_role==='staff'?'관리자해제':'관리자지정')+'</button>');
+        } else if(m.status==='suspended'){
+          acts.push('<button class="b blue" data-unsuspend="'+m.id+'">정지해제</button>');
+          acts.push('<button class="b amber" data-del="'+m.id+'" data-nm="'+esc(m.name||'')+'">삭제</button>');
+        } else if(m.status==='deleted'){
+          acts.push('<button class="b blue" data-restore="'+m.id+'">복구</button>');
+        }
+      }
+      return '<tr>'+
+        '<td><span class="em">'+esc(m.name||'—')+'</span>'+roleChip+'</td>'+
+        '<td><span class="mask">'+esc(m.email||'—')+'</span></td>'+
+        '<td><span class="mask">'+esc(m.phone_mask||'—')+'</span></td>'+
+        '<td>'+esc(m.church||'—')+'</td>'+
+        '<td><span class="badge '+st[1]+'">'+st[0]+'</span>'+reason+'</td>'+
+        '<td><div class="rowacts">'+acts.join('')+'</div></td>'+
+      '</tr>';
+    }
+    function mbind(){
+      var tb=document.getElementById('mbody');
+      tb.querySelectorAll('[data-view]').forEach(function(b){ b.addEventListener('click', function(){ reveal(b.getAttribute('data-view')); }); });
+      tb.querySelectorAll('[data-suspend]').forEach(function(b){ b.addEventListener('click', function(){ openAct('suspend', b.getAttribute('data-suspend'), b.getAttribute('data-nm')); }); });
+      tb.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click', function(){ openAct('delete', b.getAttribute('data-del'), b.getAttribute('data-nm')); }); });
+      tb.querySelectorAll('[data-unsuspend]').forEach(function(b){ b.addEventListener('click', function(){ quick('admin_set_suspend',{p_id:b.getAttribute('data-unsuspend'),p_suspend:false,p_reason:null},'정지를 해제할까요? 다시 로그인할 수 있게 됩니다.'); }); });
+      tb.querySelectorAll('[data-restore]').forEach(function(b){ b.addEventListener('click', function(){ quick('admin_soft_delete_member',{p_id:b.getAttribute('data-restore'),p_restore:true,p_reason:null},'이 회원을 복구할까요?'); }); });
+      tb.querySelectorAll('[data-role]').forEach(function(b){ b.addEventListener('click', function(){
+        var staff=b.getAttribute('data-staff')==='1';
+        quick('admin_set_role',{p_id:b.getAttribute('data-role'),p_staff:!staff}, staff?'이 회원의 관리자 권한을 해제할까요?':'이 회원을 일반 관리자로 지정할까요? (회원 조회·문의 응대 가능)');
+      }); });
+    }
+    async function reveal(id){
+      var r=await window.sb.rpc('admin_reveal_member',{p_id:id});
+      if(r.error){ alert('열람 실패: '+r.error.message); return; }
+      var d=(r.data&&r.data[0])||{};
+      document.getElementById('vName').textContent = document.querySelector('[data-view="'+id+'"]').closest('tr').querySelector('.em').textContent;
+      document.getElementById('vEmail').textContent = d.email||'—';
+      document.getElementById('vPhone').textContent = d.phone||'—';
+      document.getElementById('vAddr').textContent = d.address||'—';
+      document.getElementById('ovView').classList.add('open');
+    }
+    async function quick(fn, args, confirmMsg){
+      if(confirmMsg && !confirm(confirmMsg)) return;
+      var r=await window.sb.rpc(fn, args);
+      if(r.error){ alert('처리 실패: '+r.error.message); return; }
+      await loadMembers(document.getElementById('q').value.trim()); loadDashboard();
+    }
+
+    // 정지/삭제 모달
+    var actMode=null, actId=null;
+    function openAct(mode, id, nm){
+      actMode=mode; actId=id;
+      var t=document.getElementById('actTitle'), desc=document.getElementById('actDesc'), chkl=document.getElementById('actChkLabel'), go=document.getElementById('actGo');
+      document.getElementById('actReason').value=''; document.getElementById('actChk').checked=false; go.disabled=true;
+      if(mode==='suspend'){ t.textContent='계정 정지'; desc.innerHTML='<b>'+esc(nm)+'</b> 회원을 정지합니다. 정지 시 로그인이 차단되며, 로그인 시 ‘이용약관 위반으로 정지’ 안내가 표시됩니다.'; chkl.textContent='정지 사유를 확인했으며 정지 처리에 동의합니다.'; go.textContent='정지하기'; }
+      else { t.textContent='회원 삭제 (소프트 딜리트)'; desc.innerHTML='<b>'+esc(nm)+'</b> 회원을 삭제 표시합니다. 데이터는 <b>실제로 지워지지 않고</b> 보존되어 언제든 복구할 수 있습니다. 로그인은 차단됩니다.'; chkl.textContent='삭제 사유를 확인했으며 삭제(복구가능) 처리에 동의합니다.'; go.textContent='삭제하기'; }
+      document.getElementById('ovAct').classList.add('open');
+    }
+    function closeAct(){ document.getElementById('ovAct').classList.remove('open'); actMode=null; actId=null; }
+    async function runAct(){
+      var reason=document.getElementById('actReason').value.trim();
+      if(!reason){ alert('사유를 입력해 주세요.'); return; }
+      if(!document.getElementById('actChk').checked){ alert('확인 체크박스를 선택해 주세요.'); return; }
+      var go=document.getElementById('actGo'); go.disabled=true; go.textContent='처리 중…';
+      var r;
+      if(actMode==='suspend') r=await window.sb.rpc('admin_set_suspend',{p_id:actId,p_suspend:true,p_reason:reason});
+      else r=await window.sb.rpc('admin_soft_delete_member',{p_id:actId,p_restore:false,p_reason:reason});
+      if(r.error){ alert('처리 실패: '+r.error.message); go.disabled=false; go.textContent='처리'; return; }
+      closeAct(); await loadMembers(document.getElementById('q').value.trim()); loadDashboard();
+    }
+
+    // ---------- 문의 ----------
+    var iLoaded=false;
+    async function loadInquiries(){
+      iLoaded=true;
+      var el=document.getElementById('iqlist');
+      el.innerHTML='<div class="empty">불러오는 중…</div>';
+      var r=await window.sb.from('inquiries').select('*').order('status',{ascending:true}).order('created_at',{ascending:false});
+      if(r.error){ el.innerHTML='<div class="empty">불러오지 못했습니다.<br>'+esc(r.error.message)+'</div>'; return; }
+      var rows=r.data||[]; document.getElementById('icount').textContent='총 '+rows.length+'건';
+      if(!rows.length){ el.innerHTML='<div class="empty">문의가 없습니다.</div>'; return; }
+      el.innerHTML=rows.map(function(q){
+        var answered=q.status==='answered';
+        return '<div class="iq">'+
+          '<div class="iqtop"><span class="subj">'+esc(q.subject)+'</span>'+
+            '<span class="badge '+(answered?'active':'suspended')+'">'+(answered?'답변완료':'미답변')+'</span></div>'+
+          '<div class="meta">'+esc(q.author_name||'회원')+' · '+esc(q.author_email||'')+' · '+ftime(q.created_at)+'</div>'+
+          (q.body?'<div class="body">'+esc(q.body)+'</div>':'')+
+          (answered
+            ? '<div class="ans"><b>답변</b> · '+ftime(q.answered_at)+'<br>'+esc(q.answer)+'</div>'
+            : '<textarea data-ans="'+q.id+'" placeholder="답변을 입력하세요"></textarea><div style="text-align:right;margin-top:8px;"><button class="b blue" data-send="'+q.id+'">답변 등록</button></div>')+
+        '</div>';
+      }).join('');
+      el.querySelectorAll('[data-send]').forEach(function(b){ b.addEventListener('click', function(){ answer(b.getAttribute('data-send')); }); });
+    }
+    async function answer(id){
+      var ta=document.querySelector('[data-ans="'+id+'"]'); var txt=ta.value.trim();
+      if(!txt){ alert('답변을 입력해 주세요.'); return; }
+      var r=await window.sb.rpc('admin_answer_inquiry',{p_id:Number(id),p_answer:txt});
+      if(r.error){ alert('등록 실패: '+r.error.message); return; }
+      await loadInquiries(); loadDashboard();
+    }
+
+    // ---------- 감사 로그 ----------
+    var aLoaded=false;
+    async function loadAudit(){
+      aLoaded=true;
+      var tb=document.getElementById('abody');
+      tb.innerHTML='<tr><td colspan="5" class="empty">불러오는 중…</td></tr>';
+      var r=await window.sb.from('audit_logs').select('*').order('created_at',{ascending:false}).limit(300);
+      if(r.error){ tb.innerHTML='<tr><td colspan="5" class="empty">불러오지 못했습니다.<br>'+esc(r.error.message)+'</td></tr>'; return; }
+      var rows=r.data||[];
+      if(!rows.length){ tb.innerHTML='<tr><td colspan="5" class="empty">기록이 없습니다.</td></tr>'; return; }
+      tb.innerHTML=rows.map(function(l){
+        var cls = (l.action==='view_full')?'act-view':(l.action==='set_role')?'act-role':'act-danger';
+        return '<tr class="logrow"><td>'+ftime(l.created_at)+'</td><td>'+esc(l.actor_email||'—')+'</td>'+
+          '<td class="'+cls+'">'+esc(ACTKO[l.action]||l.action)+'</td>'+
+          '<td>'+esc(l.target_label||'—')+'</td><td>'+esc(l.detail||'')+'</td></tr>';
+      }).join('');
+    }
+  </script>
+</body>
+</html>

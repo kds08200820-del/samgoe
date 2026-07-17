@@ -56,14 +56,20 @@
         <div class="err" id="err"></div>
         <button class="btn" type="submit">로그인</button>
       </form>
-      <div class="foot">계정이 없으신가요? <a href="signup.html">회원가입</a></div>
+      <div class="foot" style="margin-top:16px;"><a href="reset-password.html">비밀번호를 잊으셨나요?</a></div>
+      <div class="foot" style="margin-top:8px;">계정이 없으신가요? <a href="signup.html">회원가입</a></div>
     </div>
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
+  <footer style="background:#1a2129;color:rgba(255,255,255,0.7);padding:24px;text-align:center;font-size:13px;">
+    © 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp;
+    <a href="terms.html#terms" style="color:rgba(255,255,255,0.9);font-weight:700;">이용약관</a> &nbsp;·&nbsp;
+    <a href="terms.html#privacy" style="color:rgba(255,255,255,0.9);font-weight:700;">개인정보처리방침</a>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js?v=9"></script>
   <script>
     var f = document.getElementById('loginForm');
     var err = document.getElementById('err');

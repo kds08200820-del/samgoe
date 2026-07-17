@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>1:1 문의 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;--ok:#0f7b3f;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:660px;margin:0 auto;padding:44px 22px 70px;}
+    .title{margin:0;font-weight:700;font-size:28px;color:var(--ink);}
+    .sub{margin:8px 0 24px;font-size:15px;color:var(--muted);}
+    .card{background:var(--canvas);border:1px solid var(--hairline);padding:26px 24px;margin-bottom:20px;}
+    label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 6px;}
+    label:first-child{margin-top:0;}
+    input,textarea{width:100%;padding:12px 13px;border:1px solid var(--hairline-strong);background:#fff;font-size:15px;font-family:inherit;font-weight:300;color:var(--ink);border-radius:0;}
+    textarea{min-height:120px;resize:vertical;line-height:1.6;}
+    input:focus,textarea:focus{outline:none;border:2px solid var(--ink);}
+    .btn{height:46px;padding:0 24px;border:0;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:16px;}
+    .btn:hover{background:var(--primary-active);} .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .msg{display:none;margin-top:12px;padding:11px 14px;font-size:14px;}
+    .msg.ok{display:block;background:#eafaf0;border:1px solid #bfe6cd;color:var(--ok);}
+    .msg.err{display:block;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);}
+    .sec{font-size:18px;font-weight:700;color:var(--ink);margin:8px 0 14px;}
+    .q{border:1px solid var(--hairline);background:var(--canvas);padding:18px 20px;margin-bottom:12px;}
+    .qtop{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;}
+    .qsub{font-size:16px;font-weight:700;color:var(--ink);}
+    .badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+    .badge.open{background:#fff4e5;color:#b45309;border:1px solid #f0d190;}
+    .badge.answered{background:#eafaf0;color:var(--ok);border:1px solid #bfe6cd;}
+    .qmeta{font-size:12px;color:var(--muted);margin-top:3px;}
+    .qbody{margin:10px 0 0;font-size:14px;line-height:1.7;color:var(--bodytext);white-space:pre-wrap;}
+    .qans{margin-top:12px;padding:12px 14px;background:var(--surface-soft);border-left:3px solid var(--primary);font-size:14px;line-height:1.7;white-space:pre-wrap;}
+    .home{display:block;text-align:center;margin-top:8px;font-size:13px;color:var(--muted);}
+    #loading{padding:70px;text-align:center;color:var(--muted);} #content{display:none;}
+    footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
+    footer a{color:rgba(255,255,255,0.85);font-weight:700;}
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <div id="loading">확인 중…</div>
+
+  <div class="wrap" id="content">
+    <h1 class="title">1:1 문의</h1>
+    <p class="sub">궁금한 점이나 요청 사항을 남겨 주세요. 관리자가 확인 후 답변드립니다.</p>
+
+    <div class="card">
+      <label for="subject">제목</label>
+      <input id="subject" type="text" maxlength="120" placeholder="문의 제목" />
+      <label for="body">내용</label>
+      <textarea id="body" placeholder="문의 내용을 적어 주세요."></textarea>
+      <div class="msg" id="msg"></div>
+      <button class="btn" id="submit" type="button">문의 등록</button>
+    </div>
+
+    <div class="sec">내 문의 내역</div>
+    <div id="list"><div style="color:var(--muted);font-size:14px;padding:20px 0;">불러오는 중…</div></div>
+    <a class="home" href="mypage.html">← 마이페이지로</a>
+  </div>
+
+  <footer>© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp;
+    <a href="terms.html#terms">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy">개인정보처리방침</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=9"></script>
+  <script>
+    var me=null, myProfile=null;
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+    function ftime(d){ if(!d) return ''; var t=new Date(d); if(isNaN(t)) return ''; return t.getFullYear()+'.'+('0'+(t.getMonth()+1)).slice(-2)+'.'+('0'+t.getDate()).slice(-2)+' '+('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2); }
+
+    (async function(){
+      var user=await window.requireAuth();
+      if(!user) return;
+      me=user;
+      try{ myProfile=await window.getMyProfile(); }catch(_){}
+      document.getElementById('loading').style.display='none';
+      document.getElementById('content').style.display='block';
+      document.getElementById('submit').addEventListener('click', submit);
+      await load();
+    })();
+
+    async function submit(){
+      var msg=document.getElementById('msg'); msg.className='msg';
+      var subject=document.getElementById('subject').value.trim(), body=document.getElementById('body').value.trim();
+      if(!subject){ msg.className='msg err'; msg.textContent='제목을 입력해 주세요.'; return; }
+      var btn=document.getElementById('submit'); btn.disabled=true; btn.textContent='등록 중…';
+      var ins=await window.sb.from('inquiries').insert({
+        author_id: me.id, author_name:(myProfile&&myProfile.name)||'', author_email: me.email||'',
+        subject: subject, body: body||null
+      });
+      btn.disabled=false; btn.textContent='문의 등록';
+      if(ins.error){ msg.className='msg err'; msg.textContent='등록 실패: '+ins.error.message; return; }
+      msg.className='msg ok'; msg.textContent='문의가 등록되었습니다. 답변이 등록되면 아래에서 확인하실 수 있습니다.';
+      document.getElementById('subject').value=''; document.getElementById('body').value='';
+      await load();
+    }
+
+    async function load(){
+      var el=document.getElementById('list');
+      var r=await window.sb.from('inquiries').select('*').eq('author_id', me.id).order('created_at',{ascending:false});
+      if(r.error){ el.innerHTML='<div style="color:var(--muted);font-size:14px;padding:20px 0;">불러오지 못했습니다.</div>'; return; }
+      var rows=r.data||[];
+      if(!rows.length){ el.innerHTML='<div style="color:var(--muted);font-size:14px;padding:20px 0;">아직 남긴 문의가 없습니다.</div>'; return; }
+      el.innerHTML=rows.map(function(q){
+        var answered=q.status==='answered';
+        return '<div class="q">'+
+          '<div class="qtop"><span class="qsub">'+esc(q.subject)+'</span><span class="badge '+(answered?'answered':'open')+'">'+(answered?'답변완료':'답변대기')+'</span></div>'+
+          '<div class="qmeta">'+ftime(q.created_at)+'</div>'+
+          (q.body?'<div class="qbody">'+esc(q.body)+'</div>':'')+
+          (answered?'<div class="qans"><b>답변</b> · '+ftime(q.answered_at)+'<br>'+esc(q.answer)+'</div>':'')+
+        '</div>';
+      }).join('');
+    }
+  </script>
+</body>
+</html>

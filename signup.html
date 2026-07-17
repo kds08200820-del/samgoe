@@ -98,7 +98,7 @@
         <input id="email" type="email" required autocomplete="email" placeholder="you@example.com" />
 
         <label for="pw">비밀번호</label>
-        <input id="pw" type="password" required autocomplete="new-password" placeholder="비밀번호 (6자 이상)" />
+        <input id="pw" type="password" required autocomplete="new-password" placeholder="비밀번호 (8자 이상, 영문+숫자 포함)" />
 
         <label for="pw2">비밀번호 확인</label>
         <input id="pw2" type="password" required autocomplete="new-password" placeholder="비밀번호를 한 번 더 입력" />
@@ -120,7 +120,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
   <script src="churches.js?v=2"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js?v=9"></script>
   <script>
     var err = document.getElementById('err');
     function showErr(m){ err.textContent = m; err.style.display = 'block'; }
@@ -210,7 +210,7 @@
       var pw2 = document.getElementById('pw2').value;
 
       if(!name || !church || !phone || !address || !email){ showErr('모든 항목을 입력해 주세요.'); return; }
-      if(pw.length < 6){ showErr('비밀번호는 6자 이상이어야 합니다.'); return; }
+      if(pw.length < 8 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)){ showErr('비밀번호는 8자 이상이며 영문과 숫자를 모두 포함해야 합니다.'); return; }
       if(pw !== pw2){ showErr('비밀번호가 일치하지 않습니다.'); return; }
       if(!agreeTerms.checked || !agreePrivacy.checked){ showErr('이용약관과 개인정보 수집·이용에 동의해 주세요.'); return; }
       if(!window.sb){ showErr('로그인 설정이 아직 완료되지 않았습니다. (관리자: Supabase 설정 필요)'); return; }
@@ -258,5 +258,10 @@
       } catch(ex){ showErr(window.krErr(ex && ex.message)); btn.disabled=false; btn.textContent='회원가입'; }
     });
   </script>
+  <footer style="background:#1a2129;color:rgba(255,255,255,0.7);padding:24px;text-align:center;font-size:13px;">
+    © 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp;
+    <a href="terms.html#terms" style="color:rgba(255,255,255,0.9);font-weight:700;">이용약관</a> &nbsp;·&nbsp;
+    <a href="terms.html#privacy" style="color:rgba(255,255,255,0.9);font-weight:700;">개인정보처리방침</a>
+  </footer>
 </body>
 </html>

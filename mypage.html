@@ -9,51 +9,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;}
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;--ok:#0f7b3f;}
     *{box-sizing:border-box;}
-    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
     .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
     #authArea{font-size:12px;}
-    .wrap{max-width:560px;margin:0 auto;padding:56px 24px 80px;}
-    .card{background:var(--canvas);border:1px solid var(--hairline);padding:44px 36px;}
-    .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
-    .sub{margin:12px 0 28px;font-size:16px;color:var(--muted);}
-    .row{display:flex;justify-content:space-between;gap:16px;padding:16px 0;border-top:1px solid var(--hairline);font-size:15px;}
-    .row .k{color:var(--muted);font-weight:700;}
-    .row .v{color:var(--ink);text-align:right;}
-    label{display:block;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--ink);margin:16px 0 6px;}
-    input{width:100%;height:48px;padding:0 14px;border:1px solid var(--hairline-strong);background:#fff;
-      font-size:16px;font-family:inherit;font-weight:300;color:var(--ink);border-radius:0;}
+    .wrap{max-width:560px;margin:0 auto;padding:56px 24px 60px;}
+    .card{background:var(--canvas);border:1px solid var(--hairline);padding:40px 36px;margin-bottom:18px;}
+    .title{margin:0;font-weight:700;font-size:30px;letter-spacing:0;color:var(--ink);}
+    .sub{margin:10px 0 24px;font-size:15px;color:var(--muted);}
+    .sec-title{margin:0 0 4px;font-size:19px;font-weight:700;color:var(--ink);}
+    .sec-desc{margin:0 0 16px;font-size:13px;color:var(--muted);line-height:1.5;}
+    .row{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--hairline);font-size:15px;}
+    .row .k{color:var(--muted);font-weight:700;} .row .v{color:var(--ink);text-align:right;word-break:break-all;}
+    label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 6px;}
+    input{width:100%;height:46px;padding:0 14px;border:1px solid var(--hairline-strong);background:#fff;font-size:16px;font-family:inherit;font-weight:300;color:var(--ink);border-radius:0;}
     input:focus{outline:none;border:2px solid var(--ink);}
     .acWrap{position:relative;}
-    .ac-list{position:absolute;left:0;right:0;top:100%;z-index:10;background:#fff;border:1px solid var(--hairline-strong);
-      border-top:0;max-height:230px;overflow-y:auto;display:none;}
+    .ac-list{position:absolute;left:0;right:0;top:100%;z-index:10;background:#fff;border:1px solid var(--hairline-strong);border-top:0;max-height:230px;overflow-y:auto;display:none;}
     .ac-item{padding:11px 14px;font-size:14px;cursor:pointer;border-top:1px solid var(--hairline);}
-    .ac-item:first-child{border-top:0;}
-    .ac-item:hover{background:var(--surface-soft);}
-    .ac-item b{color:var(--ink);font-weight:700;}
-    .ac-item span{color:var(--muted);font-size:12px;margin-left:6px;}
+    .ac-item:first-child{border-top:0;} .ac-item:hover{background:var(--surface-soft);}
+    .ac-item b{color:var(--ink);font-weight:700;} .ac-item span{color:var(--muted);font-size:12px;margin-left:6px;}
     .memberTag{display:none;margin-top:8px;font-size:13px;font-weight:700;padding:8px 12px;}
     .memberTag.full{display:block;background:#eaf3ff;border:1px solid #b9d6ff;color:var(--primary);}
     .memberTag.general{display:block;background:var(--surface-soft);border:1px solid var(--hairline-strong);color:var(--muted);}
-    .btn{width:100%;height:48px;border:0;border-radius:0;background:var(--primary);color:#fff;font-size:15px;
-      font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:14px;font-family:inherit;transition:background .15s ease;}
-    .btn:hover{background:var(--primary-active);}
-    .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .btn{width:100%;height:46px;border:0;background:var(--primary);color:#fff;font-size:15px;font-weight:700;letter-spacing:0.5px;cursor:pointer;margin-top:14px;font-family:inherit;transition:background .15s ease;}
+    .btn:hover{background:var(--primary-active);} .btn:disabled{background:var(--hairline-strong);cursor:default;}
     .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
     .btn.ghost:hover{background:var(--surface-soft);}
-    .err{display:none;margin-top:14px;padding:12px 14px;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);font-size:14px;}
-    .home{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--muted);}
-    .danger-link{display:block;text-align:center;margin-top:26px;font-size:13px;color:var(--muted);
-      text-decoration:underline;cursor:pointer;background:none;border:0;width:100%;font-family:inherit;font-weight:300;}
-    .danger-link:hover{color:var(--error);}
-    #content{display:none;}
-    #editMode{display:none;}
+    .btn.danger{background:#fff;color:var(--error);border:1px solid #f3c7c3;}
+    .btn.danger:hover{background:#fdecea;}
+    .msg{display:none;margin-top:12px;padding:11px 14px;font-size:14px;line-height:1.5;}
+    .msg.err{display:block;background:#fdecea;border:1px solid #f3c7c3;color:var(--error);}
+    .msg.ok{display:block;background:#eafaf0;border:1px solid #bfe6cd;color:var(--ok);}
+    .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+    .actions .btn{margin-top:0;flex:1;min-width:120px;}
+    .collapse{display:none;margin-top:14px;padding-top:6px;border-top:1px dashed var(--hairline);}
+    .collapse.open{display:block;}
+    .home{display:block;text-align:center;margin-top:8px;font-size:13px;color:var(--muted);}
     #loading{padding:80px 24px;text-align:center;color:var(--muted);font-size:15px;}
+    #content{display:none;}
+    footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:24px;text-align:center;font-size:13px;}
+    footer a{color:rgba(255,255,255,0.9);font-weight:700;}
   </style>
 </head>
 <body>
@@ -61,11 +62,10 @@
   <div id="loading">확인 중…</div>
 
   <div class="wrap" id="content">
+    <!-- 내 정보 -->
     <div class="card">
       <h1 class="title">마이페이지</h1>
       <p class="sub">삼기연 홈페이지에 로그인하셨습니다. 환영합니다. 🙏</p>
-
-      <!-- 보기 모드 -->
       <div id="viewMode">
         <div class="row"><span class="k">이름</span><span class="v" id="pName">—</span></div>
         <div class="row"><span class="k">교회</span><span class="v" id="pChurch">—</span></div>
@@ -74,13 +74,13 @@
         <div class="row"><span class="k">전화번호</span><span class="v" id="pPhone">—</span></div>
         <div class="row"><span class="k">주소</span><span class="v" id="pAddr">—</span></div>
         <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
-        <button class="btn" id="editBtn">정보 수정</button>
-        <button class="btn ghost" id="logout">로그아웃</button>
-        <button class="danger-link" id="deleteBtn">회원 탈퇴</button>
+        <div class="actions">
+          <button class="btn" id="editBtn">정보 수정</button>
+          <button class="btn ghost" id="logout">로그아웃</button>
+        </div>
       </div>
-
-      <!-- 수정 모드 -->
-      <div id="editMode">
+      <!-- 정보 수정 -->
+      <div id="editMode" style="display:none;">
         <label for="eName">이름</label>
         <input id="eName" type="text" placeholder="홍길동" />
         <label for="eChurch">교회명 <span style="font-weight:400;color:var(--muted)">(검색)</span></label>
@@ -93,20 +93,70 @@
         <input id="ePhone" type="tel" placeholder="010-0000-0000" />
         <label for="eAddr">주소</label>
         <input id="eAddr" type="text" placeholder="예) 화성시 우정읍 ○○로 00" />
-        <div class="err" id="eErr"></div>
-        <button class="btn" id="saveBtn">저장</button>
-        <button class="btn ghost" id="cancelBtn">취소</button>
+        <div class="msg" id="eMsg"></div>
+        <div class="actions"><button class="btn" id="saveBtn">저장</button><button class="btn ghost" id="cancelBtn">취소</button></div>
       </div>
     </div>
+
+    <!-- 계정 보안 -->
+    <div class="card">
+      <h2 class="sec-title">계정 · 보안</h2>
+      <p class="sec-desc">이메일과 비밀번호를 변경할 수 있습니다.</p>
+      <div class="actions">
+        <button class="btn ghost" id="emailBtn">이메일 변경</button>
+        <button class="btn ghost" id="pwBtn">비밀번호 변경</button>
+      </div>
+
+      <!-- 이메일 변경 -->
+      <div class="collapse" id="emailMode">
+        <label for="newEmail">새 이메일</label>
+        <input id="newEmail" type="email" placeholder="new@example.com" autocomplete="email" />
+        <p class="sec-desc" style="margin-top:8px;">변경하면 <b>새 이메일 주소로 확인 링크</b>가 발송됩니다. 그 링크를 클릭해야 이메일 변경이 완료됩니다.</p>
+        <div class="msg" id="emailMsg"></div>
+        <div class="actions"><button class="btn" id="emailSave">확인 메일 보내기</button><button class="btn ghost" id="emailCancel">취소</button></div>
+      </div>
+
+      <!-- 비밀번호 변경 -->
+      <div class="collapse" id="pwMode">
+        <label for="curPw">현재 비밀번호</label>
+        <input id="curPw" type="password" placeholder="현재 비밀번호" autocomplete="current-password" />
+        <label for="newPw">새 비밀번호 <span style="font-weight:400;color:var(--muted)">(8자 이상, 영문+숫자)</span></label>
+        <input id="newPw" type="password" placeholder="새 비밀번호" autocomplete="new-password" />
+        <label for="newPw2">새 비밀번호 확인</label>
+        <input id="newPw2" type="password" placeholder="한 번 더 입력" autocomplete="new-password" />
+        <div class="msg" id="pwMsg"></div>
+        <div class="actions"><button class="btn" id="pwSave">비밀번호 변경</button><button class="btn ghost" id="pwCancel">취소</button></div>
+      </div>
+    </div>
+
+    <!-- 회원 탈퇴 -->
+    <div class="card">
+      <h2 class="sec-title">회원 탈퇴</h2>
+      <p class="sec-desc">탈퇴하면 개인정보(이메일·이름·연락처 등)는 익명 처리되고, 해당 계정으로는 다시 로그인할 수 없습니다. 작성하신 글·댓글의 이름은 ‘탈퇴한 회원’으로 표시됩니다.</p>
+      <button class="btn danger" id="deleteBtn">회원 탈퇴하기</button>
+      <div class="collapse" id="deleteMode">
+        <label for="delPw">확인을 위해 현재 비밀번호를 입력해 주세요</label>
+        <input id="delPw" type="password" placeholder="현재 비밀번호" autocomplete="current-password" />
+        <div class="msg" id="delMsg"></div>
+        <div class="actions"><button class="btn danger" id="delConfirm">탈퇴 진행</button><button class="btn ghost" id="delCancel">취소</button></div>
+      </div>
+    </div>
+
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
+  <footer>© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp;
+    <a href="terms.html#terms">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy">개인정보처리방침</a></footer>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=2"></script>
+  <script src="supabase-config.js?v=3"></script>
   <script src="churches.js?v=2"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js?v=9"></script>
   <script>
     function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
+    function pwOk(p){ return p.length>=8 && /[A-Za-z]/.test(p) && /[0-9]/.test(p); }
+    function setMsg(el, kind, text){ el.className='msg '+kind; el.textContent=text; }
+    function clearMsg(el){ el.className='msg'; el.textContent=''; }
     var CH = window.CHURCHES || [];
     var meUser = null, meProfile = null;
 
@@ -118,6 +168,11 @@
       document.getElementById('pPhone').textContent = (p && p.phone) || '—';
       document.getElementById('pAddr').textContent = (p && p.address) || '—';
     }
+    function only(openId){ // 하나의 collapse만 열기
+      ['emailMode','pwMode','deleteMode'].forEach(function(id){
+        document.getElementById(id).classList.toggle('open', id===openId);
+      });
+    }
 
     (async function () {
       var user = await window.requireAuth();
@@ -126,58 +181,34 @@
       document.getElementById('userEmail').textContent = user.email || '';
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
+
       document.getElementById('logout').addEventListener('click', async function () {
         if (window.sb) { try { await window.sb.auth.signOut(); } catch (_) {} }
         location.href = 'index.html';
       });
 
-      // ----- 회원 탈퇴 -----
-      document.getElementById('deleteBtn').addEventListener('click', async function () {
-        if (!window.sb) return;
-        if (!confirm('정말 회원을 탈퇴하시겠습니까?\n\n탈퇴하면 회원 정보가 즉시 삭제되며 되돌릴 수 없습니다.')) return;
-        if (!confirm('마지막 확인입니다.\n\n탈퇴를 진행하려면 [확인]을 눌러 주세요.')) return;
-        var btn = this; btn.disabled = true; btn.textContent = '탈퇴 처리 중...';
-        try {
-          var r = await window.sb.rpc('delete_own_account');
-          if (r.error) {
-            alert('탈퇴 처리 중 오류가 발생했습니다: ' + r.error.message + '\n\n관리자에게 문의해 주세요.');
-            btn.disabled = false; btn.textContent = '회원 탈퇴'; return;
-          }
-          try { await window.sb.auth.signOut(); } catch (_) {}
-          alert('회원 탈퇴가 완료되었습니다. 그동안 함께해 주셔서 감사합니다. 🙏');
-          location.href = 'index.html';
-        } catch (ex) {
-          alert('탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-          btn.disabled = false; btn.textContent = '회원 탈퇴';
-        }
-      });
-      try {
-        if (typeof window.getMyProfile === 'function') { meProfile = await window.getMyProfile(); fill(meProfile); }
-      } catch (e) {}
+      try { if (typeof window.getMyProfile === 'function') { meProfile = await window.getMyProfile(); fill(meProfile); } } catch (e) {}
 
-      // ----- 수정 모드 -----
-      var view = document.getElementById('viewMode'), edit = document.getElementById('editMode');
-      var eName = document.getElementById('eName'), eChurch = document.getElementById('eChurch');
-      var ePhone = document.getElementById('ePhone'), eAddr = document.getElementById('eAddr');
-      var eErr = document.getElementById('eErr'), tag = document.getElementById('eMemberTag');
-      var list = document.getElementById('eChurchList');
-
+      // ---------- 정보 수정 ----------
+      var view=document.getElementById('viewMode'), edit=document.getElementById('editMode');
+      var eName=document.getElementById('eName'), eChurch=document.getElementById('eChurch');
+      var ePhone=document.getElementById('ePhone'), eAddr=document.getElementById('eAddr');
+      var eMsg=document.getElementById('eMsg'), tag=document.getElementById('eMemberTag'), list=document.getElementById('eChurchList');
       function updateTag(){
-        var nm = norm(eName.value);
-        var rec = CH.find(function(c){ return c.name === eChurch.value.trim(); });
-        tag.className = 'memberTag';
+        var nm=norm(eName.value), rec=CH.find(function(c){ return c.name===eChurch.value.trim(); });
+        tag.className='memberTag';
         if(!nm || !eChurch.value.trim()){ tag.textContent=''; return; }
-        if(rec && norm(rec.pastor) === nm){ tag.textContent = '✓ 회원교회 담임목사로 확인됩니다 — 정회원'; tag.classList.add('full'); }
-        else { tag.textContent = '일반회원으로 저장됩니다.'; tag.classList.add('general'); }
+        if(rec && norm(rec.pastor)===nm){ tag.textContent='✓ 회원교회 담임목사로 확인됩니다 — 정회원'; tag.classList.add('full'); }
+        else { tag.textContent='일반회원으로 저장됩니다.'; tag.classList.add('general'); }
       }
       function renderList(q){
-        q = q.trim(); list.innerHTML = '';
+        q=q.trim(); list.innerHTML='';
         if(!q){ list.style.display='none'; return; }
-        var m = CH.filter(function(c){ return c.name.indexOf(q) >= 0; }).slice(0, 8);
+        var m=CH.filter(function(c){ return c.name.indexOf(q)>=0; }).slice(0,8);
         if(!m.length){ list.style.display='none'; return; }
         m.forEach(function(c){
-          var d = document.createElement('div'); d.className='ac-item';
-          d.innerHTML = '<b>'+c.name+'</b><span>'+c.region+' · '+c.pastor+' 목사</span>';
+          var d=document.createElement('div'); d.className='ac-item';
+          d.innerHTML='<b>'+c.name+'</b><span>'+c.region+' · '+c.pastor+' 목사</span>';
           d.addEventListener('mousedown', function(ev){ ev.preventDefault(); eChurch.value=c.name; list.style.display='none'; updateTag(); });
           list.appendChild(d);
         });
@@ -185,37 +216,93 @@
       }
       eChurch.addEventListener('input', function(){ renderList(eChurch.value); updateTag(); });
       eChurch.addEventListener('focus', function(){ renderList(eChurch.value); });
-      eChurch.addEventListener('blur', function(){ setTimeout(function(){ list.style.display='none'; }, 150); });
+      eChurch.addEventListener('blur', function(){ setTimeout(function(){ list.style.display='none'; },150); });
       eName.addEventListener('input', updateTag);
 
       document.getElementById('editBtn').addEventListener('click', function(){
-        eName.value = (meProfile && meProfile.name) || '';
-        eChurch.value = (meProfile && meProfile.church) || '';
-        ePhone.value = (meProfile && meProfile.phone) || '';
-        eAddr.value = (meProfile && meProfile.address) || '';
-        eErr.style.display='none'; updateTag();
-        view.style.display='none'; edit.style.display='block';
+        eName.value=(meProfile&&meProfile.name)||''; eChurch.value=(meProfile&&meProfile.church)||'';
+        ePhone.value=(meProfile&&meProfile.phone)||''; eAddr.value=(meProfile&&meProfile.address)||'';
+        clearMsg(eMsg); updateTag(); view.style.display='none'; edit.style.display='block';
       });
-      document.getElementById('cancelBtn').addEventListener('click', function(){
-        edit.style.display='none'; view.style.display='block';
-      });
+      document.getElementById('cancelBtn').addEventListener('click', function(){ edit.style.display='none'; view.style.display='block'; });
       document.getElementById('saveBtn').addEventListener('click', async function(){
-        eErr.style.display='none';
-        var name = eName.value.trim(), church = eChurch.value.trim(), phone = ePhone.value.trim(), addr = eAddr.value.trim();
-        if(!name || !church){ eErr.textContent='이름과 교회명을 입력해 주세요.'; eErr.style.display='block'; return; }
-        if(!window.sb){ eErr.textContent='서버 연결이 준비되지 않았습니다.'; eErr.style.display='block'; return; }
-        var rec = CH.find(function(c){ return c.name === church; });
-        var memberType = (rec && norm(rec.pastor) === norm(name)) ? '정회원' : '일반회원';
-        var btn = document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='저장 중...';
-        var up = await window.sb.from('profiles')
-          .update({ name: name, church: church, phone: phone, address: addr, member_type: memberType })
-          .eq('id', meUser.id);
+        clearMsg(eMsg);
+        var name=eName.value.trim(), church=eChurch.value.trim(), phone=ePhone.value.trim(), addr=eAddr.value.trim();
+        if(!name || !church){ setMsg(eMsg,'err','이름과 교회명을 입력해 주세요.'); return; }
+        if(!window.sb){ setMsg(eMsg,'err','서버 연결이 준비되지 않았습니다.'); return; }
+        var rec=CH.find(function(c){ return c.name===church; });
+        var memberType=(rec && norm(rec.pastor)===norm(name)) ? '정회원' : '일반회원';
+        var btn=document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='저장 중...';
+        var up=await window.sb.from('profiles').update({ name:name, church:church, phone:phone, address:addr, member_type:memberType }).eq('id', meUser.id);
         btn.disabled=false; btn.textContent='저장';
-        if(up.error){ eErr.textContent='저장 실패: ' + up.error.message; eErr.style.display='block'; return; }
-        meProfile = meProfile || {};
-        meProfile.name=name; meProfile.church=church; meProfile.phone=phone; meProfile.address=addr; meProfile.member_type=memberType;
-        fill(meProfile);
-        edit.style.display='none'; view.style.display='block';
+        if(up.error){ setMsg(eMsg,'err','저장 실패: '+up.error.message); return; }
+        meProfile=meProfile||{}; meProfile.name=name; meProfile.church=church; meProfile.phone=phone; meProfile.address=addr; meProfile.member_type=memberType;
+        fill(meProfile); edit.style.display='none'; view.style.display='block';
+      });
+
+      // ---------- 이메일 변경 ----------
+      var emailMsg=document.getElementById('emailMsg');
+      document.getElementById('emailBtn').addEventListener('click', function(){ clearMsg(emailMsg); document.getElementById('newEmail').value=''; only(document.getElementById('emailMode').classList.contains('open')?'':'emailMode'); });
+      document.getElementById('emailCancel').addEventListener('click', function(){ only(''); });
+      document.getElementById('emailSave').addEventListener('click', async function(){
+        clearMsg(emailMsg);
+        var ne=document.getElementById('newEmail').value.trim();
+        if(!ne || ne.indexOf('@')<0){ setMsg(emailMsg,'err','올바른 이메일을 입력해 주세요.'); return; }
+        if(ne.toLowerCase()===String(meUser.email||'').toLowerCase()){ setMsg(emailMsg,'err','현재 이메일과 동일합니다.'); return; }
+        var btn=this; btn.disabled=true; btn.textContent='보내는 중…';
+        try{
+          var res=await window.sb.auth.updateUser({ email: ne }, { emailRedirectTo: location.origin + '/mypage.html' });
+          if(res.error){ setMsg(emailMsg,'err', window.krErr(res.error.message)); btn.disabled=false; btn.textContent='확인 메일 보내기'; return; }
+          setMsg(emailMsg,'ok','새 이메일('+ne+')로 확인 링크를 보냈습니다. 메일에서 링크를 클릭하면 변경이 완료됩니다.');
+        }catch(ex){ setMsg(emailMsg,'err', window.krErr(ex && ex.message)); }
+        btn.disabled=false; btn.textContent='확인 메일 보내기';
+      });
+
+      // ---------- 비밀번호 변경 ----------
+      var pwMsg=document.getElementById('pwMsg');
+      document.getElementById('pwBtn').addEventListener('click', function(){ clearMsg(pwMsg); ['curPw','newPw','newPw2'].forEach(function(id){document.getElementById(id).value='';}); only(document.getElementById('pwMode').classList.contains('open')?'':'pwMode'); });
+      document.getElementById('pwCancel').addEventListener('click', function(){ only(''); });
+      document.getElementById('pwSave').addEventListener('click', async function(){
+        clearMsg(pwMsg);
+        var cur=document.getElementById('curPw').value, np=document.getElementById('newPw').value, np2=document.getElementById('newPw2').value;
+        if(!cur){ setMsg(pwMsg,'err','현재 비밀번호를 입력해 주세요.'); return; }
+        if(!pwOk(np)){ setMsg(pwMsg,'err','새 비밀번호는 8자 이상이며 영문과 숫자를 모두 포함해야 합니다.'); return; }
+        if(np!==np2){ setMsg(pwMsg,'err','새 비밀번호가 일치하지 않습니다.'); return; }
+        var btn=this; btn.disabled=true; btn.textContent='변경 중…';
+        try{
+          // 1) 현재 비밀번호 재확인
+          var v=await window.sb.auth.signInWithPassword({ email: meUser.email, password: cur });
+          if(v.error){ setMsg(pwMsg,'err','현재 비밀번호가 올바르지 않습니다.'); btn.disabled=false; btn.textContent='비밀번호 변경'; return; }
+          // 2) 새 비밀번호로 변경
+          var u=await window.sb.auth.updateUser({ password: np });
+          if(u.error){ setMsg(pwMsg,'err', window.krErr(u.error.message)); btn.disabled=false; btn.textContent='비밀번호 변경'; return; }
+          setMsg(pwMsg,'ok','비밀번호가 변경되었습니다.');
+          document.getElementById('curPw').value=''; document.getElementById('newPw').value=''; document.getElementById('newPw2').value='';
+        }catch(ex){ setMsg(pwMsg,'err', window.krErr(ex && ex.message)); }
+        btn.disabled=false; btn.textContent='비밀번호 변경';
+      });
+
+      // ---------- 회원 탈퇴 ----------
+      var delMsg=document.getElementById('delMsg');
+      document.getElementById('deleteBtn').addEventListener('click', function(){ clearMsg(delMsg); document.getElementById('delPw').value=''; only(document.getElementById('deleteMode').classList.contains('open')?'':'deleteMode'); });
+      document.getElementById('delCancel').addEventListener('click', function(){ only(''); });
+      document.getElementById('delConfirm').addEventListener('click', async function(){
+        clearMsg(delMsg);
+        var pw=document.getElementById('delPw').value;
+        if(!pw){ setMsg(delMsg,'err','비밀번호를 입력해 주세요.'); return; }
+        if(!confirm('정말 탈퇴하시겠습니까?\n\n탈퇴하면 개인정보가 익명 처리되고 이 계정으로는 다시 로그인할 수 없습니다.')) return;
+        var btn=this; btn.disabled=true; btn.textContent='탈퇴 처리 중…';
+        try{
+          // 1) 비밀번호 확인
+          var v=await window.sb.auth.signInWithPassword({ email: meUser.email, password: pw });
+          if(v.error){ setMsg(delMsg,'err','비밀번호가 올바르지 않습니다.'); btn.disabled=false; btn.textContent='탈퇴 진행'; return; }
+          // 2) 소프트삭제 + 익명화
+          var r=await window.sb.rpc('soft_delete_account');
+          if(r.error){ setMsg(delMsg,'err','탈퇴 처리 중 오류: '+r.error.message); btn.disabled=false; btn.textContent='탈퇴 진행'; return; }
+          try{ await window.sb.auth.signOut(); }catch(_){}
+          alert('회원 탈퇴가 완료되었습니다. 그동안 함께해 주셔서 감사합니다. 🙏');
+          location.href='index.html';
+        }catch(ex){ setMsg(delMsg,'err','탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'); btn.disabled=false; btn.textContent='탈퇴 진행'; }
       });
     })();
   </script>
