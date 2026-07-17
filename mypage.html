@@ -7,13 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
       --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
-      font-family:"Pretendard Variable",Pretendard,'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
@@ -76,7 +75,6 @@
         <div class="row"><span class="k">주소</span><span class="v" id="pAddr">—</span></div>
         <div class="row"><span class="k">이메일</span><span class="v" id="userEmail"></span></div>
         <button class="btn" id="editBtn">정보 수정</button>
-        <button class="btn ghost" id="pwBtn">비밀번호 변경</button>
         <button class="btn ghost" id="logout">로그아웃</button>
         <button class="danger-link" id="deleteBtn">회원 탈퇴</button>
       </div>
@@ -98,19 +96,6 @@
         <div class="err" id="eErr"></div>
         <button class="btn" id="saveBtn">저장</button>
         <button class="btn ghost" id="cancelBtn">취소</button>
-      </div>
-
-      <!-- 비밀번호 변경 모드 -->
-      <div id="pwMode" style="display:none;">
-        <p class="sub" style="margin:0 0 6px;">새로 사용하실 비밀번호를 입력해 주세요.</p>
-        <label for="np1">새 비밀번호</label>
-        <input id="np1" type="password" autocomplete="new-password" placeholder="6자 이상" />
-        <label for="np2">새 비밀번호 확인</label>
-        <input id="np2" type="password" autocomplete="new-password" placeholder="한 번 더 입력" />
-        <div class="err" id="npErr"></div>
-        <div id="npOk" style="display:none;margin-top:14px;padding:12px 14px;background:#eaf6ee;border:1px solid #bfe3cb;color:#177245;font-size:14px;">비밀번호가 변경되었습니다. ✅</div>
-        <button class="btn" id="npSave">비밀번호 저장</button>
-        <button class="btn ghost" id="npCancel">취소</button>
       </div>
     </div>
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
@@ -231,31 +216,6 @@
         meProfile.name=name; meProfile.church=church; meProfile.phone=phone; meProfile.address=addr; meProfile.member_type=memberType;
         fill(meProfile);
         edit.style.display='none'; view.style.display='block';
-      });
-
-      // ----- 비밀번호 변경 (로그인 상태에서 직접 변경) -----
-      var pwMode = document.getElementById('pwMode');
-      document.getElementById('pwBtn').addEventListener('click', function(){
-        document.getElementById('np1').value=''; document.getElementById('np2').value='';
-        document.getElementById('npErr').style.display='none'; document.getElementById('npOk').style.display='none';
-        var sv=document.getElementById('npSave'); sv.disabled=false; sv.textContent='비밀번호 저장';
-        view.style.display='none'; pwMode.style.display='block';
-      });
-      document.getElementById('npCancel').addEventListener('click', function(){ pwMode.style.display='none'; view.style.display='block'; });
-      document.getElementById('npSave').addEventListener('click', async function(){
-        var e=document.getElementById('npErr'); e.style.display='none';
-        var p1=document.getElementById('np1').value, p2=document.getElementById('np2').value;
-        if(p1.length<6){ e.textContent='비밀번호는 6자 이상이어야 합니다.'; e.style.display='block'; return; }
-        if(p1!==p2){ e.textContent='비밀번호가 일치하지 않습니다.'; e.style.display='block'; return; }
-        if(!window.sb){ e.textContent='서버 연결이 준비되지 않았습니다.'; e.style.display='block'; return; }
-        var b=this; b.disabled=true; b.textContent='변경 중…';
-        try{
-          var res=await window.sb.auth.updateUser({ password:p1 });
-          if(res.error){ b.disabled=false; b.textContent='비밀번호 저장'; e.textContent=(window.krErr?window.krErr(res.error.message):res.error.message); e.style.display='block'; return; }
-          document.getElementById('np1').value=''; document.getElementById('np2').value='';
-          document.getElementById('npOk').style.display='block'; b.textContent='완료';
-          setTimeout(function(){ pwMode.style.display='none'; view.style.display='block'; }, 1600);
-        }catch(ex){ b.disabled=false; b.textContent='비밀번호 저장'; e.textContent=(window.krErr?window.krErr(ex&&ex.message):(ex&&ex.message))||'변경에 실패했습니다.'; e.style.display='block'; }
       });
     })();
   </script>

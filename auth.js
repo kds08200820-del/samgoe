@@ -35,7 +35,7 @@
   window.krErr = function (m) {
     m = String(m || '');
     if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
-    if (/Email not confirmed/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
+    if (/Email not confirmed/i.test(m)) return '이메일 인증이 필요합니다. 가입 시 받은 인증 메일을 확인해 주세요.';
     if (/already registered|already been registered|User already/i.test(m)) return '이미 가입된 이메일입니다.';
     if (/Password should be at least/i.test(m)) return '비밀번호는 6자 이상이어야 합니다.';
     if (/valid email|Unable to validate email|invalid.*email/i.test(m)) return '올바른 이메일 형식이 아닙니다.';
@@ -84,6 +84,7 @@
       var parts = [];
       if (window.isAdmin(user, profile)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
       if (profile && profile.officer_role) parts.push('<a href="officer.html" style="color:#8fc0ff;font-weight:700">임원실</a>');
+      if (window.isSamo(user, profile)) parts.push('<a href="samo.html" style="color:#f6b6d0;font-weight:700">사모 게시판</a>');
       parts.push('<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>');
       parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
       el.innerHTML = parts.join(sep);

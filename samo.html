@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>사모 게시판 | 삼괴지역 기독교 연합회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;
+      --error:#dc2626;--rose:#c2185b;--rose-soft:#fce4ec;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      -webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:760px;margin:0 auto;padding:34px 20px 90px;}
+    .head{text-align:center;margin-bottom:26px;}
+    .head h1{margin:0;font-size:26px;font-weight:700;color:var(--ink);}
+    .head p{margin:8px 0 0;font-size:14px;color:var(--muted);line-height:1.6;}
+    .head .badge{display:inline-block;margin-top:12px;background:var(--rose-soft);color:var(--rose);
+      font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;}
+    .card{background:var(--canvas);border:1px solid var(--hairline);}
+    .composer{padding:20px 20px 22px;margin-bottom:22px;}
+    .composer input.t{width:100%;height:46px;padding:0 13px;border:1px solid var(--hairline-strong);font-size:15px;
+      font-family:inherit;font-weight:400;color:var(--ink);border-radius:0;margin-bottom:10px;}
+    .composer textarea{width:100%;min-height:110px;padding:12px 13px;border:1px solid var(--hairline-strong);font-size:15px;
+      font-family:inherit;font-weight:300;color:var(--ink);border-radius:0;resize:vertical;line-height:1.6;}
+    .composer input.t:focus,.composer textarea:focus{outline:none;border:2px solid var(--ink);}
+    .crow{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px;flex-wrap:wrap;}
+    .anon{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400;color:var(--bodytext);cursor:pointer;}
+    .anon input{width:18px;height:18px;accent-color:var(--rose);cursor:pointer;margin:0;}
+    .btn{height:44px;padding:0 26px;border:0;border-radius:0;background:var(--rose);color:#fff;font-size:14px;
+      font-weight:700;letter-spacing:0.4px;cursor:pointer;font-family:inherit;transition:background .15s ease;}
+    .btn:hover{background:#a01248;}
+    .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .btn.sm{height:36px;padding:0 16px;font-size:13px;}
+    .post{padding:20px;margin-bottom:16px;}
+    .post .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+    .post h3{margin:0;font-size:17px;font-weight:700;color:var(--ink);line-height:1.4;}
+    .post .meta{font-size:12px;color:var(--muted);white-space:nowrap;flex:0 0 auto;}
+    .post .who{font-weight:700;color:var(--rose);}
+    .post .body{margin:12px 0 0;font-size:15px;color:var(--bodytext);line-height:1.75;white-space:pre-wrap;}
+    .post .acts{margin-top:12px;text-align:right;}
+    .post .acts a{font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer;margin-left:14px;}
+    .cmts{margin-top:16px;border-top:1px solid var(--hairline);padding-top:14px;}
+    .cmt{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--surface-soft);}
+    .cmt .c-main{font-size:14px;color:var(--bodytext);line-height:1.6;}
+    .cmt .c-who{font-weight:700;color:var(--ink);margin-right:8px;}
+    .cmt .c-date{font-size:11px;color:var(--muted);margin-left:8px;}
+    .cmt .c-del{font-size:11px;color:var(--muted);text-decoration:underline;cursor:pointer;flex:0 0 auto;}
+    .cform{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap;}
+    .cform input.ci{flex:1;min-width:160px;height:40px;padding:0 12px;border:1px solid var(--hairline-strong);
+      font-size:14px;font-family:inherit;font-weight:300;border-radius:0;}
+    .cform input.ci:focus{outline:none;border:2px solid var(--ink);}
+    .cform .anon{font-size:13px;}
+    .empty{text-align:center;color:var(--muted);font-size:14px;padding:50px 20px;}
+    .loading{text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;}
+    .home{display:block;text-align:center;margin-top:26px;font-size:13px;color:var(--muted);}
+  </style>
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <div class="wrap">
+    <div class="head">
+      <h1>사모 게시판</h1>
+      <p>목회자와 그 배우자(사모·사부)만을 위한 나눔의 공간입니다.<br>서로의 마음을 나누고 기도로 함께해 주세요.</p>
+      <span class="badge">🌷 사모·사부 전용 · 익명 작성 가능</span>
+    </div>
+
+    <div class="card composer" id="composer" style="display:none">
+      <input class="t" id="pTitle" type="text" placeholder="제목" maxlength="120" />
+      <textarea id="pBody" placeholder="나누고 싶은 이야기를 편하게 적어 주세요."></textarea>
+      <div class="crow">
+        <label class="anon"><input type="checkbox" id="pAnon" /> 익명으로 작성</label>
+        <button class="btn" id="pSubmit" type="button">글 올리기</button>
+      </div>
+    </div>
+
+    <div id="list"><div class="loading">불러오는 중…</div></div>
+    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=2"></script>
+  <script src="auth.js?v=6"></script>
+  <script>
+    var me = null, myProfile = null, isAdminUser = false;
+    var listEl = document.getElementById('list');
+
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+    function fmt(d){ if(!d) return ''; var t=new Date(d); if(isNaN(t)) return '';
+      return t.getFullYear()+'.'+('0'+(t.getMonth()+1)).slice(-2)+'.'+('0'+t.getDate()).slice(-2); }
+
+    (async function init(){
+      var g = await window.requireSamo();
+      if(!g) return;
+      me = g.user; myProfile = g.profile || {};
+      isAdminUser = window.isAdmin(me, myProfile);
+      document.getElementById('composer').style.display = 'block';
+      document.getElementById('pSubmit').addEventListener('click', submitPost);
+      await load();
+    })();
+
+    async function load(){
+      var pr = await window.sb.from('samo_posts').select('*').order('created_at',{ascending:false});
+      if(pr.error){ listEl.innerHTML = '<div class="empty">글을 불러오지 못했습니다.<br>'+esc(pr.error.message)+'</div>'; return; }
+      var posts = pr.data || [];
+      var cr = await window.sb.from('samo_comments').select('*').order('created_at',{ascending:true});
+      var cmts = (cr.error ? [] : (cr.data || []));
+      if(!posts.length){ listEl.innerHTML = '<div class="empty">아직 올라온 글이 없습니다.<br>첫 이야기를 나눠 주세요.</div>'; return; }
+      listEl.innerHTML = posts.map(function(p){ return renderPost(p, cmts.filter(function(c){return c.post_id===p.id;})); }).join('');
+      bind();
+    }
+
+    function who(anon, name){ return anon ? '익명' : (name || '이름 없음'); }
+
+    function renderPost(p, cs){
+      var canDel = isAdminUser || p.author_id === me.id;
+      var comments = cs.map(function(c){
+        var cd = isAdminUser || c.author_id === me.id;
+        return '<div class="cmt"><div class="c-main"><span class="c-who">'+esc(who(c.anonymous, c.author_name))+'</span>'+
+          esc(c.body)+'<span class="c-date">'+fmt(c.created_at)+'</span></div>'+
+          (cd ? '<span class="c-del" data-cdel="'+c.id+'">삭제</span>' : '')+'</div>';
+      }).join('');
+      return '<div class="card post" data-post="'+p.id+'">'+
+        '<div class="top"><h3>'+esc(p.title)+'</h3>'+
+        '<span class="meta"><span class="who">'+esc(who(p.anonymous, p.author_name))+'</span> · '+fmt(p.created_at)+'</span></div>'+
+        (p.body ? '<div class="body">'+esc(p.body)+'</div>' : '')+
+        (canDel ? '<div class="acts"><a data-pdel="'+p.id+'">삭제</a></div>' : '')+
+        '<div class="cmts">'+comments+
+          '<div class="cform">'+
+            '<input class="ci" type="text" data-cinput="'+p.id+'" placeholder="댓글을 남겨 주세요" maxlength="500" />'+
+            '<label class="anon"><input type="checkbox" data-canon="'+p.id+'" /> 익명</label>'+
+            '<button class="btn sm" type="button" data-cadd="'+p.id+'">등록</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }
+
+    function bind(){
+      Array.prototype.forEach.call(document.querySelectorAll('[data-pdel]'), function(a){
+        a.addEventListener('click', function(){ delPost(a.getAttribute('data-pdel')); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-cadd]'), function(b){
+        b.addEventListener('click', function(){ addComment(b.getAttribute('data-cadd')); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-cdel]'), function(a){
+        a.addEventListener('click', function(){ delComment(a.getAttribute('data-cdel')); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-cinput]'), function(inp){
+        inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addComment(inp.getAttribute('data-cinput')); } });
+      });
+    }
+
+    async function submitPost(){
+      var t = document.getElementById('pTitle').value.trim();
+      var b = document.getElementById('pBody').value.trim();
+      var anon = document.getElementById('pAnon').checked;
+      if(!t){ alert('제목을 입력해 주세요.'); return; }
+      var btn = document.getElementById('pSubmit'); btn.disabled = true; btn.textContent = '올리는 중…';
+      var ins = await window.sb.from('samo_posts').insert({
+        title: t, body: b || null, anonymous: anon,
+        author_id: me.id, author_name: (myProfile && myProfile.name) || (me.email || '')
+      });
+      btn.disabled = false; btn.textContent = '글 올리기';
+      if(ins.error){ alert('등록 실패: '+ins.error.message); return; }
+      document.getElementById('pTitle').value = '';
+      document.getElementById('pBody').value = '';
+      document.getElementById('pAnon').checked = false;
+      await load();
+    }
+
+    async function delPost(id){
+      if(!confirm('이 글을 삭제할까요? 달린 댓글도 함께 삭제됩니다.')) return;
+      var d = await window.sb.from('samo_posts').delete().eq('id', id);
+      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+      await load();
+    }
+
+    async function addComment(postId){
+      var inp = document.querySelector('[data-cinput="'+postId+'"]');
+      var anonEl = document.querySelector('[data-canon="'+postId+'"]');
+      var text = inp.value.trim();
+      if(!text) return;
+      var ins = await window.sb.from('samo_comments').insert({
+        post_id: postId, body: text, anonymous: !!(anonEl && anonEl.checked),
+        author_id: me.id, author_name: (myProfile && myProfile.name) || (me.email || '')
+      });
+      if(ins.error){ alert('댓글 등록 실패: '+ins.error.message); return; }
+      await load();
+    }
+
+    async function delComment(id){
+      if(!confirm('댓글을 삭제할까요?')) return;
+      var d = await window.sb.from('samo_comments').delete().eq('id', id);
+      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+      await load();
+    }
+  </script>
+</body>
+</html>

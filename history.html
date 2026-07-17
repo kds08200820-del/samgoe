@@ -8,13 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
   <style>
     :root{--primary:#1c69d4;--blue:#1c69d4;--primary-active:#0653b6;--ink:#1a1a1a;--bodytext:#3c3c3c;--muted:#6b6b6b;
       --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f6f7f9;--parchment:#f3f1ea;--dark:#1a2129;--on-dark:#e8ebef;--on-dark-soft:#a7b0bd;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--canvas);color:var(--bodytext);font-weight:300;
-      font-family:"Pretendard Variable",Pretendard,'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:30;}
     .bar .in{max-width:1080px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
@@ -219,31 +218,23 @@
       {badge:'2014', title:'투명한 손길', body:'연간 결산과 재정 감사를 정착시켜, 작은 헌금 하나까지 회원 교회 앞에 책임 있고 투명하게 섬겼습니다.'},
       {badge:'2016', title:'다음 세대를 심다', body:'지역의 학생들에게 장학금과 장학증서를 전하며, 오늘의 섬김이 내일의 열매가 되도록 다음 세대를 함께 세웠습니다.'},
       {badge:'2018', title:'쉼 없이 이어진 걸음', body:'신년 조찬기도회, 부활절 연합예배(헌금으로 이웃 섬김), 목회자 부부 수양회, 8·15 광복절 연합예배와 정기총회로 한 해를 가득 채웠습니다.'},
-      {badge:'2021', title:'회칙을 다시 다듬다', body:'정기총회에서 회칙을 개정하며 조직을 새롭게 정비했습니다. 오랜 「총무·서기·회계」 체제에서 「사무총장」 체제로 나아가는 기틀을 놓아, 연합 사역을 한층 든든하게 세웠습니다.'},
-      {badge:'2024', title:'3·1 만세길을 다시 걷다', body:'우정·장안에서 일어난 3·1 만세운동의 정신을 잇는 「3·1 만세길 걷기대회」를 시작했습니다. 지역의 역사와 신앙, 시민의 발걸음이 하나로 이어진, 삼기연의 간판 사업이 태어났습니다.', big:true},
-      {badge:'2025', title:'함께 걷고, 함께 쉬다', body:'만세길 걷기대회를 본격적으로 준비하며 지역 기관과 손을 맞잡았고, 목회자 부부가 함께하는 야유회로 서로를 돌보았습니다. 부활절 연합예배와 임원회의 섬김도 쉼 없이 이어졌습니다.'},
-      {badge:'2026', title:'오늘, 그리고 내일', body:'조암감리교회에서 드린 부활절 연합예배, 시흥갯골로 떠난 목회자 부부 야유회, 그리고 제9회 지방선거를 앞두고 삼괴지역 6대 현안을 담아 후보자들에게 전한 정책 질의·제언까지 — 공식 홈페이지·앱을 열어, 지나온 길을 기억하며 다음 세대와 함께 걸어갈 길을 준비합니다.', big:true}
+      {badge:'2026', title:'오늘, 그리고 내일', body:'목회자 부부 야유회, 지역을 향한 정책 제언, 공식 홈페이지·앱 개설 — 지나온 길을 기억하며, 다음 세대와 함께 걸어갈 길을 준비합니다.', big:true}
     ];
-    var EVENTS = [], isAdmin = false, me = null, editingIndex = -1, usingDefaults = false;
-    function seedRow(e, i){ return { badge:(e.badge||null), title:e.title, body:(e.body||null), big:!!e.big, sort:(i+1)*10 }; }
+    var EVENTS = [], isAdmin = false, me = null, editingId = null;
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
 
-    // 연혁 배지에서 연도(4자리) 추출 — 없으면 맨 앞(오래된 것)으로
-    function evYear(e){ var m=String(e && e.badge!=null ? e.badge : '').match(/(1[89]\d\d|20\d\d)/); return m?parseInt(m[1],10):-1; }
     function render(){
       var tl = document.getElementById('timeline');
-      // 연도 기준 자동 정렬(같은 연도는 sort 값으로 정렬)
-      EVENTS.sort(function(a,b){ var ya=evYear(a), yb=evYear(b); if(ya!==yb) return ya-yb; return (a.sort!=null?a.sort:0)-(b.sort!=null?b.sort:0); });
       if(!EVENTS.length){ tl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">아직 등록된 연혁이 없습니다.</div>'; return; }
-      tl.innerHTML = EVENTS.map(function(e, i){
-        var adm = isAdmin ? '<div class="adm"><button class="admBtn hEdit" data-idx="'+i+'">수정</button><button class="admBtn hDel" data-idx="'+i+'">삭제</button></div>' : '';
+      tl.innerHTML = EVENTS.map(function(e){
+        var adm = isAdmin ? '<div class="adm"><button class="admBtn hEdit" data-id="'+esc(e.id||'')+'">수정</button><button class="admBtn hDel" data-id="'+esc(e.id||'')+'">삭제</button></div>' : '';
         return '<div class="ev'+(e.big?' big':'')+'"><span class="dot"></span><div class="yr">'+esc(e.badge)+'</div><h3>'+esc(e.title)+'</h3>'+
           (e.body?'<p>'+esc(e.body)+'</p>':'')+adm+'</div>';
       }).join('');
     }
 
-    function openModal(ev, idx){
-      editingIndex = (idx==null ? -1 : idx);
+    function openModal(ev){
+      editingId = ev ? ev.id : null;
       document.getElementById('hTitle').textContent = ev ? '연혁 수정' : '연혁 항목 추가';
       document.getElementById('hBadge').value = ev ? (ev.badge||'') : '';
       document.getElementById('hHead').value = ev ? (ev.title||'') : '';
@@ -253,12 +244,11 @@
       document.getElementById('hErr').style.display='none';
       document.getElementById('histOv').classList.add('on');
     }
-    function closeModal(){ document.getElementById('histOv').classList.remove('on'); editingIndex=-1; }
+    function closeModal(){ document.getElementById('histOv').classList.remove('on'); editingId=null; }
 
     async function reload(){
       var r = await window.sb.from('history_events').select('*').order('sort',{ascending:true});
-      if(!r.error && r.data && r.data.length){ EVENTS = r.data; usingDefaults=false; }
-      else { EVENTS = DEFAULTS.slice(); usingDefaults=true; }
+      if(!r.error && r.data){ EVENTS = r.data; }
       render();
     }
     async function saveEvent(){
@@ -273,33 +263,18 @@
         sort: parseInt(document.getElementById('hSort').value,10) || 0
       };
       var btn = document.getElementById('hSaveBtn'); btn.disabled=true;
-      try{
-        if(usingDefaults){
-          // 기본 연혁을 처음 편집/추가 → 현재 목록 전체를 DB에 저장(편집 반영). 이후부터는 개별 관리.
-          var rows = EVENTS.map(function(e,i){ var r=seedRow(e,i);
-            if(i===editingIndex){ r.badge=payload.badge; r.title=payload.title; r.body=payload.body; r.big=payload.big; r.sort=payload.sort; } return r; });
-          if(editingIndex<0){ rows.push({ badge:payload.badge, title:payload.title, body:payload.body, big:payload.big, sort:payload.sort }); }
-          var ins = await window.sb.from('history_events').insert(rows); if(ins.error) throw ins.error;
-        } else if(editingIndex>=0 && EVENTS[editingIndex] && EVENTS[editingIndex].id){
-          var up = await window.sb.from('history_events').update(payload).eq('id', EVENTS[editingIndex].id); if(up.error) throw up.error;
-        } else {
-          var ins2 = await window.sb.from('history_events').insert(payload); if(ins2.error) throw ins2.error;
-        }
-        btn.disabled=false; closeModal(); await reload();
-      }catch(e){ btn.disabled=false; err.textContent='저장 실패: '+(e.message||e)+' (관리자: history-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display='block'; }
+      var res = editingId
+        ? await window.sb.from('history_events').update(payload).eq('id', editingId)
+        : await window.sb.from('history_events').insert(payload);
+      btn.disabled=false;
+      if(res.error){ err.textContent='저장 실패: '+res.error.message+' (관리자: history-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display='block'; return; }
+      closeModal(); await reload();
     }
-    async function delEvent(index){
+    async function delEvent(id){
       if(!confirm('이 연혁 항목을 삭제할까요?')) return;
-      try{
-        if(usingDefaults){
-          var rows = EVENTS.filter(function(_,i){ return i!==index; }).map(function(e,i){ return seedRow(e,i); });
-          if(rows.length){ var ins=await window.sb.from('history_events').insert(rows); if(ins.error) throw ins.error; }
-        } else {
-          var ev = EVENTS[index]; if(!ev || !ev.id){ await reload(); return; }
-          var d = await window.sb.from('history_events').delete().eq('id', ev.id); if(d.error) throw d.error;
-        }
-        await reload();
-      }catch(e){ alert('삭제 실패: '+(e.message||e)+'\n(관리자: history-setup.sql 실행이 필요할 수 있습니다.)'); }
+      var d = await window.sb.from('history_events').delete().eq('id', id);
+      if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+      await reload();
     }
 
     (async function(){
@@ -309,10 +284,10 @@
           me = s.data && s.data.session ? s.data.session.user : null;
           if(me && typeof window.getMyProfile==='function'){ var p = await window.getMyProfile(); isAdmin = window.isAdmin ? window.isAdmin(me, p) : false; }
           var r = await window.sb.from('history_events').select('*').order('sort',{ascending:true});
-          if(!r.error && r.data && r.data.length){ EVENTS = r.data; usingDefaults=false; }
-          else { EVENTS = DEFAULTS.slice(); usingDefaults=true; }
-        } else { EVENTS = DEFAULTS.slice(); usingDefaults=true; }
-      }catch(e){ EVENTS = DEFAULTS.slice(); usingDefaults=true; }
+          if(!r.error && r.data && r.data.length){ EVENTS = r.data; }
+          else { EVENTS = DEFAULTS.slice(); }
+        } else { EVENTS = DEFAULTS.slice(); }
+      }catch(e){ EVENTS = DEFAULTS.slice(); }
       render();
 
       if(isAdmin){
@@ -320,9 +295,9 @@
         document.getElementById('histAdd').addEventListener('click', function(){ openModal(null); });
         document.getElementById('timeline').addEventListener('click', function(e){
           var ed = e.target.closest && e.target.closest('.hEdit');
-          if(ed){ var i=parseInt(ed.getAttribute('data-idx'),10); if(EVENTS[i]) openModal(EVENTS[i], i); return; }
+          if(ed){ var id=ed.getAttribute('data-id'); var ev=EVENTS.find(function(x){return String(x.id)===id;}); if(ev) openModal(ev); return; }
           var dl = e.target.closest && e.target.closest('.hDel');
-          if(dl){ delEvent(parseInt(dl.getAttribute('data-idx'),10)); }
+          if(dl){ delEvent(dl.getAttribute('data-id')); }
         });
         document.getElementById('hCancel').addEventListener('click', closeModal);
         document.getElementById('hSaveBtn').addEventListener('click', saveEvent);

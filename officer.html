@@ -7,13 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
       --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--surface-card:#fafafa;--dark:#1a2129;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
-      font-family:"Pretendard Variable",Pretendard,'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:30;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
@@ -182,13 +181,13 @@
 
     <!-- 역사 자료 아카이브 -->
     <div class="pane" id="paneArchive">
-      <p class="who" style="margin:0 0 14px;">삼기연이 보관해 온 회의록·총회자료·순서지·보고서입니다.</p>
+      <p class="who" style="margin:0 0 14px;">삼기연이 보관해 온 회의록·총회자료·순서지·보고서입니다. 제목을 누르면 문서가 <b>이 화면 안에서 열리고, 뒤로가기로 닫힙니다.</b><br><span style="font-size:12px;">※ 계좌·개인정보가 포함된 회계·공문 자료는 공개 노출을 막기 위해 여기에 두지 않았습니다. 그런 자료는 위 <b>임원 자료방</b>에 올려 보관하세요.</span></p>
       <div class="arcAdd" id="arcAdd" style="display:none;">
-        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">＋ 자료 추가 <span style="font-weight:400;color:var(--muted);font-size:12px">· .docx / .hwpx 는 변환되어, .pdf 는 원본 그대로 목록에 추가됩니다</span></div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">＋ 자료 추가 <span style="font-weight:400;color:var(--muted);font-size:12px">· .docx / .hwpx 를 올리면 자동 변환되어 목록에 추가됩니다</span></div>
         <div style="margin-bottom:10px;"><span style="font-size:13px;color:var(--muted);margin-right:8px;">유형</span>
-          <select id="arcAddType"><option value="총회자료">총회자료</option><option value="회의록">회의록</option><option value="월례·임원회의">월례·임원회의</option><option value="보고서">보고서</option><option value="공문">공문</option><option value="순서지" selected>순서지</option></select></div>
-        <div class="drop" id="arcDrop" style="padding:22px;"><div class="big">파일을 여기로 끌어다 놓으세요</div><div class="small">.docx · .hwpx · .pdf · 여러 개 가능 · <u>클릭해서 선택</u>도 됩니다</div></div>
-        <input type="file" id="arcFile" accept=".docx,.hwpx,.pdf" multiple hidden />
+          <select id="arcAddType"><option value="총회자료">총회자료</option><option value="회의록">회의록</option><option value="월례·임원회의">월례·임원회의</option><option value="보고서">보고서</option><option value="순서지" selected>순서지</option></select></div>
+        <div class="drop" id="arcDrop" style="padding:22px;"><div class="big">파일을 여기로 끌어다 놓으세요</div><div class="small">.docx · .hwpx · 여러 개 가능 · <u>클릭해서 선택</u>도 됩니다</div></div>
+        <input type="file" id="arcFile" accept=".docx,.hwpx" multiple hidden />
         <div class="prog" id="arcAddProg"></div>
       </div>
       <div class="arcFilters">
@@ -214,7 +213,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
-  <script src="archive-list.js?v=6"></script>
+  <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=6"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
@@ -249,8 +248,8 @@
     });
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------
-    var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','보고서','공문','순서지'];
-    var TYPE_ICON = {'총회자료':'📋','회의록':'📝','월례·임원회의':'🗓️','보고서':'📊','공문':'📨','순서지':'📄'};
+    var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','보고서','순서지'];
+    var TYPE_ICON = {'총회자료':'📋','회의록':'📝','월례·임원회의':'🗓️','보고서':'📊','순서지':'📄'};
 
     function mergedDocs(){
       var out = [];
@@ -313,48 +312,20 @@
     }
 
     async function loadDBDocs(){
-      try{ var r = await window.sb.from('archive_docs').select('id,type,title,year,url,path,mime').order('created_at',{ascending:false}); if(!r.error && r.data) DBDOCS = r.data; }catch(_){ }
+      try{ var r = await window.sb.from('archive_docs').select('id,type,title,year').order('created_at',{ascending:false}); if(!r.error && r.data) DBDOCS = r.data; }catch(_){ }
     }
 
     // ----- 문서 뷰어(팝업) + 뒤로가기 -----
-    // 자료실의 '모든' 문서(파일 기반·업로드본·신규)에 글꼴/크기를 일괄 통일 —
-    // 원본 문서 서식을 따르지 않고 뷰어에서 강제 적용(제목 16px 굵게 · 본문 15px)
-    function injectUniformStyle(f){
-      try{
-        var d = f.contentDocument || (f.contentWindow && f.contentWindow.document);
-        if(!d || !d.head || !d.body) return;
-        if(d.getElementById('samgoeUniform')) return;
-        var st = d.createElement('style'); st.id='samgoeUniform';
-        st.textContent =
-          "body,body *{font-family:'Malgun Gothic','맑은 고딕',sans-serif !important;font-size:15px !important;line-height:1.85 !important;}"+
-          "h1,h2,h3,h4,h5,h6{font-size:16px !important;font-weight:700 !important;line-height:1.5 !important;}"+
-          "table{border-collapse:collapse !important;} td,th{white-space:nowrap;vertical-align:top;word-break:keep-all;}";
-        d.head.appendChild(st);
-      }catch(e){ /* 교차출처 등 접근 불가 시 무시 */ }
-    }
-    var curBlobUrl = null, curDocBlobUrl = null;
-    // iframe에 src/srcdoc를 직접 넣으면 브라우저 히스토리가 쌓여 뒤로가기가 꼬임 →
-    // location.replace 로 로드해 히스토리를 남기지 않는다(닫기·뒤로가기 한 번에 닫힘).
-    function loadFrame(f, target){ try{ f.contentWindow.location.replace(target); }catch(e){ f.src = target; } }
     function openDoc(o){
       var f = document.getElementById('docFrame');
-      if(curBlobUrl){ try{ URL.revokeObjectURL(curBlobUrl); }catch(_){ } }
-      curBlobUrl = o.blob || null;
-      if(curDocBlobUrl){ try{ URL.revokeObjectURL(curDocBlobUrl); }catch(_){ } curDocBlobUrl=null; }
-      f.onload = function(){ injectUniformStyle(f); };
-      f.removeAttribute('srcdoc');
-      var target;
-      if(o.src){ target = o.src; }
-      else { curDocBlobUrl = URL.createObjectURL(new Blob([o.html||''], {type:'text/html;charset=utf-8'})); target = curDocBlobUrl; }
-      loadFrame(f, target);
+      if(o.src){ f.removeAttribute('srcdoc'); f.src = o.src; }
+      else { f.removeAttribute('src'); f.srcdoc = o.html || ''; }
       document.getElementById('docTitle').textContent = o.title || '';
       document.getElementById('docOv').classList.add('on'); document.body.style.overflow='hidden';
       docOpen = true; history.pushState({doc:1}, '');
     }
     function hideDoc(){
-      var f = document.getElementById('docFrame'); loadFrame(f, 'about:blank');
-      if(curBlobUrl){ try{ URL.revokeObjectURL(curBlobUrl); }catch(_){ } curBlobUrl=null; }
-      if(curDocBlobUrl){ try{ URL.revokeObjectURL(curDocBlobUrl); }catch(_){ } curDocBlobUrl=null; }
+      var f = document.getElementById('docFrame'); f.removeAttribute('srcdoc'); f.src = 'about:blank';
       document.getElementById('docOv').classList.remove('on'); if(!modalOpen) document.body.style.overflow='';
       docOpen = false;
     }
@@ -362,13 +333,6 @@
     function openArcItem(it){
       var kind=it.getAttribute('data-kind'), key=it.getAttribute('data-key'), title=it.getAttribute('data-title');
       if(kind==='db'){
-        var dbd = DBDOCS.find(function(x){ return x.id===key; });
-        if(dbd && dbd.url){   // PDF 등 원본 파일: 다운로드(attachment)를 막고 화면 안에서 보이도록 blob으로 로드
-          fetch(dbd.url).then(function(r){ return r.blob(); }).then(function(b){
-            var bu=URL.createObjectURL(b); openDoc({ src:bu, title:title, blob:bu });
-          }).catch(function(){ openDoc({ src:dbd.url, title:title }); });
-          return;
-        }
         window.sb.from('archive_docs').select('html').eq('id',key).single().then(function(r){
           if(r.error || !r.data){ alert('문서를 여는 데 실패했습니다.'); return; }
           openDoc({ html:r.data.html||'', title:title });
@@ -383,15 +347,7 @@
       if(kind==='db'){
         if(!isAdminUser) return;
         if(!confirm('이 자료를 삭제할까요?')) return;
-        (async function(){
-          var d = DBDOCS.find(function(x){ return x.id===key; });
-          try{  // PDF 등 원본 파일이면 R2에서도 삭제
-            if(d && d.path){ var r2=(window.R2_WORKER_URL||'').replace(/\/$/,''); if(r2){ var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:''; await fetch(r2+'/file-delete',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({key:d.path})}); } }
-          }catch(_){ }
-          var del=await window.sb.from('archive_docs').delete().eq('id',key);
-          if(del.error){ alert('삭제 실패: '+del.error.message); return; }
-          await loadDBDocs(); renderArchive();
-        })();
+        window.sb.from('archive_docs').delete().eq('id',key).then(function(r){ if(r.error){ alert('삭제 실패: '+r.error.message); return; } loadDBDocs().then(renderArchive); });
       } else { deleteArchive(key); }
     }
     function onArcEdit(kind,key){
@@ -443,37 +399,13 @@
       m=t.match(/(20[0-2]\d)/); if(m) return { y:m[1], s:m[1] };
       return { y:'', s:'' };
     }
-    // 문서 자체의 '생성 날짜'(메타데이터) — 올린 날짜가 아니라 문서가 만들어진 날짜
-    //   docx: docProps/core.xml 의 dcterms:created / hwpx: Contents/content.hpf 의 dc:date
-    async function getCreatedInfo(file){
-      try{
-        var ext=(file.name.split('.').pop()||'').toLowerCase();
-        var buf=await file.arrayBuffer();
-        var zip=await window.JSZip.loadAsync(buf);
-        var iso='';
-        if(ext==='docx'){
-          var core=zip.file('docProps/core.xml');
-          if(core){ var xml=await core.async('string');
-            var m=xml.match(/<dcterms:created[^>]*>([^<]+)<\/dcterms:created>/i); if(m) iso=m[1]; }
-        } else if(ext==='hwpx'){
-          var hpf=zip.file('Contents/content.hpf');
-          if(hpf){ var x=await hpf.async('string');
-            var m=x.match(/<dc:date[^>]*>([^<]+)<\/dc:date>/i); if(m) iso=m[1]; }
-        }
-        if(iso){ var d=new Date(iso);
-          if(!isNaN(d)) return { y:String(d.getFullYear()), s:d.getFullYear()+'.'+padN(d.getMonth()+1)+'.'+padN(d.getDate()) }; }
-      }catch(_){ }
-      return null;
-    }
     function wrapDoc(title, inner){
       return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title>'+
-        '<style>body{max-width:1040px;margin:0 auto;padding:26px 20px;background:#f4f4f2;font-family:\'Malgun Gothic\',\'맑은 고딕\',sans-serif;color:#222;line-height:1.85;}'+
-        '.dw{background:#fff;padding:34px 36px;box-shadow:0 1px 6px rgba(0,0,0,.08);border-radius:6px;overflow-x:auto;}'+
+        '<style>body{max-width:900px;margin:0 auto;padding:26px 20px;background:#f4f4f2;font-family:\'Malgun Gothic\',\'맑은 고딕\',sans-serif;color:#222;line-height:1.85;}'+
+        '.dw{background:#fff;padding:34px 36px;box-shadow:0 1px 6px rgba(0,0,0,.08);border-radius:6px;}'+
         '.dh{border-bottom:2px solid #1c69d4;padding-bottom:10px;margin-bottom:22px;}.dh h1{font-size:20px;color:#1a2129;margin:0;}.dh .s{font-size:12px;color:#8a8a8a;margin-top:4px;}'+
-        'img{max-width:100%;height:auto;}table{border-collapse:collapse;width:auto;max-width:none;table-layout:auto;margin:10px 0;}td,th{border:1px solid #ccc;padding:6px 10px;white-space:nowrap;vertical-align:top;word-break:keep-all;}p{margin:8px 0;}'+
-        /* 원본 문서 서식을 따르지 않고 글꼴·크기를 일괄 통일 */
-        '.doc{font-size:15px;line-height:1.85;color:#222;}.doc *{font-size:15px !important;font-family:inherit !important;}.doc h1,.doc h2,.doc h3,.doc h4,.doc h5,.doc h6{font-size:16px !important;font-weight:700;margin:16px 0 6px;color:#1a2129;}.doc td,.doc th{font-size:14px !important;}</style></head>'+
-        '<body><div class="dw"><div class="dh"><h1>'+esc(title)+'</h1><div class="s">삼괴지역기독교연합회 기록물 · 업로드 변환본</div></div><div class="doc">'+inner+'</div></div></body></html>';
+        'img{max-width:100%;height:auto;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:6px 10px;}p{margin:8px 0;}h1,h2,h3{color:#1a2129;}</style></head>'+
+        '<body><div class="dw"><div class="dh"><h1>'+esc(title)+'</h1><div class="s">삼괴지역기독교연합회 기록물 · 업로드 변환본</div></div>'+inner+'</div></body></html>';
     }
     async function convertFile(file){
       var ext=(file.name.split('.').pop()||'').toLowerCase();
@@ -500,63 +432,30 @@
       }
       throw new Error('지원하지 않는 형식');
     }
-    // PDF는 변환하지 않고 원본 저장 — 제목(파일명)과 날짜(PDF 생성일 → 없으면 파일명)만 추출
-    async function pdfCreatedInfo(file){
-      try{
-        var buf=await file.arrayBuffer(); var bytes=new Uint8Array(buf);
-        function scan(a,b){ var s=''; for(var i=a;i<b;i++) s+=String.fromCharCode(bytes[i]); return s; }
-        var tail=Math.max(0, bytes.length-262144); // 마지막 256KB(+앞 32KB)에서 Info 딕셔너리 탐색
-        var chunk=scan(tail, bytes.length)+(tail>0?scan(0, Math.min(bytes.length,32768)):'');
-        var m=chunk.match(/\/CreationDate\s*\(\s*D?:?(\d{4})(\d{2})(\d{2})/);
-        if(m){ var mo=+m[2], da=+m[3]; if(mo>=1&&mo<=12&&da>=1&&da<=31) return { y:m[1], s:m[1]+'.'+m[2]+'.'+m[3] }; }
-      }catch(_){ }
-      return null;
-    }
     async function handleArcFiles(files){
       var prog=document.getElementById('arcAddProg');
       var type=document.getElementById('arcAddType').value;
       var arr=Array.prototype.slice.call(files);
-      var list=arr.filter(function(f){ return /\.(docx|hwpx|pdf)$/i.test(f.name); });
+      var list=arr.filter(function(f){ return /\.(docx|hwpx)$/i.test(f.name); });
       var skipped=arr.length-list.length;
-      if(!list.length){ prog.textContent='.docx / .hwpx / .pdf 파일만 올릴 수 있습니다.' + (skipped?' (한글 .hwp 구버전은 한글에서 hwpx로 저장해 올려주세요)':''); return; }
-      var needConv=list.some(function(f){ return /\.(docx|hwpx)$/i.test(f.name); });
-      if(needConv){ try{ prog.textContent='변환 도구 준비 중…'; await ensureLibs(); }catch(e){ prog.textContent='변환 도구를 불러오지 못했습니다. 인터넷 연결을 확인하세요.'; return; } }
-      var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
-      var ok=0, fail=0, lastErr='';
+      if(!list.length){ prog.textContent='.docx / .hwpx 파일만 변환할 수 있습니다.' + (skipped?' (한글 .hwp 구버전은 한글에서 hwpx로 저장해 올려주세요)':''); return; }
+      try{ prog.textContent='변환 도구 준비 중…'; await ensureLibs(); }catch(e){ prog.textContent='변환 도구를 불러오지 못했습니다. 인터넷 연결을 확인하세요.'; return; }
+      var ok=0, fail=0;
       for(var i=0;i<list.length;i++){
-        var file=list[i]; var ext=(file.name.split('.').pop()||'').toLowerCase();
-        prog.textContent=(ext==='pdf'?'업로드 중… ':'변환 중… ')+'('+(i+1)+'/'+list.length+') '+file.name;
+        var file=list[i]; prog.textContent='변환 중… ('+(i+1)+'/'+list.length+') '+file.name;
         try{
+          var inner=await convertFile(file);
+          if(!inner || !inner.replace(/<[^>]*>/g,'').trim()) throw new Error('내용 없음');
           var base=cleanBaseName(file.name);
-          if(ext==='pdf'){
-            if(!r2) throw new Error('파일 저장소(Cloudflare) 설정이 필요합니다.');
-            var dip=(await pdfCreatedInfo(file)) || findDateInfo(file.name);
-            var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
-            var resp=await fetch(r2+'/file',{ method:'POST', headers:{ 'Authorization':'Bearer '+token, 'Content-Type':file.type||'application/pdf', 'X-Filename':encodeURIComponent(file.name) }, body:file });
-            var j=await resp.json().catch(function(){return {};});
-            if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
-            var titleP=(dip.s?dip.s+' ':'')+"'"+base+"'";
-            var insP=await window.sb.from('archive_docs').insert({ type:type, title:titleP, year:dip.y||null, url:j.url, path:j.key, mime:j.mime||'application/pdf', uploaded_by:me.id });
-            if(insP.error) throw insP.error;
-            ok++;
-          } else {
-            var inner=await convertFile(file);
-            if(!inner || !inner.replace(/<[^>]*>/g,'').trim()) throw new Error('내용 없음');
-            // 제목 날짜는 '문서가 생성된 날짜'(메타데이터) 우선, 없으면 내용/파일명에서 추출
-            var di=(await getCreatedInfo(file)) || findDateInfo(inner.replace(/<[^>]*>/g,' ')+' '+file.name);
-            var title=(di.s?di.s+' ':'')+"'"+base+"'";
-            var html=wrapDoc(base, inner);
-            var ins=await window.sb.from('archive_docs').insert({ type:type, title:title, year:di.y||null, html:html, uploaded_by:me.id });
-            if(ins.error) throw ins.error;
-            ok++;
-          }
-        }catch(e){ fail++; console.error(e); lastErr=(e&&(e.message||e.error_description||e.hint))||String(e); }
+          var di=findDateInfo(inner.replace(/<[^>]*>/g,' ')+' '+file.name);
+          var title=(di.s?di.s+' ':'')+"'"+base+"'";
+          var html=wrapDoc(base, inner);
+          var ins=await window.sb.from('archive_docs').insert({ type:type, title:title, year:di.y||null, html:html, uploaded_by:me.id });
+          if(ins.error) throw ins.error;
+          ok++;
+        }catch(e){ fail++; console.error(e); }
       }
-      var hint='';
-      if(fail && /column|PGRST204|url|path|mime/i.test(lastErr) && /schema|column|find/i.test(lastErr)) hint=' (관리자: archive-docs-setup.sql 의 컬럼 추가 부분을 Supabase에서 실행해 주세요)';
-      else if(fail && /archive_docs|schema cache|PGRST205/i.test(lastErr)) hint=' (관리자: archive-docs-setup.sql 을 Supabase에서 실행해 주세요)';
-      else if(fail && /row-level security|policy|permission/i.test(lastErr)) hint=' (관리자: 회장 또는 최고관리자만 자료를 추가할 수 있습니다)';
-      prog.textContent=ok+'개 추가 완료'+(fail?(' · '+fail+'개 실패'+(lastErr?' — '+lastErr:'')+hint):'')+(skipped?(' · '+skipped+'개 형식 제외'):'');
+      prog.textContent=ok+'개 추가 완료'+(fail?(' · '+fail+'개 실패'):'')+(skipped?(' · '+skipped+'개 형식 제외'):'');
       await loadDBDocs(); renderArchive();
       setTimeout(function(){ if(prog.textContent.indexOf('완료')>=0) prog.textContent=''; }, 5000);
     }

@@ -12,10 +12,10 @@
   <meta property="og:image" content="assets/img/hero.webp" />
 
   <!-- 스마트폰 홈 화면 앱 설치 (PWA) -->
-  <link rel="manifest" href="manifest.webmanifest?v=6" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#1c69d4" />
-  <link rel="icon" type="image/png" href="assets/app-icon-192.png?v=6" />
-  <link rel="apple-touch-icon" href="assets/app-icon-192.png?v=6" />
+  <link rel="icon" type="image/png" href="assets/app-icon.png?v=4" />
+  <link rel="apple-touch-icon" href="assets/app-icon.png?v=4" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="삼기연" />
@@ -23,9 +23,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet" />
 
   <style>
     :root{
@@ -42,15 +40,12 @@
       --tile1:#1a2129; --tile3:#1a2129; --black:#1a2129;
       --divider:#ebebeb; --ondark:#ffffff; --ondark-muted:#bbbbbb;
       --shadow:none;
-      /* 폰트 스택 — 모던 산세리프(Pretendard) */
-      --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-      --sans-latin:"Inter","Pretendard Variable",Pretendard,sans-serif;
     }
     *{box-sizing:border-box;}
     html{scroll-behavior:smooth;}
     body{margin:0;background:var(--canvas);color:var(--bodytext);
-      font-family:var(--sans);
-      font-weight:400;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      font-weight:300;letter-spacing:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
       word-break:keep-all;overflow-wrap:break-word;}
     ::selection{background:var(--primary);color:#fff;}
     /* 걸어온 길 세로 자동 스크롤 */
@@ -104,9 +99,6 @@
     .ofc-card:hover{transform:translateY(-8px);border-color:var(--primary);}
     /* 4:5 세로 비율 + 위쪽 정렬 → 인물 머리가 잘리지 않음 */
     .ofc-photo{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center top;background:var(--surface-card);display:block;}
-    .ofc-card{position:relative;}
-    .ofc-edit{position:absolute;top:8px;right:8px;z-index:3;background:rgba(20,26,32,0.75);color:#fff;border:0;font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;cursor:pointer;}
-    .ofc-edit:hover{background:rgba(20,26,32,0.92);} .ofc-edit:disabled{opacity:0.6;cursor:default;}
     .ofc-body{padding:20px;}
     .ofc-role{font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);}
     .ofc-name{margin-top:8px;font-size:18px;font-weight:700;color:var(--ink);}
@@ -196,27 +188,24 @@
       --navy:#26374d; --navy-deep:#1c2a3a; --navy-soft:#33475f; --navy-line:rgba(255,255,255,0.14);
       --slate:#8ea3b2; --slate-deep:#5f7688; --mist:#e8edf0; --mist-2:#dde4e9; --gold:#c3a366;
     }
-    .serif{font-family:var(--sans);font-weight:800;letter-spacing:-0.025em;}
-    /* 모든 섹션 제목을 굵은 모던 산세리프로 — 세련되고 정돈된 톤 */
-    .sec-h2,.hero-h1{font-family:var(--sans) !important;font-weight:800;letter-spacing:-0.025em;}
+    .serif{font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif;font-weight:700;letter-spacing:0.01em;}
+    /* 모든 섹션 제목을 세리프로 — 전체 톤을 격조있게 */
+    .sec-h2,.hero-h1{font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif !important;font-weight:700;letter-spacing:0.005em;}
     /* 얇은 대문자 라벨 (— LABEL) */
     .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:12px;font-weight:700;
-      letter-spacing:2.5px;text-transform:uppercase;color:var(--slate-deep);font-family:var(--sans-latin);}
+      letter-spacing:2.5px;text-transform:uppercase;color:var(--slate-deep);font-family:'Inter',sans-serif;}
     .eyebrow::before{content:'';width:26px;height:1px;background:currentColor;flex:0 0 auto;}
     .eyebrow.on-dark{color:var(--slate);}
 
     /* ---- HERO (풀블리드 사진 + 네이비 오버레이 박스) ---- */
     .hero2{position:relative;min-height:640px;display:flex;align-items:center;background:var(--navy-deep);overflow:hidden;}
-    .hero2 .hero2-slides{position:absolute;inset:0;overflow:hidden;}
-    .hero2 .hero2-slide{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(0.25) contrast(1.02);opacity:0;transition:opacity 1.6s ease-in-out;}
-    .hero2 .hero2-slide.on{opacity:1;}
-    .hero2 .hero2-slides::after{content:'';position:absolute;inset:0;z-index:1;
-      background:linear-gradient(100deg,rgba(15,23,33,0.92) 0%,rgba(15,23,33,0.82) 34%,rgba(15,23,33,0.5) 66%,rgba(15,23,33,0.32) 100%);}
-    .hero2 .hero2-box{text-shadow:0 2px 18px rgba(0,0,0,0.7);}
-    .hero2 .hero2-inner{position:relative;z-index:3;max-width:1160px;width:100%;margin:0 auto;padding:0 40px;}
+    .hero2 .hero2-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:grayscale(0.25) contrast(1.02);}
+    .hero2 .hero2-bg::after{content:'';position:absolute;inset:0;
+      background:linear-gradient(100deg,rgba(20,30,42,0.94) 0%,rgba(20,30,42,0.82) 34%,rgba(20,30,42,0.30) 62%,rgba(20,30,42,0.12) 100%);}
+    .hero2 .hero2-inner{position:relative;max-width:1160px;width:100%;margin:0 auto;padding:0 40px;}
     .hero2 .hero2-box{max-width:560px;color:#fff;padding:48px 0;}
-    .hero2 .hero2-box h1{margin:22px 0 26px;font-size:60px;line-height:1.1;color:#fff;
-      font-family:var(--sans);font-weight:800;letter-spacing:-0.03em;}
+    .hero2 .hero2-box h1{margin:22px 0 26px;font-size:64px;line-height:1.06;color:#fff;
+      font-family:'Cormorant Garamond','Nanum Myeongjo',Georgia,serif;font-weight:700;letter-spacing:0.01em;}
     .hero2 .hero2-verse{margin:0 0 30px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.78);font-weight:300;max-width:440px;}
     .hero2 .hero2-cta{display:inline-flex;align-items:center;gap:10px;height:50px;padding:0 30px;
       border:1px solid rgba(255,255,255,0.55);color:#fff;font-size:14px;font-weight:700;letter-spacing:1.5px;
@@ -224,30 +213,12 @@
     .hero2 .hero2-cta:hover{background:#fff;color:var(--navy-deep);}
     @media (max-width:820px){
       .hero2{min-height:0;}
-      .hero2 .hero2-slides{position:relative;height:280px;}
-      .hero2 .hero2-slides::after{background:linear-gradient(180deg,rgba(20,30,42,0.25),rgba(20,30,42,0.6));}
+      .hero2 .hero2-bg{position:relative;height:280px;}
+      .hero2 .hero2-bg::after{background:linear-gradient(180deg,rgba(20,30,42,0.25),rgba(20,30,42,0.6));}
       .hero2 .hero2-inner{position:relative;margin-top:-1px;padding:0;}
       .hero2 .hero2-box{background:var(--navy-deep);max-width:none;padding:40px 24px;}
       .hero2 .hero2-box h1{font-size:42px;}
     }
-    /* 히어로 사진 관리 (관리자) */
-    .hero-manage{position:absolute;right:20px;bottom:18px;z-index:6;display:none;align-items:center;gap:6px;height:36px;padding:0 16px;
-      background:rgba(255,255,255,0.16);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;border:1px solid rgba(255,255,255,0.45);
-      font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
-    .hero-manage.show{display:inline-flex;} .hero-manage:hover{background:rgba(255,255,255,0.3);}
-    @media (max-width:820px){ .hero-manage{right:12px;bottom:auto;top:12px;} }
-    .hm-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;padding:20px;}
-    .hm-overlay.on{display:flex;}
-    .hm-modal{background:#fff;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;padding:26px 26px 24px;}
-    .hm-modal h3{margin:0 0 4px;font-size:20px;color:var(--ink);}
-    .hm-modal .hm-sub{margin:0 0 16px;font-size:14px;line-height:1.6;color:var(--muted);}
-    .hm-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--hairline);}
-    .hm-thumb{width:88px;height:54px;object-fit:cover;flex:0 0 auto;background:var(--surface-soft);}
-    .hm-ord{display:flex;flex-direction:column;gap:2px;}
-    .hm-up{background:none;border:0;cursor:pointer;font-size:14px;color:var(--muted);padding:1px 4px;}
-    .hm-btn{height:36px;padding:0 14px;border:1px solid var(--hairline-strong);background:#fff;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);}
-    .hm-btn.primary{background:var(--blue);color:#fff;border:0;} .hm-btn.primary:disabled{background:var(--hairline-strong);cursor:default;}
-    .hm-btn.danger{color:#dc2626;border-color:#f3c7c3;}
 
     /* ---- 대시보드 카드 ---- */
     .dash-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;max-width:1160px;margin:44px auto 0;}
@@ -255,7 +226,7 @@
       display:flex;flex-direction:column;min-height:150px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;}
     a.dash-card:hover{transform:translateY(-4px);border-color:var(--navy);box-shadow:0 10px 26px rgba(28,42,58,0.10);}
     .dash-card .dc-label{font-size:11.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--slate-deep);}
-    .dash-card .dc-big{font-family:var(--sans-latin);font-weight:800;letter-spacing:-0.02em;color:var(--navy-deep);line-height:1;}
+    .dash-card .dc-big{font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:700;color:var(--navy-deep);line-height:1;}
     .dash-card.navy{background:var(--navy);border-color:var(--navy);color:#fff;}
     .dash-card.navy .dc-label{color:var(--slate);}
     .dash-card.navy .dc-big,.dash-card.navy .dc-title{color:#fff;}
@@ -266,55 +237,6 @@
     @media (max-width:900px){ .dash-grid{grid-template-columns:repeat(6,1fr);} }
     @media (max-width:560px){ .dash-grid{grid-template-columns:repeat(2,1fr);gap:12px;} .col-12,.col-8,.col-6,.col-4,.col-3{grid-column:span 2 !important;} }
     .col-3{grid-column:span 3;} .col-4{grid-column:span 4;} .col-6{grid-column:span 6;} .col-8{grid-column:span 8;} .col-12{grid-column:span 12;}
-    /* 언론 코너 */
-    .press-feat{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;margin-top:44px;}
-    @media (max-width:720px){ .press-feat{grid-template-columns:1fr;} }
-    .press-more a:hover{background:var(--surface-soft);}
-    .press-more .pm-date{flex:0 0 auto;width:150px;font-size:13px;font-weight:700;color:var(--slate-deep);}
-    @media (max-width:560px){ .press-more a{flex-wrap:wrap;} .press-more .pm-date{width:100%;} }
-    /* 언론 캐러셀 · 임원 등록 */
-    .press-toolbar{display:flex;justify-content:center;margin-top:22px;}
-    .press-addbtn{display:none;align-items:center;gap:6px;height:40px;padding:0 20px;background:var(--navy);color:#fff;border:0;font-size:13px;font-weight:700;letter-spacing:0.3px;cursor:pointer;font-family:inherit;transition:background .15s ease;}
-    .press-addbtn.show{display:inline-flex;} .press-addbtn:hover{background:var(--navy-deep);}
-    .press-form{display:none;max-width:620px;margin:18px auto 0;background:var(--surface-soft);border:1px solid var(--hairline);padding:20px;}
-    .press-form.open{display:block;}
-    .press-form input,.press-form textarea{width:100%;padding:11px 13px;border:1px solid var(--hairline-strong);font-size:14.5px;font-family:inherit;font-weight:300;color:var(--ink);margin-bottom:10px;background:#fff;border-radius:0;}
-    .press-form textarea{min-height:64px;resize:vertical;line-height:1.5;}
-    .press-form input:focus,.press-form textarea:focus{outline:none;border:2px solid var(--navy);}
-    .press-form .pf-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .press-form .pf-btn{height:38px;padding:0 16px;background:var(--blue);color:#fff;border:0;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;}
-    .press-form .pf-btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
-    .press-carousel{margin-top:36px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;}
-    .pc-wrap{position:relative;margin-top:36px;}
-    .pc-wrap .press-carousel{margin-top:0;}
-    .pc-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;border:0;background:rgba(20,30,42,0.6);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding-bottom:3px;box-shadow:0 2px 10px rgba(0,0,0,0.2);transition:background .15s ease;}
-    .pc-nav:hover{background:rgba(20,30,42,0.88);}
-    .pc-nav.prev{left:8px;} .pc-nav.next{right:8px;}
-    @media (max-width:560px){ .pc-nav{width:38px;height:38px;font-size:22px;} }
-    .press-carousel::-webkit-scrollbar{display:none;}
-    .pc-track{display:flex;gap:24px;width:max-content;padding:2px;}
-    .pc-card{flex:0 0 360px;width:360px;border:1px solid var(--hairline);background:var(--canvas);display:flex;flex-direction:column;position:relative;}
-    .pc-card .pc-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--surface-soft);}
-    .pc-body{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1;}
-    .pc-meta{font-size:12.5px;font-weight:700;letter-spacing:0.5px;color:var(--slate-deep);}
-    .pc-title{margin:8px 0 0;font-size:19px;font-weight:700;color:var(--ink);line-height:1.35;}
-    .pc-sum{margin:9px 0 0;font-size:15px;line-height:1.65;color:var(--muted);flex:1;}
-    .pc-foot{margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--muted-soft);}
-    .pc-foot a{font-size:13px;font-weight:700;color:var(--blue);}
-    .pc-del{position:absolute;top:8px;right:8px;background:rgba(20,26,32,0.72);color:#fff;border:0;font-size:12px;padding:5px 9px;cursor:pointer;}
-    .pc-adm{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:2;}
-    .pc-adm button{background:rgba(20,26,32,0.72);color:#fff;border:0;font-size:12px;padding:5px 9px;cursor:pointer;border-radius:5px;}
-    .press-form .pf-drop{border:2px dashed var(--hairline-strong);border-radius:12px;background:#fff;padding:16px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:10px;transition:border-color .15s ease,background .15s ease;}
-    .press-form .pf-drop.over{border-color:var(--blue);background:#eef5ff;}
-    .press-form .pf-drop u{color:var(--blue);}
-    .press-form #prImgPreview{margin-top:8px;}
-    .press-form #prImgPreview img{max-height:120px;border-radius:8px;display:block;margin:0 auto;}
-    @media (max-width:560px){ .pc-card{flex-basis:82vw;width:82vw;} }
-    /* 헤더 네비 호버 */
-    .nav-links a{transition:color .15s ease, background .15s ease;}
-    .nav-links a:not(.nav-cta):not(.nav-ext):hover{color:var(--blue) !important;}
-    .nav-cta:hover{background:var(--navy-deep) !important;}
-    .nav-ext:hover{background:var(--blue) !important;color:#fff !important;}
     @media (max-width:900px) and (min-width:561px){ .col-3{grid-column:span 3;} .col-4{grid-column:span 3;} .col-6{grid-column:span 3;} .col-8{grid-column:span 6;} .col-12{grid-column:span 6;} }
 
     /* ---- 공지사항 ---- */
@@ -326,14 +248,11 @@
     .notice-pin{font-size:11px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--navy);padding:2px 8px;}
     .notice-body{margin:8px 0 0;font-size:15.5px;line-height:1.7;color:var(--muted);white-space:pre-wrap;}
     .notice-del{flex:0 0 auto;font-size:12px;color:var(--muted-soft);text-decoration:underline;cursor:pointer;padding-top:5px;}
-    .notice-edit,.pray-edit{flex:0 0 auto;font-size:12px;color:var(--slate-deep);text-decoration:underline;cursor:pointer;padding-top:5px;margin-right:12px;}
-    .notice-caret,.pr-caret{font-size:13px;font-weight:400;color:var(--muted-soft);}
-    .notice-head:hover .notice-caret,.pr-host:hover .pr-caret{color:var(--navy);}
 
     /* ---- 수요조찬기도회 ---- */
     .pray-next{background:var(--navy);color:#fff;padding:40px 40px;display:flex;gap:40px;align-items:center;flex-wrap:wrap;}
     .pray-next .pn-date{flex:0 0 auto;text-align:center;padding-right:40px;border-right:1px solid var(--navy-line);}
-    .pray-next .pn-d{font-family:var(--sans-latin);font-weight:800;letter-spacing:-0.02em;font-size:66px;line-height:0.9;}
+    .pray-next .pn-d{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:66px;line-height:0.9;}
     .pray-next .pn-m{margin-top:6px;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--slate);}
     .pray-next .pn-main{flex:1;min-width:240px;}
     .pray-row{display:flex;gap:20px;align-items:baseline;padding:16px 4px;border-top:1px solid var(--hairline);}
@@ -366,13 +285,7 @@
   <header style="position:sticky;top:0;z-index:60;background:var(--black);height:44px;">
     <div style="max-width:1024px;margin:0 auto;height:44px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;">
       <a href="#top" style="font-size:13px;font-weight:700;letter-spacing:0;color:rgba(255,255,255,0.92);">삼괴지역 기독교 연합회</a>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button id="installBtn" type="button" style="display:none;align-items:center;gap:5px;height:28px;padding:0 12px;border:0;border-radius:14px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;letter-spacing:0;cursor:pointer;font-family:inherit;line-height:1;white-space:nowrap;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="display:block;"><path d="M12 3v11m0 0 4-4m-4 4-4-4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
-          앱 설치
-        </button>
-        <span id="authArea" style="font-size:12px;letter-spacing:0;"></span>
-      </div>
+      <span id="authArea" style="font-size:12px;letter-spacing:0;"></span>
     </div>
   </header>
 
@@ -386,10 +299,12 @@
       <div class="nav-links" style="display:flex;align-items:center;gap:6px;">
         <a href="#about" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">소개</a>
         <a href="#notices" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">공지</a>
+        <a href="#prayer" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">수요조찬기도회</a>
         <a href="#work" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">활동</a>
-        <a href="#org" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">회원</a>
+        <a href="#org" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">임원</a>
+        <a href="#schedule" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">일정</a>
+        <a href="#churches" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">소속교회</a>
         <a href="#gallery" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">갤러리</a>
-        <a href="#press" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">언론</a>
         <a href="history.html" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">걸어온 길</a>
         <a href="#bylaws" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">회칙</a>
         <a href="officer.html" style="font-size:14px;font-weight:400;letter-spacing:0;color:var(--ink);">임원방</a>
@@ -401,9 +316,10 @@
 
   <!-- ===================== HERO (네이비 오버레이) ===================== -->
   <section id="top" class="hero2">
-    <div class="hero2-slides" id="heroSlides"></div>
+    <div class="hero2-bg" style="background-image:url('assets/img/hero.webp');"></div>
     <div class="hero2-inner">
       <div class="hero2-box">
+        <img src="assets/logo-trans.png" alt="삼기연" style="height:52px;width:auto;filter:brightness(0) invert(1);opacity:0.95;margin-bottom:20px;" />
         <div class="eyebrow on-dark">화성특례시 · 삼괴지역</div>
         <h1>삼괴지역<br>기독교 연합회</h1>
         <p class="hero2-verse">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고”<br>— 시편 133 : 1</p>
@@ -414,23 +330,7 @@
         <div style="margin-top:28px;" class="eyebrow on-dark">연락 · 사무총장 010-4271-5090</div>
       </div>
     </div>
-    <button class="hero-manage" id="heroManageBtn" type="button">🖼 사진 관리</button>
   </section>
-
-  <!-- 히어로 사진 관리 모달 (관리자) -->
-  <div class="hm-overlay" id="heroModal">
-    <div class="hm-modal">
-      <h3>히어로 사진 관리</h3>
-      <p class="hm-sub">첫 화면에서 자동으로 넘어가는 배경 사진입니다. 최대 5장까지 등록할 수 있고, 위/아래로 순서 변경·삭제가 가능합니다.</p>
-      <div id="hmList"></div>
-      <div style="margin-top:16px;">
-        <input type="file" id="hmFile" accept="image/*" hidden />
-        <button class="hm-btn primary" id="hmAdd" type="button">＋ 사진 추가 업로드</button>
-        <span id="hmMsg" style="margin-left:10px;font-size:13px;color:var(--muted);"></span>
-      </div>
-      <div style="margin-top:22px;text-align:right;"><button class="hm-btn" id="hmClose" type="button">닫기</button></div>
-    </div>
-  </div>
 
   <!-- ===================== 대시보드 ===================== -->
   <section id="dashboard" class="section" style="scroll-margin-top:96px;background:var(--mist);padding:72px 24px 80px;">
@@ -458,34 +358,25 @@
         <span class="dash-arrow" style="margin-top:14px;">공지사항 전체 보기 →</span>
       </a>
       <!-- 통계 · 바로가기 -->
-      <a href="#churches" class="dash-card col-3" style="align-items:flex-start;">
+      <div class="dash-card col-3" style="align-items:flex-start;">
         <div class="dc-label">회원교회</div>
         <div class="dc-big" style="margin:10px 0 0;font-size:54px;">49</div>
         <div class="dc-sub" style="margin-top:4px;font-size:14px;">우정읍 31 · 장안면 18</div>
-        <span class="dash-arrow" style="margin-top:12px;">회원교회 보기 →</span>
-      </a>
+      </div>
       <a href="officer.html" class="dash-card col-3" style="align-items:flex-start;">
         <div class="dc-label">임원방</div>
         <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;color:var(--navy-deep);">임원 전용 자료실</div>
         <span class="dash-arrow" style="margin-top:12px;">바로가기 →</span>
       </a>
-      <a href="gallery.html" class="dash-card navy col-3" style="align-items:flex-start;">
+      <a href="gallery.html" class="dash-card col-3" style="align-items:flex-start;">
         <div class="dc-label">갤러리</div>
-        <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;">함께한 순간들</div>
+        <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;color:var(--navy-deep);">함께한 순간들</div>
         <span class="dash-arrow" style="margin-top:12px;">사진 보기 →</span>
       </a>
       <a href="history.html" class="dash-card col-3" style="align-items:flex-start;">
         <div class="dc-label">걸어온 길</div>
         <div class="dc-title serif" style="margin:10px 0 0;font-size:24px;color:var(--navy-deep);">삼기연의 발자취</div>
         <span class="dash-arrow" style="margin-top:12px;">연혁 보기 →</span>
-      </a>
-      <a href="#press" class="dash-card navy col-12" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;text-align:left;gap:20px;flex-wrap:wrap;">
-        <div>
-          <div class="dc-label">Press · 언론</div>
-          <div class="dc-title serif" style="margin:8px 0 0;font-size:24px;">언론 속 삼기연 — 보도 모음</div>
-          <div class="dc-sub" style="margin-top:4px;font-size:14px;">3·1 만세길 걷기 · 3·1절 공감음악회 등 삼괴지역 교회 활동이 언론에 소개되었습니다.</div>
-        </div>
-        <span class="dash-arrow">언론 보도 보기 →</span>
       </a>
     </div>
   </section>
@@ -513,6 +404,7 @@
       </div>
     </div>
   </section>
+
   <!-- ===================== 수요조찬기도회 ===================== -->
   <section id="prayer" class="section" style="scroll-margin-top:96px;background:var(--mist);padding:80px 24px;">
     <div style="max-width:900px;margin:0 auto;">
@@ -641,9 +533,21 @@
   <!-- ===================== 2026 걸어온 길 ===================== -->
   <section id="path-2026" class="section" style="scroll-margin-top:96px;background:var(--surface-soft);padding:80px 24px;">
     <div style="max-width:1080px;margin:0 auto;">
-      <div style="max-width:860px;margin:0 auto;">
-        <h3 style="margin:0 0 22px;font-size:28px;font-weight:700;letter-spacing:0;color:var(--ink);text-align:center;">2026년 활동</h3>
-        <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="path-grid" style="display:grid;grid-template-columns:0.85fr 1.15fr;gap:44px;align-items:start;">
+        <!-- 왼쪽: 그동안 걸어온 길 (세로 자동 스크롤) -->
+        <div>
+          <h3 style="margin:0;font-size:28px;font-weight:700;letter-spacing:0;color:var(--ink);word-break:keep-all;">삼기연이 걸어온 길</h3>
+          <p style="margin:12px 0 20px;font-size:15px;line-height:1.5;color:var(--muted);">해마다 기록해 온 삼기연의 발자취입니다.</p>
+          <div class="path-viewport" id="pathViewport">
+            <button class="path-nav up" id="pathUp" aria-label="위로">▲</button>
+            <div class="path-list" id="pathList"></div>
+            <button class="path-nav down" id="pathDown" aria-label="아래로">▼</button>
+          </div>
+        </div>
+        <!-- 오른쪽: 2026년 활동 -->
+        <div>
+          <h3 style="margin:0 0 20px;font-size:28px;font-weight:700;letter-spacing:0;color:var(--ink);">2026년 활동</h3>
+          <div style="display:flex;flex-direction:column;gap:16px;">
             <div style="background:var(--canvas);border:1px solid var(--hairline);padding:28px 30px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;">
               <div style="text-align:left;flex:1;min-width:220px;">
                 <div style="font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);">2026 · 6. 1.</div>
@@ -660,171 +564,12 @@
               </div>
               <a href="https://2903.notion.site/6-3-36fcfb078efd81bcb13dc89e68a9c4a2?source=copy_link" target="_blank" rel="noopener" class="press" style="flex:none;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 24px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;letter-spacing:0.5px;white-space:nowrap;">자세히 보기 ›</a>
             </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== 언론 (Press) ===================== -->
-  <section id="press" class="section" style="scroll-margin-top:96px;background:var(--white);padding:80px 24px;">
-    <div style="max-width:1160px;margin:0 auto;">
-      <div style="text-align:center;">
-        <div class="eyebrow" style="justify-content:center;">Press</div>
-        <h2 class="sec-h2" style="margin:12px 0 0;font-size:40px;line-height:1.1;color:var(--ink);">언론 속 삼기연</h2>
-        <p style="margin:14px auto 0;max-width:620px;font-size:17px;line-height:1.6;color:var(--muted);">삼괴지역 교회들이 함께한 활동이 언론에 보도된 기록입니다.<br>삼기연은 화성특례시기독교총연합회를 이루는 5개 지역연합회 중 하나입니다.</p>
-      </div>
-
-      <!-- 임원 전용: 기사 등록 -->
-      <div class="press-toolbar">
-        <button class="press-addbtn" id="pressAddBtn" type="button">＋ 기사 등록 <span style="font-weight:400;opacity:0.85;font-size:12px;">(임원 등급)</span></button>
-      </div>
-      <div class="press-form" id="pressForm">
-        <input id="prUrl" type="url" placeholder="기사 URL을 붙여넣으세요 (https://...)" />
-        <p style="margin:2px 2px 12px;font-size:12.5px;line-height:1.6;color:var(--muted);">링크만 넣고 <b>등록</b>을 누르면 제목·언론사·날짜·대표 이미지·요약을 자동으로 가져옵니다.</p>
-        <div id="prErr" style="display:none;margin:2px 0 10px;font-size:13px;color:#dc2626;"></div>
-        <div id="prDetails" style="display:none;">
-          <input id="prTitle" type="text" placeholder="제목" />
-          <div class="pf-row">
-            <input id="prSource" type="text" placeholder="언론사 (예: 경기신문)" style="flex:1;min-width:150px;" />
-            <input id="prDate" type="text" placeholder="날짜 (예: 2026.03.01)" style="flex:1;min-width:130px;" />
           </div>
-          <div class="pf-drop" id="prDrop">
-            <input type="file" id="prImgFile" accept="image/*" hidden />
-            <span id="prDropText">📷 대표 이미지를 여기로 끌어다 놓거나 <u>클릭해서 업로드</u></span>
-            <div id="prImgPreview"></div>
-          </div>
-          <input id="prImg" type="url" placeholder="또는 대표 이미지 URL 직접 입력 (선택)" />
-          <textarea id="prSummary" placeholder="요약 (선택)"></textarea>
         </div>
-        <div class="pf-row" style="justify-content:space-between;align-items:center;">
-          <button class="pf-btn ghost" id="prManual" type="button" style="font-size:12px;padding:0 12px;">직접 입력/수정</button>
-          <span style="display:inline-flex;gap:10px;">
-            <button class="pf-btn ghost" id="prCancel" type="button">취소</button>
-            <button class="pf-btn" id="prSave" type="button">등록</button>
-          </span>
-        </div>
-        <span id="prFetchMsg" style="display:block;margin-top:10px;font-size:12.5px;color:var(--muted);"></span>
-      </div>
-
-      <!-- 자동 회전 캐러셀 (좌우 버튼) -->
-      <div class="pc-wrap">
-        <button class="pc-nav prev" id="pcPrev" type="button" aria-label="이전 기사">‹</button>
-        <div class="press-carousel" id="pressCarousel"><div class="pc-track" id="pressTrack"></div></div>
-        <button class="pc-nav next" id="pcNext" type="button" aria-label="다음 기사">›</button>
-      </div>
-
-      <!-- 그 외 보도 -->
-      <div class="press-more" style="margin-top:44px;">
-        <h3 class="serif" style="margin:0 0 6px;font-size:20px;color:var(--ink);">그 외 삼기연 관련 보도</h3>
-        <div style="border-top:1px solid var(--hairline-strong);">
-          <a href="https://www.kgnews.co.kr/news/article.html?no=783190" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
-            <span class="pm-date">경기신문 · 2024.02.26</span>
-            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">화성시기독교총연합회 ‘3·1운동 105주년 기념식’ 참석 — 삼괴기독교연합회 등 5개 지역연합회</span>
-            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
-          </a>
-          <a href="https://n.news.naver.com/mnews/article/005/0000555593?sid=103" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
-            <span class="pm-date">국민일보 · 2013.05.27</span>
-            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">화성기독총련 ‘사랑나눔 축제’ 성료 — 삼괴 등 5개 지역연합회 4,000여 명 참여</span>
-            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
-          </a>
-          <a href="http://www.pckworld.com/news/articleView.html?idxno=71337" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
-            <span class="pm-date">한국기독공보 · 2016.06.21</span>
-            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">“목회와 사회봉사는 분리될 수 없습니다” — 삼괴지역 3·1운동 기념사업·삼괴도서관 조성</span>
-            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
-          </a>
-          <a href="http://www.nspna.com/news/?mode=view&newsid=551331" target="_blank" rel="noopener" style="display:flex;gap:16px;align-items:baseline;padding:15px 6px;border-bottom:1px solid var(--hairline);text-decoration:none;">
-            <span class="pm-date">NSP통신 · 2022.01.24</span>
-            <span style="flex:1;min-width:0;font-size:16px;color:var(--ink);">화성시기독교총연합회 대표회장 취임 — 삼괴기독교연합회 포함 5개 지역연합회</span>
-            <span style="flex:0 0 auto;color:var(--muted-soft);font-size:14px;">›</span>
-          </a>
-        </div>
-        <p style="margin:14px 2px 0;font-size:13px;line-height:1.6;color:var(--muted-soft);">※ 각 기사는 해당 언론사 지면으로 연결되며, 사진의 저작권은 각 언론사에 있습니다.</p>
       </div>
     </div>
   </section>
 
-
-
-
-  <!-- ===================== CHURCHES (parchment) ===================== -->
-  <section id="churches" class="section" style="scroll-margin-top:96px;background:var(--parchment);padding:80px 24px;">
-    <div style="text-align:center;">
-      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:0;color:var(--ink);">삼괴지역 49개 교회가 함께합니다</h2>
-      <p style="margin:18px auto 0;max-width:760px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:0;color:var(--blue);">우정읍과 장안면 곳곳의 교회가 교파를 넘어 한 형제로 연합합니다.</p>
-    </div>
-    <div class="grid-4" style="max-width:900px;margin:52px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;">
-      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">49</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">회원교회</div></div>
-      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">31</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">우정읍</div></div>
-      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">18</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">장안면</div></div>
-      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">12</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">참여 교단</div></div>
-    </div>
-
-    <div style="max-width:1000px;margin:64px auto 0;">
-      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:24px;flex-wrap:wrap;">
-        <h3 style="margin:0;font-size:24px;font-weight:700;letter-spacing:0;color:var(--ink);">회원교회 명단</h3>
-        <span style="font-size:15px;color:var(--muted);">가나다순 · 담임목사 · 교단</span>
-      </div>
-      <div class="church-viewport" id="churchViewport">
-      <div class="churches-list" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
-        <div>
-          <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:700;color:var(--blue);">우정읍</span><span style="font-size:14px;color:var(--muted);">31 교회</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">고온교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">심상훈 목사 · 예수교성결</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">굳프랜드교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">오동길 목사 · 예장(백석)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">매향교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">정진학 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">복지교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">오대석 목사 · 선교침례</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">새화수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한길용 목사 · 나사렛성결</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">생명나무교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박상현 목사 · 예장(개혁)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">석천교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">최현재 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">성은교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">황권선 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">순복음조암영광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김정서 목사 · 기하성</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">신흥비전교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김선미 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">엘바람교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이정렬 목사 · 연합오순절</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">염광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한준용 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">영광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김경진 목사 · 독립</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">예손교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용훈 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">우정교회(감리)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">양봉국 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">우정교회(침례)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조인상 목사 · 침례</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">운평장로교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김동석 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">율리교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박현정 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">이화교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김지웅 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">인자교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용구 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조대흥 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암신흥교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">장명희 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암중앙교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">제재호 목사 · 침례</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">주공교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김종호 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">향원교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">우종현 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">호곡교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박성규 목사 · 나사렛성결</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화산교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">유승용 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화성권능교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">류성원 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화성소망교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용태 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">남용남 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">활빈교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">권오현 목사 · 예장(통합)</span></div>
-        </div>
-        <div>
-          <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:700;color:var(--blue);">장안면</span><span style="font-size:14px;color:var(--muted);">18 교회</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">길벗교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">정한숙 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">꽃밭교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">남기훈 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">노진교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">손병민 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">노진제일교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박종덕 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">덕성교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이상철 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">독정교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김동천 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">브니엘교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조영애 목사 · 예장(개혁)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">생수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이영이 목사 · 기하성</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">석포교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박주환 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">시은소교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김낭주 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">예수정안교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이성범 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">장안교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한민규 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">장안제일교회(기감)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김요한 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">장안제일교회(통합)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김두희 목사 · 예장(통합)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암제일교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김재도 목사 · 예장(합동)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">주사랑교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이우성 목사 · 기감</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">축복교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박창대 목사 · 예장(백석)</span></div>
-          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">한마음교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김광옥 목사 · 기하성</span></div>
-        </div>
-      </div>
-      </div>
-    </div>
-  </section>
   <!-- ===================== ORG (officers — moving cards) ===================== -->
   <section id="org" class="section" style="scroll-margin-top:96px;background:var(--surface-soft);padding:80px 24px;">
     <div style="max-width:1160px;margin:0 auto;text-align:center;">
@@ -907,6 +652,7 @@
       <p style="margin:36px auto 0;font-size:15px;font-weight:300;color:var(--muted);">연합회 관련 문의는 사무총장 <a href="tel:01042715090" style="color:var(--primary);font-weight:700;">010-4271-5090</a> 으로 연락 주세요.</p>
     </div>
   </section>
+
   <!-- ===================== 증경회장단 (dark band) ===================== -->
   <section id="past-presidents" class="section" style="scroll-margin-top:96px;background:var(--dark);color:var(--on-dark);padding:80px 24px;text-align:center;">
     <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:700;color:#fff;">증경회장단</h2>
@@ -917,6 +663,118 @@
       <div class="pp-card"><div class="pp-name">최현재 목사</div></div>
       <div class="pp-card"><div class="pp-name">류성원 목사</div></div>
       <div class="pp-card"><div class="pp-name">김동천 목사</div></div>
+    </div>
+  </section>
+
+  <!-- ===================== SCHEDULE (white) ===================== -->
+  <section id="schedule" class="section" style="scroll-margin-top:96px;background:var(--white);padding:80px 24px;text-align:center;">
+    <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:0;color:var(--ink);">연중 연합 일정</h2>
+    <p style="margin:18px auto 0;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:0;color:var(--blue);">한 해 동안 삼괴지역 교회가 함께 모이는 자리</p>
+    <div style="max-width:760px;margin:48px auto 0;text-align:left;">
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:700;color:var(--blue);">매월 첫 주 수요일 오전 7시</div>
+        <div><div style="font-size:21px;font-weight:700;letter-spacing:0;color:var(--ink);">월례 조찬기도회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">회원교회를 순회하며 지역과 한국교회를 위해 기도합니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:700;color:var(--blue);">3월</div>
+        <div><div style="font-size:21px;font-weight:700;letter-spacing:0;color:var(--ink);">3·1절 기념 공감음악회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">화성시기독교연합회와 회원교회가 함께 무대에 서는 음악회입니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:700;color:var(--blue);">부활주일</div>
+        <div><div style="font-size:21px;font-weight:700;letter-spacing:0;color:var(--ink);">부활절 연합예배 · 임원수련회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">부활하신 주님을 함께 찬양하고, 새 회기 임원들이 비전을 다집니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:700;color:var(--blue);">5~6월</div>
+        <div><div style="font-size:21px;font-weight:700;letter-spacing:0;color:var(--ink);">목회자·사모 야유회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">목회자 가정이 함께 쉼과 교제를 누립니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:700;color:var(--blue);">10월 중</div>
+        <div><div style="font-size:21px;font-weight:700;letter-spacing:0;color:var(--ink);">3·1만세길 걷기대회</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">삼괴지역 3·1만세운동의 길을 함께 걸으며 그 정신을 기립니다.</div></div>
+      </div>
+      <div style="display:flex;gap:28px;padding:24px 0;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);">
+        <div style="flex:none;width:130px;font-size:15px;font-weight:700;color:var(--blue);">11월</div>
+        <div><div style="font-size:21px;font-weight:700;letter-spacing:0;color:var(--ink);">정기총회 · 임원선출</div><div style="margin-top:5px;font-size:17px;color:var(--muted);">한 해의 사업과 회계를 결산하고 새 회기의 임원을 선출합니다.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CHURCHES (parchment) ===================== -->
+  <section id="churches" class="section" style="scroll-margin-top:96px;background:var(--parchment);padding:80px 24px;">
+    <div style="text-align:center;">
+      <h2 class="sec-h2" style="margin:0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:0;color:var(--ink);">삼괴지역 49개 교회가 함께합니다</h2>
+      <p style="margin:18px auto 0;max-width:760px;font-size:21px;line-height:1.4;font-weight:400;letter-spacing:0;color:var(--blue);">우정읍과 장안면 곳곳의 교회가 교파를 넘어 한 형제로 연합합니다.</p>
+    </div>
+    <div class="grid-4" style="max-width:900px;margin:52px auto 0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;">
+      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">49</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">회원교회</div></div>
+      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">31</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">우정읍</div></div>
+      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">18</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">장안면</div></div>
+      <div><div style="font-size:52px;font-weight:700;letter-spacing:0;color:var(--ink);line-height:1;">12</div><div style="margin-top:8px;font-size:15px;color:var(--muted);">참여 교단</div></div>
+    </div>
+
+    <div style="max-width:1000px;margin:64px auto 0;">
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:24px;flex-wrap:wrap;">
+        <h3 style="margin:0;font-size:24px;font-weight:700;letter-spacing:0;color:var(--ink);">회원교회 명단</h3>
+        <span style="font-size:15px;color:var(--muted);">가나다순 · 담임목사 · 교단</span>
+      </div>
+      <div class="church-viewport" id="churchViewport">
+      <div class="churches-list" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:700;color:var(--blue);">우정읍</span><span style="font-size:14px;color:var(--muted);">31 교회</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">고온교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">심상훈 목사 · 예수교성결</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">굳프랜드교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">오동길 목사 · 예장(백석)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">매향교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">정진학 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">복지교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">오대석 목사 · 선교침례</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">새화수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한길용 목사 · 나사렛성결</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">생명나무교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박상현 목사 · 예장(개혁)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">석천교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">최현재 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">성은교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">황권선 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">순복음조암영광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김정서 목사 · 기하성</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">신흥비전교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김선미 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">엘바람교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이정렬 목사 · 연합오순절</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">염광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한준용 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">영광교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김경진 목사 · 독립</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">예손교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용훈 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">우정교회(감리)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">양봉국 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">우정교회(침례)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조인상 목사 · 침례</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">운평장로교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김동석 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">율리교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박현정 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">이화교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김지웅 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">인자교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용구 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조대흥 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암신흥교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">장명희 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암중앙교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">제재호 목사 · 침례</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">주공교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김종호 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">향원교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">우종현 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">호곡교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박성규 목사 · 나사렛성결</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화산교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">유승용 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화성권능교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">류성원 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화성소망교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김용태 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">화수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">남용남 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">활빈교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">권오현 목사 · 예장(통합)</span></div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:12px;margin-bottom:4px;border-bottom:2px solid var(--blue);"><span style="font-size:17px;font-weight:700;color:var(--blue);">장안면</span><span style="font-size:14px;color:var(--muted);">18 교회</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">길벗교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">정한숙 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">꽃밭교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">남기훈 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">노진교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">손병민 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">노진제일교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박종덕 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">덕성교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이상철 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">독정교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김동천 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">브니엘교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">조영애 목사 · 예장(개혁)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">생수교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이영이 목사 · 기하성</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">석포교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박주환 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">시은소교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김낭주 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">예수정안교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이성범 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">장안교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">한민규 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">장안제일교회(기감)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김요한 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">장안제일교회(통합)</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김두희 목사 · 예장(통합)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">조암제일교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김재도 목사 · 예장(합동)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">주사랑교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">이우성 목사 · 기감</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">축복교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">박창대 목사 · 예장(백석)</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline);"><span style="font-size:16px;font-weight:700;letter-spacing:0;color:var(--ink);">한마음교회</span><span style="font-size:13px;color:var(--muted);white-space:nowrap;">김광옥 목사 · 기하성</span></div>
+        </div>
+      </div>
+      </div>
     </div>
   </section>
 
@@ -1116,7 +974,7 @@
     <div style="max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;">
       <div>
         <div style="display:inline-flex;background:#fff;border:1px solid var(--hairline);border-radius:0;padding:12px 16px;">
-          <img src="assets/logo.png?v=2" alt="삼괴지역 기독교 연합회" style="height:30px;width:auto;display:block;" />
+          <img src="assets/logo.png" alt="삼괴지역 기독교 연합회" style="height:30px;width:auto;display:block;" />
         </div>
         <p style="margin:18px 0 0;font-size:15px;line-height:1.5;color:var(--muted);max-width:340px;">화성특례시 우정읍·장안면 49개 교회가 함께하는<br>삼괴지역 목회자들의 연합 공동체 「삼기연」</p>
       </div>
@@ -1235,118 +1093,9 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function(){});
   });
 }
-
-// 앱 설치(PWA) — 헤더 "앱 설치" 버튼 (모든 환경 대응)
-(function(){
-  var btn = document.getElementById('installBtn');
-  if(!btn) return;
-  var deferred = null;
-  var ua = navigator.userAgent || '';
-  function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
-  var isIOS = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
-  var isAndroid = /Android/i.test(ua);
-  // 카카오톡·네이버·페북·인스타·라인·밴드 등 인앱(웹뷰) 브라우저 — PWA 설치 불가
-  var inApp = /KAKAOTALK|NAVER\(inapp|; ?wv\)|Instagram|FBAN|FBAV|FB_IAB|Line\/|DaumApps|KAKAOSTORY|Snapchat|everytimeApp|BAND|whale\/.*inapp/i.test(ua)
-              || /NAVER/i.test(ua);
-  function show(){ if(!isStandalone()) btn.style.display='inline-flex'; }
-  function hide(){ btn.style.display='none'; }
-
-  // 안드로이드 크롬/엣지: 설치 가능 시 브라우저가 이 이벤트를 보냄
-  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; show(); });
-  window.addEventListener('appinstalled', function(){ deferred=null; hide(); });
-
-  // 설치 전이면 버튼을 항상 노출 — 이벤트가 늦게 오거나 오지 않는 환경(인앱 브라우저 등)에서도
-  // 사용자가 설치 경로를 찾을 수 있게 함.
-  if(!isStandalone()) show();
-
-  btn.addEventListener('click', function(){
-    // 1) 안드로이드 크롬/엣지 — 네이티브 설치창 바로
-    if(deferred){
-      deferred.prompt();
-      deferred.userChoice.then(function(c){ if(c && c.outcome==='accepted') hide(); deferred=null; });
-      return;
-    }
-    // 2) 카카오/네이버 등 인앱 브라우저 — 여기선 설치 불가
-    if(inApp){
-      if(isAndroid){
-        // 안드로이드는 크롬으로 자동 열기 시도 (intent)
-        var full = 'https://' + location.host + location.pathname + location.search;
-        try{
-          location.href = 'intent://' + location.host + location.pathname + location.search +
-            '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(full) + ';end';
-        }catch(_){}
-        setTimeout(function(){ openSheet(inAppSheet(true)); }, 1200);
-      } else {
-        openSheet(inAppSheet(false)); // iOS 인앱(카카오 등) → 사파리로 열기 안내
-      }
-      return;
-    }
-    // 3) iOS 사파리 — 홈 화면에 추가 안내
-    if(isIOS){ openSheet(iosSheet()); return; }
-    // 4) 그 외(데스크톱/기타 안드로이드) — 브라우저 메뉴 안내
-    openSheet(menuSheet());
-  });
-
-  // ---- 안내 시트 (하단 바텀시트) ----
-  function openSheet(inner){
-    var old = document.getElementById('installSheet'); if(old) old.remove();
-    var w = document.createElement('div');
-    w.id = 'installSheet';
-    w.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(10,14,20,0.55);display:flex;align-items:flex-end;justify-content:center;';
-    w.innerHTML = '<div style="background:#fff;width:100%;max-width:440px;border-radius:18px 18px 0 0;padding:24px 22px 30px;box-shadow:0 -8px 30px rgba(0,0,0,0.2);font-family:inherit;">'+ inner +
-      '<button type="button" id="installSheetClose" style="width:100%;height:46px;margin-top:6px;border:0;border-radius:12px;background:#1c69d4;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">확인</button></div>';
-    document.body.appendChild(w);
-    w.addEventListener('click', function(e){ if(e.target===w) w.remove(); });
-    document.getElementById('installSheetClose').addEventListener('click', function(){ w.remove(); });
-  }
-  function head(title, sub){
-    return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">'+
-      '<img src="assets/app-icon-192.png?v=6" alt="삼기연" style="width:44px;height:44px;border-radius:11px;flex:0 0 auto;" />'+
-      '<div><div style="font-size:16px;font-weight:700;color:#1a2129;">'+title+'</div>'+
-      '<div style="font-size:12.5px;color:#6b6b6b;">'+sub+'</div></div></div>';
-  }
-  function steps(arr){
-    return '<ol style="margin:0 0 18px;padding-left:20px;font-size:14px;line-height:1.9;color:#3c3c3c;">'+
-      arr.map(function(s){ return '<li>'+s+'</li>'; }).join('')+'</ol>';
-  }
-  function iosSheet(){
-    return head('홈 화면에 앱 추가','삼기연을 앱처럼 사용하세요')+
-      steps([
-        '사파리 하단(또는 상단)의 <b>공유</b> 버튼 <span style="display:inline-block;vertical-align:-3px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v11" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/><path d="m8 7 4-4 4 4" stroke="#1c69d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" stroke="#1c69d4" stroke-width="2" stroke-linecap="round"/></svg></span> 을 누릅니다.',
-        '<b>“홈 화면에 추가”</b> 를 선택합니다.',
-        '오른쪽 위 <b>“추가”</b> 를 누르면 완료!'
-      ]);
-  }
-  function inAppSheet(android){
-    if(android){
-      return head('크롬(Chrome)에서 열어 주세요','카카오톡·네이버 화면에서는 앱 설치가 안 돼요')+
-        '<p style="margin:0 0 14px;font-size:14px;line-height:1.7;color:#3c3c3c;">크롬으로 열리지 않았다면, 화면 <b>오른쪽 위 ⋮(더보기)</b> → <b>“다른 브라우저로 열기”</b> 를 눌러 <b>Chrome</b> 을 선택한 뒤, 크롬 화면에서 이 <b>“앱 설치”</b> 버튼을 다시 눌러 주세요.</p>';
-    }
-    return head('사파리(Safari)에서 열어 주세요','카카오톡·네이버 화면에서는 앱 설치가 안 돼요')+
-      steps([
-        '화면 오른쪽 아래/위의 <b>더보기( ⋯ / 공유 )</b> 를 누릅니다.',
-        '<b>“Safari로 열기”</b> 를 선택합니다.',
-        '사파리에서 <b>공유 → “홈 화면에 추가”</b> 로 설치합니다.'
-      ]);
-  }
-  function menuSheet(){
-    if(isAndroid){
-      return head('앱으로 설치하기','크롬 메뉴에서 설치할 수 있어요')+
-        steps([
-          '크롬 오른쪽 위 <b>⋮ (더보기)</b> 를 누릅니다.',
-          '<b>“앱 설치”</b> 또는 <b>“홈 화면에 추가”</b> 를 선택합니다.'
-        ]);
-    }
-    return head('앱으로 설치하기','크롬·엣지 브라우저에서 설치할 수 있어요')+
-      steps([
-        '주소창 오른쪽의 <b>설치 아이콘(⊕ / 모니터 모양)</b> 을 누르거나,',
-        '브라우저 <b>메뉴 → “삼기연 설치”</b> 를 선택합니다.'
-      ]);
-  }
-})();
 </script>
 <!-- '걸어온 길' 세로 자동 스크롤 (역사 자료 아카이브 목록) -->
-<script src="archive-list.js?v=6"></script>
+<script src="archive-list.js?v=5"></script>
 <script>
 (function(){
   var vp=document.getElementById('pathViewport'), list=document.getElementById('pathList');
@@ -1419,8 +1168,7 @@ if ('serviceWorker' in navigator) {
   function mdY(d){ var t=new Date(d); return isNaN(t)?'':((t.getMonth()+1)+'월 '+t.getDate()+'일'); }
   function todayStr(){ var t=new Date(); return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2); }
 
-  var isAdminUser=false, isOfficerUser=false, me=null, myProfile=null;
-  var NOTICES=[], PRAYERS=[], editNoticeId=null, editPrayerId=null;
+  var isAdminUser=false, me=null, myProfile=null;
 
   // 관리자면 인라인 편집 UI 노출
   (async function initAdmin(){
@@ -1428,14 +1176,9 @@ if ('serviceWorker' in navigator) {
       if(!window.sb) return;
       var s=await window.sb.auth.getSession();
       me = s.data && s.data.session ? s.data.session.user : null;
-      if(me){ myProfile = await window.getMyProfile();
-        isAdminUser = window.isAdmin(me, myProfile);
-        isOfficerUser = isAdminUser || !!(myProfile && myProfile.officer_role) || (window.isSuperAdmin && window.isSuperAdmin(me));
-      }
+      if(me){ myProfile = await window.getMyProfile(); isAdminUser = window.isAdmin(me, myProfile); }
     }catch(_){}
-    // 공지사항: 임원(직책 보유자·회장·최고관리자) 노출 / 수요조찬기도회: 관리자만 노출
-    if(isOfficerUser){ ['noticeAddBtn','noticeForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
-    if(isOfficerUser){ ['prayerAddBtn','prayerForm'].forEach(function(id){ var el=document.getElementById(id); if(el) el.classList.remove('adm-only'); }); }
+    if(isAdminUser){ Array.prototype.forEach.call(document.querySelectorAll('.adm-only'), function(el){ el.classList.remove('adm-only'); }); }
   })();
 
   // ---------- 공지사항 ----------
@@ -1446,7 +1189,7 @@ if ('serviceWorker' in navigator) {
     try{ r=await window.sb.from('announcements').select('*').order('pinned',{ascending:false}).order('created_at',{ascending:false}); }
     catch(e){ r={error:e}; }
     if(!r || r.error || !r.data){ if(listEl) listEl.innerHTML='<div style="padding:30px 0;text-align:center;color:var(--muted);">공지를 불러오지 못했습니다.</div>'; return; }
-    var rows=r.data; NOTICES=rows;
+    var rows=r.data;
     if(!rows.length){
       if(listEl) listEl.innerHTML='<div style="padding:40px 0;text-align:center;color:var(--muted);font-size:15px;">아직 등록된 공지가 없습니다.</div>';
       if(dashEl) dashEl.innerHTML='<div class="dc-sub" style="font-size:15px;">등록된 공지가 없습니다.</div>';
@@ -1454,30 +1197,18 @@ if ('serviceWorker' in navigator) {
     }
     if(listEl){
       listEl.innerHTML=rows.map(function(n){
-        var hasBody=!!(n.body && n.body.trim());
         return '<div class="notice-item">'+
           '<div class="notice-date">'+fdate(n.created_at)+'</div>'+
           '<div class="notice-main">'+
-            '<div class="notice-head"'+(hasBody?' data-ntoggle="'+n.id+'" style="cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"':' style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"')+'>'+
-              '<span class="notice-title">'+(n.pinned?'<span class="notice-pin">공지</span>':'')+esc(n.title)+'</span>'+
-              (hasBody?'<span class="notice-caret" style="margin-left:auto;">＋ 자세히</span>':'')+
-            '</div>'+
-            (hasBody?'<div class="notice-body" id="nb-'+n.id+'" style="display:none;">'+esc(n.body)+'</div>':'')+
+            '<div class="notice-title">'+(n.pinned?'<span class="notice-pin">공지</span>':'')+esc(n.title)+'</div>'+
+            (n.body?'<div class="notice-body">'+esc(n.body)+'</div>':'')+
           '</div>'+
-          (isOfficerUser?'<span class="notice-edit" data-nedit="'+n.id+'">수정</span><span class="notice-del" data-ndel="'+n.id+'">삭제</span>':'')+
+          (isAdminUser?'<span class="notice-del" data-ndel="'+n.id+'">삭제</span>':'')+
         '</div>';
       }).join('');
-      Array.prototype.forEach.call(listEl.querySelectorAll('[data-ntoggle]'),function(h){
-        h.addEventListener('click',function(){
-          var id=h.getAttribute('data-ntoggle'); var b=document.getElementById('nb-'+id); if(!b) return;
-          var open=b.style.display==='none'; b.style.display=open?'block':'none';
-          var c=h.querySelector('.notice-caret'); if(c) c.textContent=open?'− 접기':'＋ 자세히';
-        });
+      if(isAdminUser) Array.prototype.forEach.call(listEl.querySelectorAll('[data-ndel]'),function(a){
+        a.addEventListener('click',function(){ delNotice(a.getAttribute('data-ndel')); });
       });
-      if(isOfficerUser){
-        Array.prototype.forEach.call(listEl.querySelectorAll('[data-ndel]'),function(a){ a.addEventListener('click',function(){ delNotice(a.getAttribute('data-ndel')); }); });
-        Array.prototype.forEach.call(listEl.querySelectorAll('[data-nedit]'),function(a){ a.addEventListener('click',function(){ startEditNotice(a.getAttribute('data-nedit')); }); });
-      }
     }
     if(dashEl){
       dashEl.innerHTML=rows.slice(0,3).map(function(n){
@@ -1495,33 +1226,21 @@ if ('serviceWorker' in navigator) {
     loadNotices();
   }
   var nAdd=document.getElementById('noticeAddBtn'), nForm=document.getElementById('noticeForm');
-  function resetNoticeForm(){ editNoticeId=null; document.getElementById('ntTitle').value=''; document.getElementById('ntBody').value=''; document.getElementById('ntPin').checked=false; var b=document.getElementById('ntSave'); if(b) b.textContent='등록하기'; }
-  if(nAdd) nAdd.addEventListener('click',function(){
-    if(nForm.classList.contains('open') && !editNoticeId){ nForm.classList.remove('open'); return; }
-    resetNoticeForm(); nForm.classList.add('open');
-  });
-  function startEditNotice(id){
-    var n=NOTICES.find(function(x){ return String(x.id)===String(id); }); if(!n) return;
-    editNoticeId=id;
-    document.getElementById('ntTitle').value=n.title||'';
-    document.getElementById('ntBody').value=n.body||'';
-    document.getElementById('ntPin').checked=!!n.pinned;
-    document.getElementById('ntSave').textContent='수정 저장';
-    nForm.classList.add('open');
-    nForm.scrollIntoView({behavior:'smooth',block:'center'});
-  }
+  if(nAdd) nAdd.addEventListener('click',function(){ nForm.classList.toggle('open'); });
   var nSave=document.getElementById('ntSave');
   if(nSave) nSave.addEventListener('click',async function(){
     var t=document.getElementById('ntTitle').value.trim();
     if(!t){ alert('공지 제목을 입력해 주세요.'); return; }
-    var payload={ title:t, body:document.getElementById('ntBody').value.trim()||null, pinned:document.getElementById('ntPin').checked };
-    nSave.disabled=true; nSave.textContent=editNoticeId?'저장 중…':'등록 중…';
-    var res;
-    if(editNoticeId){ res=await window.sb.from('announcements').update(payload).eq('id',editNoticeId); }
-    else { payload.created_by=me?me.id:null; payload.author_name=(myProfile&&myProfile.name)||''; res=await window.sb.from('announcements').insert(payload); }
-    nSave.disabled=false;
-    if(res.error){ nSave.textContent=editNoticeId?'수정 저장':'등록하기'; alert((editNoticeId?'수정':'등록')+' 실패: '+res.error.message); return; }
-    resetNoticeForm(); nForm.classList.remove('open'); loadNotices();
+    nSave.disabled=true; nSave.textContent='등록 중…';
+    var ins=await window.sb.from('announcements').insert({
+      title:t, body:document.getElementById('ntBody').value.trim()||null,
+      pinned:document.getElementById('ntPin').checked,
+      created_by:me?me.id:null, author_name:(myProfile&&myProfile.name)||''
+    });
+    nSave.disabled=false; nSave.textContent='등록하기';
+    if(ins.error){ alert('등록 실패: '+ins.error.message); return; }
+    document.getElementById('ntTitle').value=''; document.getElementById('ntBody').value=''; document.getElementById('ntPin').checked=false;
+    nForm.classList.remove('open'); loadNotices();
   });
 
   // ---------- 수요조찬기도회 ----------
@@ -1532,7 +1251,7 @@ if ('serviceWorker' in navigator) {
     try{ r=await window.sb.from('prayer_meetings').select('*').order('meet_date',{ascending:false}); }
     catch(e){ r={error:e}; }
     if(!r || r.error || !r.data){ return; }
-    var rows=r.data; PRAYERS=rows;
+    var rows=r.data;
     var today=todayStr();
     var upcoming=rows.filter(function(m){ return m.meet_date>=today; }).sort(function(a,b){ return a.meet_date<b.meet_date?-1:1; });
     var nextM=upcoming.length?upcoming[0]:null;
@@ -1555,35 +1274,19 @@ if ('serviceWorker' in navigator) {
       }
     }
     if(listEl){
-      if(!rows.length){ listEl.innerHTML='<div style="padding:26px 0;color:var(--muted);font-size:15px;">등록된 기도회 일정이 없습니다.'+(isOfficerUser?' 위의 ‘＋ 기도회 일정 등록’으로 추가하세요.':'')+'</div>'; return; }
+      if(!rows.length){ listEl.innerHTML='<div style="padding:26px 0;color:var(--muted);font-size:15px;">등록된 기도회 일정이 없습니다.'+(isAdminUser?' 위의 ‘＋ 기도회 일정 등록’으로 추가하세요.':'')+'</div>'; return; }
       listEl.innerHTML=rows.map(function(m){
         var past=m.meet_date<today;
-        var detail=(m.topic?'<div class="pr-topic">🙏 '+esc(m.topic)+'</div>':'')+
-          (m.note?'<div style="margin-top:5px;font-size:14.5px;line-height:1.7;color:var(--muted);white-space:pre-wrap;">'+esc(m.note)+'</div>':'')+
-          (!m.topic&&!m.note?'<div style="font-size:14px;color:var(--muted-soft);">등록된 상세 내용이 없습니다.</div>':'');
         return '<div class="pray-row" style="'+(past?'opacity:0.6;':'')+'">'+
           '<div class="pr-date">'+fdate(m.meet_date)+'</div>'+
-          '<div style="flex:1;min-width:0;">'+
-            '<div class="pr-host" data-ptoggle="'+m.id+'" style="cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'+
-              '<span>'+esc(m.host_church||'회원교회 순회')+(past?' <span style="font-size:12px;color:var(--muted-soft);font-weight:400;">· 지난 기도회</span>':'')+'</span>'+
-              '<span class="pr-caret" style="margin-left:auto;">＋ 자세히</span>'+
-            '</div>'+
-            '<div id="pd-'+m.id+'" style="display:none;margin-top:7px;">'+detail+'</div>'+
-          '</div>'+
-          (isOfficerUser?'<span class="pray-edit" data-pedit="'+m.id+'">수정</span><span class="pray-del" data-pdel="'+m.id+'">삭제</span>':'')+
+          '<div style="flex:1;min-width:0;"><div class="pr-host">'+esc(m.host_church||'회원교회 순회')+(past?' <span style="font-size:12px;color:var(--muted-soft);font-weight:400;">· 지난 기도회</span>':'')+'</div>'+
+            (m.topic?'<div class="pr-topic">'+esc(m.topic)+'</div>':'')+'</div>'+
+          (isAdminUser?'<span class="pray-del" data-pdel="'+m.id+'">삭제</span>':'')+
         '</div>';
       }).join('');
-      Array.prototype.forEach.call(listEl.querySelectorAll('[data-ptoggle]'),function(h){
-        h.addEventListener('click',function(){
-          var id=h.getAttribute('data-ptoggle'); var b=document.getElementById('pd-'+id); if(!b) return;
-          var open=b.style.display==='none'; b.style.display=open?'block':'none';
-          var c=h.querySelector('.pr-caret'); if(c) c.textContent=open?'− 접기':'＋ 자세히';
-        });
+      if(isAdminUser) Array.prototype.forEach.call(listEl.querySelectorAll('[data-pdel]'),function(a){
+        a.addEventListener('click',function(){ delPrayer(a.getAttribute('data-pdel')); });
       });
-      if(isOfficerUser){
-        Array.prototype.forEach.call(listEl.querySelectorAll('[data-pdel]'),function(a){ a.addEventListener('click',function(){ delPrayer(a.getAttribute('data-pdel')); }); });
-        Array.prototype.forEach.call(listEl.querySelectorAll('[data-pedit]'),function(a){ a.addEventListener('click',function(){ startEditPrayer(a.getAttribute('data-pedit')); }); });
-      }
     }
   }
   async function delPrayer(id){
@@ -1593,450 +1296,27 @@ if ('serviceWorker' in navigator) {
     loadPrayer();
   }
   var pAdd=document.getElementById('prayerAddBtn'), pForm=document.getElementById('prayerForm');
-  function resetPrayerForm(){ editPrayerId=null; document.getElementById('pmDate').value=''; document.getElementById('pmHost').value=''; document.getElementById('pmTopic').value=''; document.getElementById('pmNote').value=''; var b=document.getElementById('pmSave'); if(b) b.textContent='등록하기'; }
-  if(pAdd) pAdd.addEventListener('click',function(){
-    if(pForm.classList.contains('open') && !editPrayerId){ pForm.classList.remove('open'); return; }
-    resetPrayerForm(); pForm.classList.add('open');
-  });
-  function startEditPrayer(id){
-    var m=PRAYERS.find(function(x){ return String(x.id)===String(id); }); if(!m) return;
-    editPrayerId=id;
-    document.getElementById('pmDate').value=m.meet_date||'';
-    document.getElementById('pmHost').value=m.host_church||'';
-    document.getElementById('pmTopic').value=m.topic||'';
-    document.getElementById('pmNote').value=m.note||'';
-    document.getElementById('pmSave').textContent='수정 저장';
-    pForm.classList.add('open');
-    pForm.scrollIntoView({behavior:'smooth',block:'center'});
-  }
+  if(pAdd) pAdd.addEventListener('click',function(){ pForm.classList.toggle('open'); });
   var pSave=document.getElementById('pmSave');
   if(pSave) pSave.addEventListener('click',async function(){
     var dt=document.getElementById('pmDate').value;
     if(!dt){ alert('기도회 날짜를 선택해 주세요.'); return; }
-    var payload={ meet_date:dt, host_church:document.getElementById('pmHost').value.trim()||null,
-      topic:document.getElementById('pmTopic').value.trim()||null, note:document.getElementById('pmNote').value.trim()||null };
-    pSave.disabled=true; pSave.textContent=editPrayerId?'저장 중…':'등록 중…';
-    var res;
-    if(editPrayerId){ res=await window.sb.from('prayer_meetings').update(payload).eq('id',editPrayerId); }
-    else { payload.created_by=me?me.id:null; res=await window.sb.from('prayer_meetings').insert(payload); }
-    pSave.disabled=false;
-    if(res.error){ pSave.textContent=editPrayerId?'수정 저장':'등록하기'; alert((editPrayerId?'수정':'등록')+' 실패: '+res.error.message); return; }
-    resetPrayerForm(); pForm.classList.remove('open'); loadPrayer();
+    pSave.disabled=true; pSave.textContent='등록 중…';
+    var ins=await window.sb.from('prayer_meetings').insert({
+      meet_date:dt, host_church:document.getElementById('pmHost').value.trim()||null,
+      topic:document.getElementById('pmTopic').value.trim()||null, note:document.getElementById('pmNote').value.trim()||null,
+      created_by:me?me.id:null
+    });
+    pSave.disabled=false; pSave.textContent='등록하기';
+    if(ins.error){ alert('등록 실패: '+ins.error.message); return; }
+    document.getElementById('pmDate').value=''; document.getElementById('pmHost').value='';
+    document.getElementById('pmTopic').value=''; document.getElementById('pmNote').value='';
+    pForm.classList.remove('open'); loadPrayer();
   });
 
   // 초기 로드 (관리자 판별 후 다시 렌더되도록 약간의 지연 재호출)
   loadNotices(); loadPrayer();
   setTimeout(function(){ loadNotices(); loadPrayer(); }, 1200);
-})();
-</script>
-<!-- ===================== 언론 캐러셀 · 임원 기사 등록 ===================== -->
-<script>
-(function(){
-  var track=document.getElementById('pressTrack'), carousel=document.getElementById('pressCarousel');
-  if(!track||!carousel) return;
-  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
-  function escA(s){ return esc(s).replace(/'/g,'&#39;'); }
-
-  var BASE=[
-    { url:'http://www.m-i.kr/news/articleView.html?idxno=1170303', title:'화성 3·1운동 만세길 걷기행사 개최', source:'매일일보', published:'2024.10.22', image_url:'assets/press/mansegil-2024.jpg', credit:'매일일보', summary:'우정·장안 3·1 만세운동의 정신을 기리는 걷기행사에 삼괴기독교연합회가 지역단체와 협업했습니다. 400여 명의 시민이 태극기를 들고 만세길을 함께 걸었습니다.' },
-    { url:'https://www.goodnews1.com/news/articleView.html?idxno=444917', title:'106주년 3·1절 기념 공감음악회', source:'데일리굿뉴스', published:'2025.02.27', image_url:'assets/press/music-2025.jpg', credit:'데일리굿뉴스', summary:'화성특례시기독교총연합회 3·1절 기념 음악회에서 조암신흥교회(장명희 목사)를 중심으로 한 삼괴지역 교회들이 워십 공연을 선보이며 나라사랑의 의미를 함께 나눴습니다.' }
-  ];
-  var DB=[], isOfficer=false, isAdminU=false, me=null;
-
-  function cardHtml(a){
-    var meta=[a.source,a.published].filter(Boolean).join(' · ');
-    var img = a.image_url
-      ? '<a href="'+escA(a.url)+'" target="_blank" rel="noopener"><img class="pc-img" src="'+escA(a.image_url)+'" alt="" loading="lazy" onerror="this.parentNode.style.display=\'none\'"></a>'
-      : '<a href="'+escA(a.url)+'" target="_blank" rel="noopener" style="text-decoration:none;"><div class="pc-img" style="display:flex;align-items:center;justify-content:center;color:var(--muted-soft);font-size:13px;">기사 바로가기</div></a>';
-    var adm = (a._edit||a._del) ? '<div class="pc-adm">'+(a._edit?'<button data-edit="'+escA(a.id)+'">수정</button>':'')+(a._del?'<button data-del="'+escA(a.id)+'">삭제</button>':'')+'</div>' : '';
-    return '<article class="pc-card">'+img+adm+
-      '<div class="pc-body">'+
-        (meta?'<div class="pc-meta">'+esc(meta)+'</div>':'')+
-        '<h3 class="pc-title">'+esc(a.title||a.url)+'</h3>'+
-        (a.summary?'<p class="pc-sum">'+esc(a.summary)+'</p>':'<div class="pc-sum"></div>')+
-        '<div class="pc-foot"><span>'+(a.credit?'사진 · '+esc(a.credit):'')+'</span>'+
-          '<a href="'+escA(a.url)+'" target="_blank" rel="noopener">기사 보기 ›</a></div>'+
-      '</div></article>';
-  }
-  function items(){
-    var db=DB.map(function(d){ var mine=(isAdminU || (me && d.created_by===me.id)); return { id:d.id, url:d.url, title:d.title, source:d.source, published:d.published, summary:d.summary, image_url:d.image_url, credit:d.source, _del:mine, _edit:mine }; });
-    return BASE.concat(db);
-  }
-  function render(){
-    var list=items(); var html=list.map(cardHtml).join('');
-    track.innerHTML = (list.length>=3) ? html+html : html;   // 3개 이상이면 복제해 무한 회전
-    setupAuto();
-  }
-
-  var rafId=null, paused=false;
-  function setupAuto(){
-    if(rafId) cancelAnimationFrame(rafId);
-    var last=null;
-    function step(t){ if(last==null)last=t; var dt=t-last; last=t; if(dt>50)dt=50;
-      if(!paused && track.children.length>2){
-        carousel.scrollLeft += dt*0.05;
-        var half=track.scrollWidth/2; if(half>0 && carousel.scrollLeft>=half) carousel.scrollLeft-=half;
-      }
-      rafId=requestAnimationFrame(step);
-    }
-    rafId=requestAnimationFrame(step);
-  }
-  carousel.addEventListener('mouseenter', function(){ paused=true; });
-  carousel.addEventListener('mouseleave', function(){ paused=false; });
-  carousel.addEventListener('pointerdown', function(){ paused=true; });
-  window.addEventListener('pointerup', function(){ setTimeout(function(){ paused=false; }, 1200); });
-  function pcNav(dir){
-    paused=true;
-    var card=track.querySelector('.pc-card'); var step=card?(card.offsetWidth+24):360;
-    var half=track.scrollWidth/2;
-    if(dir>0 && half>0 && carousel.scrollLeft>=half) carousel.scrollLeft-=half;
-    if(dir<0 && half>0 && carousel.scrollLeft<step) carousel.scrollLeft+=half;
-    carousel.scrollBy({left:dir*step, behavior:'smooth'});
-    setTimeout(function(){ paused=false; }, 1500);
-  }
-  var pcPrev=document.getElementById('pcPrev'), pcNext=document.getElementById('pcNext');
-  if(pcPrev) pcPrev.addEventListener('click', function(){ pcNav(-1); });
-  if(pcNext) pcNext.addEventListener('click', function(){ pcNav(1); });
-  track.addEventListener('click', function(e){
-    var ed=e.target.closest&&e.target.closest('[data-edit]'); if(ed){ e.preventDefault(); e.stopPropagation(); startEditPress(ed.getAttribute('data-edit')); return; }
-    var b=e.target.closest&&e.target.closest('[data-del]'); if(b){ e.preventDefault(); e.stopPropagation(); delArticle(b.getAttribute('data-del')); }
-  });
-
-  async function loadDB(){ if(!window.sb) return;
-    try{ var r=await window.sb.from('press_articles').select('*').order('created_at',{ascending:false}); if(!r.error && r.data) DB=r.data; }catch(_){}
-  }
-  async function delArticle(id){
-    if(!confirm('이 기사를 목록에서 삭제할까요?')) return;
-    var d=await window.sb.from('press_articles').delete().eq('id',id);
-    if(d.error){ alert('삭제 실패: '+d.error.message); return; }
-    await loadDB(); render();
-  }
-
-  (async function init(){
-    render();
-    await loadDB(); render();
-    try{ if(window.sb){
-      var s=await window.sb.auth.getSession();
-      me = s.data && s.data.session ? s.data.session.user : null;
-      if(me){ var p = (typeof window.getMyProfile==='function') ? await window.getMyProfile() : null;
-        isOfficer = !!(p && p.officer_role) || (window.isSuperAdmin && window.isSuperAdmin(me));
-        isAdminU = window.isAdmin ? window.isAdmin(me, p) : false;
-      }
-    }}catch(_){}
-    render();
-    if(isOfficer){ var b=document.getElementById('pressAddBtn'); if(b) b.classList.add('show'); }
-  })();
-
-  var form=document.getElementById('pressForm');
-  var addBtn=document.getElementById('pressAddBtn');
-  if(addBtn) addBtn.addEventListener('click', function(){ form.classList.toggle('open'); });
-  function prErr(m){ var e=document.getElementById('prErr'); e.textContent=m||''; e.style.display=m?'block':'none'; }
-  var details=document.getElementById('prDetails');
-  var editingId=null;
-  function setImgPreview(u){ var p=document.getElementById('prImgPreview'); if(!p) return; p.innerHTML = u ? '<img src="'+escA(u)+'" alt="">' : ''; }
-  function resetPressForm(){ editingId=null; ['prUrl','prTitle','prSource','prDate','prImg','prSummary'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; }); setImgPreview(''); if(details) details.style.display='none'; var fm=document.getElementById('prFetchMsg'); if(fm) fm.textContent=''; var sb=document.getElementById('prSave'); if(sb) sb.textContent='등록'; prErr(''); }
-  var cancel=document.getElementById('prCancel');
-  if(cancel) cancel.addEventListener('click', function(){ form.classList.remove('open'); resetPressForm(); });
-
-  function fillFields(j){
-    if(j.title) document.getElementById('prTitle').value=j.title;
-    if(j.source) document.getElementById('prSource').value=j.source;
-    if(j.published) document.getElementById('prDate').value=j.published;
-    if(j.image) document.getElementById('prImg').value=j.image;
-    if(j.summary) document.getElementById('prSummary').value=j.summary;
-  }
-  async function fetchMeta(u){
-    var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
-    if(!r2) throw new Error('NO_WORKER');
-    var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
-    var resp=await fetch(r2+'/fetch-meta',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({url:u})});
-    var j=await resp.json().catch(function(){return {};});
-    if(!resp.ok) throw new Error(j.error||('실패('+resp.status+')'));
-    return j;
-  }
-  async function savePress(payload){
-    var ins=await window.sb.from('press_articles').insert(payload);
-    if(ins.error) throw new Error('등록 실패: '+ins.error.message+(/press_articles|schema cache|PGRST205/i.test(ins.error.message)?' (관리자: press-setup.sql 실행이 필요합니다)':''));
-  }
-
-  // ---- 대표 이미지 드래그앤드롭 업로드 ----
-  async function resizeImg(file){
-    var bitmap=await createImageBitmap(file);
-    try{ var maxDim=1600, scale=Math.min(1, maxDim/Math.max(bitmap.width,bitmap.height));
-      var w=Math.max(1,Math.round(bitmap.width*scale)), h=Math.max(1,Math.round(bitmap.height*scale));
-      var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(bitmap,0,0,w,h);
-      return await new Promise(function(res){ c.toBlob(function(bl){res(bl);},'image/webp',0.85); });
-    } finally { if(bitmap.close) bitmap.close(); }
-  }
-  async function uploadImg(file){
-    var r2=(window.R2_WORKER_URL||'').replace(/\/$/,''); if(!r2) throw new Error('사진 저장소(Cloudflare) 설정이 필요합니다.');
-    var blob=await resizeImg(file);
-    var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
-    var resp=await fetch(r2+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'image/webp'},body:blob});
-    var j=await resp.json().catch(function(){return {};});
-    if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
-    return j.url;
-  }
-  var prDrop=document.getElementById('prDrop'), prImgFile=document.getElementById('prImgFile'), prDropText=document.getElementById('prDropText');
-  async function doImgUpload(f){
-    if(!f) return; var old=prDropText.innerHTML; prDropText.textContent='이미지 업로드 중…';
-    try{ var u=await uploadImg(f); document.getElementById('prImg').value=u; setImgPreview(u); prDropText.innerHTML=old; }
-    catch(err){ prDropText.innerHTML=old; alert('이미지 업로드 실패: '+(err.message||err)); }
-  }
-  if(prDrop){
-    prDrop.addEventListener('click', function(){ prImgFile.click(); });
-    ['dragenter','dragover'].forEach(function(ev){ prDrop.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();prDrop.classList.add('over');}); });
-    ['dragleave','drop'].forEach(function(ev){ prDrop.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();prDrop.classList.remove('over');}); });
-    prDrop.addEventListener('drop', function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; doImgUpload(f); });
-    prImgFile.addEventListener('change', function(){ var f=prImgFile.files&&prImgFile.files[0]; prImgFile.value=''; doImgUpload(f); });
-  }
-  var prImgInput=document.getElementById('prImg');
-  if(prImgInput) prImgInput.addEventListener('input', function(){ setImgPreview(this.value.trim()); });
-
-  // ---- 기존 기사 수정 ----
-  function startEditPress(id){
-    var d=DB.find(function(x){return String(x.id)===String(id);}); if(!d) return;
-    editingId=id;
-    form.classList.add('open'); details.style.display='block';
-    document.getElementById('prUrl').value=d.url||'';
-    document.getElementById('prTitle').value=d.title||'';
-    document.getElementById('prSource').value=d.source||'';
-    document.getElementById('prDate').value=d.published||'';
-    document.getElementById('prImg').value=d.image_url||'';
-    document.getElementById('prSummary').value=d.summary||'';
-    setImgPreview(d.image_url||'');
-    var sb=document.getElementById('prSave'); if(sb) sb.textContent='수정 저장';
-    var fm=document.getElementById('prFetchMsg'); if(fm) fm.textContent='';
-    prErr(''); form.scrollIntoView({behavior:'smooth',block:'center'});
-  }
-
-  var manualBtn=document.getElementById('prManual');
-  if(manualBtn) manualBtn.addEventListener('click', async function(){
-    details.style.display='block';
-    var u=document.getElementById('prUrl').value.trim();
-    if(/^https?:\/\//i.test(u) && !document.getElementById('prTitle').value.trim()){
-      var msg=document.getElementById('prFetchMsg'); msg.textContent='불러오는 중…';
-      try{ fillFields(await fetchMeta(u)); msg.textContent='불러왔습니다. 확인 후 등록하세요.'; }catch(e){ msg.textContent=''; }
-    }
-  });
-
-  var saveBtn=document.getElementById('prSave');
-  if(saveBtn) saveBtn.addEventListener('click', async function(){
-    prErr(''); var msg=document.getElementById('prFetchMsg');
-    var url=document.getElementById('prUrl').value.trim();
-    if(!/^https?:\/\//i.test(url)){ prErr('기사 URL(https://…)을 붙여넣어 주세요.'); return; }
-    if(!window.sb){ prErr('서버 연결이 준비되지 않았습니다.'); return; }
-    var detailsOpen = details.style.display!=='none';
-    saveBtn.disabled=true;
-    try{
-      if(editingId){
-        var et=document.getElementById('prTitle').value.trim();
-        if(!et){ prErr('제목을 입력해 주세요.'); saveBtn.disabled=false; saveBtn.textContent='수정 저장'; return; }
-        saveBtn.textContent='저장 중…';
-        var up=await window.sb.from('press_articles').update({ url:url, title:et,
-          source:document.getElementById('prSource').value.trim()||null,
-          published:document.getElementById('prDate').value.trim()||null,
-          summary:document.getElementById('prSummary').value.trim()||null,
-          image_url:document.getElementById('prImg').value.trim()||null }).eq('id', editingId);
-        if(up.error) throw new Error('수정 실패: '+up.error.message);
-        resetPressForm(); form.classList.remove('open'); await loadDB(); render();
-        saveBtn.disabled=false; saveBtn.textContent='등록'; return;
-      }
-      if(!detailsOpen){
-        saveBtn.textContent='불러오는 중…'; msg.textContent='제목·언론사·날짜·이미지·요약을 가져오는 중…';
-        var j;
-        try{ j=await fetchMeta(url); }
-        catch(e){
-          details.style.display='block'; msg.textContent='';
-          prErr(e.message==='NO_WORKER'
-            ? '자동 불러오기 기능이 아직 켜지지 않았어요. 아래에 직접 입력해 등록해 주세요. (관리자: Worker 재배포 필요)'
-            : '자동으로 가져오지 못했어요. 아래 항목을 확인·입력하고 다시 등록해 주세요. ('+(e.message||e)+')');
-          saveBtn.disabled=false; saveBtn.textContent='등록'; return;
-        }
-        fillFields(j);
-        var atitle=(j.title||'').trim();
-        if(!atitle){ details.style.display='block'; msg.textContent=''; prErr('제목을 자동으로 못 찾았어요. 아래에 제목만 넣고 다시 등록해 주세요.'); saveBtn.disabled=false; saveBtn.textContent='등록'; return; }
-        saveBtn.textContent='등록 중…';
-        await savePress({ url:url, title:atitle, source:(j.source||'').trim()||null, published:(j.published||'').trim()||null, summary:(j.summary||'').trim()||null, image_url:(j.image||'').trim()||null, created_by: me?me.id:null });
-      } else {
-        var t=document.getElementById('prTitle').value.trim();
-        if(!t){ prErr('제목을 입력해 주세요.'); saveBtn.disabled=false; saveBtn.textContent='등록'; return; }
-        saveBtn.textContent='등록 중…';
-        await savePress({ url:url, title:t,
-          source:document.getElementById('prSource').value.trim()||null,
-          published:document.getElementById('prDate').value.trim()||null,
-          summary:document.getElementById('prSummary').value.trim()||null,
-          image_url:document.getElementById('prImg').value.trim()||null,
-          created_by: me?me.id:null });
-      }
-      resetPressForm(); form.classList.remove('open');
-      await loadDB(); render();
-    }catch(err){ prErr(err.message||String(err)); }
-    saveBtn.disabled=false; saveBtn.textContent='등록';
-  });
-})();
-</script>
-<!-- ===================== 히어로 배경 슬라이드쇼 + 관리자 사진 관리 ===================== -->
-<script>
-(function(){
-  var el=document.getElementById('heroSlides'); if(!el) return;
-  var DEFAULTS=['assets/img/hero.webp','assets/img/g1.webp','assets/img/g2.webp','assets/img/g4.webp'];
-  var HERO=[], timer=null, idx=0, isAdminU=false, me=null;
-  function hmEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
-  function urls(){ return HERO.length ? HERO.map(function(h){return h.url;}) : DEFAULTS; }
-
-  function buildSlides(){
-    var list=urls(); el.innerHTML='';
-    list.forEach(function(src,i){ var d=document.createElement('div'); d.className='hero2-slide'+(i===0?' on':''); d.style.backgroundImage="url('"+String(src).replace(/'/g,'%27')+"')"; el.appendChild(d); });
-    idx=0; if(timer){ clearInterval(timer); timer=null; }
-    var slides=el.querySelectorAll('.hero2-slide');
-    if(slides.length>1){ timer=setInterval(function(){ slides[idx].classList.remove('on'); idx=(idx+1)%slides.length; slides[idx].classList.add('on'); }, 5500); }
-  }
-  async function loadHero(){ if(!window.sb) return;
-    try{ var r=await window.sb.from('hero_images').select('*').order('sort',{ascending:true}); if(!r.error && r.data) HERO=r.data; }catch(_){}
-  }
-
-  buildSlides();
-  (async function(){ await loadHero(); buildSlides();
-    try{ if(window.sb){ var s=await window.sb.auth.getSession(); me=s.data&&s.data.session?s.data.session.user:null;
-      if(me){ var p=(typeof window.getMyProfile==='function')?await window.getMyProfile():null; isAdminU=window.isAdmin?window.isAdmin(me,p):false; } } }catch(_){}
-    if(isAdminU){ var b=document.getElementById('heroManageBtn'); if(b) b.classList.add('show'); }
-  })();
-
-  // ---- 관리 모달 ----
-  var modal=document.getElementById('heroModal'), listEl=document.getElementById('hmList');
-  var manageBtn=document.getElementById('heroManageBtn'), closeBtn=document.getElementById('hmClose');
-  if(manageBtn) manageBtn.addEventListener('click', async function(){ await loadHero(); renderList(); modal.classList.add('on'); });
-  if(closeBtn) closeBtn.addEventListener('click', function(){ modal.classList.remove('on'); });
-  if(modal) modal.addEventListener('click', function(e){ if(e.target===modal) modal.classList.remove('on'); });
-
-  function renderList(){
-    if(!HERO.length){ listEl.innerHTML='<p style="font-size:14px;color:var(--muted);padding:8px 0;">아직 등록한 사진이 없어 기본 사진이 표시됩니다. 아래에서 사진을 추가하세요.</p>'; }
-    else { listEl.innerHTML=HERO.map(function(h,i){
-      return '<div class="hm-item">'+
-        '<img class="hm-thumb" src="'+hmEsc(h.url)+'" alt="">'+
-        '<div style="flex:1;font-size:13px;color:var(--muted);">'+(i+1)+'번째</div>'+
-        '<div class="hm-ord">'+
-          '<button class="hm-up" data-mv="up" data-id="'+hmEsc(h.id)+'"'+(i===0?' disabled style="opacity:.25"':'')+'>▲</button>'+
-          '<button class="hm-up" data-mv="down" data-id="'+hmEsc(h.id)+'"'+(i===HERO.length-1?' disabled style="opacity:.25"':'')+'>▼</button>'+
-        '</div>'+
-        '<button class="hm-btn danger" data-del="'+hmEsc(h.id)+'">삭제</button>'+
-      '</div>'; }).join(''); }
-    var add=document.getElementById('hmAdd'), msg=document.getElementById('hmMsg');
-    if(HERO.length>=5){ add.disabled=true; msg.textContent='최대 5장입니다. 추가하려면 기존 사진을 삭제하세요.'; }
-    else { add.disabled=false; if(msg.textContent.indexOf('최대')>=0) msg.textContent=''; }
-  }
-
-  if(listEl) listEl.addEventListener('click', function(e){
-    var del=e.target.closest&&e.target.closest('[data-del]'); if(del){ delHero(del.getAttribute('data-del')); return; }
-    var mv=e.target.closest&&e.target.closest('[data-mv]'); if(mv && !mv.disabled){ moveHero(mv.getAttribute('data-id'), mv.getAttribute('data-mv')); }
-  });
-
-  async function delHero(id){
-    var h=HERO.find(function(x){return String(x.id)===String(id);}); if(!h) return;
-    if(!confirm('이 사진을 삭제할까요?')) return;
-    try{ if(h.path && h.path.indexOf('r2:')===0){ var r2=(window.R2_WORKER_URL||'').replace(/\/$/,''); if(r2){ var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:''; await fetch(r2+'/delete',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({key:h.path.slice(3)})}); } } }catch(_){}
-    var d=await window.sb.from('hero_images').delete().eq('id',id);
-    if(d.error){ alert('삭제 실패: '+d.error.message); return; }
-    await loadHero(); renderList(); buildSlides();
-  }
-  async function moveHero(id, dir){
-    var i=HERO.findIndex(function(x){return String(x.id)===String(id);}); if(i<0) return;
-    var j = dir==='up' ? i-1 : i+1; if(j<0 || j>=HERO.length) return;
-    var a=HERO[i], b=HERO[j]; var sa=(a.sort==null?i:a.sort), sb=(b.sort==null?j:b.sort); if(sa===sb){ sa=i; sb=j; }
-    var u1=await window.sb.from('hero_images').update({sort:sb}).eq('id',a.id);
-    var u2=await window.sb.from('hero_images').update({sort:sa}).eq('id',b.id);
-    if((u1&&u1.error)||(u2&&u2.error)){ alert('순서 변경 실패'); }
-    await loadHero(); renderList(); buildSlides();
-  }
-
-  async function resizeImage(file){
-    var bitmap=await createImageBitmap(file);
-    try{ var maxDim=1800, scale=Math.min(1, maxDim/Math.max(bitmap.width,bitmap.height));
-      var w=Math.max(1,Math.round(bitmap.width*scale)), h=Math.max(1,Math.round(bitmap.height*scale));
-      var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(bitmap,0,0,w,h);
-      return await new Promise(function(res){ c.toBlob(function(bl){res(bl);},'image/webp',0.85); });
-    } finally { if(bitmap.close) bitmap.close(); }
-  }
-  var addBtn=document.getElementById('hmAdd'), fileInput=document.getElementById('hmFile');
-  if(addBtn) addBtn.addEventListener('click', function(){ if(!addBtn.disabled) fileInput.click(); });
-  if(fileInput) fileInput.addEventListener('change', async function(){
-    var f=fileInput.files&&fileInput.files[0]; fileInput.value=''; if(!f) return;
-    if(HERO.length>=5){ alert('최대 5장까지 등록됩니다.'); return; }
-    var msg=document.getElementById('hmMsg'); var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
-    if(!r2){ alert('사진 저장소(Cloudflare) 주소가 설정되지 않았습니다.'); return; }
-    addBtn.disabled=true; msg.textContent='업로드 중…';
-    try{
-      var blob=await resizeImage(f);
-      var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
-      var resp=await fetch(r2+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'image/webp'},body:blob});
-      var j=await resp.json().catch(function(){return {};});
-      if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
-      var maxSort=HERO.reduce(function(m,x){return Math.max(m,(x.sort||0));},0);
-      var ins=await window.sb.from('hero_images').insert({ url:j.url, path:'r2:'+j.key, sort:maxSort+1, created_by:me?me.id:null });
-      if(ins.error) throw new Error(ins.error.message+(/hero_images|schema cache|PGRST205/i.test(ins.error.message)?' (관리자: hero-setup.sql 실행이 필요합니다)':''));
-      msg.textContent='추가되었습니다.';
-      await loadHero(); renderList(); buildSlides();
-    }catch(err){ msg.textContent=''; alert('업로드 실패: '+(err.message||err)); }
-    addBtn.disabled = HERO.length>=5;
-  });
-})();
-</script>
-<!-- ===================== 임원 사진 변경 (본인 또는 관리자) ===================== -->
-<script>
-(function(){
-  var grid=document.querySelector('#org .ofc-grid'); if(!grid) return;
-  function norm(s){ return String(s||'').replace(/목사/g,'').replace(/\s+/g,'').trim(); }
-  var cards=[].slice.call(grid.querySelectorAll('.ofc-card'));
-  var PHOTOS={}, me=null, myName='', isAdminU=false;
-
-  async function loadPhotos(){ if(!window.sb) return;
-    try{ var r=await window.sb.from('officer_photos').select('*'); if(!r.error && r.data){ PHOTOS={}; r.data.forEach(function(p){ PHOTOS[p.officer_name]=p; }); } }catch(_){}
-  }
-  async function resizeImg(file){ var bm=await createImageBitmap(file);
-    try{ var md=1200, sc=Math.min(1, md/Math.max(bm.width,bm.height)); var w=Math.max(1,Math.round(bm.width*sc)), h=Math.max(1,Math.round(bm.height*sc));
-      var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(bm,0,0,w,h);
-      return await new Promise(function(res){ c.toBlob(function(b){res(b);},'image/webp',0.86); });
-    } finally { if(bm.close) bm.close(); } }
-  async function uploadImg(file){ var r2=(window.R2_WORKER_URL||'').replace(/\/$/,''); if(!r2) throw new Error('사진 저장소(Cloudflare) 설정이 필요합니다.');
-    var blob=await resizeImg(file); var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
-    var resp=await fetch(r2+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'image/webp'},body:blob});
-    var j=await resp.json().catch(function(){return{};}); if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')')); return j.url; }
-
-  function pickPhoto(card, key){
-    var input=document.createElement('input'); input.type='file'; input.accept='image/*'; input.style.display='none'; document.body.appendChild(input);
-    input.addEventListener('change', async function(){
-      var f=input.files&&input.files[0]; try{ document.body.removeChild(input); }catch(_){ } if(!f) return;
-      var btn=card.querySelector('.ofc-edit'); var old=btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.textContent='업로드 중…'; }
-      try{
-        var url=await uploadImg(f);
-        var up=await window.sb.from('officer_photos').upsert({ officer_name:key, url:url, updated_by: me?me.id:null }, { onConflict:'officer_name' });
-        if(up.error) throw new Error(up.error.message+(/officer_photos|schema cache|PGRST205/i.test(up.error.message)?' (관리자: officer-photos-setup.sql 실행이 필요합니다)':''));
-        var img=card.querySelector('.ofc-photo'); if(img) img.src=url; PHOTOS[key]={officer_name:key,url:url};
-      }catch(err){ alert('사진 변경 실패: '+(err.message||err)); }
-      if(btn){ btn.disabled=false; btn.textContent=old; }
-    });
-    input.click();
-  }
-  function applyPhotos(){
-    cards.forEach(function(card){
-      var nameEl=card.querySelector('.ofc-name'); if(!nameEl) return;
-      var key=norm(nameEl.textContent);
-      var p=PHOTOS[key]; var img=card.querySelector('.ofc-photo');
-      if(p && p.url && img) img.src=p.url;
-      var canEdit = isAdminU || (myName && key===myName);
-      var existing=card.querySelector('.ofc-edit');
-      if(canEdit && !existing){ var b=document.createElement('button'); b.className='ofc-edit'; b.type='button'; b.textContent='📷 사진 변경';
-        b.addEventListener('click', function(){ pickPhoto(card, key); }); card.appendChild(b); }
-      else if(!canEdit && existing){ existing.remove(); }
-    });
-  }
-  (async function(){
-    await loadPhotos(); applyPhotos();
-    try{ if(window.sb){ var s=await window.sb.auth.getSession(); me=s.data&&s.data.session?s.data.session.user:null;
-      if(me){ var pr=(typeof window.getMyProfile==='function')?await window.getMyProfile():null; myName=norm(pr&&pr.name); isAdminU=window.isAdmin?window.isAdmin(me,pr):false; } } }catch(_){}
-    applyPhotos();
-  })();
 })();
 </script>
 </body>

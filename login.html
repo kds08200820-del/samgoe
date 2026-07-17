@@ -7,13 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
   <style>
     :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
       --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
-      font-family:"Pretendard Variable",Pretendard,'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
       -webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;}
@@ -45,7 +44,7 @@
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
   <div class="wrap">
     <div class="card">
-      <img class="logo" src="assets/logo-trans.png?v=2" alt="삼기연" />
+      <img class="logo" src="assets/logo-trans.png" alt="삼기연" />
       <h1 class="title">로그인</h1>
       <p class="sub">삼기연 회원 로그인</p>
       <form id="loginForm" novalidate>
@@ -57,15 +56,7 @@
         <div class="err" id="err"></div>
         <button class="btn" type="submit">로그인</button>
       </form>
-      <div class="foot">계정이 없으신가요? <a href="signup.html">회원가입</a> &nbsp;·&nbsp; <a href="#" id="forgotLink">비밀번호 찾기</a></div>
-
-      <div id="forgotBox" style="display:none;margin-top:22px;padding-top:22px;border-top:1px solid var(--hairline);">
-        <p class="sub" style="margin:0 0 6px;text-align:left;">가입하신 이메일로 <b>비밀번호 재설정 링크</b>를 보내드립니다.</p>
-        <label for="fpEmail">이메일</label>
-        <input id="fpEmail" type="email" autocomplete="email" placeholder="you@example.com" />
-        <div class="err" id="fpMsg"></div>
-        <button class="btn" type="button" id="fpSend">재설정 메일 보내기</button>
-      </div>
+      <div class="foot">계정이 없으신가요? <a href="signup.html">회원가입</a></div>
     </div>
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
@@ -106,36 +97,6 @@
         else { location.href = 'index.html'; return; }
       } catch (ex) { showErr(window.krErr(ex && ex.message)); }
       btn.disabled = false; btn.textContent = '로그인';
-    });
-
-    // ----- 비밀번호 찾기(재설정 메일) -----
-    var forgotLink = document.getElementById('forgotLink');
-    var forgotBox = document.getElementById('forgotBox');
-    var fpMsg = document.getElementById('fpMsg');
-    forgotLink.addEventListener('click', function(e){
-      e.preventDefault();
-      var open = forgotBox.style.display === 'none';
-      forgotBox.style.display = open ? 'block' : 'none';
-      if (open) {
-        var em = document.getElementById('email').value.trim();
-        if (em) document.getElementById('fpEmail').value = em;
-        document.getElementById('fpEmail').focus();
-      }
-    });
-    function fpShow(msg, ok){ fpMsg.textContent = msg; fpMsg.style.display='block';
-      fpMsg.style.background = ok ? '#eaf6ee' : '#fdecea'; fpMsg.style.borderColor = ok ? '#bfe3cb' : '#f3c7c3'; fpMsg.style.color = ok ? '#177245' : 'var(--error)'; }
-    document.getElementById('fpSend').addEventListener('click', async function(){
-      if (!window.sb) { fpShow('로그인 설정이 아직 완료되지 않았습니다.', false); return; }
-      var em = document.getElementById('fpEmail').value.trim();
-      if (!em || em.indexOf('@') < 0) { fpShow('가입하신 이메일을 정확히 입력해 주세요.', false); return; }
-      var b = this; b.disabled = true; b.textContent = '보내는 중…';
-      try {
-        var redirectTo = new URL('reset-password.html', location.href).href;
-        var res = await window.sb.auth.resetPasswordForEmail(em, { redirectTo: redirectTo });
-        if (res.error) { fpShow((window.krErr ? window.krErr(res.error.message) : res.error.message), false); }
-        else { fpShow('재설정 메일을 보냈습니다. 메일함(스팸함 포함)을 확인해, 링크를 눌러 새 비밀번호를 설정해 주세요.', true); }
-      } catch (ex) { fpShow((window.krErr?window.krErr(ex&&ex.message):(ex&&ex.message))||'메일 발송에 실패했습니다.', false); }
-      b.disabled = false; b.textContent = '재설정 메일 보내기';
     });
   </script>
 </body>
