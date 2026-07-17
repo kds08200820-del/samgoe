@@ -255,13 +255,15 @@
     .adm-only{display:none !important;}
     .officer-only{display:none !important;}
 
-    /* ===================== 언론 보도 ===================== */
-    .press-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px;}
-    @media (max-width:960px){ .press-grid{grid-template-columns:repeat(2,1fr);} }
-    @media (max-width:600px){ .press-grid{grid-template-columns:1fr;} }
+    /* ===================== 언론 보도 — 좌→우 회전 마퀴 ===================== */
+    .press-mq{overflow:hidden;width:100%;margin-top:44px;padding:6px 0 14px;}
+    .press-row{display:flex;width:max-content;will-change:transform;}
+    .press-row .mq-loading{color:var(--muted);}
     .press-card{position:relative;display:flex;flex-direction:column;background:var(--card);
+      width:340px;flex:0 0 auto;margin-right:18px;
       border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden;
       box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
+    @media (max-width:600px){ .press-card{width:290px;} }
     .press-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:#d8e2f0;}
     .press-thumb{aspect-ratio:16/9;background:var(--soft);overflow:hidden;display:block;}
     .press-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -286,29 +288,23 @@
 
     /* ===================== 갤러리 — 인스타그램형 (다크) ===================== */
     .gallery-sec{background:var(--dark);color:var(--on-dark);}
-    .ig-frame{position:relative;max-width:880px;margin:0 auto;border-radius:var(--radius);overflow:hidden;
-      background:var(--dark-2);height:clamp(320px,54vw,540px);}
-    .ig-slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease;
-      display:flex;align-items:center;justify-content:center;}
-    .ig-slide.on{opacity:1;pointer-events:auto;}
-    .ig-slide img.ph{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none;}
-    .ig-cap{position:absolute;left:0;right:0;bottom:0;padding:60px 26px 24px;
+    /* 좌→우 무한 회전 마퀴 (갤러리·언론 보도 공용) */
+    .mq-wrap{overflow:hidden;width:100%;position:relative;}
+    .mq-row{display:flex;width:max-content;will-change:transform;}
+    .mq-loading{width:100vw;padding:56px 24px;text-align:center;font-size:15px;}
+    .mq-item{position:relative;flex:0 0 auto;width:min(420px,78vw);height:300px;margin-right:14px;
+      border-radius:14px;overflow:hidden;background:var(--dark-2);display:block;}
+    @media (max-width:720px){ .mq-item{height:220px;} }
+    .mq-item img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none;}
+    .mq-cap{position:absolute;left:0;right:0;bottom:0;padding:44px 18px 14px;
       background:linear-gradient(to top,rgba(0,0,0,0.74),transparent);text-align:left;}
-    .ig-cap .t{font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.01em;line-height:1.35;}
-    .ig-cap .d{margin-top:4px;font-size:13.5px;color:rgba(255,255,255,0.75);}
-    .ig-badge{position:absolute;top:14px;right:14px;z-index:3;background:rgba(0,0,0,0.55);color:#fff;
-      font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;backdrop-filter:blur(4px);}
-    .ig-slide iframe{border:0;background:#000;}
-    .ig-slide .yt{width:100%;height:100%;}
-    .ig-slide .insta{width:min(400px,94%);height:100%;background:#fff;}
-    .ig-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:6;width:44px;height:44px;
-      border:0;border-radius:50%;background:rgba(255,255,255,0.16);color:#fff;font-size:24px;line-height:1;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;}
-    .ig-nav:hover{background:rgba(255,255,255,0.3);}
-    .ig-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:7px;z-index:6;}
-    .ig-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4);border:0;padding:0;
-      cursor:pointer;transition:background .15s ease,transform .15s ease;}
-    .ig-dot.on{background:#fff;transform:scale(1.3);}
+    .mq-cap .t{font-size:15.5px;font-weight:700;color:#fff;letter-spacing:-0.01em;line-height:1.35;}
+    .mq-cap .d{margin-top:2px;font-size:12.5px;color:rgba(255,255,255,0.72);}
+    .mq-badge{position:absolute;top:10px;right:10px;z-index:2;background:rgba(0,0,0,0.55);color:#fff;
+      font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px);}
+    .mq-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:8px;color:#8ab0f7;font-size:14px;font-weight:600;background:linear-gradient(150deg,#16233f,#1b1430);}
+    .mq-ph span{font-size:34px;}
     .ig-actions{display:flex;justify-content:center;gap:12px;margin-top:28px;flex-wrap:wrap;}
     /* 업로드 패널 (평상시 숨김) */
     .ig-panel{max-width:660px;margin:26px auto 0;background:#fff;border-radius:var(--radius);
@@ -769,13 +765,12 @@
       <h2 class="sec-h2" style="color:#fff;">함께한 순간들</h2>
       <p class="sec-sub" style="color:var(--on-dark-soft);">연합의 발자취</p>
     </div>
-    <div class="wrap" style="max-width:940px;">
-      <div class="ig-frame" id="igFrame">
-        <div id="igEmpty" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--on-dark-soft);font-size:15px;">게시물을 불러오는 중…</div>
-        <button id="igPrev" class="ig-nav" style="left:12px;" aria-label="이전" type="button">‹</button>
-        <button id="igNext" class="ig-nav" style="right:12px;" aria-label="다음" type="button">›</button>
-        <div class="ig-dots" id="igDots"></div>
+    <div class="mq-wrap" id="igMq">
+      <div class="mq-row" id="igRow">
+        <div class="mq-loading" style="color:var(--on-dark-soft);">게시물을 불러오는 중…</div>
       </div>
+    </div>
+    <div class="wrap" style="max-width:940px;">
       <div class="ig-actions">
         <a href="gallery.html" class="btn btn-ghost-dark press">소식 더 보기</a>
         <button id="igUploadBtn" class="btn btn-solid press" type="button" style="display:none;">＋ 사진 올리기</button>
@@ -1070,8 +1065,10 @@
           <button class="adm-btn" id="prSave" type="button">등록하기</button>
         </div>
       </div>
-      <div id="pressGrid" class="press-grid">
-        <div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--muted);font-size:15px;">기사를 불러오는 중…</div>
+    </div>
+    <div class="press-mq" id="pressMq">
+      <div class="press-row" id="pressGrid">
+        <div class="mq-loading">기사를 불러오는 중…</div>
       </div>
     </div>
   </section>
@@ -1335,6 +1332,48 @@
   }
   requestAnimationFrame(step);
 })();
+// 좌→우 무한 회전 마퀴 (갤러리·언론 보도 공용)
+//  - 콘텐츠를 복제해 끊김 없이 왼쪽에서 오른쪽으로 흐르게 함
+//  - 마우스 올림/터치 중에는 일시 정지
+window.samMarquee = function(row, speed){
+  if(!row) return;
+  if(row._mqStop) row._mqStop();
+  var wrap = row.parentElement;
+  row.style.transform = 'translate3d(0,0,0)';
+  var base = row.innerHTML;
+  var w = row.scrollWidth;
+  if(!w) return;
+  var copies = Math.max(2, Math.ceil((wrap.clientWidth * 2) / w) + 1);
+  var html = ''; for(var i = 0; i < copies; i++) html += base;
+  row.innerHTML = html;
+  var period = w, pos = -period, paused = false, last = null, rafId = 0, alive = true;
+  function pause(){ paused = true; }
+  function resume(){ paused = false; }
+  wrap.addEventListener('mouseenter', pause);
+  wrap.addEventListener('mouseleave', resume);
+  wrap.addEventListener('pointerdown', pause);
+  window.addEventListener('pointerup', resume);
+  function step(t){
+    if(!alive) return;
+    if(last === null) last = t;
+    var dt = Math.min(t - last, 80) / 1000; last = t;
+    if(!paused){
+      pos += dt * speed;
+      if(pos >= 0) pos -= period;
+      row.style.transform = 'translate3d(' + pos + 'px,0,0)';
+    }
+    rafId = requestAnimationFrame(step);
+  }
+  rafId = requestAnimationFrame(step);
+  row._mqStop = function(){
+    alive = false; cancelAnimationFrame(rafId);
+    wrap.removeEventListener('mouseenter', pause);
+    wrap.removeEventListener('mouseleave', resume);
+    wrap.removeEventListener('pointerdown', pause);
+    window.removeEventListener('pointerup', resume);
+    row._mqStop = null;
+  };
+};
 </script>
 <!-- ===================== 로그인(Supabase) ===================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1343,10 +1382,8 @@
 <script>
 // ===================== 갤러리 — 인스타그램형 캐러셀 + 업로드 =====================
 (function(){
-  var frame=document.getElementById('igFrame');
-  if(!frame) return;
-  var emptyEl=document.getElementById('igEmpty'), dotsEl=document.getElementById('igDots');
-  var slides=[], cur=0, autoTimer=null;
+  var igRow=document.getElementById('igRow');
+  if(!igRow) return;
   var meIg=null, profIg=null, canPost=false;
   var pendingIg=[];
 
@@ -1357,29 +1394,14 @@
   function ytId(u){ var m=String(u||'').match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,20})/); return m?m[1]:null; }
   function instaEmbed(u){ var m=String(u||'').match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/); return m?('https://www.instagram.com/'+m[1]+'/'+m[2]+'/embed/'):null; }
 
-  // ---------- 캐러셀 ----------
-  function show(i){
-    if(!slides.length) return;
-    cur=(i+slides.length)%slides.length;
-    slides.forEach(function(s,k){ s.classList.toggle('on',k===cur); });
-    Array.prototype.forEach.call(dotsEl.children,function(d,k){ d.classList.toggle('on',k===cur); });
-  }
-  function startAuto(){
-    stopAuto();
-    autoTimer=setInterval(function(){
-      // 유튜브/인스타 임베드 슬라이드에선 자동 넘김 정지(시청 중일 수 있음)
-      if(slides[cur] && slides[cur].getAttribute('data-kind')!=='photo') return;
-      show(cur+1);
-    },5000);
-  }
-  function stopAuto(){ if(autoTimer){ clearInterval(autoTimer); autoTimer=null; } }
-
+  // ---------- 좌→우 회전 마퀴 ----------
+  function mqMsg(msg){ igRow.innerHTML='<div class="mq-loading" style="color:var(--on-dark-soft);">'+msg+'</div>'; }
   async function loadFeed(){
-    if(!window.sb){ emptyEl.textContent='갤러리를 준비 중입니다.'; return; }
+    if(!window.sb){ mqMsg('갤러리를 준비 중입니다.'); return; }
     var pr;
-    try{ pr=await window.sb.from('gallery_posts').select('*').order('created_at',{ascending:false}).limit(12); }
+    try{ pr=await window.sb.from('gallery_posts').select('*').order('created_at',{ascending:false}).limit(16); }
     catch(e){ pr={error:e}; }
-    if(!pr || pr.error){ emptyEl.textContent='게시물을 불러오지 못했습니다.'; return; }
+    if(!pr || pr.error){ mqMsg('게시물을 불러오지 못했습니다.'); return; }
     var rows=pr.data||[];
     var ids=rows.map(function(p){ return p.id; });
     var phMap={};
@@ -1387,48 +1409,27 @@
       var ph=await window.sb.from('gallery_photos').select('post_id,url,sort').in('post_id',ids).order('sort',{ascending:true});
       (ph.data||[]).forEach(function(x){ (phMap[x.post_id]=phMap[x.post_id]||[]).push(x); });
     }
-    // 기존 슬라이드/도트 제거
-    Array.prototype.forEach.call(frame.querySelectorAll('.ig-slide'),function(s){ s.remove(); });
-    dotsEl.innerHTML='';
     var html=rows.map(function(p){
       var when=fdate(p.event_date||p.created_at);
+      var cap='<div class="mq-cap"><div class="t">'+esc(p.title)+'</div>'+(when?'<div class="d">'+when+'</div>':'')+'</div>';
       if(p.embed_kind==='youtube'){
         var id=ytId(p.embed_url); if(!id) return '';
-        return '<div class="ig-slide" data-kind="youtube"><span class="ig-badge">▶ 유튜브</span>'+
-          '<iframe class="yt" src="https://www.youtube-nocookie.com/embed/'+id+'" title="'+esc(p.title)+'" '+
-          'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+        return '<a class="mq-item" href="gallery.html"><img src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg" alt="'+esc(p.title)+'" loading="lazy" />'+
+          '<span class="mq-badge">▶ 유튜브</span>'+cap+'</a>';
       }
       if(p.embed_kind==='instagram'){
-        var src=instaEmbed(p.embed_url); if(!src) return '';
-        return '<div class="ig-slide" data-kind="instagram"><span class="ig-badge">📸 인스타그램</span>'+
-          '<iframe class="insta" src="'+src+'" title="'+esc(p.title)+'" loading="lazy"></iframe></div>';
+        if(!instaEmbed(p.embed_url)) return '';
+        return '<a class="mq-item" href="gallery.html"><div class="mq-ph"><span>📸</span>인스타그램 게시물</div>'+cap+'</a>';
       }
       var photos=phMap[p.id]||[]; if(!photos.length) return '';
-      return '<a class="ig-slide" data-kind="photo" href="gallery.html">'+
-        (photos.length>1?'<span class="ig-badge">📷 '+photos.length+'장</span>':'')+
-        '<img class="ph" src="'+esc(photos[0].url)+'" alt="'+esc(p.title)+'" loading="lazy" />'+
-        '<div class="ig-cap"><div class="t">'+esc(p.title)+'</div>'+(when?'<div class="d">'+when+'</div>':'')+'</div></a>';
+      return '<a class="mq-item" href="gallery.html">'+
+        (photos.length>1?'<span class="mq-badge">📷 '+photos.length+'장</span>':'')+
+        '<img src="'+esc(photos[0].url)+'" alt="'+esc(p.title)+'" loading="lazy" />'+cap+'</a>';
     }).filter(Boolean);
-    if(!html.length){ emptyEl.style.display='flex'; emptyEl.textContent='아직 올라온 게시물이 없습니다.'; return; }
-    emptyEl.style.display='none';
-    frame.insertAdjacentHTML('afterbegin',html.join(''));
-    slides=Array.prototype.slice.call(frame.querySelectorAll('.ig-slide'));
-    dotsEl.innerHTML=slides.map(function(_,i){ return '<button class="ig-dot" type="button" aria-label="'+(i+1)+'번째 게시물"></button>'; }).join('');
-    Array.prototype.forEach.call(dotsEl.children,function(d,i){ d.addEventListener('click',function(){ show(i); startAuto(); }); });
-    show(0); startAuto();
+    if(!html.length){ mqMsg('아직 올라온 게시물이 없습니다.'); return; }
+    igRow.innerHTML=html.join('');
+    window.samMarquee(igRow, 30);
   }
-  document.getElementById('igPrev').addEventListener('click',function(){ show(cur-1); startAuto(); });
-  document.getElementById('igNext').addEventListener('click',function(){ show(cur+1); startAuto(); });
-  frame.addEventListener('mouseenter',stopAuto);
-  frame.addEventListener('mouseleave',startAuto);
-  // 터치 스와이프 (사진 슬라이드)
-  var swX=null;
-  frame.addEventListener('pointerdown',function(e){ swX=e.clientX; });
-  frame.addEventListener('pointerup',function(e){
-    if(swX===null) return;
-    var dx=e.clientX-swX; swX=null;
-    if(Math.abs(dx)>48){ show(cur+(dx<0?1:-1)); startAuto(); e.preventDefault(); }
-  });
 
   // ---------- 업로드 (정회원 전용 · 버튼을 눌러야 폼 표시) ----------
   var panel=document.getElementById('igPanel'), upBtn=document.getElementById('igUploadBtn');
@@ -1579,7 +1580,7 @@ if ('serviceWorker' in navigator) {
   var isAdminUser=false, isOfficerUser=false, me=null, myProfile=null;
 
   // 관리자/임원이면 인라인 편집 UI 노출
-  (async function initAdmin(){
+  var adminReady = (async function initAdmin(){
     try{
       if(!window.sb) return;
       var s=await window.sb.auth.getSession();
@@ -1732,7 +1733,7 @@ if ('serviceWorker' in navigator) {
   function pressField(id){ return document.getElementById(id); }
   async function loadPress(){
     var grid=document.getElementById('pressGrid'); if(!grid) return;
-    var empty='<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--muted);font-size:15px;">';
+    var empty='<div class="mq-loading">';
     if(!window.sb){ grid.innerHTML=empty+'언론 보도 기능을 준비 중입니다.</div>'; return; }
     var r;
     try{ r=await window.sb.from('press_articles').select('*')
@@ -1745,8 +1746,10 @@ if ('serviceWorker' in navigator) {
       var thumb=a.image_url
         ? '<img src="'+esc(a.image_url)+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=press-thumb-ph><span>📰</span></div>\'" />'
         : '<div class="press-thumb-ph"><span>📰</span>'+esc(a.source||'언론 보도')+'</div>';
+      // 수정·삭제: 등록한 사람 또는 관리자
+      var canManage = isAdminUser || (me && a.created_by===me.id);
       return '<article class="press-card">'+
-        (isOfficerUser
+        (canManage
           ? '<div class="press-actions">'+
               '<button class="press-act" type="button" data-predit="'+a.id+'">수정</button>'+
               '<button class="press-act danger" type="button" data-prdel="'+a.id+'">삭제</button>'+
@@ -1760,15 +1763,16 @@ if ('serviceWorker' in navigator) {
           '<a class="press-link" href="'+esc(a.url||'#')+'" target="_blank" rel="noopener">기사 원문 보기 →</a>'+
         '</div></article>';
     }).join('');
-    if(isOfficerUser){
-      Array.prototype.forEach.call(grid.querySelectorAll('[data-prdel]'),function(b){
-        b.addEventListener('click',function(){ delPress(b.getAttribute('data-prdel')); });
-      });
-      Array.prototype.forEach.call(grid.querySelectorAll('[data-predit]'),function(b){
-        b.addEventListener('click',function(){ editPress(b.getAttribute('data-predit')); });
-      });
-    }
+    window.samMarquee(grid, 26);
   }
+  // 수정/삭제 버튼 — 마퀴 복제본에서도 동작하도록 이벤트 위임
+  var pressGridEl=document.getElementById('pressGrid');
+  if(pressGridEl) pressGridEl.addEventListener('click',function(e){
+    var d=e.target.closest?e.target.closest('[data-prdel]'):null;
+    if(d){ delPress(d.getAttribute('data-prdel')); return; }
+    var ed=e.target.closest?e.target.closest('[data-predit]'):null;
+    if(ed){ editPress(ed.getAttribute('data-predit')); }
+  });
   function resetPressForm(){
     editingPressId=null;
     ['prUrl','prTitle','prSource','prDate','prImage','prSummary'].forEach(function(id){ pressField(id).value=''; });
@@ -1848,9 +1852,9 @@ if ('serviceWorker' in navigator) {
     resetPressForm(); prForm.classList.remove('open'); loadPress();
   });
 
-  // 초기 로드 (관리자 판별 후 다시 렌더되도록 약간의 지연 재호출)
+  // 초기 로드 — 즉시 한 번(방문자용), 로그인·권한 판별이 끝나면 다시 렌더(편집 버튼 표시)
   loadNotices(); loadPrayer(); loadPress();
-  setTimeout(function(){ loadNotices(); loadPrayer(); loadPress(); }, 1200);
+  adminReady.then(function(){ loadNotices(); loadPrayer(); loadPress(); });
 })();
 </script>
 
