@@ -253,22 +253,89 @@
     .adm-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
     .adm-check{display:inline-flex;align-items:center;gap:7px;font-size:14px;color:var(--body);cursor:pointer;}
     .adm-only{display:none !important;}
+    .officer-only{display:none !important;}
 
-    /* ===================== 갤러리 (다크) ===================== */
+    /* ===================== 언론 보도 ===================== */
+    .press-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px;}
+    @media (max-width:960px){ .press-grid{grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:600px){ .press-grid{grid-template-columns:1fr;} }
+    .press-card{position:relative;display:flex;flex-direction:column;background:var(--card);
+      border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden;
+      box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
+    .press-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:#d8e2f0;}
+    .press-thumb{aspect-ratio:16/9;background:var(--soft);overflow:hidden;display:block;}
+    .press-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .press-thumb-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;
+      justify-content:center;gap:8px;color:var(--faint);font-size:13px;font-weight:600;
+      background:linear-gradient(160deg,var(--soft) 0%,#eef2f9 100%);}
+    .press-thumb-ph span{font-size:30px;}
+    .press-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1;}
+    .press-meta{font-size:12.5px;font-weight:700;color:var(--accent);}
+    .press-meta em{font-style:normal;font-weight:500;color:var(--faint);}
+    .press-title{margin:8px 0;font-size:16.5px;font-weight:700;line-height:1.45;color:var(--ink);
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .press-sum{margin:0;font-size:13.5px;line-height:1.6;color:var(--muted);flex:1;
+      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .press-link{margin-top:14px;font-size:13.5px;font-weight:700;color:var(--accent);
+      display:inline-flex;align-items:center;gap:6px;}
+    .press-actions{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2;}
+    .press-act{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;border:0;cursor:pointer;
+      font-family:inherit;background:rgba(15,23,42,0.62);color:#fff;backdrop-filter:blur(4px);}
+    .press-act:hover{background:rgba(15,23,42,0.82);}
+    .press-act.danger:hover{background:#dc2626;}
+
+    /* ===================== 갤러리 — 인스타그램형 (다크) ===================== */
     .gallery-sec{background:var(--dark);color:var(--on-dark);}
-    .gallery-viewport{overflow-x:auto;overflow-y:hidden;cursor:grab;
-      -webkit-mask-image:linear-gradient(to right,transparent 0,#000 64px,#000 calc(100% - 64px),transparent 100%);
-      mask-image:linear-gradient(to right,transparent 0,#000 64px,#000 calc(100% - 64px),transparent 100%);
-      scrollbar-width:none;-ms-overflow-style:none;}
-    .gallery-viewport::-webkit-scrollbar{display:none;}
-    .gallery-row{display:flex;align-items:center;width:max-content;}
-    .gallery-item{height:300px;width:auto;margin-right:14px;flex:0 0 auto;display:block;
-      border-radius:14px;background:var(--dark-2);-webkit-user-drag:none;user-select:none;}
-    @media (max-width:720px){ .gallery-item{height:200px;} }
-    .gal-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:46px;height:46px;
-      border:0;border-radius:50%;background:rgba(255,255,255,0.14);color:#fff;font-size:24px;line-height:1;
+    .ig-frame{position:relative;max-width:880px;margin:0 auto;border-radius:var(--radius);overflow:hidden;
+      background:var(--dark-2);height:clamp(320px,54vw,540px);}
+    .ig-slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease;
+      display:flex;align-items:center;justify-content:center;}
+    .ig-slide.on{opacity:1;pointer-events:auto;}
+    .ig-slide img.ph{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none;user-select:none;}
+    .ig-cap{position:absolute;left:0;right:0;bottom:0;padding:60px 26px 24px;
+      background:linear-gradient(to top,rgba(0,0,0,0.74),transparent);text-align:left;}
+    .ig-cap .t{font-size:19px;font-weight:800;color:#fff;letter-spacing:-0.01em;line-height:1.35;}
+    .ig-cap .d{margin-top:4px;font-size:13.5px;color:rgba(255,255,255,0.75);}
+    .ig-badge{position:absolute;top:14px;right:14px;z-index:3;background:rgba(0,0,0,0.55);color:#fff;
+      font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;backdrop-filter:blur(4px);}
+    .ig-slide iframe{border:0;background:#000;}
+    .ig-slide .yt{width:100%;height:100%;}
+    .ig-slide .insta{width:min(400px,94%);height:100%;background:#fff;}
+    .ig-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:6;width:44px;height:44px;
+      border:0;border-radius:50%;background:rgba(255,255,255,0.16);color:#fff;font-size:24px;line-height:1;
       cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;}
-    .gal-nav:hover{background:rgba(255,255,255,0.28);}
+    .ig-nav:hover{background:rgba(255,255,255,0.3);}
+    .ig-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:7px;z-index:6;}
+    .ig-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4);border:0;padding:0;
+      cursor:pointer;transition:background .15s ease,transform .15s ease;}
+    .ig-dot.on{background:#fff;transform:scale(1.3);}
+    .ig-actions{display:flex;justify-content:center;gap:12px;margin-top:28px;flex-wrap:wrap;}
+    /* 업로드 패널 (평상시 숨김) */
+    .ig-panel{max-width:660px;margin:26px auto 0;background:#fff;border-radius:var(--radius);
+      padding:24px;text-align:left;color:var(--body);box-shadow:var(--shadow-lift);}
+    .ig-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+    .ig-tab{height:38px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;
+      font-size:14px;font-weight:600;color:var(--body);cursor:pointer;font-family:inherit;
+      transition:background .15s ease,border-color .15s ease,color .15s ease;}
+    .ig-tab.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .ig-panel input[type=text],.ig-panel input[type=url],.ig-panel input[type=date]{width:100%;padding:11px 14px;
+      border:1.5px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;color:var(--ink);
+      margin-bottom:10px;background:#fff;}
+    .ig-panel input:focus{outline:none;border-color:var(--accent);}
+    .ig-srcbtns{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+    .ig-srcbtn{flex:1;min-width:150px;height:76px;border:2px dashed var(--line);border-radius:12px;background:var(--soft);
+      font-family:inherit;font-size:14px;font-weight:700;color:var(--body);cursor:pointer;display:flex;
+      flex-direction:column;align-items:center;justify-content:center;gap:4px;
+      transition:border-color .15s ease,background .15s ease;}
+    .ig-srcbtn:hover{border-color:var(--accent);background:var(--accent-soft);}
+    .ig-srcbtn span{font-size:22px;}
+    .ig-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+    .ig-thumbs .t{position:relative;width:68px;height:68px;border-radius:10px;overflow:hidden;background:var(--soft);}
+    .ig-thumbs .t img{width:100%;height:100%;object-fit:cover;display:block;}
+    .ig-thumbs .t button{position:absolute;top:2px;right:2px;width:20px;height:20px;border:0;border-radius:50%;
+      background:rgba(0,0,0,0.6);color:#fff;font-size:12px;line-height:1;cursor:pointer;}
+    .ig-hint{font-size:12.5px;color:var(--faint);margin:-4px 0 10px;}
+    .ig-prog{font-size:13.5px;color:var(--muted);min-height:18px;margin-top:8px;}
 
     /* ===================== 임원 ===================== */
     .ofc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:44px;text-align:left;}
@@ -376,7 +443,7 @@
   </style>
 </head>
 <body>
-<div style="width:100%;overflow-x:hidden;">
+<div style="width:100%;overflow-x:hidden;overflow-x:clip;">
 
   <!-- ===================== 상단 스트립 (로그인 영역) ===================== -->
   <header class="topstrip">
@@ -401,6 +468,7 @@
         <a href="#org">임원</a>
         <a href="#churches">소속교회</a>
         <a href="#bylaws">회칙</a>
+        <a href="#pressSec">언론보도</a>
         <a href="gallery.html">갤러리</a>
         <a href="officer.html">임원방</a>
         <a href="march.html" class="nav-ext">3·1만세운동본부</a>
@@ -694,26 +762,57 @@
     </div>
   </section>
 
-  <!-- ===================== 갤러리 (다크) ===================== -->
+  <!-- ===================== 갤러리 — 인스타그램형 (다크) ===================== -->
   <section id="gallery" class="section gallery-sec" style="scroll-margin-top:110px;">
-    <div style="text-align:center;margin-bottom:44px;padding:0 24px;">
+    <div style="text-align:center;margin-bottom:36px;padding:0 24px;">
       <span class="eyebrow" style="background:rgba(255,255,255,0.1);color:#8ab0f7;">갤러리</span>
       <h2 class="sec-h2" style="color:#fff;">함께한 순간들</h2>
       <p class="sec-sub" style="color:var(--on-dark-soft);">연합의 발자취</p>
-      <a href="gallery.html" class="btn btn-ghost-dark press" style="margin-top:22px;height:44px;font-size:14px;">갤러리 게시판 →</a>
     </div>
-    <div style="position:relative;">
-      <button id="galPrev" aria-label="이전 사진" class="gal-nav" style="left:14px;">‹</button>
-      <div class="gallery-viewport" id="galleryViewport">
-        <div class="gallery-row" id="galleryRow">
-          <img class="gallery-item" src="assets/img/g1.webp" alt="연합 행사 사진" />
-          <img class="gallery-item" src="assets/img/g2.webp" alt="연합 행사 사진" />
-          <img class="gallery-item" src="assets/img/g3.webp" alt="연합 행사 사진" />
-          <img class="gallery-item" src="assets/img/g4.webp" alt="연합 행사 사진" />
-          <img class="gallery-item" src="assets/img/g5.webp" alt="연합 행사 사진" />
-        </div>
+    <div class="wrap" style="max-width:940px;">
+      <div class="ig-frame" id="igFrame">
+        <div id="igEmpty" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--on-dark-soft);font-size:15px;">게시물을 불러오는 중…</div>
+        <button id="igPrev" class="ig-nav" style="left:12px;" aria-label="이전" type="button">‹</button>
+        <button id="igNext" class="ig-nav" style="right:12px;" aria-label="다음" type="button">›</button>
+        <div class="ig-dots" id="igDots"></div>
       </div>
-      <button id="galNext" aria-label="다음 사진" class="gal-nav" style="right:14px;">›</button>
+      <div class="ig-actions">
+        <a href="gallery.html" class="btn btn-ghost-dark press">소식 더 보기</a>
+        <button id="igUploadBtn" class="btn btn-solid press" type="button" style="display:none;">＋ 사진 올리기</button>
+      </div>
+
+      <!-- 업로드 패널 — '＋ 사진 올리기'를 눌러야 나타남 (정회원 전용) -->
+      <div id="igPanel" class="ig-panel" style="display:none;">
+        <div class="ig-tabs">
+          <button class="ig-tab on" data-igtab="photo" type="button">📷 사진</button>
+          <button class="ig-tab" data-igtab="youtube" type="button">▶ 유튜브</button>
+          <button class="ig-tab" data-igtab="insta" type="button">📸 인스타그램</button>
+        </div>
+        <div id="igTabPhoto">
+          <div class="ig-srcbtns">
+            <button class="ig-srcbtn" id="igCamBtn" type="button"><span>📷</span>사진 촬영</button>
+            <button class="ig-srcbtn" id="igAlbBtn" type="button"><span>🖼️</span>사진첩에서 선택</button>
+          </div>
+          <div class="ig-thumbs" id="igThumbs"></div>
+        </div>
+        <div id="igTabYoutube" style="display:none;">
+          <input id="igYtUrl" type="url" placeholder="유튜브 영상 주소 (youtu.be/… 또는 youtube.com/watch?v=…)" />
+          <div class="ig-hint">영상 주소를 붙여넣으면 갤러리에서 바로 재생됩니다.</div>
+        </div>
+        <div id="igTabInsta" style="display:none;">
+          <input id="igInUrl" type="url" placeholder="인스타그램 게시물 주소 (instagram.com/p/… 또는 /reel/…)" />
+          <div class="ig-hint">게시물 주소를 붙여넣으면 갤러리에 인스타그램 게시물이 표시됩니다.</div>
+        </div>
+        <input id="igTitle" type="text" placeholder="제목 / 설명" maxlength="140" />
+        <input id="igDate" type="date" />
+        <div class="adm-row">
+          <button class="adm-btn" id="igCancel" type="button" style="background:var(--muted);">닫기</button>
+          <button class="adm-btn" id="igSubmit" type="button" style="margin-left:auto;">올리기</button>
+        </div>
+        <div class="ig-prog" id="igProg"></div>
+        <input id="igFileCam" type="file" accept="image/*" capture="environment" style="display:none;" />
+        <input id="igFileAlb" type="file" accept="image/*" multiple style="display:none;" />
+      </div>
     </div>
   </section>
 
@@ -940,6 +1039,39 @@
           <div class="ch-row"><span class="n">한마음교회</span><span class="i">김광옥 목사 · 기하성</span></div>
         </div>
       </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 언론에 소개된 삼기연 ===================== -->
+  <section id="pressSec" class="section" style="scroll-margin-top:110px;">
+    <div class="wrap">
+      <div style="text-align:center;">
+        <span class="eyebrow">언론 보도</span>
+        <h2 class="sec-h2">언론에 소개된 삼기연</h2>
+        <p class="sec-sub">지역과 함께 걸어온 삼기연의 발자취를 언론 보도로 만나보세요.</p>
+        <button class="adm-btn officer-only" id="pressAddBtn" type="button" style="margin-top:20px;">＋ 기사 등록</button>
+      </div>
+      <div class="adm-form officer-only" id="pressForm" style="max-width:680px;margin:16px auto 0;">
+        <div class="adm-row" style="margin-bottom:10px;">
+          <input id="prUrl" type="url" placeholder="기사 링크(URL)를 붙여넣으세요" style="flex:1;min-width:220px;margin-bottom:0;" />
+          <button class="adm-btn" id="prFetch" type="button">자동 채우기</button>
+        </div>
+        <input id="prTitle" type="text" placeholder="기사 제목" maxlength="200" />
+        <div class="adm-row" style="margin-bottom:10px;">
+          <input id="prSource" type="text" placeholder="언론사" style="flex:1;min-width:140px;margin-bottom:0;" />
+          <input id="prDate" type="text" placeholder="보도일 (예: 2025.10.19)" style="flex:1;min-width:140px;margin-bottom:0;" />
+        </div>
+        <input id="prImage" type="url" placeholder="대표 이미지 URL (선택 — '자동 채우기'로 가져올 수 있습니다)" />
+        <textarea id="prSummary" placeholder="요약 (선택)"></textarea>
+        <div class="adm-row">
+          <span id="prEditing" style="font-size:13px;color:var(--muted);"></span>
+          <button class="adm-btn" id="prCancel" type="button" style="margin-left:auto;background:var(--muted);display:none;">취소</button>
+          <button class="adm-btn" id="prSave" type="button">등록하기</button>
+        </div>
+      </div>
+      <div id="pressGrid" class="press-grid">
+        <div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--muted);font-size:15px;">기사를 불러오는 중…</div>
       </div>
     </div>
   </section>
@@ -1203,57 +1335,230 @@
   }
   requestAnimationFrame(step);
 })();
-// 갤러리 — 가로(오른쪽→왼쪽) 자동 스크롤
-window.initGalleryMarquee = function(){
-  var vp=document.getElementById('galleryViewport');
-  if(!vp) return;
-  var row=vp.querySelector('.gallery-row');
-  if(!row) return;
-  var kids=Array.prototype.slice.call(row.children);
-  kids.forEach(function(k){var c=k.cloneNode(true);c.setAttribute('aria-hidden','true');row.appendChild(c);});
-  var paused=false, isDown=false, startX=0, startLeft=0, last=null;
-  vp.addEventListener('mouseenter',function(){paused=true;});
-  vp.addEventListener('mouseleave',function(){paused=false;});
-  vp.addEventListener('pointerdown',function(e){isDown=true;startX=e.clientX;startLeft=vp.scrollLeft;try{vp.setPointerCapture(e.pointerId);}catch(_){ } vp.style.cursor='grabbing';});
-  vp.addEventListener('pointermove',function(e){if(!isDown)return;vp.scrollLeft=startLeft-(e.clientX-startX);});
-  function up(){isDown=false;vp.style.cursor='grab';}
-  vp.addEventListener('pointerup',up); vp.addEventListener('pointercancel',up);
-  function step(t){
-    if(last===null)last=t; var dt=t-last; last=t; if(dt>50)dt=50;
-    if(!paused && !isDown){ vp.scrollLeft += dt*0.045; }   // 오른쪽→왼쪽으로 흐름
-    var period=row.scrollWidth/2;
-    if(period>0){ if(vp.scrollLeft>=period){vp.scrollLeft-=period;} else if(vp.scrollLeft<0){vp.scrollLeft+=period;} }
-    requestAnimationFrame(step);
-  }
-  var gp=document.getElementById('galPrev'), gn=document.getElementById('galNext');
-  function nudge(dir){ var amt=Math.max(260, Math.round(vp.clientWidth*0.7)); vp.scrollBy({left:dir*amt, behavior:'smooth'}); }
-  if(gp) gp.addEventListener('click',function(){ nudge(-1); });
-  if(gn) gn.addEventListener('click',function(){ nudge(1); });
-  requestAnimationFrame(step);
-};
 </script>
 <!-- ===================== 로그인(Supabase) ===================== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=3"></script>
 <script src="auth.js?v=10"></script>
 <script>
-// 갤러리 마퀴 — 게시판에 올라온 최신 사진으로 채우기 (없으면 기본 사진 유지)
-(async function(){
-  var row = document.getElementById('galleryRow');
-  try{
-    if(window.sb && row){
-      var res = await window.sb.from('gallery_photos')
-        .select('url,caption,created_at').order('created_at',{ascending:false}).limit(24);
-      if(!res.error && res.data && res.data.length){
-        row.innerHTML = res.data.map(function(r){
-          var u=String(r.url||'').replace(/"/g,'&quot;');
-          var a=String(r.caption||'연합 행사 사진').replace(/"/g,'&quot;');
-          return '<img class="gallery-item" src="'+u+'" alt="'+a+'" loading="lazy" />';
-        }).join('');
-      }
+// ===================== 갤러리 — 인스타그램형 캐러셀 + 업로드 =====================
+(function(){
+  var frame=document.getElementById('igFrame');
+  if(!frame) return;
+  var emptyEl=document.getElementById('igEmpty'), dotsEl=document.getElementById('igDots');
+  var slides=[], cur=0, autoTimer=null;
+  var meIg=null, profIg=null, canPost=false;
+  var pendingIg=[];
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+  function fdate(d){ if(!d) return ''; var t=new Date(String(d).length<=10?d+'T00:00:00':d);
+    if(isNaN(t)) return ''; return t.getFullYear()+'.'+('0'+(t.getMonth()+1)).slice(-2)+'.'+('0'+t.getDate()).slice(-2); }
+  function todayStr(){ var t=new Date(); return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2); }
+  function ytId(u){ var m=String(u||'').match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,20})/); return m?m[1]:null; }
+  function instaEmbed(u){ var m=String(u||'').match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/); return m?('https://www.instagram.com/'+m[1]+'/'+m[2]+'/embed/'):null; }
+
+  // ---------- 캐러셀 ----------
+  function show(i){
+    if(!slides.length) return;
+    cur=(i+slides.length)%slides.length;
+    slides.forEach(function(s,k){ s.classList.toggle('on',k===cur); });
+    Array.prototype.forEach.call(dotsEl.children,function(d,k){ d.classList.toggle('on',k===cur); });
+  }
+  function startAuto(){
+    stopAuto();
+    autoTimer=setInterval(function(){
+      // 유튜브/인스타 임베드 슬라이드에선 자동 넘김 정지(시청 중일 수 있음)
+      if(slides[cur] && slides[cur].getAttribute('data-kind')!=='photo') return;
+      show(cur+1);
+    },5000);
+  }
+  function stopAuto(){ if(autoTimer){ clearInterval(autoTimer); autoTimer=null; } }
+
+  async function loadFeed(){
+    if(!window.sb){ emptyEl.textContent='갤러리를 준비 중입니다.'; return; }
+    var pr;
+    try{ pr=await window.sb.from('gallery_posts').select('*').order('created_at',{ascending:false}).limit(12); }
+    catch(e){ pr={error:e}; }
+    if(!pr || pr.error){ emptyEl.textContent='게시물을 불러오지 못했습니다.'; return; }
+    var rows=pr.data||[];
+    var ids=rows.map(function(p){ return p.id; });
+    var phMap={};
+    if(ids.length){
+      var ph=await window.sb.from('gallery_photos').select('post_id,url,sort').in('post_id',ids).order('sort',{ascending:true});
+      (ph.data||[]).forEach(function(x){ (phMap[x.post_id]=phMap[x.post_id]||[]).push(x); });
     }
-  }catch(e){}
-  if(window.initGalleryMarquee) window.initGalleryMarquee();
+    // 기존 슬라이드/도트 제거
+    Array.prototype.forEach.call(frame.querySelectorAll('.ig-slide'),function(s){ s.remove(); });
+    dotsEl.innerHTML='';
+    var html=rows.map(function(p){
+      var when=fdate(p.event_date||p.created_at);
+      if(p.embed_kind==='youtube'){
+        var id=ytId(p.embed_url); if(!id) return '';
+        return '<div class="ig-slide" data-kind="youtube"><span class="ig-badge">▶ 유튜브</span>'+
+          '<iframe class="yt" src="https://www.youtube-nocookie.com/embed/'+id+'" title="'+esc(p.title)+'" '+
+          'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+      }
+      if(p.embed_kind==='instagram'){
+        var src=instaEmbed(p.embed_url); if(!src) return '';
+        return '<div class="ig-slide" data-kind="instagram"><span class="ig-badge">📸 인스타그램</span>'+
+          '<iframe class="insta" src="'+src+'" title="'+esc(p.title)+'" loading="lazy"></iframe></div>';
+      }
+      var photos=phMap[p.id]||[]; if(!photos.length) return '';
+      return '<a class="ig-slide" data-kind="photo" href="gallery.html">'+
+        (photos.length>1?'<span class="ig-badge">📷 '+photos.length+'장</span>':'')+
+        '<img class="ph" src="'+esc(photos[0].url)+'" alt="'+esc(p.title)+'" loading="lazy" />'+
+        '<div class="ig-cap"><div class="t">'+esc(p.title)+'</div>'+(when?'<div class="d">'+when+'</div>':'')+'</div></a>';
+    }).filter(Boolean);
+    if(!html.length){ emptyEl.style.display='flex'; emptyEl.textContent='아직 올라온 게시물이 없습니다.'; return; }
+    emptyEl.style.display='none';
+    frame.insertAdjacentHTML('afterbegin',html.join(''));
+    slides=Array.prototype.slice.call(frame.querySelectorAll('.ig-slide'));
+    dotsEl.innerHTML=slides.map(function(_,i){ return '<button class="ig-dot" type="button" aria-label="'+(i+1)+'번째 게시물"></button>'; }).join('');
+    Array.prototype.forEach.call(dotsEl.children,function(d,i){ d.addEventListener('click',function(){ show(i); startAuto(); }); });
+    show(0); startAuto();
+  }
+  document.getElementById('igPrev').addEventListener('click',function(){ show(cur-1); startAuto(); });
+  document.getElementById('igNext').addEventListener('click',function(){ show(cur+1); startAuto(); });
+  frame.addEventListener('mouseenter',stopAuto);
+  frame.addEventListener('mouseleave',startAuto);
+  // 터치 스와이프 (사진 슬라이드)
+  var swX=null;
+  frame.addEventListener('pointerdown',function(e){ swX=e.clientX; });
+  frame.addEventListener('pointerup',function(e){
+    if(swX===null) return;
+    var dx=e.clientX-swX; swX=null;
+    if(Math.abs(dx)>48){ show(cur+(dx<0?1:-1)); startAuto(); e.preventDefault(); }
+  });
+
+  // ---------- 업로드 (정회원 전용 · 버튼을 눌러야 폼 표시) ----------
+  var panel=document.getElementById('igPanel'), upBtn=document.getElementById('igUploadBtn');
+  var prog=document.getElementById('igProg');
+  (async function initPoster(){
+    try{
+      if(!window.sb) return;
+      var s=await window.sb.auth.getSession();
+      meIg=s.data&&s.data.session?s.data.session.user:null;
+      if(meIg){ profIg=await window.getMyProfile(); canPost=!!(profIg&&profIg.member_type==='정회원'); }
+    }catch(_){}
+    if(canPost) upBtn.style.display='';
+  })();
+  upBtn.addEventListener('click',function(){
+    panel.style.display=panel.style.display==='none'?'block':'none';
+    if(panel.style.display==='block') panel.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  document.getElementById('igCancel').addEventListener('click',function(){ panel.style.display='none'; });
+  // 탭 전환
+  var tabs={photo:'igTabPhoto',youtube:'igTabYoutube',insta:'igTabInsta'}, curTab='photo';
+  Array.prototype.forEach.call(document.querySelectorAll('.ig-tab'),function(b){
+    b.addEventListener('click',function(){
+      curTab=b.getAttribute('data-igtab');
+      Array.prototype.forEach.call(document.querySelectorAll('.ig-tab'),function(x){ x.classList.toggle('on',x===b); });
+      Object.keys(tabs).forEach(function(k){ document.getElementById(tabs[k]).style.display=k===curTab?'':'none'; });
+      prog.textContent='';
+    });
+  });
+  // 사진 선택 (촬영 / 사진첩)
+  var fCam=document.getElementById('igFileCam'), fAlb=document.getElementById('igFileAlb');
+  document.getElementById('igCamBtn').addEventListener('click',function(){ fCam.value=''; fCam.click(); });
+  document.getElementById('igAlbBtn').addEventListener('click',function(){ fAlb.value=''; fAlb.click(); });
+  function addIgFiles(list){
+    Array.prototype.slice.call(list||[]).forEach(function(f){ if(f.type.indexOf('image/')===0) pendingIg.push(f); });
+    renderIgThumbs();
+  }
+  fCam.addEventListener('change',function(){ addIgFiles(fCam.files); });
+  fAlb.addEventListener('change',function(){ addIgFiles(fAlb.files); });
+  function renderIgThumbs(){
+    var box=document.getElementById('igThumbs');
+    box.innerHTML=pendingIg.map(function(f,i){
+      return '<div class="t"><img src="'+URL.createObjectURL(f)+'" alt="" /><button data-i="'+i+'" type="button" title="빼기">×</button></div>';
+    }).join('');
+    Array.prototype.forEach.call(box.querySelectorAll('button'),function(b){
+      b.addEventListener('click',function(){ pendingIg.splice(+b.getAttribute('data-i'),1); renderIgThumbs(); });
+    });
+  }
+  // 이미지 축소 + 업로드 (갤러리 게시판과 동일한 저장 방식)
+  async function resizeImage(file){
+    var bitmap=await createImageBitmap(file);
+    try{
+      var scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));
+      var w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
+      var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(bitmap,0,0,w,h);
+      return await new Promise(function(res){ cv.toBlob(function(b){ res(b); },'image/webp',0.82); });
+    } finally { if(bitmap.close) bitmap.close(); }
+  }
+  async function uploadBlob(blob){
+    var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
+    if(r2){
+      var sess=await window.sb.auth.getSession();
+      var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
+      var resp=await fetch(r2+'/upload',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'image/webp'},body:blob});
+      var j=await resp.json().catch(function(){ return {}; });
+      if(!resp.ok) throw new Error(j.error||('업로드 실패 ('+resp.status+')'));
+      return {url:j.url,path:'r2:'+j.key};
+    }
+    var p=meIg.id+'/'+Date.now()+'_'+Math.random().toString(36).slice(2)+'.webp';
+    var up=await window.sb.storage.from('gallery').upload(p,blob,{contentType:'image/webp',upsert:false});
+    if(up.error) throw up.error;
+    return {url:window.sb.storage.from('gallery').getPublicUrl(p).data.publicUrl,path:p};
+  }
+  // 올리기
+  document.getElementById('igSubmit').addEventListener('click',async function(){
+    var btn=this;
+    if(!canPost){ prog.textContent='정회원만 올릴 수 있습니다.'; return; }
+    var title=document.getElementById('igTitle').value.trim();
+    var date=document.getElementById('igDate').value||todayStr();
+    var uname=(profIg&&profIg.name)||(meIg.email||'회원');
+    var payload=null;
+    if(curTab==='youtube'){
+      var yu=document.getElementById('igYtUrl').value.trim();
+      if(!ytId(yu)){ prog.textContent='올바른 유튜브 주소가 아닙니다.'; return; }
+      payload={title:title||'유튜브 영상',embed_url:yu,embed_kind:'youtube'};
+    } else if(curTab==='insta'){
+      var iu=document.getElementById('igInUrl').value.trim();
+      if(!instaEmbed(iu)){ prog.textContent='올바른 인스타그램 게시물 주소가 아닙니다.'; return; }
+      payload={title:title||'인스타그램 게시물',embed_url:iu,embed_kind:'instagram'};
+    } else {
+      if(!pendingIg.length){ prog.textContent='사진을 촬영하거나 사진첩에서 선택해 주세요.'; return; }
+      if(!title){ prog.textContent='제목/설명을 입력해 주세요.'; return; }
+      payload={title:title};
+    }
+    btn.disabled=true;
+    try{
+      var ins=await window.sb.from('gallery_posts').insert(Object.assign({
+        event_date:date,author_id:meIg.id,author_name:uname
+      },payload)).select().single();
+      if(ins.error) throw ins.error;
+      if(curTab==='photo'){
+        var ok=0,fail=0;
+        for(var i=0;i<pendingIg.length;i++){
+          prog.textContent='사진 올리는 중… ('+(i+1)+'/'+pendingIg.length+')';
+          try{
+            var blob=await resizeImage(pendingIg[i]); if(!blob) throw new Error('변환 실패');
+            var up=await uploadBlob(blob);
+            var pi=await window.sb.from('gallery_photos').insert({
+              post_id:ins.data.id,path:up.path,url:up.url,caption:title,
+              uploader_id:meIg.id,uploader_name:uname,sort:i});
+            if(pi.error) throw pi.error;
+            ok++;
+          }catch(e){ fail++; }
+        }
+        if(!ok){ await window.sb.from('gallery_posts').delete().eq('id',ins.data.id);
+          prog.textContent='사진 업로드에 실패했습니다. 다시 시도해 주세요.'; btn.disabled=false; return; }
+        prog.textContent='게시되었습니다.'+(fail?(' ('+fail+'장 실패)'):'');
+      } else {
+        prog.textContent='게시되었습니다.';
+      }
+      document.getElementById('igTitle').value=''; document.getElementById('igDate').value='';
+      document.getElementById('igYtUrl').value=''; document.getElementById('igInUrl').value='';
+      pendingIg=[]; renderIgThumbs();
+      await loadFeed();
+      setTimeout(function(){ panel.style.display='none'; prog.textContent=''; },1200);
+    }catch(e){ prog.textContent='등록 실패: '+(e.message||e); }
+    btn.disabled=false;
+  });
+
+  loadFeed();
 })();
 // 앱 설치(PWA) — 서비스 워커 등록
 if ('serviceWorker' in navigator) {
@@ -1271,17 +1576,22 @@ if ('serviceWorker' in navigator) {
   function mdY(d){ var t=new Date(d); return isNaN(t)?'':((t.getMonth()+1)+'월 '+t.getDate()+'일'); }
   function todayStr(){ var t=new Date(); return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2); }
 
-  var isAdminUser=false, me=null, myProfile=null;
+  var isAdminUser=false, isOfficerUser=false, me=null, myProfile=null;
 
-  // 관리자면 인라인 편집 UI 노출
+  // 관리자/임원이면 인라인 편집 UI 노출
   (async function initAdmin(){
     try{
       if(!window.sb) return;
       var s=await window.sb.auth.getSession();
       me = s.data && s.data.session ? s.data.session.user : null;
-      if(me){ myProfile = await window.getMyProfile(); isAdminUser = window.isAdmin(me, myProfile); }
+      if(me){
+        myProfile = await window.getMyProfile();
+        isAdminUser = window.isAdmin(me, myProfile);
+        isOfficerUser = window.isSuperAdmin(me) || !!(myProfile && myProfile.officer_role);
+      }
     }catch(_){}
     if(isAdminUser){ Array.prototype.forEach.call(document.querySelectorAll('.adm-only'), function(el){ el.classList.remove('adm-only'); }); }
+    if(isOfficerUser){ Array.prototype.forEach.call(document.querySelectorAll('.officer-only'), function(el){ el.classList.remove('officer-only'); }); }
   })();
 
   // ---------- 공지사항 ----------
@@ -1417,9 +1727,130 @@ if ('serviceWorker' in navigator) {
     pForm.classList.remove('open'); loadPrayer();
   });
 
+  // ---------- 언론에 소개된 삼기연 ----------
+  var pressRows=[], editingPressId=null;
+  function pressField(id){ return document.getElementById(id); }
+  async function loadPress(){
+    var grid=document.getElementById('pressGrid'); if(!grid) return;
+    var empty='<div style="grid-column:1/-1;padding:40px 0;text-align:center;color:var(--muted);font-size:15px;">';
+    if(!window.sb){ grid.innerHTML=empty+'언론 보도 기능을 준비 중입니다.</div>'; return; }
+    var r;
+    try{ r=await window.sb.from('press_articles').select('*')
+      .order('published',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}); }
+    catch(e){ r={error:e}; }
+    if(!r || r.error || !r.data){ grid.innerHTML=empty+'기사를 불러오지 못했습니다.</div>'; return; }
+    pressRows=r.data;
+    if(!pressRows.length){ grid.innerHTML=empty+'아직 등록된 기사가 없습니다.</div>'; return; }
+    grid.innerHTML=pressRows.map(function(a){
+      var thumb=a.image_url
+        ? '<img src="'+esc(a.image_url)+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=press-thumb-ph><span>📰</span></div>\'" />'
+        : '<div class="press-thumb-ph"><span>📰</span>'+esc(a.source||'언론 보도')+'</div>';
+      return '<article class="press-card">'+
+        (isOfficerUser
+          ? '<div class="press-actions">'+
+              '<button class="press-act" type="button" data-predit="'+a.id+'">수정</button>'+
+              '<button class="press-act danger" type="button" data-prdel="'+a.id+'">삭제</button>'+
+            '</div>'
+          : '')+
+        '<a class="press-thumb" href="'+esc(a.url||'#')+'" target="_blank" rel="noopener">'+thumb+'</a>'+
+        '<div class="press-body">'+
+          '<div class="press-meta">'+esc(a.source||'언론 보도')+(a.published?' <em>· '+esc(a.published)+'</em>':'')+'</div>'+
+          '<h3 class="press-title">'+esc(a.title||'(제목 없음)')+'</h3>'+
+          (a.summary?'<p class="press-sum">'+esc(a.summary)+'</p>':'')+
+          '<a class="press-link" href="'+esc(a.url||'#')+'" target="_blank" rel="noopener">기사 원문 보기 →</a>'+
+        '</div></article>';
+    }).join('');
+    if(isOfficerUser){
+      Array.prototype.forEach.call(grid.querySelectorAll('[data-prdel]'),function(b){
+        b.addEventListener('click',function(){ delPress(b.getAttribute('data-prdel')); });
+      });
+      Array.prototype.forEach.call(grid.querySelectorAll('[data-predit]'),function(b){
+        b.addEventListener('click',function(){ editPress(b.getAttribute('data-predit')); });
+      });
+    }
+  }
+  function resetPressForm(){
+    editingPressId=null;
+    ['prUrl','prTitle','prSource','prDate','prImage','prSummary'].forEach(function(id){ pressField(id).value=''; });
+    pressField('prEditing').textContent='';
+    pressField('prSave').textContent='등록하기';
+    pressField('prCancel').style.display='none';
+  }
+  function editPress(id){
+    var a=pressRows.filter(function(x){ return x.id===id; })[0]; if(!a) return;
+    editingPressId=id;
+    pressField('prUrl').value=a.url||''; pressField('prTitle').value=a.title||'';
+    pressField('prSource').value=a.source||''; pressField('prDate').value=a.published||'';
+    pressField('prImage').value=a.image_url||''; pressField('prSummary').value=a.summary||'';
+    pressField('prEditing').textContent='「'+(a.title||'기사')+'」 수정 중';
+    pressField('prSave').textContent='수정 저장';
+    pressField('prCancel').style.display='';
+    var f=document.getElementById('pressForm');
+    f.classList.add('open');
+    f.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  async function delPress(id){
+    if(!confirm('이 기사를 삭제할까요?')) return;
+    var d=await window.sb.from('press_articles').delete().eq('id',id);
+    if(d.error){ alert('삭제 실패: '+d.error.message); return; }
+    if(editingPressId===id) resetPressForm();
+    loadPress();
+  }
+  var prAdd=document.getElementById('pressAddBtn'), prForm=document.getElementById('pressForm');
+  if(prAdd) prAdd.addEventListener('click',function(){
+    if(prForm.classList.contains('open')){ prForm.classList.remove('open'); resetPressForm(); }
+    else prForm.classList.add('open');
+  });
+  var prCancel=document.getElementById('prCancel');
+  if(prCancel) prCancel.addEventListener('click',function(){ resetPressForm(); prForm.classList.remove('open'); });
+  // '자동 채우기' — 기사 URL에서 제목·언론사·날짜·요약·대표 이미지를 추출 (R2 Worker)
+  var prFetch=document.getElementById('prFetch');
+  if(prFetch) prFetch.addEventListener('click',async function(){
+    var u=pressField('prUrl').value.trim();
+    if(!/^https?:\/\//i.test(u)){ alert('기사 링크(https://…)를 먼저 붙여넣어 주세요.'); return; }
+    var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
+    if(!r2){ alert('자동 채우기 기능이 설정되지 않았습니다. 직접 입력해 주세요.'); return; }
+    prFetch.disabled=true; prFetch.textContent='가져오는 중…';
+    try{
+      var s=await window.sb.auth.getSession();
+      var token=s.data&&s.data.session?s.data.session.access_token:'';
+      var resp=await fetch(r2+'/fetch-meta',{method:'POST',
+        headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({url:u})});
+      var meta=await resp.json();
+      if(!resp.ok) throw new Error(meta.error||'메타정보를 가져오지 못했습니다.');
+      if(meta.title && !pressField('prTitle').value) pressField('prTitle').value=meta.title;
+      if(meta.source && !pressField('prSource').value) pressField('prSource').value=meta.source;
+      if(meta.published && !pressField('prDate').value) pressField('prDate').value=meta.published;
+      if(meta.image && !pressField('prImage').value) pressField('prImage').value=meta.image;
+      if(meta.summary && !pressField('prSummary').value) pressField('prSummary').value=meta.summary;
+    }catch(e){ alert('자동 채우기 실패: '+(e.message||e)); }
+    prFetch.disabled=false; prFetch.textContent='자동 채우기';
+  });
+  var prSave=document.getElementById('prSave');
+  if(prSave) prSave.addEventListener('click',async function(){
+    var u=pressField('prUrl').value.trim(), t=pressField('prTitle').value.trim();
+    if(!/^https?:\/\//i.test(u)){ alert('기사 링크(https://…)를 입력해 주세요.'); return; }
+    if(!t){ alert('기사 제목을 입력해 주세요.'); return; }
+    var payload={
+      url:u, title:t,
+      source:pressField('prSource').value.trim()||null,
+      published:pressField('prDate').value.trim()||null,
+      image_url:pressField('prImage').value.trim()||null,
+      summary:pressField('prSummary').value.trim()||null
+    };
+    prSave.disabled=true; prSave.textContent=editingPressId?'저장 중…':'등록 중…';
+    var res=editingPressId
+      ? await window.sb.from('press_articles').update(payload).eq('id',editingPressId)
+      : await window.sb.from('press_articles').insert(Object.assign({created_by:me?me.id:null},payload));
+    prSave.disabled=false; prSave.textContent=editingPressId?'수정 저장':'등록하기';
+    if(res.error){ alert('저장 실패: '+res.error.message); return; }
+    resetPressForm(); prForm.classList.remove('open'); loadPress();
+  });
+
   // 초기 로드 (관리자 판별 후 다시 렌더되도록 약간의 지연 재호출)
-  loadNotices(); loadPrayer();
-  setTimeout(function(){ loadNotices(); loadPrayer(); }, 1200);
+  loadNotices(); loadPrayer(); loadPress();
+  setTimeout(function(){ loadNotices(); loadPrayer(); loadPress(); }, 1200);
 })();
 </script>
 

@@ -206,6 +206,9 @@
     function fmtDate(d){ if(!d) return ''; try{ var x=new Date(d+'T00:00:00'); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2); }catch(_){ return d; } }
     function fmtDT(ts){ if(!ts) return ''; try{ var x=new Date(ts); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2)+' '+('0'+x.getHours()).slice(-2)+':'+('0'+x.getMinutes()).slice(-2); }catch(_){ return ''; } }
     function todayStr(){ var x=new Date(); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
+    // 유튜브/인스타그램 임베드 (홈 갤러리에서 등록)
+    function ytId(u){ var m=String(u||'').match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,20})/); return m?m[1]:null; }
+    function instaEmbed(u){ var m=String(u||'').match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/); return m?('https://www.instagram.com/'+m[1]+'/'+m[2]+'/embed/'):null; }
 
     // ---------- 이미지 축소 ----------
     async function resizeImage(file, maxDim, quality){
@@ -284,9 +287,16 @@
         var photos = PH[p.id]||[]; var cover = photos[0];
         var nComment = (CM[p.id]||[]).length;
         var nReact = (RX[p.id]||[]).length;
-        var coverHtml = cover
-          ? '<div class="coverWrap"><img class="cover" src="'+esc(cover.url)+'" loading="lazy" alt="'+esc(p.title)+'" />'+(photos.length>1?'<span class="cnt">📷 '+photos.length+'</span>':'')+'</div>'
-          : '<div class="nocover">🖼</div>';
+        var coverHtml;
+        if(p.embed_kind==='youtube' && ytId(p.embed_url)){
+          coverHtml = '<div class="coverWrap"><img class="cover" src="https://i.ytimg.com/vi/'+ytId(p.embed_url)+'/hqdefault.jpg" loading="lazy" alt="'+esc(p.title)+'" /><span class="cnt">▶ 유튜브</span></div>';
+        } else if(p.embed_kind==='instagram'){
+          coverHtml = '<div class="coverWrap"><div class="nocover">📸</div><span class="cnt">인스타그램</span></div>';
+        } else {
+          coverHtml = cover
+            ? '<div class="coverWrap"><img class="cover" src="'+esc(cover.url)+'" loading="lazy" alt="'+esc(p.title)+'" />'+(photos.length>1?'<span class="cnt">📷 '+photos.length+'</span>':'')+'</div>'
+            : '<div class="nocover">🖼</div>';
+        }
         return '<div class="post" data-id="'+p.id+'">'+ coverHtml +
           '<div class="body">'+
             (p.event_name?'<span class="ev">'+esc(p.event_name)+'</span>':'')+
@@ -385,6 +395,16 @@
         return '<img src="'+esc(ph.url)+'" data-idx="'+i+'" loading="lazy" alt="'+esc(p.title)+'" />';
       }).join('')+'</div>' : '';
 
+      var embedHtml = '';
+      if(p.embed_kind==='youtube' && ytId(p.embed_url)){
+        embedHtml = '<div style="position:relative;padding-top:56.25%;margin-bottom:20px;background:#000;">'+
+          '<iframe src="https://www.youtube-nocookie.com/embed/'+ytId(p.embed_url)+'" title="'+esc(p.title)+'" style="position:absolute;inset:0;width:100%;height:100%;border:0;" '+
+          'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+      } else if(p.embed_kind==='instagram' && instaEmbed(p.embed_url)){
+        embedHtml = '<div style="display:flex;justify-content:center;margin-bottom:20px;">'+
+          '<iframe src="'+instaEmbed(p.embed_url)+'" title="'+esc(p.title)+'" style="width:min(400px,100%);height:540px;border:1px solid var(--hairline);background:#fff;" loading="lazy"></iframe></div>';
+      }
+
       var cmtsHtml = comments.map(function(c){
         var canRm = me && (c.author_id===me.id || isAdminUser);
         return '<div class="cmt"><div class="top"><span><span class="who">'+esc(c.author_name||'회원')+'</span> <span class="when">'+fmtDT(c.created_at)+'</span></span>'+
@@ -400,11 +420,12 @@
           '<button class="mclose" id="dClose" aria-label="닫기">×</button>'+
           (p.event_name?'<span class="ev" style="display:inline-block;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--primary);background:#eaf3ff;border:1px solid #b9d6ff;padding:3px 8px;">'+esc(p.event_name)+'</span>':'')+
           '<h2>'+esc(p.title)+'</h2>'+
-          '<div class="mmeta"><span>'+esc(p.author_name||'회원')+'</span>'+(p.event_date?'<span>·</span><span>'+fmtDate(p.event_date)+'</span>':'')+'<span>·</span><span>사진 '+photos.length+'장</span></div>'+
+          '<div class="mmeta"><span>'+esc(p.author_name||'회원')+'</span>'+(p.event_date?'<span>·</span><span>'+fmtDate(p.event_date)+'</span>':'')+
+            (p.embed_kind?'<span>·</span><span>'+(p.embed_kind==='youtube'?'유튜브 영상':'인스타그램 게시물')+'</span>':'<span>·</span><span>사진 '+photos.length+'장</span>')+'</div>'+
         '</div>'+
         '<div class="mbody">'+
           (p.body?'<p class="desc">'+esc(p.body)+'</p>':'')+
-          photosHtml +
+          embedHtml + photosHtml +
           '<div class="rxbar">'+rxHtml+'</div>'+
           '<div class="cmts"><h4>댓글 '+comments.length+'</h4>'+cmtsHtml+cmtInput+'</div>'+
           (canDeletePost?'<div class="mactions">'+((isOwner||isAdminUser)?'<button class="btn ghost sm" id="editPost">수정</button>':'')+'<button class="btn danger sm" id="delPost">게시글 삭제</button></div>':'')+
