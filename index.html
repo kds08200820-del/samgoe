@@ -256,8 +256,10 @@
     .officer-only{display:none !important;}
 
     /* ===================== 언론 보도 — 좌→우 회전 마퀴 ===================== */
-    .press-mq{overflow:hidden;width:100%;margin-top:44px;padding:6px 0 14px;}
-    .press-row{display:flex;width:max-content;will-change:transform;}
+    .press-mq{overflow:hidden;width:100%;margin-top:44px;padding:6px 0 14px;touch-action:pan-y;cursor:grab;}
+    .press-mq:active{cursor:grabbing;}
+    .press-row{display:flex;width:max-content;will-change:transform;user-select:none;-webkit-user-select:none;}
+    .press-row img{-webkit-user-drag:none;}
     .press-row .mq-loading{color:var(--muted);}
     .press-card{position:relative;display:flex;flex-direction:column;background:var(--card);
       width:340px;flex:0 0 auto;margin-right:18px;
@@ -288,9 +290,10 @@
 
     /* ===================== 갤러리 — 인스타그램형 (다크) ===================== */
     .gallery-sec{background:var(--dark);color:var(--on-dark);}
-    /* 좌→우 무한 회전 마퀴 (갤러리·언론 보도 공용) */
-    .mq-wrap{overflow:hidden;width:100%;position:relative;}
-    .mq-row{display:flex;width:max-content;will-change:transform;}
+    /* 좌→우 무한 회전 마퀴 (갤러리·언론 보도 공용) — 드래그·쓸어 넘기기 지원 */
+    .mq-wrap{overflow:hidden;width:100%;position:relative;touch-action:pan-y;cursor:grab;}
+    .mq-wrap:active{cursor:grabbing;}
+    .mq-row{display:flex;width:max-content;will-change:transform;user-select:none;-webkit-user-select:none;}
     .mq-loading{width:100vw;padding:56px 24px;text-align:center;font-size:15px;}
     .mq-item{position:relative;flex:0 0 auto;width:min(420px,78vw);height:300px;margin-right:14px;
       border-radius:14px;overflow:hidden;background:var(--dark-2);display:block;}
@@ -1333,8 +1336,10 @@
   requestAnimationFrame(step);
 })();
 // 좌→우 무한 회전 마퀴 (갤러리·언론 보도 공용)
-//  - 콘텐츠를 복제해 끊김 없이 왼쪽에서 오른쪽으로 흐르게 함
-//  - 마우스 올림/터치 중에는 일시 정지
+//  - 콘텐츠를 복제해 끊김 없이 흐르게 함 (기본: 왼쪽→오른쪽)
+//  - 마우스 드래그/손가락 쓸어 넘기기로 직접 움직일 수 있고,
+//    던지는(플링) 방향·세기에 따라 회전 방향과 속도가 바뀐 뒤 서서히 기본 속도로 복귀
+//  - 마우스를 올려두면(데스크톱) 일시 정지
 window.samMarquee = function(row, speed){
   if(!row) return;
   if(row._mqStop) row._mqStop();
@@ -1346,31 +1351,77 @@ window.samMarquee = function(row, speed){
   var copies = Math.max(2, Math.ceil((wrap.clientWidth * 2) / w) + 1);
   var html = ''; for(var i = 0; i < copies; i++) html += base;
   row.innerHTML = html;
-  var period = w, pos = -period, paused = false, last = null, rafId = 0, alive = true;
-  function pause(){ paused = true; }
-  function resume(){ paused = false; }
-  wrap.addEventListener('mouseenter', pause);
-  wrap.addEventListener('mouseleave', resume);
-  wrap.addEventListener('pointerdown', pause);
-  window.addEventListener('pointerup', resume);
+
+  var period = w, pos = -period, last = null, rafId = 0, alive = true;
+  var baseSpeed = Math.abs(speed), dir = 1, vel = baseSpeed;
+  var hovering = false, dragging = false, moved = 0;
+  var lastX = 0, lastT = 0, flingV = 0;
+
+  function apply(){ row.style.transform = 'translate3d(' + pos + 'px,0,0)'; }
+  function wrapPos(){ while(pos >= 0) pos -= period; while(pos < -period) pos += period; }
+
+  function onEnter(){ hovering = true; }
+  function onLeave(){ hovering = false; }
+  wrap.addEventListener('mouseenter', onEnter);
+  wrap.addEventListener('mouseleave', onLeave);
+
+  // 드래그 / 쓸어 넘기기
+  function onDown(e){
+    dragging = true; moved = 0; flingV = 0;
+    lastX = e.clientX; lastT = performance.now();
+    try{ wrap.setPointerCapture(e.pointerId); }catch(_){}
+  }
+  function onMove(e){
+    if(!dragging) return;
+    var now = performance.now();
+    var dx = e.clientX - lastX;
+    moved += Math.abs(dx);
+    var dt = (now - lastT) / 1000;
+    if(dt > 0){ flingV = 0.75 * flingV + 0.25 * (dx / dt); }
+    lastX = e.clientX; lastT = now;
+    pos += dx; wrapPos(); apply();
+  }
+  function onUp(){
+    if(!dragging) return;
+    dragging = false;
+    var v = Math.max(-900, Math.min(900, flingV));
+    if(Math.abs(v) > 60){ vel = v; dir = v < 0 ? -1 : 1; }
+  }
+  wrap.addEventListener('pointerdown', onDown);
+  wrap.addEventListener('pointermove', onMove);
+  wrap.addEventListener('pointerup', onUp);
+  wrap.addEventListener('pointercancel', onUp);
+  // 드래그로 움직였으면 카드 클릭(링크 이동)은 무시
+  function onClickCapture(e){ if(moved > 8){ e.preventDefault(); e.stopPropagation(); } }
+  wrap.addEventListener('click', onClickCapture, true);
+  function onDragStart(e){ e.preventDefault(); }
+  wrap.addEventListener('dragstart', onDragStart);
+
   function step(t){
     if(!alive) return;
     if(last === null) last = t;
     var dt = Math.min(t - last, 80) / 1000; last = t;
-    if(!paused){
-      pos += dt * speed;
-      if(pos >= 0) pos -= period;
-      row.style.transform = 'translate3d(' + pos + 'px,0,0)';
+    if(!dragging){
+      var target = dir * baseSpeed;
+      var flinging = Math.abs(vel - target) > 5;
+      if(flinging || !hovering){
+        pos += dt * vel; wrapPos(); apply();
+        vel += (target - vel) * Math.min(1, dt * 0.9);
+      }
     }
     rafId = requestAnimationFrame(step);
   }
   rafId = requestAnimationFrame(step);
   row._mqStop = function(){
     alive = false; cancelAnimationFrame(rafId);
-    wrap.removeEventListener('mouseenter', pause);
-    wrap.removeEventListener('mouseleave', resume);
-    wrap.removeEventListener('pointerdown', pause);
-    window.removeEventListener('pointerup', resume);
+    wrap.removeEventListener('mouseenter', onEnter);
+    wrap.removeEventListener('mouseleave', onLeave);
+    wrap.removeEventListener('pointerdown', onDown);
+    wrap.removeEventListener('pointermove', onMove);
+    wrap.removeEventListener('pointerup', onUp);
+    wrap.removeEventListener('pointercancel', onUp);
+    wrap.removeEventListener('click', onClickCapture, true);
+    wrap.removeEventListener('dragstart', onDragStart);
     row._mqStop = null;
   };
 };
