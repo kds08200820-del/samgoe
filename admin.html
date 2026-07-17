@@ -171,15 +171,27 @@
       function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
       function flash(t){ msg.textContent = t; setTimeout(function(){ if (msg.textContent === t) msg.textContent = ''; }, 2500); }
 
-      var res = await window.sb.from('profiles').select('*').order('created_at', { ascending: true });
-      if (res.error) {
+      // 개인정보 보호: 목록은 서버에서 '마스킹된 값'(admin_list_members)만 받아온다.
+      //   원본(전화·주소·이메일)은 '전체보기'/'수정' 시 admin_reveal_member 로만 열람하며 감사로그에 기록된다.
+      async function fetchMembers(){
+        var r = await window.sb.rpc('admin_list_members', { p_search: null });
+        if (r.error) throw r.error;
+        return (r.data || []).map(function(m){ return {
+          id:m.id, name:m.name, church:m.church, member_type:m.member_type, officer_role:m.officer_role,
+          admin_role:m.admin_role, created_at:m.created_at, status:m.status,
+          phone:m.phone_mask, email:m.email, address:m.address_mask
+        }; });
+      }
+      var rows;
+      try { rows = await fetchMembers(); }
+      catch (e) {
         var setup = document.getElementById('setup');
         setup.style.display = 'block';
-        setup.innerHTML = '⚠️ 회원 테이블(profiles)이 아직 없습니다. Supabase → <b>SQL Editor</b> 에서 저장소의 <b>db-setup.sql</b> 내용을 한 번 실행해 주세요. (' + esc(res.error.message) + ')';
+        setup.innerHTML = '⚠️ 회원 목록을 불러오지 못했습니다. Supabase <b>SQL Editor</b>에서 <b>admin-console-setup.sql</b>을 실행했는지 확인해 주세요. (' + esc((e && e.message) || e) + ')';
         document.getElementById('memberRows').innerHTML = '<tr><td colspan="8" style="color:var(--muted)">데이터 없음</td></tr>';
         return;
       }
-      var rows = res.data || [];
+      async function reloadMembers(){ try { rows = await fetchMembers(); } catch(_){}; renderMembers(); refreshStats(); renderChurches(); renderOfficers(); }
       function refreshStats(){
         document.getElementById('cTotal').textContent = rows.length;
         document.getElementById('cFull').textContent = rows.filter(function(r){ return r.member_type === '정회원'; }).length;
@@ -208,10 +220,10 @@
           '<td>'+esc(r.church)+'</td>'+
           '<td><select data-id="'+r.id+'" class="typeSel">'+typeOpts+'</select></td>'+
           '<td>'+roleCell+'</td>'+
-          '<td>'+esc(r.phone)+'</td>'+
-          '<td style="color:var(--muted)">'+esc(r.email)+'</td>'+
+          '<td class="cPhone" style="font-variant-numeric:tabular-nums">'+esc(r.phone)+'</td>'+
+          '<td class="cEmail" style="color:var(--muted)">'+esc(r.email)+'</td>'+
           '<td style="color:var(--muted)">'+esc(since)+'</td>'+
-          '<td style="white-space:nowrap"><button class="rowbtn mEdit" data-id="'+r.id+'">수정</button> <button class="rowbtn del mDel" data-id="'+r.id+'">삭제</button></td>';
+          '<td style="white-space:nowrap"><button class="rowbtn mReveal" data-id="'+r.id+'">전체보기</button> <button class="rowbtn mEdit" data-id="'+r.id+'">수정</button> <button class="rowbtn del mDel" data-id="'+r.id+'">삭제</button></td>';
       }
       function renderMembers(){
         if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="color:var(--muted)">아직 등록된 회원이 없습니다. 우측 상단 <b>＋ 회원 추가</b>로 등록하세요.</td></tr>'; return; }
@@ -252,11 +264,24 @@
       });
       // 수정 · 삭제
       tbody.addEventListener('click', function (e) {
+        var rv = e.target.closest && e.target.closest('.mReveal');
+        if (rv) { revealRow(rv.getAttribute('data-id'), rv); return; }
         var ed = e.target.closest && e.target.closest('.mEdit');
         if (ed) { var r = rows.find(function(x){ return x.id === ed.getAttribute('data-id'); }); if (r) openMemberModal(r); return; }
         var dl = e.target.closest && e.target.closest('.mDel');
         if (dl) { deleteMember(dl.getAttribute('data-id')); }
       });
+      // 전체보기 — 원본을 서버에서 불러와 해당 행에 표시(감사로그에 '전체보기'로 기록)
+      async function revealRow(id, btn){
+        btn.disabled = true; btn.textContent = '…';
+        var r = await window.sb.rpc('admin_reveal_member', { p_id: id });
+        if (r.error) { flash('열람 실패: ' + r.error.message); btn.disabled = false; btn.textContent = '전체보기'; return; }
+        var d = (r.data && r.data[0]) || {}; var tr = btn.closest('tr');
+        var pc = tr.querySelector('.cPhone'), ec = tr.querySelector('.cEmail');
+        if (pc) pc.textContent = d.phone || '—';
+        if (ec) ec.textContent = d.email || '—';
+        btn.remove();
+      }
 
       // ----- 등록 49개 교회 명단 · 가입현황 · 직책 지정 -----
       function norm(s){ return String(s || '').replace(/\s+/g, '').replace(/목사$/, ''); }
@@ -349,15 +374,21 @@
 
       // ----- 회원 추가 / 수정 / 삭제 -----
       var editingId = null;
-      function openMemberModal(r){
+      async function openMemberModal(r){
         editingId = r ? r.id : null;
         document.getElementById('mdlTitle').textContent = r ? '회원 수정' : '회원 추가';
         document.getElementById('mName').value = r ? (r.name||'') : '';
         document.getElementById('mChurch').value = r ? (r.church||'') : '';
         document.getElementById('mType').value = (r && r.member_type) || '일반회원';
-        document.getElementById('mPhone').value = r ? (r.phone||'') : '';
-        document.getElementById('mAddr').value = r ? (r.address||'') : '';
-        document.getElementById('mEmail').value = r ? (r.email||'') : '';
+        // 전화·주소·이메일은 마스킹돼 있으므로, 수정 시 서버에서 원본을 불러온다(감사로그 기록).
+        var mPhoneEl=document.getElementById('mPhone'), mAddrEl=document.getElementById('mAddr'), mEmailEl=document.getElementById('mEmail');
+        mPhoneEl.value=''; mAddrEl.value=''; mEmailEl.value='';
+        if (r) {
+          try {
+            var rv = await window.sb.rpc('admin_reveal_member', { p_id: r.id });
+            if (!rv.error && rv.data && rv.data[0]) { var d=rv.data[0]; mPhoneEl.value=d.phone||''; mAddrEl.value=d.address||''; mEmailEl.value=d.email||''; }
+          } catch(_){}
+        }
         var rw = document.getElementById('mRoleWrap');
         if (isSuper) {
           rw.style.display = 'block';
@@ -387,15 +418,13 @@
           var up = await window.sb.from('profiles').update(payload).eq('id', editingId);
           btn.disabled = false;
           if (up.error) { err.textContent = '저장 실패: ' + up.error.message; err.style.display = 'block'; return; }
-          var rec = rows.find(function(x){ return x.id === editingId; }); if (rec) { for (var k in payload) rec[k] = payload[k]; }
         } else {
           payload.id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('m-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-          var ins = await window.sb.from('profiles').insert(payload).select().single();
+          var ins = await window.sb.from('profiles').insert(payload);
           btn.disabled = false;
           if (ins.error) { err.textContent = '추가 실패: ' + ins.error.message + ' (member-admin-setup.sql 실행이 필요할 수 있습니다.)'; err.style.display = 'block'; return; }
-          rows.push(ins.data);
         }
-        closeMemberModal(); renderMembers(); refreshStats(); renderChurches(); renderOfficers();
+        closeMemberModal(); await reloadMembers();
         flash(wasEdit ? '수정했습니다.' : '회원을 추가했습니다.');
       }
       async function deleteMember(id){
@@ -403,8 +432,7 @@
         if (!confirm('“' + ((r && r.name) || '이 회원') + '” 회원을 삭제할까요?\n되돌릴 수 없습니다.')) return;
         var del = await window.sb.from('profiles').delete().eq('id', id);
         if (del.error) { flash('삭제 실패: ' + del.error.message); return; }
-        rows = rows.filter(function(x){ return x.id !== id; });
-        renderMembers(); refreshStats(); renderChurches(); renderOfficers();
+        await reloadMembers();
         flash('삭제했습니다.');
       }
       // 모달: 교회명 자동완성 + 버튼
