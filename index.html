@@ -370,6 +370,10 @@
     footer{background:var(--soft);border-top:1px solid var(--line-soft);padding:56px 24px 40px;}
     footer a{transition:color .15s ease;}
     footer a:hover{color:var(--accent) !important;}
+  .ofc-card{position:relative;}
+    .sup-only{display:none !important;}
+    .ofc-replace{position:absolute;top:8px;right:8px;z-index:3;height:30px;padding:0 12px;border:0;border-radius:4px;background:rgba(28,42,58,0.88);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .ofc-replace:hover{background:rgba(28,42,58,1);}
   </style>
 </head>
 <body>
@@ -507,53 +511,7 @@
     </div>
   </section>
 
-  <!-- ===================== 소개 ===================== -->
-  <section id="about" class="section" style="scroll-margin-top:110px;">
-    <div class="wrap" style="max-width:900px;">
-      <div style="text-align:center;">
-        <span class="eyebrow">소개</span>
-        <h2 class="sec-h2">예수 그리스도 안에서<br>한 형제 된 공동체</h2>
-        <p class="sec-sub" style="max-width:640px;margin-left:auto;margin-right:auto;">
-          2010년 설립 · 약칭 삼기연 · 12개 교단 49개 교회<br><br>
-          화성특례시 삼괴지역기독교연합회는 우정읍과 장안면에서 교회를 섬기는 목회자들이
-          교파를 넘어 한 형제처럼 모인 작은 연합 공동체입니다. 작은 교회와 큰 교회가 한 식탁에
-          둘러앉아 손을 맞잡는 자리가 곧 우리 지역 복음의 통로라 믿습니다.</p>
-      </div>
-      <div class="about-vals">
-        <div class="card">
-          <h3>친목과 화합</h3>
-          <p>교파와 규모를 넘어 매월 함께 기도하고 식탁에서 마음을 나눕니다.</p>
-        </div>
-        <div class="card">
-          <h3>지역 복음화</h3>
-          <p>우정·장안 지역 영혼을 향한 부담을 함께 짊어지고 복음의 향기를 흘려보냅니다.</p>
-        </div>
-        <div class="card">
-          <h3>교회 부흥과 다음 세대</h3>
-          <p>작은 교회를 함께 일으키고 장학사업과 음악회로 다음 세대를 격려합니다.</p>
-        </div>
-      </div>
-      <!-- 최근 활동 -->
-      <div class="about-recent">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-          <h3 style="font-size:20px;">최근 활동</h3>
-          <a href="history.html" style="font-size:14px;font-weight:700;color:var(--accent);">걸어온 길 전체 보기 →</a>
-        </div>
-        <div style="margin-top:10px;">
-          <a class="ar-row" href="https://2903.notion.site/6-3-36fcfb078efd81bcb13dc89e68a9c4a2?source=copy_link" target="_blank" rel="noopener">
-            <span class="ar-date">2026. 6. 3.</span>
-            <span class="ar-title">6·3 지방선거 정책질의서 발송 및 회신</span>
-            <span class="ar-go">자세히 →</span>
-          </a>
-          <a class="ar-row" href="https://2903.notion.site/2026-06-01-372cfb078efd80a6b665d507025e66bc?source=copy_link" target="_blank" rel="noopener">
-            <span class="ar-date">2026. 6. 1.</span>
-            <span class="ar-title">삼기연 목회자 부부 야유회</span>
-            <span class="ar-go">자세히 →</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+  
 
   <!-- ===================== 공지사항 ===================== -->
   <section id="notices" class="section" style="scroll-margin-top:110px;background:var(--soft);">
@@ -642,6 +600,54 @@
     </div>
   </section>
 
+  <!-- ===================== 소개 ===================== -->
+  <section id="about" class="section" style="scroll-margin-top:110px;">
+    <div class="wrap" style="max-width:900px;">
+      <div style="text-align:center;">
+        <span class="eyebrow">소개</span>
+        <h2 class="sec-h2">예수 그리스도 안에서<br>한 형제 된 공동체</h2>
+        <p class="sec-sub" style="max-width:640px;margin-left:auto;margin-right:auto;">
+          2010년 설립 · 약칭 삼기연 · 12개 교단 49개 교회<br><br>
+          화성특례시 삼괴지역기독교연합회는 우정읍과 장안면에서 교회를 섬기는 목회자들이
+          교파를 넘어 한 형제처럼 모인 작은 연합 공동체입니다. 작은 교회와 큰 교회가 한 식탁에
+          둘러앉아 손을 맞잡는 자리가 곧 우리 지역 복음의 통로라 믿습니다.</p>
+      </div>
+      <div class="about-vals">
+        <div class="card">
+          <h3>친목과 화합</h3>
+          <p>교파와 규모를 넘어 매월 함께 기도하고 식탁에서 마음을 나눕니다.</p>
+        </div>
+        <div class="card">
+          <h3>지역 복음화</h3>
+          <p>우정·장안 지역 영혼을 향한 부담을 함께 짊어지고 복음의 향기를 흘려보냅니다.</p>
+        </div>
+        <div class="card">
+          <h3>교회 부흥과 다음 세대</h3>
+          <p>작은 교회를 함께 일으키고 장학사업과 음악회로 다음 세대를 격려합니다.</p>
+        </div>
+      </div>
+      <!-- 최근 활동 -->
+      <div class="about-recent">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;">
+          <h3 style="font-size:20px;">최근 활동</h3>
+          <a href="history.html" style="font-size:14px;font-weight:700;color:var(--accent);">걸어온 길 전체 보기 →</a>
+        </div>
+        <div style="margin-top:10px;">
+          <a class="ar-row" href="https://2903.notion.site/6-3-36fcfb078efd81bcb13dc89e68a9c4a2?source=copy_link" target="_blank" rel="noopener">
+            <span class="ar-date">2026. 6. 3.</span>
+            <span class="ar-title">6·3 지방선거 정책질의서 발송 및 회신</span>
+            <span class="ar-go">자세히 →</span>
+          </a>
+          <a class="ar-row" href="https://2903.notion.site/2026-06-01-372cfb078efd80a6b665d507025e66bc?source=copy_link" target="_blank" rel="noopener">
+            <span class="ar-date">2026. 6. 1.</span>
+            <span class="ar-title">삼기연 목회자 부부 야유회</span>
+            <span class="ar-go">자세히 →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== 임원 ===================== -->
   <section id="org" class="section" style="scroll-margin-top:110px;">
     <div class="wrap" style="text-align:center;">
@@ -649,7 +655,8 @@
       <h2 class="sec-h2">연합회를 섬기는 사람들</h2>
       <p class="sec-sub">제19회기 · 2026년 임원진</p>
       <div class="ofc-grid">
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="1">
+          <button type="button" class="ofc-replace sup-only" data-slot="1">사진 교체</button>
           <img src="assets/img/ofc-1.webp" alt="회장 장명희 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">회장</div>
@@ -657,7 +664,8 @@
             <div class="ofc-aff">조암신흥교회 · 예장(통합)</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="2">
+          <button type="button" class="ofc-replace sup-only" data-slot="2">사진 교체</button>
           <img src="assets/img/ofc-2.png" alt="부회장 이정렬 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">부회장</div>
@@ -665,7 +673,8 @@
             <div class="ofc-aff">엘바람교회 · 연합오순절</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="3">
+          <button type="button" class="ofc-replace sup-only" data-slot="3">사진 교체</button>
           <img src="assets/img/ofc-3.webp" alt="사무총장 김낭주 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">사무총장</div>
@@ -673,7 +682,8 @@
             <div class="ofc-aff">시은소교회 · 기감</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="4">
+          <button type="button" class="ofc-replace sup-only" data-slot="4">사진 교체</button>
           <img src="assets/img/ofc-4.png" alt="부사무총장 조영애 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">부사무총장</div>
@@ -681,7 +691,8 @@
             <div class="ofc-aff">브니엘교회 · 예장(개혁)</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="5">
+          <button type="button" class="ofc-replace sup-only" data-slot="5">사진 교체</button>
           <img src="assets/img/ofc-5.png" alt="서기 김동석 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">서기</div>
@@ -689,7 +700,8 @@
             <div class="ofc-aff">운평장로교회 · 예장(합동)</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="6">
+          <button type="button" class="ofc-replace sup-only" data-slot="6">사진 교체</button>
           <img src="assets/img/ofc-6.png" alt="회계 김두희 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">회계</div>
@@ -697,7 +709,8 @@
             <div class="ofc-aff">장안제일교회 · 예장(통합)</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="7">
+          <button type="button" class="ofc-replace sup-only" data-slot="7">사진 교체</button>
           <img src="assets/img/ofc-7.png" alt="실무위원 오동길 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">실무위원</div>
@@ -705,7 +718,8 @@
             <div class="ofc-aff">굳프랜드교회 · 예장(백석)</div>
           </div>
         </div>
-        <div class="ofc-card">
+        <div class="ofc-card" data-slot="8">
+          <button type="button" class="ofc-replace sup-only" data-slot="8">사진 교체</button>
           <img src="assets/img/ofc-8.png" alt="실무위원 김용태 목사" class="ofc-photo" />
           <div class="ofc-body">
             <div class="ofc-role">실무위원</div>
@@ -1289,6 +1303,54 @@ if ('serviceWorker' in navigator) {
   // 초기 로드 (관리자 판별 후 다시 렌더되도록 약간의 지연 재호출)
   loadNotices(); loadPrayer();
   setTimeout(function(){ loadNotices(); loadPrayer(); }, 1200);
+})();
+</script>
+
+<script>
+(function(){
+  async function applyPhotos(){
+    if(!window.sb) return;
+    try{
+      var r=await window.sb.from("officer_card_photos").select("slot,url");
+      if(r.error||!r.data) return;
+      r.data.forEach(function(row){
+        if(!row.url) return;
+        var card=document.querySelector(".ofc-card[data-slot=\""+row.slot+"\"]");
+        if(card){ var img=card.querySelector(".ofc-photo"); if(img) img.src=row.url; }
+      });
+    }catch(_){}
+  }
+  function resize(file,max){ return createImageBitmap(file).then(function(bmp){
+    var sc=Math.min(1,max/Math.max(bmp.width,bmp.height));
+    var w=Math.round(bmp.width*sc),h=Math.round(bmp.height*sc);
+    var cv=document.createElement("canvas");cv.width=w;cv.height=h;
+    cv.getContext("2d").drawImage(bmp,0,0,w,h);
+    return cv.toDataURL("image/webp",0.85);
+  }); }
+  async function initSuper(){
+    if(!window.sb) return;
+    var isSuper=false;
+    try{ var s=await window.sb.auth.getSession(); var u=s.data&&s.data.session?s.data.session.user:null;
+      isSuper=!!(u&&window.isSuperAdmin&&window.isSuperAdmin(u)); }catch(_){}
+    if(!isSuper) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".sup-only"),function(el){ el.classList.remove("sup-only"); });
+    var fi=document.createElement("input"); fi.type="file"; fi.accept="image/*"; fi.style.display="none"; document.body.appendChild(fi);
+    var curSlot=null;
+    Array.prototype.forEach.call(document.querySelectorAll(".ofc-replace"),function(btn){
+      btn.addEventListener("click",function(){ curSlot=btn.getAttribute("data-slot"); fi.value=""; fi.click(); });
+    });
+    fi.addEventListener("change",async function(){
+      var file=fi.files&&fi.files[0]; if(!file||!curSlot) return;
+      var card=document.querySelector(".ofc-card[data-slot=\""+curSlot+"\"]"); var img=card&&card.querySelector(".ofc-photo");
+      try{
+        var url=await resize(file,560);
+        var up=await window.sb.from("officer_card_photos").upsert({slot:curSlot,url:url},{onConflict:"slot"});
+        if(up.error){ alert("저장 실패: "+up.error.message); return; }
+        if(img) img.src=url; alert("사진을 교체했습니다.");
+      }catch(e){ alert("이미지 처리 실패: "+((e&&e.message)||e)); }
+    });
+  }
+  applyPhotos(); initSuper();
 })();
 </script>
 </body>
