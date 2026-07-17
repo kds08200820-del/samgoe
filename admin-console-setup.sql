@@ -229,3 +229,10 @@ begin
 end; $$;
 revoke all on function public.admin_dashboard() from public, anon;
 grant execute on function public.admin_dashboard() to authenticated;
+
+-- 11) 개인정보 보호 일원화 ------------------------------------
+--   관리자의 '원본 직접 조회' 정책(admin_select)을 제거한다.
+--   → 관리자는 회원 정보를 admin_list_members(마스킹) / admin_reveal_member(원본·감사로그 기록)
+--     로만 볼 수 있어, admin.html·운영콘솔 어디서도 원본이 그냥 노출되지 않는다.
+--   ※ 본인 정보(own_select)와 관리용 update/insert/delete 정책은 그대로 유지된다.
+drop policy if exists "admin_select" on public.profiles;
