@@ -88,10 +88,10 @@
       padding:4px 6px;font-family:inherit;}
     .itools button:hover{color:var(--ink);text-decoration:underline;}
     .itools .idel:hover{color:var(--error);}
-    .imedia{position:relative;background:#000;overflow:hidden;}
+    .imedia{position:relative;background:#000;overflow:hidden;touch-action:pan-y;}
     .imedia .track{display:flex;transition:transform .28s ease;}
     .imedia .track img{width:100%;flex:0 0 100%;object-fit:contain;max-height:64vh;display:block;
-      cursor:zoom-in;background:#000;}
+      cursor:zoom-in;background:#000;-webkit-user-drag:none;user-select:none;-webkit-user-select:none;}
     .inav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:50%;
       background:rgba(255,255,255,0.88);color:#111;font-size:18px;line-height:1;cursor:pointer;z-index:2;
       display:flex;align-items:center;justify-content:center;}
@@ -170,43 +170,10 @@
       <p class="sub">함께한 순간들을 나눠 주세요 · 정회원이면 글과 사진을 올릴 수 있습니다.</p>
     </div>
 
-    <!-- 정회원: 글쓰기 -->
-    <div class="writeBox" id="writeBox" style="display:none;">
-      <h3>새 게시글 올리기</h3>
-      <div class="fld">
-        <label for="pTitle">제목</label>
-        <input id="pTitle" type="text" maxlength="80" placeholder="예: 2026 3·1절 기념 공감음악회" />
-      </div>
-      <div class="frow">
-        <div class="fld">
-          <label for="pEvent">행사명 <span style="font-weight:400;color:var(--muted)">(선택 · 입력하면 다음부터 추천)</span></label>
-          <input id="pEvent" type="text" list="eventList" maxlength="60" placeholder="예: 조찬기도회" autocomplete="off" />
-          <datalist id="eventList"></datalist>
-        </div>
-        <div class="fld">
-          <label for="pDate">날짜</label>
-          <input id="pDate" type="date" />
-        </div>
-      </div>
-      <div class="fld">
-        <label for="pBody">설명 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
-        <textarea id="pBody" maxlength="1000" placeholder="행사 내용을 간단히 적어 주세요."></textarea>
-      </div>
-      <div class="fld">
-        <label>사진</label>
-        <div class="drop" id="drop">
-          <div class="big">사진을 여기로 끌어다 놓으세요</div>
-          <div class="small">또는 <u>클릭해서 선택</u> · 여러 장 가능 · 올릴 때 자동으로 웹 크기로 줄입니다</div>
-        </div>
-        <input type="file" id="fileInput" accept="image/*" multiple hidden />
-        <div class="thumbs" id="thumbs"></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-        <button class="btn" id="submitPost">게시글 등록</button>
-        <span class="prog" id="prog"></span>
-      </div>
+    <!-- 정회원: 글쓰기 버튼 (폼은 팝업으로) -->
+    <div style="text-align:center;margin-top:28px;">
+      <button class="btn" id="writeOpenBtn" style="display:none;">＋ 게시글 올리기</button>
     </div>
-
     <!-- 비회원/일반회원 안내 -->
     <div class="notice" id="guestNotice" style="display:none;"></div>
 
@@ -222,6 +189,50 @@
     <div class="modal" id="detailModal"></div>
   </div>
 
+  <!-- 글쓰기 팝업 (정회원 · '＋ 게시글 올리기' 버튼으로 열림) -->
+  <div class="overlay" id="writeOverlay">
+    <div class="modal" style="max-width:640px;">
+      <div class="writeBox" id="writeBox" style="margin:0;border:0;">
+        <button class="mclose" id="wClose" aria-label="닫기" style="position:absolute;top:14px;right:16px;">×</button>
+        <div style="position:relative;">
+          <h3>새 게시글 올리기</h3>
+          <div class="fld">
+            <label for="pTitle">제목</label>
+            <input id="pTitle" type="text" maxlength="80" placeholder="예: 2026 3·1절 기념 공감음악회" />
+          </div>
+          <div class="frow">
+            <div class="fld">
+              <label for="pEvent">행사명 <span style="font-weight:400;color:var(--muted)">(선택 · 입력하면 다음부터 추천)</span></label>
+              <input id="pEvent" type="text" list="eventList" maxlength="60" placeholder="예: 조찬기도회" autocomplete="off" />
+              <datalist id="eventList"></datalist>
+            </div>
+            <div class="fld">
+              <label for="pDate">날짜</label>
+              <input id="pDate" type="date" />
+            </div>
+          </div>
+          <div class="fld">
+            <label for="pBody">설명 <span style="font-weight:400;color:var(--muted)">(선택)</span></label>
+            <textarea id="pBody" maxlength="1000" placeholder="행사 내용을 간단히 적어 주세요."></textarea>
+          </div>
+          <div class="fld">
+            <label>사진</label>
+            <div class="drop" id="drop">
+              <div class="big">사진을 여기로 끌어다 놓으세요</div>
+              <div class="small">또는 <u>클릭해서 선택</u> · 여러 장 가능 · 올릴 때 자동으로 웹 크기로 줄입니다</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" multiple hidden />
+            <div class="thumbs" id="thumbs"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+            <button class="btn" id="submitPost">게시글 등록</button>
+            <span class="prog" id="prog"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 라이트박스 -->
   <div class="lb" id="lightbox">
     <button class="x" id="lbClose" aria-label="닫기">×</button>
@@ -233,7 +244,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
-  <script src="auth.js?v=10"></script>
+  <script src="auth.js?v=11"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isFull = false;
     var POSTS = [], PH = {}, CM = {}, RX = {};  // maps keyed by post_id
@@ -392,7 +403,11 @@
         pendingFiles=[]; renderThumbs();
         prog.textContent='게시글이 등록되었습니다.'+(fail?(' ('+fail+'장 실패)'):'');
         await loadAll();
-        setTimeout(function(){ if(prog.textContent.indexOf('등록')>=0) prog.textContent=''; }, 4000);
+        // 등록 완료 → 팝업 닫기 (새 게시물이 목록 맨 앞에 표시됨)
+        setTimeout(function(){
+          if(document.getElementById('writeOverlay').classList.contains('on')) requestCloseTop();
+          prog.textContent='';
+        }, 900);
       }catch(e){
         prog.textContent='등록 실패: '+(e.message||e);
       }
@@ -407,6 +422,7 @@
       var name = modalStack.pop();
       if(name === 'lightbox') hideLightbox();
       else if(name === 'detail') hideDetail();
+      else if(name === 'write') hideWrite();
     });
 
     // ---------- 상세 모달 ----------
@@ -489,6 +505,38 @@
       if(track) modal.querySelectorAll('.imedia .track img').forEach(function(img){
         img.addEventListener('click', function(){ openLightbox(photos.map(function(x){return x.url;}), parseInt(img.getAttribute('data-idx'),10)); });
       });
+      // 쓸어 넘기기 (모바일·마우스 드래그 공용) — 손을 따라 움직이고, 충분히 밀면 다음/이전 장
+      var mediaEl = modal.querySelector('.imedia');
+      if(mediaEl && track && photos.length > 1){
+        var swX = null, swDx = 0, swMoved = 0;
+        mediaEl.addEventListener('pointerdown', function(e){
+          swX = e.clientX; swDx = 0; swMoved = 0;
+          try{ mediaEl.setPointerCapture(e.pointerId); }catch(_){}
+        });
+        mediaEl.addEventListener('pointermove', function(e){
+          if(swX === null) return;
+          swDx = e.clientX - swX;
+          swMoved = Math.max(swMoved, Math.abs(swDx));
+          track.style.transition = 'none';
+          track.style.transform = 'translateX(calc(-' + (slideIdx*100) + '% + ' + swDx + 'px))';
+        });
+        function swEnd(){
+          if(swX === null) return;
+          track.style.transition = '';
+          var th = Math.max(40, (mediaEl.clientWidth || 300) * 0.15);
+          if(Math.abs(swDx) > th){
+            slideIdx = Math.min(photos.length - 1, Math.max(0, slideIdx + (swDx < 0 ? 1 : -1)));
+          }
+          drawSlide(); swX = null; swDx = 0;
+        }
+        mediaEl.addEventListener('pointerup', swEnd);
+        mediaEl.addEventListener('pointercancel', swEnd);
+        // 쓸어 넘긴 경우에는 사진 클릭(라이트박스 확대) 무시
+        mediaEl.addEventListener('click', function(e){
+          if(swMoved > 8){ e.preventDefault(); e.stopPropagation(); }
+        }, true);
+        mediaEl.addEventListener('dragstart', function(e){ e.preventDefault(); });
+      }
       // 좋아요·댓글
       var heart = document.getElementById('iHeart');
       if(heart) heart.addEventListener('click', function(){ toggleReaction(p.id,'❤️'); });
@@ -624,6 +672,13 @@
     document.getElementById('lbNext').addEventListener('click', function(e){ e.stopPropagation(); lbIdx=(lbIdx+1)%lbPhotos.length; drawLb(); });
     document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
 
+    // ---------- 글쓰기 팝업 ----------
+    function openWrite(){ document.getElementById('writeOverlay').classList.add('on'); document.body.style.overflow='hidden'; pushModal('write'); }
+    function hideWrite(){ document.getElementById('writeOverlay').classList.remove('on'); if(!modalStack.length) document.body.style.overflow=''; }
+    document.getElementById('writeOpenBtn').addEventListener('click', openWrite);
+    document.getElementById('wClose').addEventListener('click', requestCloseTop);
+    document.getElementById('writeOverlay').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
+
     // 오버레이 배경 클릭 / ESC 로 닫기
     document.getElementById('detailOverlay').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
     document.addEventListener('keydown', function(e){
@@ -648,7 +703,7 @@
 
       isFull = myProfile && myProfile.member_type === '정회원';
       if(isFull){
-        document.getElementById('writeBox').style.display='block';
+        document.getElementById('writeOpenBtn').style.display='inline-block';
         document.getElementById('pDate').value = todayStr();
       } else {
         var n = document.getElementById('guestNotice'); n.style.display='block';

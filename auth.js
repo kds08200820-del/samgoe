@@ -96,7 +96,6 @@
       if (window.isConsoleAdmin(user, profile)) parts.push('<a href="operator.html" style="color:#ffd479;font-weight:700">운영관리</a>');
       parts.push('<a href="inquiry.html" style="color:rgba(255,255,255,0.9)">문의</a>');
       if (window.isAdmin(user, profile)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
-      if (profile && profile.officer_role) parts.push('<a href="officer.html" style="color:#8fc0ff;font-weight:700">임원실</a>');
       if (window.isSamo(user, profile)) parts.push('<a href="samo.html" style="color:#f6b6d0;font-weight:700">사모 게시판</a>');
       parts.push('<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>');
       parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
