@@ -101,7 +101,8 @@
     @media (max-width:960px){ .nav-links a:not(.nav-cta):not(.nav-ext){display:none;} }
 
     /* ===================== HERO — 마우스 반응형 파티클 ===================== */
-    .hero{position:relative;min-height:620px;display:flex;align-items:center;justify-content:center;
+    .hero{position:relative;min-height:calc(100vh - 100px);min-height:calc(100svh - 100px);
+      display:flex;align-items:center;justify-content:center;
       background:var(--bg);overflow:hidden;}
     #heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
     .hero .in{position:relative;z-index:1;max-width:840px;width:100%;margin:0 auto;
@@ -124,7 +125,6 @@
     .btn-ghost-dark:hover{background:rgba(255,255,255,0.12);}
     .hero-contact{margin-top:36px;font-size:13.5px;font-weight:500;color:var(--faint);}
     @media (max-width:720px){
-      .hero{min-height:0;}
       .hero .in{padding:72px 20px 60px;}
     }
 
@@ -134,8 +134,7 @@
       padding:26px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;}
     a.card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
     a.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:#d8e2f0;}
-    .card.accent{background:linear-gradient(135deg,#1e40af 0%,#2563eb 60%,#3b82f6 100%);
-      border:0;color:#fff;}
+    .card.accent{background:var(--accent);border:0;color:#fff;}
     .dc-label{font-size:12.5px;font-weight:700;letter-spacing:0.04em;color:var(--muted);text-transform:uppercase;}
     .card.accent .dc-label{color:rgba(255,255,255,0.75);}
     .dc-big{font-size:34px;font-weight:800;letter-spacing:-0.02em;line-height:1.15;color:var(--ink);}
@@ -395,7 +394,7 @@
         <span>삼기연</span>
       </a>
       <div class="nav-links">
-        <a href="#dashboard">한눈에</a>
+        <a href="#dashboard">대시보드</a>
         <a href="#about">소개</a>
         <a href="#notices">공지</a>
         <a href="#prayer">기도회</a>
@@ -427,35 +426,41 @@
   </section>
 
   <script>
-  /* 히어로 파티클 — 마우스를 따라 밀려나는 컬러 대시 */
+  /* 히어로 파티클 — 콘텐츠 주위를 함께 도는 대시 스웜 (마우스 반응) */
   (function(){
     var canvas = document.getElementById('heroCanvas');
     if(!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext('2d');
     var hero = canvas.parentElement;
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var COLORS = ['#4285f4','#5e7ce2','#ea4335','#d96570','#a142f4','#7c5cff','#f29900','#fbbc04'];
+    /* 위치(좌→우)에 따른 그라데이션: 파랑 → 남보라 → 보라 → 다홍 → 주황 */
+    var STOPS = [[66,133,244],[94,114,235],[161,66,244],[234,67,120],[242,153,0]];
     var W = 0, H = 0, parts = [], mouse = {x:-9999, y:-9999};
     var running = false, rafId = 0;
 
+    function colorAt(p){
+      p = Math.min(Math.max(p, 0), 1) * (STOPS.length - 1);
+      var i = Math.min(p | 0, STOPS.length - 2), f = p - i;
+      var a = STOPS[i], b = STOPS[i + 1];
+      return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' +
+                      Math.round(a[1] + (b[1] - a[1]) * f) + ',' +
+                      Math.round(a[2] + (b[2] - a[2]) * f) + ')';
+    }
+
     function build(){
       parts = [];
-      var n = Math.round(W * H / 8500);
-      var cx = W / 2, cy = H / 2;
+      var n = Math.min(300, Math.round(W * H / 3200));
       for(var i = 0; i < n; i++){
-        var x = Math.random() * W, y = Math.random() * H;
-        /* 중앙 텍스트 주변은 밀도를 낮춰 가독성 확보 */
-        var nx = (x - cx) / (W * 0.30), ny = (y - cy) / (H * 0.34);
-        if(nx * nx + ny * ny < 1 && Math.random() < 0.75){ continue; }
+        var u = Math.pow(Math.random(), 0.85); /* 안쪽이 살짝 더 촘촘 */
         parts.push({
-          bx: x, by: y, ox: 0, oy: 0,
-          len: 4 + Math.random() * 7, w: 2 + Math.random() * 1.6,
-          rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.012,
-          color: COLORS[(Math.random() * COLORS.length) | 0],
-          phase: Math.random() * Math.PI * 2,
-          amp: 5 + Math.random() * 12,
-          speed: 0.25 + Math.random() * 0.5,
-          alpha: 0.45 + Math.random() * 0.5
+          theta: Math.random() * Math.PI * 2,      /* 궤도상 위치 */
+          u: u,                                    /* 안쪽 0 ~ 바깥쪽 1 */
+          omega: 0.10 + 0.07 * (1 - u),            /* 안쪽일수록 조금 빠르게 */
+          wobAmp: 0.02 + Math.random() * 0.04,
+          wobPhase: Math.random() * Math.PI * 2,
+          len: 5 + Math.random() * 6, w: 2 + Math.random() * 1.4,
+          alpha: 0.4 + Math.random() * 0.5,
+          ox: 0, oy: 0, spin: 0
         });
       }
     }
@@ -471,22 +476,33 @@
 
     function draw(t){
       ctx.clearRect(0, 0, W, H);
-      var R = 140;
+      var cx = W / 2, cy = H / 2, R = 150;
+      /* 중앙 텍스트를 비켜 가는 타원 궤도 띠 */
+      var rxMin = Math.min(W * 0.34, 460), rxMax = Math.max(rxMin + 60, W * 0.48);
+      var ryMin = Math.min(H * 0.34, 220), ryMax = Math.max(ryMin + 50, H * 0.47);
       for(var i = 0; i < parts.length; i++){
         var p = parts[i];
-        var x = p.bx + Math.cos(t * p.speed + p.phase) * p.amp + p.ox;
-        var y = p.by + Math.sin(t * p.speed * 0.8 + p.phase) * p.amp + p.oy;
+        var th = p.theta + t * p.omega;
+        var wob = 1 + p.wobAmp * Math.sin(t * 0.6 + p.wobPhase); /* 궤도 숨쉬기 */
+        var rx = (rxMin + (rxMax - rxMin) * p.u) * wob;
+        var ry = (ryMin + (ryMax - ryMin) * p.u) * wob;
+        var x = cx + Math.cos(th) * rx + p.ox;
+        var y = cy + Math.sin(th) * ry + p.oy;
+        /* 마우스 반응 — 부드럽게 밀려났다가 흐름으로 복귀 */
         var dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
         if(d2 < R * R){
           var d = Math.sqrt(d2) || 1, f = (R - d) / R;
-          p.ox += (dx / d) * f * 5; p.oy += (dy / d) * f * 5;
-          p.rot += f * 0.08;
+          f = f * f; /* 가장자리는 약하게, 중심은 강하게 */
+          p.ox += (dx / d) * f * 6; p.oy += (dy / d) * f * 6;
+          p.spin += f * 0.1;
         }
-        p.ox *= 0.90; p.oy *= 0.90;
-        p.rot += p.vr;
+        p.ox *= 0.92; p.oy *= 0.92; p.spin *= 0.95;
+        /* 대시를 진행 방향(궤도 접선)으로 정렬 */
+        var ang = Math.atan2(Math.cos(th) * ry, -Math.sin(th) * rx) + p.spin;
         ctx.save();
-        ctx.translate(x, y); ctx.rotate(p.rot);
-        ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
+        ctx.translate(x, y); ctx.rotate(ang);
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = colorAt((Math.cos(th) + 1) / 2);
         ctx.beginPath();
         if(ctx.roundRect){ ctx.roundRect(-p.len / 2, -p.w / 2, p.len, p.w, p.w / 2); }
         else { ctx.rect(-p.len / 2, -p.w / 2, p.len, p.w); }
