@@ -6,19 +6,24 @@
 -- ============================================================
 
 -- 0) 컬럼 ----------------------------------------------------
-alter table public.profiles add column if not exists admin_role text;   -- null | 'staff'(일반관리자)
-alter table public.profiles add column if not exists deleted_by uuid;   -- 관리자 삭제 시 관리자 id(자진탈퇴는 null)
+alter table public.profiles add column if not exists admin_role text;     -- null | 'staff'(일반관리자)
+alter table public.profiles add column if not exists deleted_by uuid;     -- 관리자 삭제 시 관리자 id(자진탈퇴는 null)
+alter table public.profiles add column if not exists deleted_at timestamptz;   -- 소프트삭제/탈퇴 표시
+alter table public.profiles add column if not exists suspended_at timestamptz; -- 정지 표시
+alter table public.profiles add column if not exists suspend_reason text;      -- 정지 사유
 
 -- 1) 권한 헬퍼 ----------------------------------------------
 create or replace function public.is_super() returns boolean
 language sql stable security definer set search_path=public as $$
   select coalesce((auth.jwt() ->> 'email') = 'kds08200820@gmail.com', false);
 $$;
+-- 콘솔 접근 = 최고관리자(대표) 또는 회장 또는 일반관리자(staff)
 create or replace function public.is_console_admin() returns boolean
 language sql stable security definer set search_path=public as $$
   select public.is_super() or exists(
     select 1 from public.profiles p
-    where p.id = auth.uid() and p.admin_role = 'staff' and p.deleted_at is null);
+    where p.id = auth.uid() and p.deleted_at is null
+      and (p.admin_role = 'staff' or p.officer_role = '회장'));
 $$;
 revoke all on function public.is_super() from public, anon;
 revoke all on function public.is_console_admin() from public, anon;
@@ -59,7 +64,7 @@ create table if not exists public.audit_logs (
 );
 alter table public.audit_logs enable row level security;
 drop policy if exists "al_read" on public.audit_logs;
-create policy "al_read" on public.audit_logs for select to authenticated using ( public.is_console_admin() );
+create policy "al_read" on public.audit_logs for select to authenticated using ( public.is_super() );  -- 감사 로그는 최고관리자만 열람
 -- insert/update/delete 정책 없음 → 사용자 키로는 불가. 기록은 아래 audit() 함수로만.
 -- 수정·삭제를 물리적으로 차단(테이블 소유자/서비스롤조차 트리거를 지워야만 가능 → 변조 흔적):
 create or replace function public.audit_immutable() returns trigger

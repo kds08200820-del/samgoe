@@ -68,7 +68,10 @@
   // 관리자 콘솔 등급
   //  최고관리자(대표) = 이메일 / 일반관리자(상담원) = profile.admin_role === 'staff'
   window.isStaffAdmin = function (profile) { return !!(profile && profile.admin_role === 'staff'); };
-  window.isConsoleAdmin = function (user, profile) { return window.isSuperAdmin(user) || window.isStaffAdmin(profile); };
+  //  콘솔 접근 = 최고관리자(대표) 또는 회장 또는 일반관리자(staff). 그 외 접근 불가.
+  window.isConsoleAdmin = function (user, profile) {
+    return window.isSuperAdmin(user) || window.isStaffAdmin(profile) || !!(profile && profile.officer_role === '회장');
+  };
 
   // 현재 로그인 사용자의 프로필(이름/교회/구분/직책) 조회
   window.getMyProfile = async function () {

@@ -203,7 +203,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
-  <script src="auth.js?v=9"></script>
+  <script src="auth.js?v=10"></script>
   <script>
     var me=null, isSuper=false;
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
@@ -222,7 +222,9 @@
       chip.className='rolechip '+(isSuper?'super':'staff'); chip.textContent=(isSuper?'최고관리자(대표)':'관리자');
       document.getElementById('subLine').textContent = isSuper
         ? '회원 조회·문의 응대·정지/삭제 등 모든 운영 기능을 사용할 수 있습니다.'
-        : '회원 조회와 문의 응대를 할 수 있습니다. (정지·삭제는 최고관리자 전용)';
+        : '회원 조회와 문의 응대를 할 수 있습니다. (정지·삭제·감사로그는 최고관리자 전용)';
+      // 감사 로그는 최고관리자만 — 회장·일반관리자에게는 탭 자체를 숨김
+      if(!isSuper){ var atab=document.querySelector('.tab[data-p="audit"]'); if(atab) atab.remove(); }
 
       // 탭
       Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){
