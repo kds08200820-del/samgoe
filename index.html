@@ -100,32 +100,32 @@
     .nav-ext:hover{border-color:var(--accent);color:var(--accent);}
     @media (max-width:960px){ .nav-links a:not(.nav-cta):not(.nav-ext){display:none;} }
 
-    /* ===================== HERO ===================== */
-    .hero{position:relative;min-height:600px;display:flex;align-items:center;
-      background:var(--dark);overflow:hidden;}
-    .hero-bg{position:absolute;inset:0;background-image:url('assets/img/hero.webp');
-      background-size:cover;background-position:center;}
-    .hero-bg::after{content:'';position:absolute;inset:0;
-      background:linear-gradient(100deg,rgba(8,14,26,0.92) 0%,rgba(8,14,26,0.78) 36%,rgba(8,14,26,0.28) 68%,rgba(8,14,26,0.15) 100%);}
-    .hero .in{position:relative;max-width:1140px;width:100%;margin:0 auto;padding:80px 24px;}
+    /* ===================== HERO — 마우스 반응형 파티클 ===================== */
+    .hero{position:relative;min-height:620px;display:flex;align-items:center;justify-content:center;
+      background:var(--bg);overflow:hidden;}
+    #heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+    .hero .in{position:relative;z-index:1;max-width:840px;width:100%;margin:0 auto;
+      padding:96px 24px;text-align:center;}
     .hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
-      color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.16);
+      color:var(--accent-ink);background:rgba(239,246,255,0.85);border:1px solid #dbe7fb;
       border-radius:999px;padding:7px 15px;backdrop-filter:blur(6px);}
     .hero h1{margin:22px 0 18px;font-size:clamp(36px,5.4vw,58px);line-height:1.14;
-      font-weight:800;letter-spacing:-0.03em;color:#fff;}
-    .hero-verse{margin:0 0 34px;font-size:16.5px;line-height:1.7;color:rgba(255,255,255,0.75);max-width:460px;}
-    .hero-cta-row{display:flex;gap:12px;flex-wrap:wrap;}
+      font-weight:800;letter-spacing:-0.03em;color:var(--ink);}
+    .hero-verse{margin:0 auto 34px;font-size:16.5px;line-height:1.7;color:var(--muted);max-width:460px;}
+    .hero-cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 26px;
       border-radius:999px;font-size:15px;font-weight:700;transition:background .15s ease,color .15s ease,border-color .15s ease,transform .12s ease;}
     .btn:active{transform:scale(0.97);}
     .btn-solid{background:var(--accent);color:#fff;}
     .btn-solid:hover{background:var(--accent-deep);}
+    .btn-ghost{border:1.5px solid var(--line);color:var(--body);background:rgba(255,255,255,0.7);}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
     .btn-ghost-dark{border:1.5px solid rgba(255,255,255,0.35);color:#fff;}
     .btn-ghost-dark:hover{background:rgba(255,255,255,0.12);}
-    .hero-contact{margin-top:36px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,0.6);}
+    .hero-contact{margin-top:36px;font-size:13.5px;font-weight:500;color:var(--faint);}
     @media (max-width:720px){
       .hero{min-height:0;}
-      .hero .in{padding:64px 20px 56px;}
+      .hero .in{padding:72px 20px 60px;}
     }
 
     /* ===================== 대시보드 ===================== */
@@ -410,21 +410,122 @@
     </div>
   </nav>
 
-  <!-- ===================== HERO ===================== -->
+  <!-- ===================== HERO — 마우스 반응형 파티클 ===================== -->
   <section id="top" class="hero">
-    <div class="hero-bg"></div>
+    <canvas id="heroCanvas" aria-hidden="true"></canvas>
     <div class="in">
-      <img src="assets/logo-trans.png" alt="삼기연" style="height:48px;width:auto;filter:brightness(0) invert(1);opacity:0.95;margin-bottom:22px;" />
+      <img src="assets/logo-trans.png" alt="삼기연" style="height:48px;width:auto;margin:0 auto 22px;" />
       <div class="hero-tag">화성특례시 우정읍 · 장안면 &nbsp;|&nbsp; 49개 교회</div>
       <h1>한 형제처럼, 한 마음으로<br>삼괴지역 기독교 연합회</h1>
       <p class="hero-verse">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고” — 시편 133:1</p>
       <div class="hero-cta-row">
         <a href="#dashboard" class="btn btn-solid press">한눈에 보기</a>
-        <a href="#about" class="btn btn-ghost-dark press">연합회 소개</a>
+        <a href="#about" class="btn btn-ghost press">연합회 소개</a>
       </div>
       <div class="hero-contact">문의 · 사무총장 010-4271-5090</div>
     </div>
   </section>
+
+  <script>
+  /* 히어로 파티클 — 마우스를 따라 밀려나는 컬러 대시 */
+  (function(){
+    var canvas = document.getElementById('heroCanvas');
+    if(!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var hero = canvas.parentElement;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var COLORS = ['#4285f4','#5e7ce2','#ea4335','#d96570','#a142f4','#7c5cff','#f29900','#fbbc04'];
+    var W = 0, H = 0, parts = [], mouse = {x:-9999, y:-9999};
+    var running = false, rafId = 0;
+
+    function build(){
+      parts = [];
+      var n = Math.round(W * H / 8500);
+      var cx = W / 2, cy = H / 2;
+      for(var i = 0; i < n; i++){
+        var x = Math.random() * W, y = Math.random() * H;
+        /* 중앙 텍스트 주변은 밀도를 낮춰 가독성 확보 */
+        var nx = (x - cx) / (W * 0.30), ny = (y - cy) / (H * 0.34);
+        if(nx * nx + ny * ny < 1 && Math.random() < 0.75){ continue; }
+        parts.push({
+          bx: x, by: y, ox: 0, oy: 0,
+          len: 4 + Math.random() * 7, w: 2 + Math.random() * 1.6,
+          rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.012,
+          color: COLORS[(Math.random() * COLORS.length) | 0],
+          phase: Math.random() * Math.PI * 2,
+          amp: 5 + Math.random() * 12,
+          speed: 0.25 + Math.random() * 0.5,
+          alpha: 0.45 + Math.random() * 0.5
+        });
+      }
+    }
+
+    function resize(){
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      build();
+      if(reduceMotion) draw(0);
+    }
+
+    function draw(t){
+      ctx.clearRect(0, 0, W, H);
+      var R = 140;
+      for(var i = 0; i < parts.length; i++){
+        var p = parts[i];
+        var x = p.bx + Math.cos(t * p.speed + p.phase) * p.amp + p.ox;
+        var y = p.by + Math.sin(t * p.speed * 0.8 + p.phase) * p.amp + p.oy;
+        var dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
+        if(d2 < R * R){
+          var d = Math.sqrt(d2) || 1, f = (R - d) / R;
+          p.ox += (dx / d) * f * 5; p.oy += (dy / d) * f * 5;
+          p.rot += f * 0.08;
+        }
+        p.ox *= 0.90; p.oy *= 0.90;
+        p.rot += p.vr;
+        ctx.save();
+        ctx.translate(x, y); ctx.rotate(p.rot);
+        ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
+        ctx.beginPath();
+        if(ctx.roundRect){ ctx.roundRect(-p.len / 2, -p.w / 2, p.len, p.w, p.w / 2); }
+        else { ctx.rect(-p.len / 2, -p.w / 2, p.len, p.w); }
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    var elapsed = 0, last = null;
+    function frame(now){
+      if(last !== null) elapsed += Math.min(now - last, 100) / 1000;
+      last = now;
+      draw(elapsed);
+      if(running) rafId = requestAnimationFrame(frame);
+    }
+    function start(){ if(!running && !reduceMotion){ running = true; last = null; rafId = requestAnimationFrame(frame); } }
+    function stop(){ running = false; cancelAnimationFrame(rafId); }
+
+    hero.addEventListener('pointermove', function(e){
+      var r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    });
+    hero.addEventListener('pointerleave', function(){ mouse.x = -9999; mouse.y = -9999; });
+    window.addEventListener('resize', resize);
+
+    /* 화면 밖이거나 탭이 숨겨지면 애니메이션 중지 */
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        entries[0].isIntersecting ? start() : stop();
+      }).observe(hero);
+    } else { start(); }
+    document.addEventListener('visibilitychange', function(){
+      document.hidden ? stop() : start();
+    });
+
+    resize();
+    if(reduceMotion) draw(0);
+  })();
+  </script>
 
   <!-- ===================== 대시보드 ===================== -->
   <section id="dashboard" class="section" style="scroll-margin-top:110px;background:var(--soft);">
