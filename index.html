@@ -517,18 +517,20 @@
 
     function build(){
       parts = [];
-      var n = Math.min(300, Math.round(W * H / 3200));
+      var n = Math.min(280, Math.round(W * H / 3800));
       for(var i = 0; i < n; i++){
-        var u = Math.pow(Math.random(), 0.85); /* 안쪽이 살짝 더 촘촘 */
+        var a0 = Math.random() * Math.PI * 2;
+        var sp = 12 + Math.random() * 14;          /* 천천히 유영하는 기본 속도(px/s) */
         parts.push({
-          theta: Math.random() * Math.PI * 2,      /* 궤도상 위치 */
-          u: u,                                    /* 안쪽 0 ~ 바깥쪽 1 */
-          omega: 0.10 + 0.07 * (1 - u),            /* 안쪽일수록 조금 빠르게 */
-          wobAmp: 0.02 + Math.random() * 0.04,
-          wobPhase: Math.random() * Math.PI * 2,
+          x: Math.random() * W, y: Math.random() * H,
+          vx: Math.cos(a0) * sp, vy: Math.sin(a0) * sp,
+          speed: sp,
+          offAmp: 0.5 + Math.random() * 0.7,       /* 무리 방향 대비 개체별 편차(라디안) */
+          offFreq: 0.15 + Math.random() * 0.2,
+          phase: Math.random() * Math.PI * 2,
+          panic: 0,                                /* 포식자(마우스)를 만난 공포 정도 */
           len: 5 + Math.random() * 6, w: 2 + Math.random() * 1.4,
-          alpha: 0.4 + Math.random() * 0.5,
-          ox: 0, oy: 0, spin: 0
+          alpha: 0.4 + Math.random() * 0.5
         });
       }
     }
@@ -542,35 +544,51 @@
       if(reduceMotion) draw(0);
     }
 
-    function draw(t){
+    function draw(t, dt){
+      dt = dt || 0.016;
       ctx.clearRect(0, 0, W, H);
-      var cx = W / 2, cy = H / 2, R = 150;
-      /* 중앙 텍스트를 비켜 가는 타원 궤도 띠 */
-      var rxMin = Math.min(W * 0.34, 460), rxMax = Math.max(rxMin + 60, W * 0.48);
-      var ryMin = Math.min(H * 0.34, 220), ryMax = Math.max(ryMin + 50, H * 0.47);
+      var cx = W / 2, cy = H / 2, R = 170;
+      /* 무리 전체가 향하는 방향 — 깊은 바다 물고기 떼처럼 느리게 굽이침 */
+      var head = t * 0.015 + 1.2 * Math.sin(t * 0.10) + 0.9 * Math.sin(t * 0.041 + 2.1);
+      /* 중앙 텍스트 회피 타원 */
+      var ax = Math.min(W * 0.30, 430), ay = Math.min(H * 0.32, 240);
       for(var i = 0; i < parts.length; i++){
         var p = parts[i];
-        var th = p.theta + t * p.omega;
-        var wob = 1 + p.wobAmp * Math.sin(t * 0.6 + p.wobPhase); /* 궤도 숨쉬기 */
-        var rx = (rxMin + (rxMax - rxMin) * p.u) * wob;
-        var ry = (ryMin + (ryMax - ryMin) * p.u) * wob;
-        var x = cx + Math.cos(th) * rx + p.ox;
-        var y = cy + Math.sin(th) * ry + p.oy;
-        /* 마우스 반응 — 부드럽게 밀려났다가 흐름으로 복귀 */
-        var dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
-        if(d2 < R * R){
-          var d = Math.sqrt(d2) || 1, f = (R - d) / R;
-          f = f * f; /* 가장자리는 약하게, 중심은 강하게 */
-          p.ox += (dx / d) * f * 6; p.oy += (dy / d) * f * 6;
-          p.spin += f * 0.1;
+        /* 원하는 유영 방향(무리 + 개체 편차) · 꼬리치기 리듬 */
+        var a = head + p.offAmp * Math.sin(t * p.offFreq + p.phase);
+        var s = p.speed * (1 + 0.18 * Math.sin(t * 1.8 + p.phase));
+        var k = Math.min(1, dt * (1.2 + p.panic * 4)); /* 놀랐을 땐 더 급하게 방향 전환 */
+        p.vx += (Math.cos(a) * s - p.vx) * k;
+        p.vy += (Math.sin(a) * s - p.vy) * k;
+        /* 포식자(마우스) — 가까울수록 강하게 흩어짐 */
+        var mdx = p.x - mouse.x, mdy = p.y - mouse.y, md2 = mdx * mdx + mdy * mdy;
+        if(md2 < R * R){
+          var md = Math.sqrt(md2) || 1, f = (R - md) / R;
+          p.vx += (mdx / md) * f * f * 1400 * dt;
+          p.vy += (mdy / md) * f * f * 1400 * dt;
+          p.panic = Math.max(p.panic, f);
         }
-        p.ox *= 0.92; p.oy *= 0.92; p.spin *= 0.95;
-        /* 대시를 진행 방향(궤도 접선)으로 정렬 */
-        var ang = Math.atan2(Math.cos(th) * ry, -Math.sin(th) * rx) + p.spin;
+        p.panic *= Math.exp(-dt * 1.6); /* 공포는 서서히 가라앉고 무리로 복귀 */
+        /* 중앙 텍스트 영역은 부드럽게 비켜 감 */
+        var ex = (p.x - cx) / ax, ey = (p.y - cy) / ay, e2 = ex * ex + ey * ey;
+        if(e2 < 1){
+          var el = Math.sqrt(e2) || 0.001, push = (1 - e2) * 260 * dt;
+          p.vx += (ex / el) * push; p.vy += (ey / el) * push;
+        }
+        /* 속도 제한(평소 느리게, 놀라면 빠르게) */
+        var vmax = 45 + p.panic * 420;
+        var vm = Math.hypot(p.vx, p.vy);
+        if(vm > vmax){ p.vx *= vmax / vm; p.vy *= vmax / vm; }
+        /* 이동 + 화면 가장자리 순환 */
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        var m = 40;
+        if(p.x < -m) p.x = W + m; else if(p.x > W + m) p.x = -m;
+        if(p.y < -m) p.y = H + m; else if(p.y > H + m) p.y = -m;
+        /* 진행 방향으로 정렬해 그리기 */
         ctx.save();
-        ctx.translate(x, y); ctx.rotate(ang);
+        ctx.translate(p.x, p.y); ctx.rotate(Math.atan2(p.vy, p.vx));
         ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = colorAt((Math.cos(th) + 1) / 2);
+        ctx.fillStyle = colorAt(p.x / W);
         ctx.beginPath();
         if(ctx.roundRect){ ctx.roundRect(-p.len / 2, -p.w / 2, p.len, p.w, p.w / 2); }
         else { ctx.rect(-p.len / 2, -p.w / 2, p.len, p.w); }
@@ -581,9 +599,10 @@
 
     var elapsed = 0, last = null;
     function frame(now){
-      if(last !== null) elapsed += Math.min(now - last, 100) / 1000;
+      var d = 0.016;
+      if(last !== null){ d = Math.min(now - last, 100) / 1000; elapsed += d; }
       last = now;
-      draw(elapsed);
+      draw(elapsed, d);
       if(running) rafId = requestAnimationFrame(frame);
     }
     function start(){ if(!running && !reduceMotion){ running = true; last = null; rafId = requestAnimationFrame(frame); } }
