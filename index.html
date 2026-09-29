@@ -24,6 +24,7 @@
   <!-- Pretendard — 한글 최적화 현대 서체 -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="assets/audiobook/player.css" />
 
   <style>
     :root{
@@ -233,6 +234,37 @@
     .pray-row .pr-host{font-size:16px;font-weight:700;color:var(--ink);}
     .pray-row .pr-topic{margin-top:2px;font-size:14.5px;color:var(--muted);}
     .pray-del{margin-left:auto;font-size:12.5px;color:var(--faint);text-decoration:underline;cursor:pointer;}
+    /* ===================== 동화 오디오북 ===================== */
+    .ab-sec{background:linear-gradient(180deg,#fdf8ef 0%,#f7f9fc 100%);}
+    .ab-card{margin-top:40px;display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:center;
+      background:var(--card);border:1px solid var(--line-soft);border-radius:var(--radius);
+      box-shadow:var(--shadow-lift);padding:36px;}
+    .ab-cover{width:100%;height:auto;border-radius:6px 12px 12px 6px;
+      box-shadow:-6px 0 0 -3px #e7dcc7,0 18px 40px rgba(15,23,42,.18);}
+    .ab-kicker{font-size:13px;font-weight:700;color:#b45309;letter-spacing:0.02em;}
+    .ab-title{margin-top:6px;font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-0.03em;color:var(--ink);line-height:1.25;}
+    .ab-subtitle{margin-top:4px;font-size:15.5px;color:var(--muted);}
+    .ab-desc{margin:18px 0 22px;font-size:15.5px;line-height:1.75;color:var(--body);}
+    .ab-credits{margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);
+      font-size:13px;line-height:1.7;color:var(--muted);}
+    .ab-credits b{color:var(--body);font-weight:600;}
+    .ab-qr{margin-top:18px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;
+      background:var(--card);border:1px dashed #cbd5e1;border-radius:var(--radius);padding:22px 24px;}
+    .ab-qr img{width:112px;height:112px;border-radius:8px;border:1px solid var(--line-soft);image-rendering:pixelated;}
+    .ab-qr .qr-txt{flex:1;min-width:220px;}
+    .ab-qr .qr-h{font-size:16px;font-weight:700;color:var(--ink);}
+    .ab-qr .qr-p{margin-top:4px;font-size:14px;line-height:1.6;color:var(--muted);}
+    .ab-qr .qr-p a{color:var(--accent);word-break:break-all;}
+    .ab-qr .qr-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+    .ab-qr .qr-btns a{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;
+      padding:9px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);background:#fff;}
+    .ab-qr .qr-btns a:hover{border-color:var(--accent);color:var(--accent);}
+    .ab-qr .qr-btns a.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+    @media (max-width:760px){
+      .ab-card{grid-template-columns:1fr;gap:26px;padding:26px 22px;}
+      .ab-cover{max-width:220px;margin:0 auto;}
+      .ab-info{text-align:left;}
+    }
     @media (max-width:560px){
       .pray-next{padding:26px 22px;gap:20px;}
       .pray-next .pn-date{padding-right:20px;}
@@ -465,6 +497,7 @@
         <a href="#about">소개</a>
         <a href="#notices">공지</a>
         <a href="#prayer">기도회</a>
+        <a href="#audiobook">오디오북</a>
         <a href="#org">임원</a>
         <a href="#churches">소속교회</a>
         <a href="#bylaws">회칙</a>
@@ -778,6 +811,68 @@
         <div class="adm-row"><button class="adm-btn" id="pmSave" type="button" style="margin-left:auto;">등록하기</button></div>
       </div>
       <div id="prayerList" class="pray-rows" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 동화 오디오북 (삼일만세운동본부 발간) ===================== -->
+  <section id="audiobook" class="section ab-sec" style="scroll-margin-top:110px;">
+    <div class="wrap" style="max-width:960px;">
+      <div style="text-align:center;">
+        <span class="eyebrow" style="color:#b45309;background:#fef3c7;">3·1만세 동화 오디오북</span>
+        <h2 class="sec-h2">귀로 듣는 1919년 수촌리의 봄</h2>
+        <p class="sec-sub" style="max-width:560px;margin-left:auto;margin-right:auto;">
+          삼일만세운동본부가 펴낸 역사 그림책을 오디오북으로 들어 보세요.<br>아이와 함께, 온 가족이 함께 들으면 더 좋습니다.</p>
+      </div>
+
+      <div class="ab-card">
+        <img class="ab-cover" src="assets/audiobook/santokki-cover.jpg" width="720" height="1008" loading="lazy"
+             alt="깡충깡충 춤을 추는 산토끼 — 쌍봉산 산토끼 삼남매 이야기 표지" />
+        <div class="ab-info">
+          <div class="ab-kicker">1919년 봄, 수촌리 만세 이야기</div>
+          <div class="ab-title">깡충깡충 춤을 추는 산토끼</div>
+          <div class="ab-subtitle">쌍봉산 산토끼 삼남매 이야기 · 약 10분</div>
+          <p class="ab-desc">‘댕, 댕, 댕.’ 새벽 종소리에 귀를 쫑긋 세우던 쌍봉산 산토끼 삼남매.
+            겁 많은 콩이, 궁금한 게 많은 달이, 용기 있는 초롱이의 눈으로
+            1919년 화성 수촌리의 만세 이야기를 따라가요.</p>
+
+          <div class="ab-player" data-audiobook data-key="santokki"
+               data-src="assets/audiobook/santokki.mp3" data-cover="assets/audiobook/santokki-cover.jpg"
+               data-title="깡충깡충 춤을 추는 산토끼" data-artist="삼일만세운동본부">
+            <button class="ab-play" type="button" aria-label="재생">
+              <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+              <svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+            </button>
+            <div class="ab-track">
+              <input class="ab-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="재생 위치" />
+              <div class="ab-meta">
+                <span><span class="ab-cur">0:00</span> / <span class="ab-dur">--:--</span></span>
+                <span class="ab-skip">
+                  <button class="ab-back" type="button" aria-label="15초 뒤로">−15초</button>
+                  <button class="ab-fwd" type="button" aria-label="15초 앞으로">+15초</button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ab-credits">
+            글 <b>이숙한</b> · 그림·편집·오디오북 <b>양승만</b> · AI 음원 제작 협력 <b>이동진</b><br>
+            기획 <b>삼일만세운동본부</b> · 펴낸곳 부크크 (2026)
+          </div>
+        </div>
+      </div>
+
+      <div class="ab-qr">
+        <img src="assets/audiobook/santokki-qr.png" alt="오디오북 바로 듣기 QR 코드" width="112" height="112" loading="lazy" />
+        <div class="qr-txt">
+          <div class="qr-h">책 속 QR 코드로 바로 듣기</div>
+          <div class="qr-p">휴대폰 카메라로 QR 코드를 비추면 오디오북 전용 페이지가 열립니다.<br>
+            <a href="book/santokki/">samgoe-cc.or.kr/book/santokki/</a></div>
+          <div class="qr-btns">
+            <a class="primary" href="assets/audiobook/santokki-qr.png" download="깡충깡충_오디오북_QR.png">QR 코드 내려받기 (PNG)</a>
+            <a href="assets/audiobook/santokki-qr.svg" download="깡충깡충_오디오북_QR.svg">인쇄용 벡터 (SVG)</a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1976,5 +2071,6 @@ if ('serviceWorker' in navigator) {
   applyPhotos(); initSuper();
 })();
 </script>
+  <script src="assets/audiobook/player.js" defer></script>
 </body>
 </html>

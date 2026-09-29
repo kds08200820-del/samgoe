@@ -16,6 +16,8 @@ self.addEventListener('fetch', function (e) {
   var url;
   try { url = new URL(e.request.url); } catch (_) { return; }
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // 오디오·영상은 부분 요청(Range)으로 스트리밍하므로 캐시하지 않고 브라우저에 맡깁니다.
+  if (e.request.headers.has('range') || /\.(mp3|mp4|m4a)$/i.test(url.pathname)) return;
   e.respondWith(
     fetch(e.request).then(function (res) {
       try { var c = res.clone(); caches.open(CACHE).then(function (ca) { ca.put(e.request, c); }); } catch (_) {}
