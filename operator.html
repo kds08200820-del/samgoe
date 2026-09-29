@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;--muted-soft:#9a9a9a;
-      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--dark:#1a2129;--navy:#26374d;
+    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;--muted-soft:#9a9a9a;
+      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;--navy:#032257;
       --error:#dc2626;--ok:#0f7b3f;--amber:#b45309;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
@@ -23,7 +23,7 @@
     .title{margin:0;font-weight:700;font-size:28px;color:var(--ink);}
     .rolechip{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
     .rolechip.super{background:#fff7e6;color:var(--amber);border:1px solid #f0d190;}
-    .rolechip.staff{background:#eaf3ff;color:var(--primary);border:1px solid #b9d6ff;}
+    .rolechip.staff{background:#f3efe4;color:var(--primary);border:1px solid #d4bf8c;}
     .sub{margin:8px 0 22px;font-size:14px;color:var(--muted);}
     .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hairline-strong);margin-bottom:24px;flex-wrap:wrap;}
     .tab{padding:12px 18px;font-size:15px;font-weight:700;color:var(--muted);cursor:pointer;background:none;border:0;border-bottom:2px solid transparent;font-family:inherit;}
@@ -55,7 +55,7 @@
     td .em{font-weight:700;color:var(--ink);}
     .mask{font-family:ui-monospace,Menlo,monospace;letter-spacing:0.3px;}
     .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:4px;}
-    .chip.staff{background:#eaf3ff;color:var(--primary);}
+    .chip.staff{background:#f3efe4;color:var(--primary);}
     .badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
     .badge.active{background:#eafaf0;color:var(--ok);border:1px solid #bfe6cd;}
     .badge.suspended{background:#fdecea;color:var(--error);border:1px solid #f3c7c3;}
@@ -66,7 +66,7 @@
     .b{height:32px;padding:0 12px;border:1px solid var(--hairline-strong);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;color:var(--bodytext);}
     .b:hover{background:var(--surface-soft);}
     .b.red{color:var(--error);border-color:#f3c7c3;} .b.red:hover{background:#fdecea;}
-    .b.blue{color:var(--primary);border-color:#b9d6ff;} .b.blue:hover{background:#eaf3ff;}
+    .b.blue{color:var(--primary);border-color:#d4bf8c;} .b.blue:hover{background:#f3efe4;}
     .b.amber{color:var(--amber);border-color:#f0d190;} .b.amber:hover{background:#fff7e6;}
     .dash{color:var(--muted-soft);}
     .empty{padding:44px 20px;text-align:center;color:var(--muted);font-size:15px;}
@@ -108,6 +108,9 @@
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;margin-top:40px;}
     footer a{color:rgba(255,255,255,0.85);font-weight:700;}
   </style>
+  <!-- 운평교회 톤 공용 테마 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
+  <link rel="stylesheet" href="assets/theme.css?v=2" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>

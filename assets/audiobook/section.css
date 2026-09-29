@@ -1,0 +1,36 @@
+/* 동화 오디오북 섹션 (삼일만세운동본부 페이지) — 토큰이 없는 페이지를 위해 기본값 포함 */
+.ab-sec{background:linear-gradient(180deg,#fdf8ef 0%,#f7f5f0 100%);}
+.ab-card{margin-top:40px;display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:center;
+  background:var(--card,#fff);border:1px solid var(--line-soft,#eeebe4);border-radius:var(--radius);
+  box-shadow:var(--shadow-lift);padding:36px;}
+.ab-cover{width:100%;height:auto;border-radius:6px 12px 12px 6px;
+  box-shadow:-6px 0 0 -3px #e7dcc7,0 18px 40px rgba(13,29,58,.18);}
+.ab-kicker{font-size:13px;font-weight:700;color:#b45309;letter-spacing:0.02em;}
+.ab-title{margin-top:6px;font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-0.03em;color:var(--ink);line-height:1.25;}
+.ab-subtitle{margin-top:4px;font-size:15.5px;color:var(--muted);}
+.ab-desc{margin:18px 0 22px;font-size:15.5px;line-height:1.75;color:var(--body);}
+.ab-credits{margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft,#eeebe4);
+  font-size:13px;line-height:1.7;color:var(--muted);}
+.ab-credits b{color:var(--body);font-weight:600;}
+.ab-qr{margin-top:18px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;
+  background:var(--card,#fff);border:1px dashed #d6cfc0;border-radius:var(--radius);padding:22px 24px;}
+.ab-qr img{width:112px;height:112px;border-radius:8px;border:1px solid var(--line-soft,#eeebe4);image-rendering:pixelated;}
+.ab-qr .qr-txt{flex:1;min-width:220px;}
+.ab-qr .qr-h{font-size:16px;font-weight:700;color:var(--ink);}
+.ab-qr .qr-p{margin-top:4px;font-size:14px;line-height:1.6;color:var(--muted);}
+.ab-qr .qr-p a{color:var(--accent);word-break:break-all;}
+.ab-qr .qr-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.ab-qr .qr-btns a{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;
+  padding:9px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);background:#fff;}
+.ab-qr .qr-btns a:hover{border-color:var(--accent);color:var(--accent);}
+.ab-qr .qr-btns a.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+@media (max-width:760px){
+  .ab-card{grid-template-columns:1fr;gap:26px;padding:26px 22px;}
+  .ab-cover{max-width:220px;margin:0 auto;}
+  .ab-info{text-align:left;}
+}
+.ab-sec .ab-wrap{max-width:960px;margin:0 auto;}
+.ab-sec .ab-head{text-align:center;}
+.ab-sec .ab-h2{margin:16px 0 0;font-size:clamp(26px,3.6vw,38px);line-height:1.25;color:var(--ink);}
+.ab-sec .ab-sub{margin:14px auto 0;max-width:560px;font-size:17px;line-height:1.6;color:var(--muted);}
+.ab-sec .eyebrow{display:inline-flex;align-items:center;}

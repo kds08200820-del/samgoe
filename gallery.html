@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#1c69d4;--primary-active:#0653b6;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e6e6;--hairline-strong:#cccccc;--canvas:#fff;--surface-soft:#f7f7f7;--surface-card:#fafafa;--dark:#1a2129;--error:#dc2626;}
+    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--surface-card:#faf9f6;--dark:#0d1d3a;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -34,7 +34,7 @@
     .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
     .drop{border:2px dashed var(--hairline-strong);background:var(--surface-soft);padding:26px 20px;text-align:center;
       cursor:pointer;transition:border-color .15s ease,background .15s ease;}
-    .drop.over{border-color:var(--primary);background:#eef5ff;}
+    .drop.over{border-color:var(--primary);background:#f3efe4;}
     .drop .big{font-size:15px;font-weight:700;color:var(--ink);}
     .drop .small{font-size:12px;color:var(--muted);margin-top:5px;}
     .drop u{color:var(--primary);}
@@ -78,7 +78,7 @@
     /* 인스타그램형 게시물 보기 */
     .ihead{display:flex;align-items:center;gap:11px;padding:13px 16px;border-bottom:1px solid var(--hairline);}
     .ihead .mclose{position:static;width:30px;height:30px;font-size:24px;flex:0 0 auto;}
-    .iava{width:38px;height:38px;border-radius:50%;flex:0 0 auto;background:linear-gradient(135deg,#1c69d4,#7c3aed);
+    .iava{width:38px;height:38px;border-radius:50%;flex:0 0 auto;background:linear-gradient(135deg,#032257,#7c3aed);
       color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
     .iwho{flex:1;min-width:0;}
     .iname{font-weight:700;font-size:14.5px;color:var(--ink);}
@@ -129,7 +129,7 @@
     .rx{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid var(--hairline-strong);background:#fff;
       font-size:15px;cursor:pointer;font-family:inherit;transition:background .12s,border-color .12s;}
     .rx:hover{background:var(--surface-soft);}
-    .rx.on{background:#eaf3ff;border-color:var(--primary);color:var(--primary);font-weight:700;}
+    .rx.on{background:#f3efe4;border-color:var(--primary);color:var(--primary);font-weight:700;}
     .rx .c{font-size:13px;color:var(--muted);}
     .rx.on .c{color:var(--primary);}
     .cmts{margin-top:22px;}
@@ -158,6 +158,9 @@
     .lb .count{position:absolute;bottom:20px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.8);font-size:14px;}
     @media (max-width:620px){ .board{gap:3px;} .post .hov{display:none;} .frow{grid-template-columns:1fr;} .mphotos{grid-template-columns:repeat(2,1fr);} }
   </style>
+  <!-- 운평교회 톤 공용 테마 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
+  <link rel="stylesheet" href="assets/theme.css?v=2" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
@@ -733,6 +736,6 @@
       }
     })();
   </script>
-<div style="background:#1a2129;color:rgba(255,255,255,0.65);padding:20px 24px;text-align:center;font-size:12px;line-height:1.7;">© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp; <a href="terms.html#terms" style="color:rgba(255,255,255,0.85);font-weight:700;">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy" style="color:rgba(255,255,255,0.85);font-weight:700;">개인정보처리방침</a></div>
+<div style="background:#0d1d3a;color:rgba(255,255,255,0.65);padding:20px 24px;text-align:center;font-size:12px;line-height:1.7;">© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp; <a href="terms.html#terms" style="color:rgba(255,255,255,0.85);font-weight:700;">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy" style="color:rgba(255,255,255,0.85);font-weight:700;">개인정보처리방침</a></div>
 </body>
 </html>
