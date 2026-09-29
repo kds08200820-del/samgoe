@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex" />
+  <title>임원방 | 삼일만세운동본부</title>
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=2" />
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부 <span class="full">&nbsp;임원방</span></a>
+    <span id="mAuth"></span>
+  </div></header>
+
+  <main class="m-wrap wide">
+    <div id="gate" class="m-card" style="max-width:520px;margin:40px auto;text-align:center">
+      <img class="m-logo" src="img/logo-192.png" alt="" />
+      <h1 class="m-title" style="font-size:22px">임원방</h1>
+      <p class="m-sub" id="gateMsg" style="margin-bottom:0">권한을 확인하는 중입니다…</p>
+    </div>
+
+    <div id="app" hidden>
+      <div class="o-head">
+        <div><h1>임원방</h1><p id="meLine"></p></div>
+        <button class="m-btn ghost sm" type="button" id="bylawsBtn">📜 현행 회칙 보기</button>
+      </div>
+      <nav class="o-tabs" role="tablist">
+        <button class="o-tab" role="tab" data-tab="docs" aria-selected="true">공문·자료</button>
+        <button class="o-tab" role="tab" data-tab="roster" aria-selected="false">임원 명단</button>
+        <button class="o-tab" role="tab" data-tab="members" aria-selected="false" data-mgr hidden>회원 관리</button>
+        <button class="o-tab" role="tab" data-tab="upload" aria-selected="false">자료 올리기</button>
+      </nav>
+
+      <!-- 공문·자료 -->
+      <section class="o-panel on" id="p-docs">
+        <div class="o-tools">
+          <select class="m-in" id="fYear"><option value="">전체 연도</option></select>
+          <input class="m-in grow" id="fText" type="search" placeholder="제목·문서번호 검색" />
+          <span class="chip gray" id="docCount"></span>
+        </div>
+        <div class="o-cats" id="fCats"></div>
+        <div id="docList"><div class="o-empty">불러오는 중…</div></div>
+      </section>
+
+      <!-- 임원 명단 -->
+      <section class="o-panel" id="p-roster">
+        <div class="o-note">임원방 권한은 이 명단을 기준으로 정해집니다. <b>'로그인 이메일'</b> 칸에 그 임원이 <b>만세운동본부 홈페이지에 가입한 이메일</b>을 넣고 '재직'이면 임원방에 들어올 수 있습니다.
+          <br><b>대표회장·서기</b>는 명단 편집, 회원 관리, 개인정보 포함 자료 열람·자료 삭제 권한을 함께 가집니다. </div>
+        <div class="o-tools"><button class="m-btn sm" id="addOfficer" data-mgr hidden>+ 임원 추가</button><span class="chip gray" id="rosterCount"></span></div>
+        <div class="o-table-wrap"><table class="o-table" id="rosterTable"></table></div>
+      </section>
+
+      <!-- 회원 관리 -->
+      <section class="o-panel" id="p-members">
+        <div class="o-tools">
+          <input class="m-in grow" id="mSearch" type="search" placeholder="이름·이메일 일부로 검색" />
+          <span class="chip gray" id="memCount"></span>
+        </div>
+        <div class="o-table-wrap"><table class="o-table" id="memTable"></table></div>
+      </section>
+
+      <!-- 자료 올리기 -->
+      <section class="o-panel" id="p-upload">
+        <div class="o-grid2">
+          <div class="m-card">
+            <h2>한 건 올리기</h2>
+            <form id="upForm">
+              <div class="o-grid2" style="gap:10px">
+                <div><label class="m-l" for="uYear">연도</label><input class="m-in" id="uYear" type="number" min="1990" max="2100" required /></div>
+                <div><label class="m-l" for="uDate">날짜 <span class="opt">(예: 2026-09-30)</span></label><input class="m-in" id="uDate" placeholder="YYYY-MM-DD" /></div>
+              </div>
+              <label class="m-l" for="uCat">종류</label><select class="m-in" id="uCat"></select>
+              <label class="m-l" for="uTitle">제목</label><input class="m-in" id="uTitle" required />
+              <label class="m-l" for="uNo">문서번호 <span class="opt">(선택)</span></label><input class="m-in" id="uNo" placeholder="예: 제26-01호" />
+              <label class="m-l" for="uFile">열람용 파일 <span class="opt">(PDF 권장 · 50MB 이하)</span></label><input class="m-in" id="uFile" type="file" style="padding-top:10px" required />
+              <label class="m-l" for="uOrig">원본 파일 <span class="opt">(선택 · HWP 등)</span></label><input class="m-in" id="uOrig" type="file" style="padding-top:10px" />
+              <label class="m-l" for="uNote">메모 <span class="opt">(선택)</span></label><input class="m-in" id="uNote" />
+              <label class="m-check" data-mgr hidden><input type="checkbox" id="uSens" /> <span>개인정보 포함 — 대표회장·서기·관리자만 열람</span></label>
+              <div class="m-msg" id="upMsg"></div>
+              <button class="m-btn block" type="submit">올리기</button>
+            </form>
+          </div>
+          <div class="m-card" data-mgr hidden>
+            <h2>폴더 한꺼번에 올리기</h2>
+            <p class="m-help" style="font-size:14px;line-height:1.7">정리해 둔 <b>'임원방_업로드자료'</b> 폴더를 선택하면 안의 <b>manifest.json</b>을 읽어 연도·종류·제목·날짜·문서번호가 자동으로 들어갑니다. 이미 올라간 자료(같은 연도·종류·제목)는 건너뜁니다.</p>
+            <input class="m-in" id="dirPick" type="file" webkitdirectory directory multiple style="padding-top:10px" />
+            <label class="m-check"><input type="checkbox" id="bulkSens" checked /> <span>개인정보 포함 자료도 올리기 <span style="color:var(--muted)">(운영임원만 열람)</span></span></label>
+            <div id="bulkInfo" class="m-help" style="margin-top:10px"></div>
+            <button class="m-btn block" id="bulkGo" type="button" disabled>일괄 올리기 시작</button>
+            <div class="o-prog"><i id="bulkBar"></i></div>
+            <div class="o-log" id="bulkLog" hidden></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 임원 편집 모달 -->
+  <div class="m-modal" id="offModal" role="dialog" aria-modal="true" aria-labelledby="offTitle">
+    <div class="box">
+      <h3 id="offTitle">임원 정보</h3>
+      <form id="offForm">
+        <div class="o-grid2" style="gap:10px">
+          <div><label class="m-l" for="oName">이름</label><input class="m-in" id="oName" required /></div>
+          <div><label class="m-l" for="oRole">직책</label><select class="m-in" id="oRole"></select></div>
+        </div>
+        <label class="m-l" for="oEmail">로그인 이메일 <span class="opt">(만세운동본부 가입 이메일 — 권한 연결)</span></label><input class="m-in" id="oEmail" type="email" />
+        <div class="o-grid2" style="gap:10px">
+          <div><label class="m-l" for="oChurch">소속</label><input class="m-in" id="oChurch" /></div>
+          <div><label class="m-l" for="oPhone">연락처</label><input class="m-in" id="oPhone" type="tel" /></div>
+          <div><label class="m-l" for="oTerm">임기</label><input class="m-in" id="oTerm" placeholder="예: 2026~2027" /></div>
+          <div><label class="m-l" for="oSort">표시 순서</label><input class="m-in" id="oSort" type="number" /></div>
+        </div>
+        <label class="m-l" for="oNote">메모</label><input class="m-in" id="oNote" />
+        <label class="m-check"><input type="checkbox" id="oActive" checked /> <span>재직 중 (해제하면 임원방 권한이 즉시 사라집니다)</span></label>
+        <div class="m-msg" id="offMsg"></div>
+        <div class="acts">
+          <button type="button" class="m-btn danger sm" id="offDel">삭제</button>
+          <span style="flex:1"></span>
+          <button type="button" class="m-btn ghost sm" data-close>취소</button>
+          <button type="submit" class="m-btn sm">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="m-footer">© 2026 삼일만세운동본부 임원방 · 열람한 공문·자료는 본부 업무 외에 배포하지 마세요.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=1"></script>
+  <script src="auth.js?v=1"></script>
+  <script src="officer.js?v=1"></script>
+</body>
+</html>

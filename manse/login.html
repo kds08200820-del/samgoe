@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>로그인 | 삼일만세운동본부</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=2" />
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span id="mAuth"></span>
+  </div></header>
+
+  <main class="m-wrap">
+    <div class="m-card">
+      <img class="m-logo" src="img/logo-192.png" alt="삼일만세운동본부 로고" />
+      <h1 class="m-title">로그인</h1>
+      <p class="m-sub">삼일만세운동본부 회원 로그인</p>
+      <div class="m-msg" id="notice"></div>
+      <form id="f" novalidate>
+        <label class="m-l" for="email">이메일</label>
+        <input class="m-in" id="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        <label class="m-l" for="pw">비밀번호</label>
+        <input class="m-in" id="pw" type="password" required minlength="6" autocomplete="current-password" placeholder="비밀번호" />
+        <label class="m-check"><input type="checkbox" id="remember" checked /> <span>로그인 상태 유지 <span style="color:var(--muted)">(공용 PC에서는 해제하세요)</span></span></label>
+        <div class="m-msg" id="msg"></div>
+        <button class="m-btn block" type="submit">로그인</button>
+      </form>
+      <div class="m-foot"><a href="#" id="forgot">비밀번호를 잊으셨나요?</a></div>
+      <div class="m-foot" style="margin-top:8px">아직 회원이 아니신가요? <a href="signup.html">회원가입</a></div>
+    </div>
+    <a class="m-home" href="./">← 삼일만세운동본부 홈</a>
+  </main>
+
+  <footer class="m-footer">© 2026 삼일만세운동본부 · <a href="terms.html#terms">이용약관</a> · <a href="terms.html#privacy">개인정보처리방침</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=1"></script>
+  <script src="auth.js?v=1"></script>
+  <script>
+  (function () {
+    var f = document.getElementById('f'), msg = document.getElementById('msg'), notice = document.getElementById('notice');
+    var remember = document.getElementById('remember'), emailEl = document.getElementById('email');
+    function show(el, cls, t) { el.className = 'm-msg ' + cls; el.textContent = t; }
+    try { var se = localStorage.getItem('manse_email'); if (se) emailEl.value = se; remember.checked = localStorage.getItem('manse_remember') !== '0'; } catch (_) {}
+
+    var qs = new URLSearchParams(location.search);
+    if (qs.get('joined') === '1') show(notice, 'ok', '가입 신청이 완료되었습니다. 받은 편지함의 확인 메일 링크를 누른 뒤 로그인해 주세요.');
+    if (qs.get('reset') === '1') show(notice, 'ok', '비밀번호가 변경되었습니다. 새 비밀번호로 로그인해 주세요.');
+    // 이메일 확인 링크·OAuth 등으로 돌아왔을 때의 오류 해시(정지 계정 포함)
+    var h = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+    if (h.get('error')) {
+      var desc = (h.get('error_description') || '') + ' ' + (h.get('error_code') || '');
+      history.replaceState(null, '', location.pathname + location.search);
+      show(notice, 'err', /banned/i.test(desc) ? window.mErr('banned') : (/expired/i.test(desc) ? '링크가 만료되었거나 이미 사용되었습니다. 다시 요청해 주세요.' : window.mErr(desc)));
+    }
+    if (!window.MANSE_READY) show(notice, 'info', '로그인 기능 준비 중입니다. (관리자: manse/config.js 에 만세운동본부 Supabase 주소와 공개 키를 입력해 주세요)');
+
+    function nextUrl() {
+      var n = qs.get('next');
+      return (n && /^\/[^\/]/.test(n)) ? n : './';
+    }
+    // 이미 로그인되어 있으면 바로 이동
+    window.mUser().then(function (u) { if (u && !h.get('error')) location.replace(nextUrl()); });
+
+    f.addEventListener('submit', async function (e) {
+      e.preventDefault(); msg.className = 'm-msg';
+      if (!window.msb) { show(msg, 'err', '로그인 기능 준비 중입니다.'); return; }
+      var email = emailEl.value.trim(), pw = document.getElementById('pw').value;
+      if (!email || !pw) { show(msg, 'err', '이메일과 비밀번호를 입력해 주세요.'); return; }
+      window.mSetRemember(remember.checked);
+      try { if (remember.checked) localStorage.setItem('manse_email', email); else localStorage.removeItem('manse_email'); } catch (_) {}
+      var btn = f.querySelector('button'); btn.disabled = true; btn.textContent = '로그인 중…';
+      try {
+        var r = await window.msb.auth.signInWithPassword({ email: email, password: pw });
+        if (r.error) throw r.error;
+        location.href = nextUrl(); return;
+      } catch (ex) { show(msg, 'err', window.mErr(ex)); }
+      btn.disabled = false; btn.textContent = '로그인';
+    });
+
+    document.getElementById('forgot').addEventListener('click', async function (e) {
+      e.preventDefault(); msg.className = 'm-msg';
+      if (!window.msb) { show(msg, 'err', '로그인 기능 준비 중입니다.'); return; }
+      var email = emailEl.value.trim();
+      if (!email) { show(msg, 'err', '위 이메일 칸에 가입한 이메일을 입력한 뒤 다시 눌러 주세요.'); emailEl.focus(); return; }
+      try {
+        var r = await window.msb.auth.resetPasswordForEmail(email, { redirectTo: window.mUrl('reset.html') });
+        if (r.error) throw r.error;
+        show(msg, 'ok', '비밀번호 재설정 메일을 보냈습니다. 링크는 30분 동안 한 번만 사용할 수 있습니다.');
+      } catch (ex) { show(msg, 'err', window.mErr(ex)); }
+    });
+  })();
+  </script>
+</body>
+</html>

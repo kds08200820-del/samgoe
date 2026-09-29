@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>내 정보 | 삼일만세운동본부</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=2" />
+  <style>.m-wrap{max-width:620px}.sec{margin-top:18px}.row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}</style>
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span id="mAuth"></span>
+  </div></header>
+
+  <main class="m-wrap">
+    <h1 style="margin:0 0 4px;font-size:26px">내 정보</h1>
+    <p style="margin:0 0 18px;color:var(--muted)" id="who"></p>
+
+    <section class="m-card">
+      <h2>기본 정보</h2>
+      <form id="pf">
+        <label class="m-l" for="name">이름</label><input class="m-in" id="name" required />
+        <label class="m-l" for="phone">연락처 <span class="opt">(선택)</span></label><input class="m-in" id="phone" type="tel" />
+        <label class="m-l" for="church">소속 단체 <span class="opt">(선택)</span></label><input class="m-in" id="church" />
+        <div class="m-msg" id="pmsg"></div>
+        <button class="m-btn block" type="submit">저장</button>
+      </form>
+    </section>
+
+    <section class="m-card sec" id="linkSec" hidden>
+      <h2>제휴 단체(삼괴연합회) 회원 연동</h2>
+      <div id="lkState" class="row2"></div>
+      <div id="lkForm" style="display:none;margin-top:10px">
+        <label class="m-l" for="sgEmail">삼괴연합회 이메일</label><input class="m-in" id="sgEmail" type="email" autocomplete="off" />
+        <label class="m-l" for="sgPw">삼괴연합회 비밀번호</label><input class="m-in" id="sgPw" type="password" autocomplete="off" />
+        <p class="m-help">확인에만 쓰이며 저장되지 않습니다.</p>
+        <button type="button" class="m-btn sm" id="lkCheck" style="margin-top:8px">확인하고 연동</button>
+      </div>
+      <div class="m-msg" id="lmsg"></div>
+    </section>
+
+    <section class="m-card sec">
+      <h2>이메일 변경</h2>
+      <label class="m-l" for="newEmail">새 이메일</label><input class="m-in" id="newEmail" type="email" />
+      <p class="m-help">새 이메일로 확인 메일이 발송되며, 링크를 눌러야 변경이 완료됩니다. 임원이시면 임원 명단의 이메일도 함께 바꿔 달라고 서기에게 알려 주세요.</p>
+      <div class="m-msg" id="emsg"></div>
+      <button class="m-btn ghost block" id="emailBtn" type="button">이메일 변경 요청</button>
+    </section>
+
+    <section class="m-card sec">
+      <h2>비밀번호 변경</h2>
+      <label class="m-l" for="cur">현재 비밀번호</label><input class="m-in" id="cur" type="password" autocomplete="current-password" />
+      <label class="m-l" for="pw1">새 비밀번호 <span class="opt">(8자 이상)</span></label><input class="m-in" id="pw1" type="password" autocomplete="new-password" />
+      <label class="m-l" for="pw2">새 비밀번호 확인</label><input class="m-in" id="pw2" type="password" autocomplete="new-password" />
+      <div class="m-msg" id="wmsg"></div>
+      <button class="m-btn ghost block" id="pwBtn" type="button">비밀번호 변경</button>
+    </section>
+
+    <section class="m-card sec">
+      <h2>회원 탈퇴</h2>
+      <p class="m-help" style="font-size:14px">탈퇴하면 이름·연락처 등 개인정보는 즉시 지워지고 같은 계정으로 다시 로그인할 수 없습니다. 올리신 자료는 남고 작성자 이름만 '탈퇴한 회원'으로 바뀝니다. 같은 이메일로 다시 가입할 수 있습니다.</p>
+      <label class="m-l" for="wdPw">비밀번호 확인</label><input class="m-in" id="wdPw" type="password" autocomplete="current-password" />
+      <div class="m-msg" id="dmsg"></div>
+      <button class="m-btn danger block" id="wdBtn" type="button">탈퇴하기</button>
+    </section>
+    <a class="m-home" href="./">← 삼일만세운동본부 홈</a>
+  </main>
+  <footer class="m-footer">© 2026 삼일만세운동본부 · <a href="terms.html#terms">이용약관</a> · <a href="terms.html#privacy">개인정보처리방침</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=1"></script>
+  <script src="auth.js?v=1"></script>
+  <script src="samgoe-link.js?v=1"></script>
+  <script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function show(el, cls, t) { el.className = 'm-msg ' + cls; el.textContent = t; }
+    var user = await window.mRequireLogin(); if (!user) return;
+    var prof = (await window.mProfile()) || {};
+    $('who').textContent = user.email;
+    $('name').value = prof.name || ''; $('phone').value = prof.phone || ''; $('church').value = prof.church || '';
+
+    $('pf').addEventListener('submit', async function (e) {
+      e.preventDefault(); var m = $('pmsg');
+      if (!$('name').value.trim()) return show(m, 'err', '이름을 입력해 주세요.');
+      var r = await window.msb.from('profiles').update({ name: $('name').value.trim(), phone: $('phone').value.trim(), church: $('church').value.trim() }).eq('id', user.id);
+      if (r.error) return show(m, 'err', window.mErr(r.error));
+      show(m, 'ok', '저장했습니다.');
+    });
+
+    // ---- 제휴 단체 연동 ----
+    function renderLink() {
+      var el = $('lkState');
+      if (prof.samgoe_uid) {
+        el.innerHTML = '<span class="chip ok">✓ 연동됨</span><span style="font-size:14px">' + window.mEsc(prof.samgoe_email || '') +
+          (prof.samgoe_linked_at ? ' · ' + prof.samgoe_linked_at.slice(0, 10) : '') + '</span><button class="m-btn ghost sm" id="unlink" type="button">연동 해제</button>';
+        $('unlink').onclick = async function () {
+          if (!confirm('삼괴연합회 회원 연동을 해제할까요?')) return;
+          var r = await window.msb.from('profiles').update({ samgoe_uid: null, samgoe_email: null, samgoe_linked_at: null }).eq('id', user.id);
+          if (r.error) return show($('lmsg'), 'err', window.mErr(r.error));
+          prof.samgoe_uid = null; prof.samgoe_email = null; renderLink(); show($('lmsg'), 'ok', '연동을 해제했습니다.');
+        };
+      } else {
+        el.innerHTML = '<span class="chip gray">연동 안 됨</span><button class="m-btn gold sm" id="link" type="button">회원 연동하기</button>';
+        $('link').onclick = async function () {
+          var s = await window.samgoeLink.fromSession();
+          if (s && confirm('이 브라우저에 로그인된 삼괴연합회 회원 ' + (s.name || s.email) + '님과 연동할까요?')) return save(s);
+          $('lkForm').style.display = 'block';
+        };
+      }
+    }
+    async function save(info) {
+      var r = await window.msb.from('profiles').update({ samgoe_uid: info.uid, samgoe_email: info.email, samgoe_linked_at: new Date().toISOString() }).eq('id', user.id);
+      if (r.error) return show($('lmsg'), 'err', window.mErr(r.error));
+      prof.samgoe_uid = info.uid; prof.samgoe_email = info.email; prof.samgoe_linked_at = new Date().toISOString();
+      $('lkForm').style.display = 'none'; renderLink(); show($('lmsg'), 'ok', '삼괴연합회 회원과 연동했습니다.');
+    }
+    $('lkCheck').onclick = async function () {
+      var em = $('sgEmail').value.trim(), pw = $('sgPw').value;
+      if (!em || !pw) return show($('lmsg'), 'err', '삼괴연합회 이메일과 비밀번호를 입력해 주세요.');
+      try { var info = await window.samgoeLink.withPassword(em, pw); $('sgPw').value = ''; await save(info); }
+      catch (ex) { show($('lmsg'), 'err', (ex && ex.message) || '확인하지 못했습니다.'); }
+    };
+    renderLink();
+    // 연동 영역은 이미 연동했거나, 제휴 단체 쪽에서 넘어왔거나, 이 브라우저에 제휴 단체 로그인이 있을 때만 보임
+    if (prof.samgoe_uid || window.mFromSamgoe()) $('linkSec').hidden = false;
+    else window.samgoeLink.fromSession().then(function (s) { if (s) $('linkSec').hidden = false; });
+
+    // ---- 이메일 변경 ----
+    $('emailBtn').onclick = async function () {
+      var ne = $('newEmail').value.trim(), m = $('emsg');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ne)) return show(m, 'err', '올바른 이메일을 입력해 주세요.');
+      var r = await window.msb.auth.updateUser({ email: ne }, { emailRedirectTo: window.mUrl('mypage.html') });
+      if (r.error) return show(m, 'err', window.mErr(r.error));
+      show(m, 'ok', '확인 메일을 보냈습니다. 새 이메일의 링크를 눌러야 변경이 완료됩니다.');
+    };
+
+    // ---- 비밀번호 변경 (현재 비밀번호 재확인) ----
+    $('pwBtn').onclick = async function () {
+      var m = $('wmsg'), cur = $('cur').value, p1 = $('pw1').value, p2 = $('pw2').value;
+      if (p1.length < 8) return show(m, 'err', '새 비밀번호는 8자 이상이어야 합니다.');
+      if (p1 !== p2) return show(m, 'err', '새 비밀번호 확인이 일치하지 않습니다.');
+      var v = await window.msb.auth.signInWithPassword({ email: user.email, password: cur });
+      if (v.error) return show(m, 'err', '현재 비밀번호가 올바르지 않습니다.');
+      var r = await window.msb.auth.updateUser({ password: p1 });
+      if (r.error) return show(m, 'err', window.mErr(r.error));
+      $('cur').value = $('pw1').value = $('pw2').value = '';
+      show(m, 'ok', '비밀번호를 변경했습니다.');
+    };
+
+    // ---- 탈퇴 ----
+    $('wdBtn').onclick = async function () {
+      var m = $('dmsg');
+      var v = await window.msb.auth.signInWithPassword({ email: user.email, password: $('wdPw').value });
+      if (v.error) return show(m, 'err', '비밀번호가 올바르지 않습니다.');
+      if (!confirm('정말 탈퇴하시겠습니까? 되돌릴 수 없습니다.')) return;
+      var r = await window.msb.rpc('withdraw_me');
+      if (r.error) return show(m, 'err', window.mErr(r.error));
+      try { localStorage.removeItem('manse-auth'); sessionStorage.removeItem('manse-auth'); } catch (_) {}
+      try { await window.msb.auth.signOut({ scope: 'local' }); } catch (_) {}
+      alert('탈퇴가 완료되었습니다. 그동안 함께해 주셔서 감사합니다.');
+      location.href = './';
+    };
+  })();
+  </script>
+</body>
+</html>

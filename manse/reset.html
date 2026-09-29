@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>비밀번호 재설정 | 삼일만세운동본부</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=2" />
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span></span>
+  </div></header>
+  <main class="m-wrap">
+    <div class="m-card">
+      <img class="m-logo" src="img/logo-192.png" alt="" />
+      <h1 class="m-title">비밀번호 재설정</h1>
+      <p class="m-sub" id="sub">링크를 확인하는 중입니다…</p>
+      <form id="f" novalidate hidden>
+        <label class="m-l" for="pw">새 비밀번호 <span class="opt">(8자 이상)</span></label>
+        <input class="m-in" id="pw" type="password" minlength="8" autocomplete="new-password" />
+        <label class="m-l" for="pw2">새 비밀번호 확인</label>
+        <input class="m-in" id="pw2" type="password" minlength="8" autocomplete="new-password" />
+        <div class="m-msg" id="msg"></div>
+        <button class="m-btn block" type="submit">비밀번호 변경</button>
+      </form>
+      <div class="m-msg" id="bad"></div>
+    </div>
+    <a class="m-home" href="login.html">← 로그인으로</a>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=1"></script>
+  <script src="auth.js?v=1"></script>
+  <script>
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function show(el, cls, t) { el.className = 'm-msg ' + cls; el.textContent = t; }
+    var h = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+    if (h.get('error') || h.get('error_code')) {
+      $('sub').textContent = '';
+      show($('bad'), 'err', '링크가 만료되었거나 이미 사용되었습니다. 로그인 화면의 "비밀번호를 잊으셨나요?"에서 다시 요청해 주세요.');
+      return;
+    }
+    if (!window.msb) { $('sub').textContent = ''; show($('bad'), 'err', '로그인 기능 준비 중입니다.'); return; }
+    // 링크의 토큰이 세션으로 바뀌기를 잠시 기다림
+    var session = null;
+    for (var i = 0; i < 20 && !session; i++) {
+      var s = await window.msb.auth.getSession(); session = s.data && s.data.session;
+      if (!session) await new Promise(function (r) { setTimeout(r, 300); });
+    }
+    if (!session) { $('sub').textContent = ''; show($('bad'), 'err', '링크를 확인하지 못했습니다. 메일의 링크를 다시 눌러 주시거나 재설정을 다시 요청해 주세요.'); return; }
+    $('sub').textContent = session.user.email + ' 계정의 새 비밀번호를 입력해 주세요.';
+    $('f').hidden = false;
+    $('f').addEventListener('submit', async function (e) {
+      e.preventDefault(); var msg = $('msg'); msg.className = 'm-msg';
+      var pw = $('pw').value, pw2 = $('pw2').value;
+      if (pw.length < 8) return show(msg, 'err', '비밀번호는 8자 이상이어야 합니다.');
+      if (pw !== pw2) return show(msg, 'err', '비밀번호 확인이 일치하지 않습니다.');
+      var b = this.querySelector('button'); b.disabled = true;
+      var r = await window.msb.auth.updateUser({ password: pw });
+      if (r.error) { show(msg, 'err', window.mErr(r.error)); b.disabled = false; return; }
+      try { await window.msb.auth.signOut(); } catch (_) {}
+      location.href = 'login.html?reset=1';
+    });
+  })();
+  </script>
+</body>
+</html>

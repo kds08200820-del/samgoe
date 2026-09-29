@@ -1,0 +1,22 @@
+{
+  "id": "/manse/",
+  "name": "삼일만세운동본부",
+  "short_name": "만세운동본부",
+  "description": "1919년 화성 우정·장안 3·1만세운동의 정신을 잇는 삼일만세운동본부 — 3·1만세길 걷기와 활동 기록",
+  "lang": "ko",
+  "start_url": "/manse/?app=1",
+  "scope": "/manse/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b0b0b",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "활동 기록", "url": "/manse/#activity" },
+    { "name": "3·1만세길 걷기대회", "url": "/manse/#walks" },
+    { "name": "임원방", "url": "/manse/officer.html" }
+  ]
+}
