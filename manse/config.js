@@ -6,8 +6,8 @@
 //       - Publishable(anon) key → MANSE_SUPABASE_KEY  (브라우저에 공개되어도 안전한 키 · RLS로 보호)
 //     ※ service_role / secret 키는 절대 넣지 마세요.
 // ============================================================
-window.MANSE_SUPABASE_URL = '';
-window.MANSE_SUPABASE_KEY = '';
+window.MANSE_SUPABASE_URL = 'https://elaockhopuvadamvwjeg.supabase.co';
+window.MANSE_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsYW9ja2hvcHV2YWRhbXZ3amVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTAyNzYsImV4cCI6MjEwNjI4NjI3Nn0.u5sFXiKFBWTK4CG2ifB_MInBAhJnUJptMNdrYjk-b-4'; // anon(공개) 키
 
 // '회원 연동'(제휴 단체 계정 확인)에 쓰는 제휴 단체의 공개 설정
 window.SAMGOE_SUPABASE_URL = 'https://xurdgazbcoxjaqkvlqff.supabase.co';
