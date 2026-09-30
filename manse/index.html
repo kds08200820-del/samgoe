@@ -88,7 +88,7 @@
   </style>
   <link rel="stylesheet" href="../assets/audiobook/player.css" />
   <link rel="stylesheet" href="../assets/audiobook/section.css" />
-  <link rel="stylesheet" href="archive/archive.css?v=4" />
+  <link rel="stylesheet" href="archive/archive.css?v=5" />
 </head>
 <body class="mz">
   <header class="gbar"><div class="in">
@@ -234,6 +234,7 @@
   <section class="mz-sec white" id="activity"><div class="mz-in">
     <div class="mz-head"><span class="mz-eyebrow">ARCHIVE</span><h2 class="mz-h2">활동 기록</h2>
       <p class="mz-lead">2021년부터 이어 온 걸음들을 연도별로 모았습니다. 사진과 영상, 관련 자료가 함께 있습니다.</p></div>
+    <div class="mz-adminbar" id="actAdmin" hidden></div>
     <div class="mz-filters" id="actYears"></div>
     <div class="mz-filters" id="actCats"></div>
     <div class="mz-grid" id="actGrid"></div>
@@ -347,6 +348,7 @@
         <div class="facts" id="dlgFacts"></div>
         <div class="links" id="dlgLinks"></div>
         <div class="vids" id="dlgVids"></div>
+        <div class="mz-adminbar" id="dlgAdmin" hidden style="margin-top:20px"></div>
         <div style="margin-top:22px;font-weight:700;color:var(--ink)" id="dlgCount"></div>
         <div class="mz-thumbs" id="dlgThumbs"></div>
       </div>
@@ -361,6 +363,27 @@
     <button class="nav next" id="vNext" type="button" aria-label="다음 사진">›</button>
     <div class="cap" id="vCap"></div>
   </div>
+  <!-- 활동 기록 추가/수정 (임원) -->
+  <div class="mz-modal" id="recModal" role="dialog" aria-modal="true" aria-labelledby="recTitle">
+    <form class="box" id="recForm" novalidate>
+      <h3 id="recTitle">활동 기록 추가</h3>
+      <div class="row2">
+        <label>날짜<input type="date" id="rDate" required></label>
+        <label>종류<select id="rCat"></select></label>
+      </div>
+      <label>제목<input id="rTitle" required placeholder="예: 제6회 화성3·1운동만세길 걷기"></label>
+      <div class="row2">
+        <label>장소 <small>(선택)</small><input id="rPlace"></label>
+        <label>참여 인원 <small>(선택)</small><input id="rPeople" placeholder="예: 약 400명"></label>
+      </div>
+      <label>걷기대회 회차 <small>(걷기대회일 때만 · 예: 6)</small><input type="number" id="rWalk" min="1" max="99"></label>
+      <label>내용 <small>(선택)</small><textarea id="rSum" rows="4"></textarea></label>
+      <label id="rFilesRow">사진 <small>(여러 장 선택 가능 · 자동으로 줄여서 올립니다)</small><input type="file" id="rFiles" accept="image/*" multiple></label>
+      <p class="mz-admin-msg" id="recMsg"></p>
+      <div class="acts"><button type="button" class="mz-btn ghost sm-btn" data-close>취소</button><button type="submit" class="mz-btn navy sm-btn">저장</button></div>
+    </form>
+  </div>
+
   <!-- 앱 설치 안내(아이폰) -->
   <div class="m-modal" id="iosTip" style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:400">
     <div style="background:#fff;border-radius:12px;max-width:420px;padding:24px 22px;font-size:15px;line-height:1.7">
@@ -373,8 +396,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=3"></script>
   <script src="auth.js?v=4"></script>
-  <script src="archive/data.js?v=2"></script>
-  <script src="archive/archive.js?v=2"></script>
+  <script src="archive/data.js?v=3"></script>
+  <script src="archive/archive.js?v=3"></script>
+  <script src="archive/admin.js?v=1"></script>
   <script src="app.js?v=1"></script>
   <script src="../assets/audiobook/player.js" defer></script>
 </body>
