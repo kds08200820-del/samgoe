@@ -276,6 +276,48 @@
     $('upForm').addEventListener('submit', uploadOne);
     $('dirPick').addEventListener('change', pickFolder);
     $('bulkGo').addEventListener('click', runBulk);
+    if ($('migGo')) $('migGo').addEventListener('click', runMigration);
+  }
+
+  // 처음 넣은 활동 사진(홈페이지 파일) → 사진 저장소(manse-photos)로 옮기기. 이미 옮긴 것은 건너뜀.
+  async function runMigration() {
+    var btn = $('migGo'), log = $('migLog'), info = $('migInfo');
+    btn.disabled = true; log.hidden = false; log.textContent = '';
+    try {
+      if (!window.MANSE_DATA) await new Promise(function (res, rej) { var s = document.createElement('script'); s.src = 'archive/data.js?v=' + Date.now(); s.onload = res; s.onerror = function () { rej(new Error('사진 목록(data.js)을 불러오지 못했습니다.')); }; document.head.appendChild(s); });
+      var items = [];
+      window.MANSE_DATA.events.forEach(function (e) { (e.photos || []).forEach(function (p, i) { items.push({ ev: e.id, f: p[0], w: p[1], h: p[2], c: p[3] || '', i: i }); }); });
+      if (!items.length) { info.textContent = '옮길 사진이 없습니다. (이미 모두 옮겨졌습니다)'; return; }
+      var ex = await window.msb.from('activity_photos').select('path');
+      if (ex.error) throw ex.error;
+      var have = {}; (ex.data || []).forEach(function (r) { have[r.path] = 1; });
+      var todo = items.filter(function (it) { return !have[it.ev + '/s-' + it.f]; });
+      info.textContent = '전체 ' + items.length + '장 중 ' + (items.length - todo.length) + '장은 이미 옮겨졌고, ' + todo.length + '장을 옮깁니다.';
+      var done = 0, fail = 0, next = 0;
+      async function one(it) {
+        var path = it.ev + '/s-' + it.f, tpath = it.ev + '/t/s-' + it.f;
+        var full = await (await fetch('archive/photos/' + it.ev + '/' + it.f)).blob();
+        var th = await (await fetch('archive/photos/' + it.ev + '/t/' + it.f)).blob();
+        var u1 = await window.msb.storage.from('manse-photos').upload(path, full, { contentType: 'image/webp', upsert: false });
+        if (u1.error && !/exist|duplicate/i.test(u1.error.message)) throw u1.error;
+        var u2 = await window.msb.storage.from('manse-photos').upload(tpath, th, { contentType: 'image/webp', upsert: false });
+        if (u2.error && !/exist|duplicate/i.test(u2.error.message)) throw u2.error;
+        var ins = await window.msb.from('activity_photos').insert({ event_key: it.ev, path: path, thumb_path: tpath, w: it.w, h: it.h,
+          caption: it.c, sort: it.i, uploaded_by: me.id, uploader_name: '삼일만세운동본부' });
+        if (ins.error) throw ins.error;
+      }
+      async function worker() {
+        while (next < todo.length) {
+          var it = todo[next++];
+          try { await one(it); done++; } catch (ex) { fail++; log.textContent += '✗ ' + it.ev + '/' + it.f + ' : ' + window.mErr(ex) + '\n'; }
+          $('migBar').style.width = Math.round((done + fail) / todo.length * 100) + '%';
+          info.textContent = '옮기는 중… ' + (done + fail) + ' / ' + todo.length + '장';
+        }
+      }
+      await Promise.all([worker(), worker(), worker(), worker()]);   // 4장씩 동시에
+      info.textContent = '완료: ' + done + '장 옮김' + (fail ? ', ' + fail + '장 실패 — 다시 누르면 실패한 것만 이어서 옮깁니다.' : '. 이제 서기(관리자)에게 완료를 알려 주세요.');
+    } catch (ex) { info.textContent = window.mErr(ex); }
+    btn.disabled = false;
   }
   async function putFile(file, year, cat, sens) {
     var key = keyFor(year, cat, file.name, sens);

@@ -98,6 +98,14 @@
             <div class="o-log" id="bulkLog" hidden></div>
           </div>
         </div>
+        <div class="m-card" data-mgr hidden style="margin-top:18px">
+          <h2>처음 넣은 사진 옮기기 (1회)</h2>
+          <p class="m-help" style="font-size:14px;line-height:1.7">홈페이지를 처음 만들 때 넣어 둔 활동 사진을 <b>사진 저장소(Supabase)</b>로 옮깁니다. 옮긴 뒤에는 홈페이지에서 직접 지우거나 추가할 수 있습니다. 여러 번 눌러도 이미 옮긴 사진은 건너뜁니다. 몇 분 걸리니 끝날 때까지 이 창을 닫지 마세요.</p>
+          <div id="migInfo" class="m-help" style="margin-top:6px"></div>
+          <button class="m-btn block" id="migGo" type="button">사진 옮기기 시작</button>
+          <div class="o-prog"><i id="migBar"></i></div>
+          <div class="o-log" id="migLog" hidden></div>
+        </div>
       </section>
     </div>
   </main>
@@ -136,6 +144,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=3"></script>
   <script src="auth.js?v=4"></script>
-  <script src="officer.js?v=1"></script>
+  <script src="officer.js?v=2"></script>
 </body>
 </html>

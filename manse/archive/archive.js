@@ -12,7 +12,7 @@
   var EV = D.events.map(function (e) {
     var o = Object.assign({}, e);
     o.photos = (e.photos || []).map(function (p) {
-      return { full: ROOT + 'photos/' + e.id + '/' + p[0], thumb: ROOT + 'photos/' + e.id + '/t/' + p[0], w: p[1], h: p[2], c: p[3] || '' };
+      return { f: p[0], full: ROOT + 'photos/' + e.id + '/' + p[0], thumb: ROOT + 'photos/' + e.id + '/t/' + p[0], w: p[1], h: p[2], c: p[3] || '' };
     });
     return o;
   });
@@ -179,7 +179,12 @@
         else { var keep = byId[e.id].photos; Object.assign(byId[e.id], e); byId[e.id].photos = keep; }
       });
       sortEV(); reindex();
-      EV.forEach(function (e) { e.photos = e.photos.filter(function (p) { return !p.db; }).concat((photosByEvent || {})[e.id] || []); });
+      EV.forEach(function (e) {
+        var db = (photosByEvent || {})[e.id] || [], moved = {};
+        // 저장소로 옮겨진 처음 사진(경로 '<행사>/s-<파일>')은 원래 파일 대신 저장소 것만 보여 줌(중복 방지)
+        db.forEach(function (p) { var m = /\/s-([^\/]+)$/.exec(p.path || ''); if (m) moved[m[1]] = 1; });
+        e.photos = e.photos.filter(function (p) { return !p.db && !moved[p.f]; }).concat(db);
+      });
       renderAll();
       if (cur && dlg.classList.contains('on')) { cur = byId[cur.id] || cur; renderThumbs(cur); }
     },
