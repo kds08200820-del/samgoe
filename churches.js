@@ -25,7 +25,7 @@ window.CHURCHES = [
   { name: '조암교회', pastor: '조대흥', region: '우정읍' },
   { name: '조암신흥교회', pastor: '장명희', region: '우정읍' },
   { name: '조암중앙교회', pastor: '제재호', region: '우정읍' },
-  { name: '주공교회', pastor: '김종호', region: '우정읍' },
+  { name: '주곡교회', pastor: '김종호', region: '우정읍' },
   { name: '향원교회', pastor: '우종현', region: '우정읍' },
   { name: '호곡교회', pastor: '박성규', region: '우정읍' },
   { name: '화산교회', pastor: '유승용', region: '우정읍' },
