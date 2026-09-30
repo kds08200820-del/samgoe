@@ -26,23 +26,24 @@
       <p class="m-sub">삼일만세운동본부 회원으로 함께해 주세요</p>
       <div class="m-msg" id="notice"></div>
 
-      <!-- 제휴 단체 연동 (제휴 단체 페이지에서 넘어왔거나, 이 브라우저에 제휴 단체 로그인이 있을 때만 표시) -->
+      <!-- 제휴 단체 연동 가입 (제휴 단체 페이지에서 넘어왔거나, 이 브라우저에 제휴 단체 로그인이 있을 때만 표시) -->
       <section class="link-card" id="linkCard" hidden>
         <div class="lk-h">🤝 삼괴연합회 회원이신가요?</div>
-        <p class="lk-p" id="lkText">삼괴연합회 회원 정보(이름·연락처·소속)를 불러와 가입을 간편하게 하고, 두 단체 회원으로 연동해 둘 수 있습니다.</p>
+        <p class="lk-p" id="lkText">삼괴연합회 이메일과 비밀번호만 입력하면 바로 가입됩니다. 이름·연락처·소속은 삼괴연합회 회원 정보에서 가져옵니다.</p>
         <div class="lk-row" id="lkBtns">
-          <button type="button" class="m-btn gold sm" id="lkUse">회원 연동하기</button>
-          <button type="button" class="m-btn ghost sm" id="lkSkip">연동하지 않고 가입</button>
+          <button type="button" class="m-btn gold sm" id="lkUse">삼괴연합회 정보로 가입</button>
+          <button type="button" class="m-btn ghost sm" id="lkSkip">직접 입력해 가입</button>
         </div>
-        <div class="lk-form" id="lkForm">
+        <form class="lk-form" id="lkForm" novalidate>
           <label class="m-l" for="sgEmail">삼괴연합회 이메일</label>
-          <input class="m-in" id="sgEmail" type="email" autocomplete="off" placeholder="삼괴연합회 가입 이메일" />
+          <input class="m-in" id="sgEmail" type="email" autocomplete="username" placeholder="삼괴연합회 가입 이메일" />
           <label class="m-l" for="sgPw">삼괴연합회 비밀번호</label>
-          <input class="m-in" id="sgPw" type="password" autocomplete="off" placeholder="삼괴연합회 비밀번호" />
-          <p class="m-help">확인에만 쓰이며 저장되지 않습니다. 확인 후 연결은 바로 종료됩니다.</p>
-          <button type="button" class="m-btn sm" id="lkCheck" style="margin-top:10px">확인하고 정보 불러오기</button>
-        </div>
-        <div class="lk-done" id="lkDone"></div>
+          <input class="m-in" id="sgPw" type="password" autocomplete="current-password" placeholder="삼괴연합회 비밀번호" />
+          <p class="m-help">가입하면 <a href="terms.html#terms" target="_blank" rel="noopener">이용약관</a>과 <a href="terms.html#privacy" target="_blank" rel="noopener">개인정보처리방침</a>에 동의한 것으로 봅니다. 만세운동본부에도 같은 이메일·비밀번호로 로그인합니다.</p>
+          <div class="m-msg" id="lkMsg"></div>
+          <button type="submit" class="m-btn block" id="lkGo">연동하여 가입하기</button>
+          <div class="m-foot"><a href="#" id="lkBack">← 직접 입력해 가입하기</a></div>
+        </form>
       </section>
 
       <form id="f" novalidate>
@@ -72,7 +73,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=3"></script>
   <script src="auth.js?v=3"></script>
-  <script src="samgoe-link.js?v=1"></script>
+  <script src="samgoe-link.js?v=2"></script>
   <script>
   (function () {
     var $ = function (id) { return document.getElementById(id); };
@@ -80,42 +81,52 @@
     function show(el, cls, t) { el.className = 'm-msg ' + cls; el.textContent = t; }
     if (!window.MANSE_READY) show(notice, 'info', '회원가입 준비 중입니다. (관리자: manse/config.js 설정 필요)');
 
-    // ---------- 제휴 단체 연동 ----------
-    var linked = null;   // { uid, email, name, phone, church }
-    var card = $('linkCard');
-    function fill(info) {
-      linked = info;
-      if (info.name) $('name').value = info.name;
-      if (info.email && !$('email').value) $('email').value = info.email;
-      if (info.phone) $('phone').value = info.phone;
-      if (info.church) $('church').value = info.church;
-      $('lkBtns').style.display = 'none'; $('lkForm').style.display = 'none';
-      $('lkText').textContent = '삼괴연합회 회원 정보를 불러왔습니다. 아래 내용을 확인해 주세요.';
-      var d = $('lkDone'); d.style.display = 'block';
-      d.innerHTML = '✓ 삼괴연합회 회원 <b>' + window.mEsc(info.name || info.email) + '</b>님과 연동하여 가입합니다. <a href="#" id="lkCancel" style="color:var(--muted);font-weight:400;margin-left:6px">연동 취소</a>';
-      $('lkCancel').addEventListener('click', function (e) { e.preventDefault(); linked = null; d.style.display = 'none'; $('lkBtns').style.display = 'flex'; $('lkText').textContent = '연동을 취소했습니다. 필요하면 다시 연동할 수 있습니다.'; });
+    // ---------- 제휴 단체 연동 가입: 삼괴연합회 이메일·비밀번호만 입력 ----------
+    var card = $('linkCard'), lkForm = $('lkForm'), lkMsg = $('lkMsg');
+    function mode(link) {                     // link=true → 연동 가입 칸만, false → 직접 입력 가입
+      lkForm.style.display = link ? 'block' : 'none';
+      $('lkBtns').style.display = link ? 'none' : 'flex';
+      f.hidden = link;
+      if (link) { (sessionInfo && !$('sgEmail').value) && ($('sgEmail').value = sessionInfo.email || ''); ($('sgEmail').value ? $('sgPw') : $('sgEmail')).focus(); }
     }
     var sessionInfo = null;
     (async function () {
       sessionInfo = await window.samgoeLink.fromSession();
       if (window.mFromSamgoe() || sessionInfo) {
         card.hidden = false;
-        if (sessionInfo) $('lkText').textContent = '이 브라우저에 삼괴연합회 회원 ' + (sessionInfo.name || sessionInfo.email) + '님으로 로그인되어 있습니다. 연동하면 이름·연락처·소속을 불러오고 두 단체 회원으로 연결해 둡니다.';
+        if (sessionInfo) $('lkText').textContent = '이 브라우저에 삼괴연합회 회원 ' + (sessionInfo.name || sessionInfo.email) + '님으로 로그인되어 있습니다. 삼괴연합회 비밀번호만 입력하면 바로 가입됩니다.';
       }
     })();
-    $('lkUse').addEventListener('click', function () {
-      if (sessionInfo) { fill(sessionInfo); return; }
-      $('lkForm').style.display = 'block'; $('sgEmail').focus();
-    });
-    $('lkSkip').addEventListener('click', function () { card.hidden = true; });
-    $('lkCheck').addEventListener('click', async function () {
-      var b = this; msg.className = 'm-msg';
+    $('lkUse').addEventListener('click', function () { mode(true); });
+    $('lkSkip').addEventListener('click', function () { card.hidden = true; f.hidden = false; });
+    $('lkBack').addEventListener('click', function (e) { e.preventDefault(); mode(false); });
+    lkForm.addEventListener('submit', async function (e) {
+      e.preventDefault(); lkMsg.className = 'm-msg';
+      if (!window.msb) return show(lkMsg, 'err', '회원가입 준비 중입니다.');
       var em = $('sgEmail').value.trim(), pw = $('sgPw').value;
-      if (!em || !pw) { show(msg, 'err', '삼괴연합회 이메일과 비밀번호를 입력해 주세요.'); return; }
-      b.disabled = true; b.textContent = '확인 중…';
-      try { fill(await window.samgoeLink.withPassword(em, pw)); $('sgPw').value = ''; }
-      catch (ex) { show(msg, 'err', (ex && ex.message) || '삼괴연합회 계정을 확인하지 못했습니다.'); }
-      b.disabled = false; b.textContent = '확인하고 정보 불러오기';
+      if (!em || !pw) return show(lkMsg, 'err', '삼괴연합회 이메일과 비밀번호를 입력해 주세요.');
+      var b = $('lkGo'); b.disabled = true; b.textContent = '확인하고 가입하는 중…';
+      try {
+        var info = await window.samgoeLink.withPassword(em, pw);          // 1) 삼괴연합회 계정 확인 + 회원 정보
+        var data = { name: info.name || '', phone: info.phone || '', church: info.church || '', terms_agreed_at: new Date().toISOString(),
+                     samgoe_uid: info.uid, samgoe_email: info.email || em };
+        var r = await window.msb.auth.signUp({ email: em, password: pw, options: { data: data } });   // 2) 만세운동본부 계정 생성
+        if (r.error) throw r.error;
+        if (r.data && r.data.session) { location.href = './'; return; }
+        if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0) {
+          // 이미 만세운동본부에 가입된 이메일 → 같은 비밀번호로 로그인 시도 후 연동 표시
+          var s2 = await window.msb.auth.signInWithPassword({ email: em, password: pw });
+          if (s2.error) throw new Error('이미 만세운동본부에 가입된 이메일입니다. 로그인 화면에서 로그인해 주세요.');
+          try { await window.msb.from('profiles').update({ samgoe_uid: info.uid, samgoe_email: info.email || em, samgoe_linked_at: new Date().toISOString() }).eq('id', s2.data.user.id); } catch (_) {}
+          location.href = './'; return;
+        }
+        location.href = 'login.html?joined=1'; return;
+      } catch (ex) {
+        var m = (ex && ex.message) || '';
+        if (/Password should be at least|password.*(short|requirement)/i.test(m)) m = '삼괴연합회 비밀번호가 만세운동본부 기준(8자 이상)보다 짧아 그대로 쓸 수 없습니다. 아래 "직접 입력해 가입하기"로 가입해 주세요.';
+        show(lkMsg, 'err', /[가-힣]/.test(m) ? m : window.mErr(ex));
+      }
+      b.disabled = false; b.textContent = '연동하여 가입하기';
     });
 
     // ---------- 가입 ----------
@@ -129,10 +140,9 @@
       if (pw !== pw2) return show(msg, 'err', '비밀번호 확인이 일치하지 않습니다.');
       if (!$('terms').checked) return show(msg, 'err', '이용약관과 개인정보처리방침에 동의해 주세요.');
       var data = { name: name, phone: $('phone').value.trim(), church: $('church').value.trim(), terms_agreed_at: new Date().toISOString() };
-      if (linked) { data.samgoe_uid = linked.uid; data.samgoe_email = linked.email; }
       var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = '가입 처리 중…';
       try {
-        var r = await window.msb.auth.signUp({ email: email, password: pw, options: { data: data, emailRedirectTo: window.mUrl('login.html') } });
+        var r = await window.msb.auth.signUp({ email: email, password: pw, options: { data: data } });
         if (r.error) throw r.error;
         // 이메일 확인이 꺼져 있으면 바로 로그인 상태
         if (r.data && r.data.session) { location.href = './'; return; }
