@@ -277,6 +277,12 @@
     $('dirPick').addEventListener('change', pickFolder);
     $('bulkGo').addEventListener('click', runBulk);
     if ($('migGo')) $('migGo').addEventListener('click', runMigration);
+    var dz = $('dropZone');
+    if (dz) {
+      ['dragenter', 'dragover'].forEach(function (t) { dz.addEventListener(t, function (e) { e.preventDefault(); dz.classList.add('over'); }); });
+      dz.addEventListener('dragleave', function () { dz.classList.remove('over'); });
+      dz.addEventListener('drop', onDrop);
+    }
   }
 
   // 처음 넣은 활동 사진(홈페이지 파일) → 사진 저장소(manse-photos)로 옮기기. 이미 옮긴 것은 건너뜀.
@@ -351,25 +357,59 @@
   }
 
   // 폴더 일괄: manifest.json { "연도/종류/파일.pdf": {year, category, title, date, no, sensitive, orig, orig2} }
+  //  - '임원방_업로드자료' 폴더: manifest 기준으로 연도·종류·제목 자동
+  //  - 그냥 파일 여러 개: 왼쪽 '한 건 올리기'의 연도·종류로, 제목은 파일 이름으로 (같은 이름의 PDF+HWP는 한 건으로 묶음)
   var bulk = null;
-  async function pickFolder() {
-    var files = Array.from(this.files || []), byRel = {}, manifest = null;
-    files.forEach(function (f) {
-      var rel = (f.webkitRelativePath || f.name).split('/').slice(1).join('/');   // 맨 앞 폴더 이름 제거
-      byRel[rel] = f;
-      if (rel === 'manifest.json') manifest = f;
+  function pickFolder() {
+    analyze(Array.from(this.files || []).map(function (f) { return { file: f, path: '/' + (f.webkitRelativePath || f.name) }; }));
+  }
+  // 끌어다 놓기: 폴더 안까지 모두 읽음
+  function readEntry(entry, out) {
+    return new Promise(function (res) {
+      if (entry.isFile) { entry.file(function (f) { out.push({ file: f, path: entry.fullPath }); res(); }, function () { res(); }); return; }
+      var rd = entry.createReader(), all = [];
+      (function more() { rd.readEntries(function (ents) { if (!ents.length) { Promise.all(all.map(function (en) { return readEntry(en, out); })).then(res); return; } all = all.concat(Array.from(ents)); more(); }, function () { res(); }); })();
     });
-    if (!manifest) { $('bulkInfo').textContent = '선택한 폴더에 manifest.json 이 없습니다. "임원방_업로드자료" 폴더 자체를 선택해 주세요.'; $('bulkGo').disabled = true; return; }
-    var man = JSON.parse(await manifest.text());
-    var items = Object.keys(man).map(function (rel) { var m = man[rel]; m.rel = rel; m.file = byRel[rel]; m.origFile = m.orig ? byRel[m.orig] : null; return m; })
-      .filter(function (m) { return m.file; });
+  }
+  async function onDrop(e) {
+    e.preventDefault(); $('dropZone').classList.remove('over');
+    if (!perms.manager) return alert('한꺼번에 올리기는 대표회장·서기만 할 수 있습니다. 한 건 올리기를 이용해 주세요.');
+    var out = [], items = Array.from(e.dataTransfer.items || []);
+    var entries = items.map(function (it) { return it.webkitGetAsEntry ? it.webkitGetAsEntry() : null; }).filter(Boolean);
+    if (entries.length) await Promise.all(entries.map(function (en) { return readEntry(en, out); }));
+    else Array.from(e.dataTransfer.files || []).forEach(function (f) { out.push({ file: f, path: '/' + f.name }); });
+    await analyze(out, true);
+  }
+  function baseName(n) { return n.replace(/\.[^.]+$/, ''); }
+  async function analyze(list, autoStart) {
+    list = list.filter(function (x) { return !/(^|\/)(\.|~\$|Thumbs\.db|desktop\.ini)/i.test(x.path); });
+    var man = list.find(function (x) { return /(^|\/)manifest\.json$/.test(x.path); }), items;
+    if (man) {
+      var base = man.path.replace(/manifest\.json$/, ''), byRel = {};
+      list.forEach(function (x) { if (x.path.indexOf(base) === 0) byRel[x.path.slice(base.length)] = x.file; });
+      var mf = JSON.parse(await man.file.text());
+      items = Object.keys(mf).map(function (rel) { var m = mf[rel]; m.rel = rel; m.file = byRel[rel]; m.origFile = m.orig ? byRel[m.orig] : null; return m; })
+        .filter(function (m) { return m.file; });
+    } else {
+      var year = parseInt($('uYear').value, 10) || new Date().getFullYear(), cat = $('uCat').value, groups = {};
+      list.forEach(function (x) { var k = baseName(x.file.name); (groups[k] = groups[k] || []).push(x.file); });
+      items = Object.keys(groups).map(function (k) {
+        var fs = groups[k], view = fs.find(function (f) { return /\.pdf$/i.test(f.name); }) || fs[0];
+        var orig = fs.find(function (f) { return f !== view; }) || null;
+        return { year: year, category: cat, title: k, date: '', no: '', sensitive: cat === '명부·개인정보', file: view, origFile: orig };
+      });
+    }
+    var tooBig = items.filter(function (m) { return m.file.size > 50 * 1048576 || (m.origFile && m.origFile.size > 50 * 1048576); });
+    items = items.filter(function (m) { return tooBig.indexOf(m) < 0; });
     var have = {}; DOCS.forEach(function (d) { have[d.year + '|' + d.category + '|' + d.title] = 1; });
     var todo = items.filter(function (m) { return !have[m.year + '|' + m.category + '|' + m.title]; });
     bulk = { items: todo };
     var sens = todo.filter(function (m) { return m.sensitive; }).length;
-    $('bulkInfo').innerHTML = '자료 ' + items.length + '건 중 <b>' + todo.length + '건</b>을 올립니다' + (items.length - todo.length ? ' (이미 있는 ' + (items.length - todo.length) + '건 건너뜀)' : '') +
-      '. 개인정보 포함 ' + sens + '건.';
+    $('bulkInfo').innerHTML = (man ? '정리된 폴더(manifest) 기준 · ' : '파일 ' + list.length + '개 → <b>' + esc($('uYear').value) + '년 · ' + esc($('uCat').value) + '</b>로 · ') +
+      '자료 ' + items.length + '건 중 <b>' + todo.length + '건</b>을 올립니다' + (items.length - todo.length ? ' (이미 있는 ' + (items.length - todo.length) + '건 건너뜀)' : '') +
+      (sens ? '. 개인정보 포함 ' + sens + '건' : '') + (tooBig.length ? '. 50MB 넘는 ' + tooBig.length + '건 제외' : '') + '.';
     $('bulkGo').disabled = !todo.length;
+    if (autoStart && todo.length && confirm(todo.length + '건을 한꺼번에 올릴까요?')) runBulk();
   }
   async function runBulk() {
     if (!bulk) return;
@@ -382,7 +422,7 @@
         var path = await putFile(m.file, m.year, m.category, m.sensitive);
         var orig = m.origFile ? await putFile(m.origFile, m.year, m.category, m.sensitive) : null;
         await insertDoc({ year: m.year, category: m.category, title: m.title, doc_date: toDate(m.date), date_text: m.date || null, doc_no: m.no || null,
-          note: m.orig_note || null, path: path, mime: 'application/pdf', size: m.file.size + (m.origFile ? m.origFile.size : 0),
+          note: m.orig_note || null, path: path, mime: m.file.type || MIME[extOf(m.file.name)] || null, size: m.file.size + (m.origFile ? m.origFile.size : 0),
           orig_path: orig, orig_name: m.origFile ? m.title + '.' + extOf(m.origFile.name) : null, sensitive: !!m.sensitive,
           uploaded_by: me.id, uploader_name: profile.name || me.email });
         ok++; log.textContent += '✓ ' + m.year + ' ' + m.category + ' — ' + m.title + '\n';

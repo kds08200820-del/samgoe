@@ -1,7 +1,7 @@
 // 삼일만세운동본부 앱 — 서비스워커 (범위: /manse/)
 // 같은 주소의 페이지·사진은 '네트워크 우선, 실패하면 저장본'으로 보여 줍니다.
 // 로그인·임원방 데이터(Supabase)와 외부 주소, 영상·음성(부분 요청)은 건드리지 않습니다.
-var CACHE = 'manse-v2';
+var CACHE = 'manse-v3';
 var CORE = ['./', 'archive/archive.css', 'archive/archive.js', 'archive/data.js', 'img/logo-192.png', 'img/logo.png', 'manse.css'];
 
 self.addEventListener('install', function (e) {

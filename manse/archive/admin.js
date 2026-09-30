@@ -79,7 +79,7 @@
     bar.hidden = false;
     bar.innerHTML = '<label class="mz-btn navy sm-btn"><input type="file" id="addPh" accept="image/*" multiple hidden>+ 사진 추가</label>' +
       (act && canEdit(act.created_by) ? '<button type="button" class="mz-btn ghost sm-btn" id="editAct">기록 수정</button><button type="button" class="mz-btn ghost sm-btn danger" id="delAct">기록 삭제</button>' : '') +
-      '<span class="mz-admin-msg" id="dlgMsg"></span>';
+      '<span class="mz-admin-msg" id="dlgMsg">사진 여러 장을 이 화면에 끌어다 놓아도 한 번에 올라갑니다.</span>';
     $('addPh').addEventListener('change', async function () {
       var files = Array.from(this.files || []); if (!files.length) return;
       var msg = $('dlgMsg');
@@ -148,6 +148,47 @@
     });
   }
 
+  // ---------- 사진 끌어다 놓기 (임원) — 행사 카드 위 또는 열린 행사 상세 화면에 여러 장 한 번에 ----------
+  function dropTarget(e) {
+    if ($('evDlg').classList.contains('on')) { var c = MZ.current(); return c ? { id: c.id, el: $('evDlg').querySelector('.box') } : null; }
+    var card = e.target.closest && e.target.closest('[data-ev]');
+    return card ? { id: card.getAttribute('data-ev'), el: card } : null;
+  }
+  var overEl = null;
+  function setOver(el) { if (overEl && overEl !== el) overEl.classList.remove('mz-dropover'); overEl = el; if (el) el.classList.add('mz-dropover'); }
+  function hasFiles(e) { return e.dataTransfer && Array.from(e.dataTransfer.types || []).indexOf('Files') >= 0; }
+  function readImages(dt) {
+    var out = [], items = Array.from(dt.items || []);
+    var ents = items.map(function (it) { return it.webkitGetAsEntry ? it.webkitGetAsEntry() : null; }).filter(Boolean);
+    if (!ents.length) return Promise.resolve(Array.from(dt.files || []).filter(function (f) { return /^image\//.test(f.type); }));
+    function walk(en) {
+      return new Promise(function (res) {
+        if (en.isFile) { en.file(function (f) { if (/^image\//.test(f.type) || /\.(jpe?g|png|webp|heic)$/i.test(f.name)) out.push(f); res(); }, function () { res(); }); return; }
+        var rd = en.createReader(), all = [];
+        (function more() { rd.readEntries(function (xs) { if (!xs.length) { Promise.all(all.map(walk)).then(res); return; } all = all.concat(Array.from(xs)); more(); }, function () { res(); }); })();
+      });
+    }
+    return Promise.all(ents.map(walk)).then(function () { return out; });
+  }
+  document.addEventListener('dragover', function (e) {
+    if (!perms.officer || !hasFiles(e)) return;
+    var t = dropTarget(e); if (!t) { setOver(null); return; }
+    e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setOver(t.el);
+  });
+  document.addEventListener('dragleave', function (e) { if (!e.relatedTarget) setOver(null); });
+  document.addEventListener('drop', async function (e) {
+    if (!perms.officer || !hasFiles(e)) return;
+    var t = dropTarget(e); setOver(null); if (!t) return;
+    e.preventDefault();
+    var files = await readImages(e.dataTransfer);
+    if (!files.length) return alert('사진 파일(JPG·PNG·WEBP)만 올릴 수 있습니다.');
+    if (!$('evDlg').classList.contains('on') || MZ.current().id !== t.id) MZ.open(t.id);
+    var msg = $('dlgMsg') || { textContent: '' };
+    var r = await uploadPhotos(t.id, files, function (i, n) { msg.textContent = '사진 올리는 중… ' + i + ' / ' + n; });
+    await load();
+    var m2 = $('dlgMsg'); if (m2) m2.textContent = '사진 ' + r.ok + '장을 올렸습니다.' + (r.fail ? ' (' + r.fail + '장 실패)' : '');
+  });
+
   // ---------- 시작 ----------
   async function initAdmin() {
     me = await window.mUser();
@@ -157,14 +198,14 @@
     MZ.rerender();
     if (perms.officer && wbar) {
       wbar.hidden = false;
-      wbar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addWalk"></button><span class="mz-admin-msg">회차를 만들면 아래에 그 회차 카드가 생깁니다. 각 카드의 <b>📷 사진 추가</b>로 회차별로 사진을 올리세요.</span>';
+      wbar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addWalk"></button><span class="mz-admin-msg">회차를 만들면 아래에 그 회차 카드가 생깁니다. 각 카드의 <b>📷 사진 추가</b>를 누르거나, 사진 여러 장을 카드 위에 <b>끌어다 놓으면</b> 그 회차에 한 번에 올라갑니다.</span>';
       walkLabel();
       $('addWalk').addEventListener('click', function () { var n = MZ.maxWalk() + 1; openRec(null, { cat: '만세길 걷기', walk: n, title: '제' + n + '회 화성3·1운동만세길 걷기' }); });
     } else if (wbar) wbar.hidden = true;
     if (perms.officer) {
       var p = await window.mProfile(); myName = (p && p.name) || (me.email || '').split('@')[0];
       bar.hidden = false;
-      bar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addAct">+ 활동 기록 추가</button><span class="mz-admin-msg">기존 기록에는 카드의 <b>📷 사진 추가</b>로 사진을 올릴 수 있습니다.</span>';
+      bar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addAct">+ 활동 기록 추가</button><span class="mz-admin-msg">기존 기록에는 카드의 <b>📷 사진 추가</b>를 누르거나 사진을 카드 위에 <b>끌어다 놓으세요</b>.</span>';
       $('addAct').addEventListener('click', function () { openRec(null); });
     } else if (bar) bar.hidden = true;
     await load();

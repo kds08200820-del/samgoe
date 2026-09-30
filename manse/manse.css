@@ -146,3 +146,9 @@ table.o-table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px
 /* 제휴 단체에서 넘어온 경우에만 보이는 돌아가기 버튼 */
 #mAuth .m-back{color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:2px 11px;margin-right:12px;white-space:nowrap;}
 #mAuth .m-back:hover{background:rgba(255,255,255,.12);color:#fff;}
+
+/* 끌어다 놓기 */
+.o-drop{margin-top:6px;border:2px dashed #bdbdbd;border-radius:12px;background:#fafafa;padding:26px 16px;text-align:center;display:flex;flex-direction:column;gap:6px;transition:background .15s,border-color .15s;}
+.o-drop b{font-size:16px;color:var(--ink);}
+.o-drop span{font-size:13.5px;color:var(--muted);}
+.o-drop.over{background:#eeeeee;border-color:#111;}
