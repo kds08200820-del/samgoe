@@ -94,8 +94,10 @@
   function render(user, profile, perms) {
     var el = document.getElementById('mAuth'); if (!el) return;
     var sep = '<span class="m-sep">|</span>';
+    // 제휴 단체(삼기연) 앱·홈페이지를 거쳐 들어온 경우에만 돌아가기 버튼 (직접 들어오면 표시 안 함)
+    var back = window.mFromSamgoe() ? '<a class="m-back" href="' + new URL('../', BASE).href + '">← 삼기연으로</a>' : '';
     if (!user) {
-      el.innerHTML = '<a href="' + window.mUrl('login.html') + '">로그인</a>' + sep + '<a href="' + window.mUrl('signup.html') + '">회원가입</a>';
+      el.innerHTML = back + '<a href="' + window.mUrl('login.html') + '">로그인</a>' + sep + '<a href="' + window.mUrl('signup.html') + '">회원가입</a>';
       return;
     }
     var parts = [];
@@ -104,7 +106,7 @@
     if (perms && perms.officer) parts.push('<a class="m-officer" href="' + window.mUrl('officer.html') + '">임원방</a>');
     parts.push('<a href="' + window.mUrl('mypage.html') + '">내 정보</a>');
     parts.push('<a href="#" data-m-logout>로그아웃</a>');
-    el.innerHTML = parts.join(sep);
+    el.innerHTML = back + parts.join(sep);
     var lo = el.querySelector('[data-m-logout]');
     if (lo) lo.addEventListener('click', async function (e) {
       e.preventDefault();
