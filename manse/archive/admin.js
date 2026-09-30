@@ -52,8 +52,14 @@
     if (!blob || blob.type !== 'image/webp') blob = await new Promise(function (r) { cv.toBlob(r, 'image/jpeg', q); });
     return { blob: blob, w: cv.width, h: cv.height };
   }
+  // 한글로 이름 붙인 사진은 그 이름을 설명으로 (예: '03_출발준비.jpg' → '출발준비'). 카메라 파일명(IMG_1234 등)은 비워 둠
+  function capFromName(n) {
+    var b = n.replace(/\.[^.]+$/, '');
+    return /[가-힣]/.test(b) ? b.replace(/^\d+[_.\s-]*/, '').replace(/_/g, ' ').trim() : '';
+  }
   async function uploadPhotos(eventKey, files, onStep) {
     var ok = 0, fail = 0;
+    files = Array.from(files).sort(function (a, b) { return a.name.localeCompare(b.name, 'ko', { numeric: true }); }); // 01_, 02_… 이름 순서대로
     for (var i = 0; i < files.length; i++) {
       var f = files[i]; onStep && onStep(i + 1, files.length);
       try {
@@ -62,7 +68,7 @@
         var path = eventKey + '/' + name, tpath = eventKey + '/t/' + name;
         var u1 = await sb.storage.from(BUCKET).upload(path, big.blob, { contentType: big.blob.type, upsert: false }); if (u1.error) throw u1.error;
         var u2 = await sb.storage.from(BUCKET).upload(tpath, small.blob, { contentType: small.blob.type, upsert: false }); if (u2.error) throw u2.error;
-        var ins = await sb.from('activity_photos').insert({ event_key: eventKey, path: path, thumb_path: tpath, w: big.w, h: big.h, caption: '',
+        var ins = await sb.from('activity_photos').insert({ event_key: eventKey, path: path, thumb_path: tpath, w: big.w, h: big.h, caption: capFromName(f.name),
           sort: Math.floor(Date.now() / 1000), uploaded_by: me.id, uploader_name: myName });
         if (ins.error) throw ins.error;
         ok++;
