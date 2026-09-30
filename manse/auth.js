@@ -52,7 +52,7 @@
     var m = String((e && e.message) || e || '');
     if (/banned|user is banned/i.test(m)) return '이용약관 위반으로 계정이 정지되었습니다. 문의: ' + (window.MANSE_CONTACT || '운영자');
     if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
-    if (/Email not confirmed/i.test(m)) return '이메일 인증이 완료되지 않았습니다. 가입 확인 메일의 링크를 눌러 주세요.';
+    if (/Email not confirmed/i.test(m)) return '가입 처리가 아직 끝나지 않았습니다. 잠시 후 다시 시도하시거나 운영 담당자에게 문의해 주세요.';
     if (/already registered|already been registered|User already/i.test(m)) return '이미 가입된 이메일입니다. 로그인해 주세요.';
     if (/New password should be different|same password|different from the old/i.test(m)) return '이전과 다른 비밀번호를 입력해 주세요.';
     if (/Password should be at least|password.*(short|requirement|contain)/i.test(m)) return '비밀번호는 8자 이상이어야 합니다.';

@@ -50,7 +50,7 @@
     <section class="m-card sec">
       <h2>이메일 변경</h2>
       <label class="m-l" for="newEmail">새 이메일</label><input class="m-in" id="newEmail" type="email" />
-      <p class="m-help">새 이메일로 확인 메일이 발송되며, 링크를 눌러야 변경이 완료됩니다. 임원이시면 임원 명단의 이메일도 함께 바꿔 달라고 서기에게 알려 주세요.</p>
+      <p class="m-help">바꾸면 다음부터 새 이메일로 로그인합니다. 임원이시면 임원 명단의 이메일도 함께 바꿔 달라고 서기에게 알려 주세요.</p>
       <div class="m-msg" id="emsg"></div>
       <button class="m-btn ghost block" id="emailBtn" type="button">이메일 변경 요청</button>
     </section>
@@ -77,7 +77,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=3"></script>
-  <script src="auth.js?v=1"></script>
+  <script src="auth.js?v=3"></script>
   <script src="samgoe-link.js?v=1"></script>
   <script>
   (async function () {
@@ -140,7 +140,8 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ne)) return show(m, 'err', '올바른 이메일을 입력해 주세요.');
       var r = await window.msb.auth.updateUser({ email: ne }, { emailRedirectTo: window.mUrl('mypage.html') });
       if (r.error) return show(m, 'err', window.mErr(r.error));
-      show(m, 'ok', '확인 메일을 보냈습니다. 새 이메일의 링크를 눌러야 변경이 완료됩니다.');
+      var changed = r.data && r.data.user && (r.data.user.email || '').toLowerCase() === ne.toLowerCase();
+      show(m, 'ok', changed ? '이메일을 바꿨습니다. 다음부터 새 이메일로 로그인해 주세요.' : '변경을 요청했습니다. 새 이메일로 안내가 발송되었으면 확인해 주세요.');
     };
 
     // ---- 비밀번호 변경 (현재 비밀번호 재확인) ----
