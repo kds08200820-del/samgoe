@@ -21,6 +21,8 @@
   function sortEV() { EV.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; }); }
   sortEV(); reindex();
   function cover(e) { var p = e.photos[e.cover || 0] || e.photos[0]; return p ? p.thumb : ''; }
+  // 임원으로 로그인하면(admin.js가 body에 mz-officer 표시) 카드마다 '사진 추가' 칩
+  function addChip(e) { return document.body.classList.contains('mz-officer') ? '<span class="mz-addph" data-addph="' + esc(e.id) + '">📷 사진 추가</span>' : ''; }
 
   // ---------- 3·1만세길 걷기대회 ----------
   function renderWalks() {
@@ -28,7 +30,7 @@
     $('walkGrid').innerHTML = walks.map(function (e) {
       var c = cover(e);
       return '<button type="button" class="mz-walk" data-ev="' + esc(e.id) + '">' +
-        (c ? '<span class="ph" style="background-image:url(\'' + c + '\')"></span>' : '<span class="ph none">제' + e.walk + '회</span>') +
+        (c ? '<span class="ph" style="background-image:url(\'' + c + '\')">' + addChip(e) + '</span>' : '<span class="ph none">제' + e.walk + '회' + addChip(e) + '</span>') +
         '<span class="bd"><span class="no">제' + e.walk + '회</span><span class="dt" style="display:block">' + fmtDate(e.date) + '</span>' +
         (e.people ? '<span class="pp">' + esc(e.people) + '</span>' : '') + '</span></button>';
     }).join('');
@@ -53,8 +55,8 @@
     $('actGrid').innerHTML = show.map(function (e) {
       var c = cover(e);
       return '<button type="button" class="mz-ev" data-ev="' + esc(e.id) + '">' +
-        (c ? '<span class="ph" style="background-image:url(\'' + c + '\')">' + (e.photos.length ? '<span class="cnt">사진 ' + e.photos.length + '</span>' : '') + '</span>'
-           : '<span class="ph none"><img src="' + ROOT + '../img/logo-192.png" alt="" /></span>') +
+        (c ? '<span class="ph" style="background-image:url(\'' + c + '\')">' + (e.photos.length ? '<span class="cnt">사진 ' + e.photos.length + '</span>' : '') + addChip(e) + '</span>'
+           : '<span class="ph none"><img src="' + ROOT + '../img/logo-192.png" alt="" />' + addChip(e) + '</span>') +
         '<span class="bd"><span class="meta"><span>' + fmtDate(e.date) + '</span><span class="cat">' + esc(e.cat) + '</span></span>' +
         '<h3>' + esc(e.title) + '</h3>' + (e.place ? '<span class="pl">' + esc(e.place) + '</span>' : '') + '</span></button>';
     }).join('') || '<p style="text-align:center;color:var(--muted);grid-column:1/-1">해당하는 활동이 없습니다.</p>';
@@ -88,6 +90,12 @@
   // ---------- 행사 상세 ----------
   var dlg = $('evDlg'), viewer = $('viewer'), cur = null, idx = 0, lastFocus = null;
   document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-addph]');
+    if (a) {                                   // 카드의 '사진 추가' → 상세를 열고 바로 사진 선택 창
+      e.preventDefault(); openEvent(a.dataset.addph);
+      var inp = document.getElementById('addPh'); if (inp) inp.click();
+      return;
+    }
     var b = e.target.closest('[data-ev]'); if (!b) return;
     e.preventDefault(); openEvent(b.dataset.ev);
   });
@@ -176,6 +184,8 @@
       if (cur && dlg.classList.contains('on')) { cur = byId[cur.id] || cur; renderThumbs(cur); }
     },
     remove: function (id) { EV = EV.filter(function (e) { return e.id !== id; }); reindex(); renderAll(); },
+    rerender: function () { renderAll(); },
+    maxWalk: function () { return EV.reduce(function (m, e) { return Math.max(m, e.walk || 0); }, 0); },
     open: openEvent,
     close: closeEvent
   };

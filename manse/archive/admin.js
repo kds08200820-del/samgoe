@@ -33,8 +33,11 @@
         c: r.caption || '', path: r.path, thumb_path: r.thumb_path, canDel: canEdit(r.uploaded_by) });
     });
     MZ.merge(events, byEv);
+    walkLabel();
     document.dispatchEvent(new CustomEvent('mz:loaded'));
   }
+  // '새 회차 만들기' 버튼에 다음 회차 번호 표시
+  function walkLabel() { var b = $('addWalk'); if (b) b.textContent = '+ 새 회차 만들기 (제' + (MZ.maxWalk() + 1) + '회)'; }
 
   // ---------- 사진 줄이기 ----------
   function loadImg(file) {
@@ -108,13 +111,13 @@
 
   // ---------- 활동 기록 추가/수정 창 ----------
   var editing = null;
-  function openRec(act) {
-    editing = act || null;
+  function openRec(act, preset) {
+    editing = act || null; preset = preset || {};
     $('recTitle').textContent = act ? '활동 기록 수정' : '활동 기록 추가';
     $('rDate').value = act ? act.date : new Date().toISOString().slice(0, 10);
-    $('rTitle').value = act ? act.title : ''; $('rCat').value = act ? act.cat : '만세길 걷기';
+    $('rTitle').value = act ? act.title : (preset.title || ''); $('rCat').value = act ? act.cat : (preset.cat || '만세길 걷기');
     $('rPlace').value = act ? (act.place || '') : ''; $('rPeople').value = act ? (act.people || '') : '';
-    $('rWalk').value = act && act.walk ? act.walk : ''; $('rSum').value = act ? (act.summary || '') : '';
+    $('rWalk').value = act && act.walk ? act.walk : (preset.walk || ''); $('rSum').value = act ? (act.summary || '') : '';
     $('rFiles').value = ''; $('rFilesRow').hidden = !!act; $('recMsg').textContent = '';
     $('recModal').classList.add('on'); $('rTitle').focus();
   }
@@ -149,11 +152,19 @@
   async function initAdmin() {
     me = await window.mUser();
     perms = me ? await window.mPerms(true) : { officer: false, manager: false };
-    var bar = $('actAdmin');
+    var bar = $('actAdmin'), wbar = $('walkAdmin');
+    document.body.classList.toggle('mz-officer', !!perms.officer);
+    MZ.rerender();
+    if (perms.officer && wbar) {
+      wbar.hidden = false;
+      wbar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addWalk"></button><span class="mz-admin-msg">회차를 만들면 아래에 그 회차 카드가 생깁니다. 각 카드의 <b>📷 사진 추가</b>로 회차별로 사진을 올리세요.</span>';
+      walkLabel();
+      $('addWalk').addEventListener('click', function () { var n = MZ.maxWalk() + 1; openRec(null, { cat: '만세길 걷기', walk: n, title: '제' + n + '회 화성3·1운동만세길 걷기' }); });
+    } else if (wbar) wbar.hidden = true;
     if (perms.officer) {
       var p = await window.mProfile(); myName = (p && p.name) || (me.email || '').split('@')[0];
       bar.hidden = false;
-      bar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addAct">+ 활동 기록 추가</button><span class="mz-admin-msg">임원으로 로그인되어 기록·사진을 추가할 수 있습니다.</span>';
+      bar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addAct">+ 활동 기록 추가</button><span class="mz-admin-msg">기존 기록에는 카드의 <b>📷 사진 추가</b>로 사진을 올릴 수 있습니다.</span>';
       $('addAct').addEventListener('click', function () { openRec(null); });
     } else if (bar) bar.hidden = true;
     await load();
