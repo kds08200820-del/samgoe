@@ -125,6 +125,16 @@
     .btn-ghost-dark{border:1.5px solid rgba(255,255,255,0.35);color:#fff;}
     .btn-ghost-dark:hover{background:rgba(255,255,255,0.12);}
     .hero-contact{margin-top:36px;font-size:13.5px;font-weight:500;color:var(--faint);}
+    .hero-walk{display:flex;align-items:center;gap:16px;max-width:640px;margin:34px auto 0;padding:16px 18px 16px 16px;text-align:left;
+      background:rgba(255,255,255,.07);border:1px solid rgba(212,191,140,.55);border-radius:14px;color:#fff;backdrop-filter:blur(4px);
+      transition:background .2s,transform .2s,border-color .2s;}
+    .hero-walk:hover{background:rgba(255,255,255,.12);border-color:#d4bf8c;transform:translateY(-2px);}
+    .hero-walk .hw-badge{flex:none;background:#b89b5e;color:#1a1a1a;font-size:12px;font-weight:800;padding:6px 11px;border-radius:20px;white-space:nowrap;}
+    .hero-walk .hw-badge b{margin-left:4px;}
+    .hero-walk .hw-main{flex:1;display:flex;flex-direction:column;gap:3px;font-size:16px;line-height:1.45;}
+    .hero-walk .hw-sub{font-size:13px;color:rgba(255,255,255,.7);}
+    .hero-walk .hw-go{flex:none;background:#fff;color:#032257;font-size:14px;font-weight:800;padding:10px 16px;border-radius:24px;white-space:nowrap;}
+    @media (max-width:640px){ .hero-walk{flex-direction:column;align-items:flex-start;gap:10px;} .hero-walk .hw-go{align-self:stretch;text-align:center;} }
     @media (max-width:720px){
       .hero .in{padding:72px 20px 60px;}
     }
@@ -497,6 +507,11 @@
         <a href="#dashboard" class="btn btn-solid press">한눈에 보기</a>
         <a href="#about" class="btn btn-ghost press">연합회 소개</a>
       </div>
+      <a href="walk.html" class="hero-walk press" data-until="2026-10-19T00:00:00+09:00">
+        <span class="hw-badge">참가 신청 중 <b id="hwDday"></b></span>
+        <span class="hw-main"><b>제6회 3·1 만세길 걷기</b><span class="hw-sub">10월 18일(주일) 오후 2시 · 쌍봉산 근린공원 · 성인 5,000원 / 미성년 무료</span></span>
+        <span class="hw-go">참가 신청하기 →</span>
+      </a>
       <div class="hero-contact">문의 · 사무총장 010-4271-5090</div>
     </div>
   </section>
@@ -686,7 +701,7 @@
             <div class="ds-row"><span class="ds-when">3월</span><span class="ds-what">3·1절 기념 공감음악회</span></div>
             <div class="ds-row"><span class="ds-when">부활주일</span><span class="ds-what">부활절 연합예배 · 임원수련회</span></div>
             <div class="ds-row"><span class="ds-when">5~6월</span><span class="ds-what">목회자·사모 야유회</span></div>
-            <div class="ds-row"><span class="ds-when">10월</span><span class="ds-what"><a href="walk.html" style="text-decoration:underline;text-underline-offset:3px">3·1만세길 걷기대회 · 참가 신청</a></span></div>
+            <div class="ds-row"><span class="ds-when">10월</span><span class="ds-what"><a href="walk.html" data-until-unlink="2026-10-19T00:00:00+09:00" style="text-decoration:underline;text-underline-offset:3px">3·1만세길 걷기대회 · 참가 신청</a></span></div>
             <div class="ds-row"><span class="ds-when">11월</span><span class="ds-what">정기총회 · 임원선출</span></div>
             <div class="ds-row"><span class="ds-when">연중</span><span class="ds-what">장학사업 · 작은 교회 후원</span></div>
           </div>
@@ -717,7 +732,7 @@
           <a href="officer.html" class="quick-tile press">임원방 · 전용 자료실 <span class="qa">→</span></a>
           <a href="history.html" class="quick-tile press">걸어온 길 · 연혁 <span class="qa">→</span></a>
           <a href="march.html" class="quick-tile press">삼일만세운동본부 <span class="qa">→</span></a>
-          <a href="walk.html" class="quick-tile press quick-walk" style="grid-column:1/-1"><span><span class="qw-tag">10.18 주일 · 참가 신청 중</span>제6회 3·1 만세길 걷기 · 참가 신청과 신청 현황</span><span class="qa">→</span></a>
+          <a href="walk.html" class="quick-tile press quick-walk" data-until="2026-10-19T00:00:00+09:00" style="grid-column:1/-1"><span><span class="qw-tag">10.18 주일 · 참가 신청 중</span>제6회 3·1 만세길 걷기 · 참가 신청과 신청 현황</span><span class="qa">→</span></a>
         </div>
 
       </div>
@@ -1985,5 +2000,15 @@ if ('serviceWorker' in navigator) {
   applyPhotos(); initSuper();
 })();
 </script>
+  <script>
+  /* 기간 한정 안내 — data-until 시각이 지나면 자동으로 숨김 (만세길 걷기 신청: 10/18까지) */
+  (function(){ var now=new Date();
+    document.querySelectorAll('[data-until]').forEach(function(el){ if(now>=new Date(el.getAttribute('data-until'))) el.remove(); });
+    document.querySelectorAll('[data-until-unlink]').forEach(function(el){ if(now>=new Date(el.getAttribute('data-until-unlink'))) el.replaceWith(document.createTextNode('3·1만세길 걷기대회')); });
+    var d=document.getElementById('hwDday'); if(d){ var ev=new Date('2026-10-18T00:00:00+09:00'), t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      var k=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Seoul'})); k=new Date(k.getFullYear(),k.getMonth(),k.getDate());
+      var n=Math.round((new Date(2026,9,18)-k)/86400000); d.textContent = n>0?'D-'+n:(n===0?'D-DAY':''); }
+  })();
+  </script>
 </body>
 </html>

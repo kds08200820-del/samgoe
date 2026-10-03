@@ -146,6 +146,7 @@
       <div class="tab on" data-tab="meeting">임원회의 게시판</div>
       <div class="tab" data-tab="files">임원 자료방</div>
       <div class="tab" data-tab="archive">역사 자료 아카이브</div>
+      <a class="tab" href="walk-admin.html" style="text-decoration:none">행사 신청 기록 →</a>
     </div>
 
     <!-- 임원회의 게시판 -->
@@ -237,9 +238,9 @@
       if(['jpg','jpeg','png','gif','webp','heic'].indexOf(e)>=0) return '🖼'; if(['zip','rar','7z'].indexOf(e)>=0) return '🗜'; return '📎'; }
 
     // ---------- 탭 ----------
-    document.querySelectorAll('.tab').forEach(function(t){
+    document.querySelectorAll('.tab[data-tab]').forEach(function(t){
       t.addEventListener('click', function(){
-        document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+        document.querySelectorAll('.tab[data-tab]').forEach(function(x){ x.classList.remove('on'); });
         document.querySelectorAll('.pane').forEach(function(x){ x.classList.remove('on'); });
         t.classList.add('on');
         var tab = t.getAttribute('data-tab');

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>만세길 걷기 신청 기록 | 임원방 · 삼괴지역 기독교 연합회</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <style>
+    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
+      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1100px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    #loading{padding:80px;text-align:center;color:var(--muted);} #content{display:none;}
+    .wrap{max-width:1100px;margin:0 auto;padding:36px 18px 70px;}
+    .crumb{font-size:13px;color:var(--muted);margin-bottom:10px;} .crumb a{color:var(--primary);font-weight:600;}
+    .title{margin:0;font-size:clamp(24px,4vw,30px);color:var(--ink);}
+    .sub{margin:8px 0 24px;font-size:14.5px;color:var(--muted);line-height:1.8;}
+    .state{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;vertical-align:4px;}
+    .state.open{background:#eafaf0;color:var(--ok);} .state.closed{background:#eee;color:#555;}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+    .kpi{background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:16px;}
+    .kpi .k{font-size:12.5px;color:var(--muted);} .kpi .n{font-size:24px;font-weight:700;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;}
+    .kpi .n small{font-size:13px;font-weight:500;color:var(--muted);margin-left:2px;}
+    .kpi.navy{background:var(--primary);border-color:var(--primary);} .kpi.navy .k{color:rgba(255,255,255,.7);} .kpi.navy .n,.kpi.navy .n small{color:#fff;}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:18px;}
+    .card{background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:20px;}
+    .card h2{margin:0 0 4px;font-size:17px;color:var(--ink);} .card .cap{margin:0 0 14px;font-size:12.5px;color:var(--muted);}
+    .card.wide{grid-column:1/-1;}
+    .chartBox{position:relative;height:280px;}
+    .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+    .tools input,.tools select{padding:9px 11px;border:1px solid var(--hairline-strong);border-radius:8px;font-family:inherit;font-size:14px;background:#fff;}
+    .tools input{flex:1;min-width:160px;}
+    .sbtn{padding:9px 14px;border:1px solid var(--hairline-strong);border-radius:8px;background:#fff;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink);}
+    .sbtn.pri{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .tblWrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;min-width:640px;}
+    th,td{padding:10px 8px;border-bottom:1px solid var(--hairline);text-align:right;white-space:nowrap;}
+    th.l,td.l{text-align:left;} th{font-size:12.5px;color:var(--muted);font-weight:600;background:#faf9f6;position:sticky;top:0;}
+    td.c,th.c{text-align:center;}
+    tr.paid td{color:#8a8a8a;}
+    .del{border:0;background:none;color:var(--err);cursor:pointer;font-size:12.5px;font-family:inherit;}
+    input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer;}
+    .empty{padding:24px;text-align:center;color:var(--muted);}
+    footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
+    @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .grid{grid-template-columns:1fr;} }
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="assets/theme.css?v=2" />
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <div id="loading">확인 중…</div>
+
+  <main class="wrap" id="content">
+    <div class="crumb"><a href="officer.html">← 임원방</a> · 행사 신청 기록</div>
+    <h1 class="title">제6회 3·1 만세길 걷기 · 신청 기록 <span class="state" id="state"></span></h1>
+    <p class="sub">2026년 10월 18일(주일) 쌍봉산 근린공원 · 신청 기간이 끝나도 이 기록은 임원방에 계속 남습니다. 입금 확인 칸을 체크하면 바로 저장됩니다.</p>
+
+    <div class="kpis">
+      <div class="kpi"><div class="k">신청 건수</div><div class="n" id="kApps">–</div></div>
+      <div class="kpi"><div class="k">참여 교회</div><div class="n" id="kChurch">–</div></div>
+      <div class="kpi"><div class="k">총 인원 (성인 / 미성년)</div><div class="n" id="kPeople">–</div></div>
+      <div class="kpi navy"><div class="k">참가비 합계</div><div class="n" id="kFee">–</div></div>
+      <div class="kpi"><div class="k">입금 확인액</div><div class="n" id="kPaid" style="color:var(--ok)">–</div></div>
+      <div class="kpi"><div class="k">미입금액</div><div class="n" id="kUnpaid" style="color:var(--err)">–</div></div>
+      <div class="kpi"><div class="k">입금 확인 건수</div><div class="n" id="kPaidCnt">–</div></div>
+      <div class="kpi"><div class="k">성인 비율</div><div class="n" id="kRatio">–</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card wide"><h2>교회별 신청 인원</h2><p class="cap">성인과 미성년을 나눠 쌓은 막대 · 인원이 많은 교회부터</p><div class="chartBox" id="boxChurch"><canvas id="cChurch"></canvas></div></div>
+      <div class="card"><h2>성인 · 미성년 비율</h2><p class="cap">전체 참가 인원 기준</p><div class="chartBox"><canvas id="cRatio"></canvas></div></div>
+      <div class="card"><h2>입금 현황</h2><p class="cap">참가비 기준 (입금 확인 / 미입금)</p><div class="chartBox"><canvas id="cPaid"></canvas></div></div>
+      <div class="card wide"><h2>날짜별 신청 추이</h2><p class="cap">막대: 그날 신청한 인원 · 선: 누적 인원</p><div class="chartBox"><canvas id="cDaily"></canvas></div></div>
+    </div>
+
+    <div class="card">
+      <h2>신청 상세 내역</h2>
+      <p class="cap">입금 확인 체크 · 잘못 들어온 신청 삭제 · 엑셀(CSV) 내려받기</p>
+      <div class="tools">
+        <input id="q" type="search" placeholder="이름·교회 검색">
+        <select id="fPaid"><option value="">전체</option><option value="0">미입금만</option><option value="1">입금 확인만</option></select>
+        <button class="sbtn" id="csvBtn" type="button">CSV 내려받기</button>
+        <a class="sbtn" href="https://docs.google.com/spreadsheets/d/13OmBo-Ym4hHD6zAz4JzCpKAkPy3x-zKYuHf44wXSYMM/edit" target="_blank" rel="noopener">구글 시트 열기</a>
+      </div>
+      <div class="tblWrap" id="tbl"><div class="empty">불러오는 중…</div></div>
+    </div>
+  </main>
+
+  <footer>© 2026 삼괴지역 기독교 연합회 · 임원 전용</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+  (function(){
+    var EVENT='2026-6', FEE=5000, DEADLINE=new Date('2026-10-19T00:00:00+09:00');
+    var NAVY='#032257', GOLD='#b89b5e', OK='#0f7b3f', MUTE='#d9d4c8';
+    var $=function(id){return document.getElementById(id);};
+    function won(n){return Number(n||0).toLocaleString('ko-KR');}
+    function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function kdate(iso){ var d=new Date(iso); var k=new Date(d.toLocaleString('en-US',{timeZone:'Asia/Seoul'})); return k; }
+    function pad(n){return (n<10?'0':'')+n;}
+    var rows=[], charts={};
+
+    if(window.Chart){ Chart.defaults.font.family="'Pretendard Variable',Pretendard,system-ui,sans-serif"; Chart.defaults.color='#555'; }
+
+    function render(){
+      var t={apps:rows.length,adult:0,minor:0,paidAmt:0,paidCnt:0}, by={}, daily={};
+      rows.forEach(function(r){
+        t.adult+=r.adults; t.minor+=r.minors; if(r.paid){t.paidAmt+=r.adults*FEE; t.paidCnt++;}
+        var c=(r.church||'').trim(); by[c]=by[c]||{a:0,m:0}; by[c].a+=r.adults; by[c].m+=r.minors;
+        var k=kdate(r.created_at), key=k.getFullYear()+'-'+pad(k.getMonth()+1)+'-'+pad(k.getDate()); daily[key]=(daily[key]||0)+r.adults+r.minors;
+      });
+      var fee=t.adult*FEE, people=t.adult+t.minor;
+      $('kApps').innerHTML=won(t.apps)+'<small>건</small>'; $('kChurch').innerHTML=Object.keys(by).length+'<small>곳</small>';
+      $('kPeople').innerHTML=won(people)+'<small>명 ('+t.adult+' / '+t.minor+')</small>';
+      $('kFee').innerHTML=won(fee)+'<small>원</small>'; $('kPaid').innerHTML=won(t.paidAmt)+'<small>원</small>';
+      $('kUnpaid').innerHTML=won(fee-t.paidAmt)+'<small>원</small>'; $('kPaidCnt').innerHTML=t.paidCnt+'<small>/ '+t.apps+'건</small>';
+      $('kRatio').innerHTML=(people?Math.round(t.adult/people*100):0)+'<small>%</small>';
+      drawCharts(by,daily,t,fee);
+      renderTable();
+    }
+
+    function mk(id,cfg){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart($(id),cfg); }
+    function drawCharts(by,daily,t,fee){
+      if(!window.Chart) return;
+      var ch=Object.keys(by).sort(function(a,b){return (by[b].a+by[b].m)-(by[a].a+by[a].m);});
+      $('boxChurch').style.height=Math.max(220, ch.length*34+60)+'px';
+      mk('cChurch',{type:'bar',data:{labels:ch,datasets:[
+          {label:'성인',data:ch.map(function(c){return by[c].a;}),backgroundColor:NAVY,borderRadius:4},
+          {label:'미성년',data:ch.map(function(c){return by[c].m;}),backgroundColor:GOLD,borderRadius:4}]},
+        options:{indexAxis:'y',maintainAspectRatio:false,responsive:true,scales:{x:{stacked:true,ticks:{precision:0},grid:{color:'#eee'}},y:{stacked:true,grid:{display:false}}},
+          plugins:{legend:{position:'top',align:'end'},tooltip:{callbacks:{footer:function(it){var s=0;it.forEach(function(i){s+=i.parsed.x;});return '합계 '+s+'명';}}}}}});
+      mk('cRatio',{type:'doughnut',data:{labels:['성인','미성년'],datasets:[{data:[t.adult,t.minor],backgroundColor:[NAVY,GOLD],borderWidth:2,borderColor:'#fff'}]},
+        options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(c){var s=t.adult+t.minor;return c.label+' '+c.parsed+'명 ('+(s?Math.round(c.parsed/s*100):0)+'%)';}}}}}});
+      mk('cPaid',{type:'doughnut',data:{labels:['입금 확인','미입금'],datasets:[{data:[t.paidAmt,fee-t.paidAmt],backgroundColor:[OK,MUTE],borderWidth:2,borderColor:'#fff'}]},
+        options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(c){return c.label+' '+won(c.parsed)+'원';}}}}}});
+      var days=Object.keys(daily).sort(), cum=0, cumArr=days.map(function(d){cum+=daily[d];return cum;});
+      mk('cDaily',{data:{labels:days.map(function(d){var p=d.split('-');return (+p[1])+'/'+(+p[2]);}),datasets:[
+          {type:'bar',label:'그날 신청 인원',data:days.map(function(d){return daily[d];}),backgroundColor:'rgba(184,155,94,.55)',borderRadius:4,yAxisID:'y'},
+          {type:'line',label:'누적 인원',data:cumArr,borderColor:NAVY,backgroundColor:NAVY,tension:.25,pointRadius:3,yAxisID:'y'}]},
+        options:{maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:'#eee'}},x:{grid:{display:false}}},plugins:{legend:{position:'top',align:'end'}}}});
+    }
+
+    function filtered(){
+      var q=$('q').value.trim(), f=$('fPaid').value;
+      return rows.filter(function(r){
+        if(q && (r.name+' '+r.church).indexOf(q)<0) return false;
+        if(f==='0'&&r.paid) return false; if(f==='1'&&!r.paid) return false; return true;
+      });
+    }
+    function renderTable(){
+      var list=filtered();
+      if(!list.length){ $('tbl').innerHTML='<div class="empty">'+(rows.length?'조건에 맞는 신청이 없습니다.':'아직 신청이 없습니다.')+'</div>'; return; }
+      var h='<table><thead><tr><th class="l">신청 시각</th><th class="l">신청자</th><th class="l">교회</th><th>성인</th><th>미성년</th><th>총 인원</th><th>참가비</th><th class="c">입금 확인</th><th class="c">관리</th></tr></thead><tbody>';
+      list.forEach(function(r){
+        var k=kdate(r.created_at);
+        h+='<tr class="'+(r.paid?'paid':'')+'"><td class="l">'+(k.getMonth()+1)+'/'+k.getDate()+' '+pad(k.getHours())+':'+pad(k.getMinutes())+'</td><td class="l">'+esc(r.name)+'</td><td class="l">'+esc(r.church)+'</td><td>'+r.adults+'</td><td>'+r.minors+'</td><td>'+(r.adults+r.minors)+'</td><td>'+won(r.adults*FEE)+'원</td>'+
+          '<td class="c"><input type="checkbox" data-paid="'+r.id+'"'+(r.paid?' checked':'')+' aria-label="입금 확인"></td><td class="c"><button class="del" data-del="'+r.id+'">삭제</button></td></tr>';
+      });
+      $('tbl').innerHTML=h+'</tbody></table>';
+    }
+
+    $('tbl').addEventListener('change',async function(e){
+      var id=e.target.getAttribute('data-paid'); if(!id) return;
+      var v=e.target.checked; e.target.disabled=true;
+      var r=await window.sb.from('walk_applications').update({paid:v}).eq('id',id);
+      e.target.disabled=false;
+      if(r.error){ alert('저장하지 못했습니다: '+window.krErr(r.error.message)); e.target.checked=!v; return; }
+      rows.forEach(function(x){ if(x.id===id) x.paid=v; }); render();
+    });
+    $('tbl').addEventListener('click',async function(e){
+      var id=e.target.getAttribute('data-del'); if(!id) return;
+      var row=rows.filter(function(x){return x.id===id;})[0];
+      if(!confirm((row?row.church+' · '+row.name+' ':'')+'신청을 삭제할까요? 되돌릴 수 없습니다.')) return;
+      var r=await window.sb.from('walk_applications').delete().eq('id',id);
+      if(r.error){ alert('삭제하지 못했습니다: '+window.krErr(r.error.message)); return; }
+      rows=rows.filter(function(x){return x.id!==id;}); render();
+    });
+    $('q').addEventListener('input',renderTable); $('fPaid').addEventListener('change',renderTable);
+    $('csvBtn').addEventListener('click',function(){
+      var lines=[['신청 시각','신청자','교회','성인','미성년','총 인원','참가비','입금 확인']];
+      rows.forEach(function(r){ var k=kdate(r.created_at); lines.push([k.getFullYear()+'-'+pad(k.getMonth()+1)+'-'+pad(k.getDate())+' '+pad(k.getHours())+':'+pad(k.getMinutes()), r.name, r.church, r.adults, r.minors, r.adults+r.minors, r.adults*FEE, r.paid?'O':'']); });
+      var csv='﻿'+lines.map(function(l){return l.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\r\n');
+      var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='만세길걷기_신청기록_2026.csv'; a.click();
+    });
+
+    async function load(){
+      var r=await window.sb.from('walk_applications').select('id,created_at,name,church,adults,minors,paid').eq('event',EVENT).order('created_at',{ascending:true});
+      if(r.error){ $('tbl').innerHTML='<div class="empty">불러오지 못했습니다: '+esc(window.krErr(r.error.message))+'</div>'; return; }
+      rows=(r.data||[]).reverse(); render();
+    }
+
+    (async function(){
+      var res=await window.requireOfficer(); if(!res) return;
+      $('loading').style.display='none'; $('content').style.display='block';
+      var closed=new Date()>=DEADLINE; var st=$('state'); st.className='state '+(closed?'closed':'open'); st.textContent=closed?'신청 마감':'신청 받는 중';
+      await load(); setInterval(load,120000);
+    })();
+  })();
+  </script>
+</body>
+</html>

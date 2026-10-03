@@ -11,7 +11,7 @@
   <style>
     :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
       --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
-      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--toss:#0064ff;}
+      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;--toss:#0064ff;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -19,55 +19,80 @@
     .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
     .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
     .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
     .wrap{max-width:760px;margin:0 auto;padding:40px 18px 70px;}
     .eyebrow{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:.2em;margin:0 0 10px;}
     .title{margin:0;font-weight:700;font-size:clamp(26px,5vw,34px);color:var(--ink);line-height:1.3;}
     .sub{margin:12px 0 28px;font-size:15.5px;color:var(--muted);line-height:1.9;}
     .card{background:var(--canvas);border:1px solid var(--hairline);padding:24px 22px;margin-bottom:18px;border-radius:10px;}
-    .card h2{margin:0 0 14px;font-size:19px;color:var(--ink);}
-    .info{display:grid;grid-template-columns:84px 1fr;gap:14px 12px;font-size:15.5px;line-height:1.8;}
+    .card h2{margin:0 0 16px;font-size:19px;color:var(--ink);}
+    .info{display:grid;grid-template-columns:84px 1fr;gap:14px 12px;font-size:15.5px;line-height:1.8;margin:0;}
     .info dt{font-weight:700;color:var(--ink);} .info dd{margin:0;}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 24px;border:0;border-radius:8px;
       background:var(--primary);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;}
-    .btn:hover{background:var(--primary-active);}
+    .btn:hover{background:var(--primary-active);} .btn:disabled{background:var(--hairline-strong);cursor:default;}
     .btn.toss{background:var(--toss);} .btn.toss:hover{background:#0050cc;}
-    .btn.line{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+    .btn.gold{background:var(--gold);color:#1a1a1a;} .btn.gold:hover{background:#d4bf8c;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .fld label{display:block;font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:7px;}
+    .fld input{width:100%;padding:13px 12px;border:1px solid var(--hairline-strong);border-radius:8px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink);}
+    .fld input:focus{outline:none;border:2px solid var(--primary);padding:12px 11px;}
+    .fld{margin-bottom:16px;}
+    .hint{font-size:12.5px;color:var(--muted);margin-top:6px;}
+    .prefill{display:none;background:#eef3fb;border:1px solid #cdddf3;color:var(--primary);font-size:13.5px;padding:10px 14px;border-radius:8px;margin-bottom:16px;line-height:1.6;}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
     .stat{background:var(--surface-soft);border-radius:8px;padding:14px 10px;text-align:center;}
     .stat .n{font-size:24px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;}
     .stat .k{font-size:12.5px;color:var(--muted);margin-top:2px;}
     table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;}
     th,td{padding:10px 8px;border-bottom:1px solid var(--hairline);text-align:right;}
-    th:first-child,td:first-child{text-align:left;}
+    th:first-child,td:first-child,th.l,td.l{text-align:left;}
     th{font-size:12.5px;color:var(--muted);font-weight:600;}
     tfoot td{font-weight:700;color:var(--ink);border-bottom:0;border-top:2px solid var(--ink);}
     .note{font-size:13.5px;color:var(--muted);margin-top:14px;line-height:1.9;}
     .empty{padding:18px 0;text-align:center;color:var(--muted);font-size:14px;}
-    .calc{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-    .calc label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
-    .calc input{width:100%;padding:12px;border:1px solid var(--hairline-strong);border-radius:8px;font-size:17px;font-family:inherit;}
     .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px;background:#f3efe4;border-radius:8px;margin-bottom:14px;}
     .total b{font-size:26px;color:var(--primary);font-variant-numeric:tabular-nums;}
     .acct{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border:1px dashed var(--hairline-strong);border-radius:8px;margin-top:12px;font-size:15px;}
     .acct .num{font-weight:800;color:var(--primary);font-size:20px;letter-spacing:.03em;}
     .copy{border:1px solid var(--hairline-strong);background:#fff;border-radius:6px;padding:7px 12px;font-size:13px;font-family:inherit;cursor:pointer;}
-    .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;}
+    .msg{display:none;margin-top:12px;padding:11px 14px;font-size:14px;border-radius:8px;}
+    .msg.err{display:block;background:#fdecea;border:1px solid #f3c7c3;color:var(--err);}
+    .done{display:none;text-align:center;}
+    .done .check{width:54px;height:54px;border-radius:50%;background:#eafaf0;color:var(--ok);font-size:28px;line-height:54px;margin:0 auto 12px;font-weight:700;}
+    .done h3{margin:0 0 6px;font-size:20px;color:var(--ink);}
+    .done p{margin:0 0 16px;color:var(--muted);font-size:14.5px;line-height:1.8;}
+    .lock{font-size:14px;color:var(--muted);line-height:1.8;}
+    .lock a{color:var(--primary);font-weight:700;text-decoration:underline;}
+    .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;background:#f3efe4;color:var(--gold-ink);margin-left:6px;vertical-align:2px;}
+    .closed{text-align:center;padding:40px 22px;}
+    .closed h2{font-size:22px;}
+    .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;}
     .toast.on{opacity:1;}
     .updated{font-size:12px;color:var(--muted);text-align:right;margin-top:8px;}
+    .hide{display:none!important;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;line-height:1.8;}
-    @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr);} .hide-sm{display:none;} th,td{padding:9px 5px;}}
+    @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr);} .hide-sm{display:none;} th,td{padding:9px 5px;} .grid2{gap:10px;}}
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
   <link rel="stylesheet" href="assets/theme.css?v=2" />
 </head>
 <body>
-  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><a href="index.html" style="font-weight:400;font-size:12px;color:rgba(255,255,255,.7)">홈으로</a></div></header>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
 
   <main class="wrap">
     <p class="eyebrow">2026 · 제6회</p>
     <h1 class="title">3·1 만세길 걷기 참가 신청</h1>
-    <p class="sub">교회별로 함께 걸을 인원을 신청해 주세요. 신청이 들어오면 아래 현황에 자동으로 반영됩니다.</p>
+    <p class="sub" id="leadText">로그인하지 않아도 신청할 수 있습니다. 신청 즉시 아래 교회별 현황에 반영됩니다. <b>10월 18일(주일)까지</b> 받습니다.</p>
 
+    <!-- 마감 후 -->
+    <section class="card closed hide" id="closedCard">
+      <h2>참가 신청이 마감되었습니다</h2>
+      <p class="note" style="margin:8px 0 0">제6회 3·1 만세길 걷기에 함께해 주셔서 감사합니다.<br>신청 기록은 임원방에 보관되어 있습니다.</p>
+      <div id="closedOfficer" class="hide" style="margin-top:20px"><a class="btn" href="walk-admin.html">임원방 · 신청 기록 보기 →</a></div>
+    </section>
+
+    <div id="openArea">
     <section class="card">
       <h2>행사 안내</h2>
       <dl class="info">
@@ -77,13 +102,41 @@
         <dt>납부 계좌</dt><dd><b style="color:var(--primary);font-weight:800">농협 355-0074-8148-33</b> (예금주 삼괴연합회)</dd>
         <dt>주최·주관</dt><dd>주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회</dd>
       </dl>
-      <div style="margin-top:20px">
-        <a class="btn" id="applyBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSdVvJoaMOAQoXe85rnL49cxMEEV-seUXcW8w11JOIdDNcPuIw/viewform" target="_blank" rel="noopener">참가 신청하기 →</a>
+    </section>
+
+    <!-- 참가 신청 (홈페이지 안에서 바로) -->
+    <section class="card" id="apply">
+      <h2>참가 신청</h2>
+      <div id="applyForm">
+        <div class="prefill" id="prefill">로그인한 회원 정보로 이름과 교회를 채웠습니다. 다른 분을 대신 신청하시면 고쳐 주세요.</div>
+        <div class="grid2">
+          <div class="fld"><label for="fName">신청자 이름</label><input id="fName" type="text" maxlength="40" autocomplete="name" placeholder="홍길동"></div>
+          <div class="fld"><label for="fChurch">신청 교회</label><input id="fChurch" type="text" maxlength="60" list="churchList" placeholder="교회 이름을 입력하거나 고르세요"><datalist id="churchList"></datalist></div>
+        </div>
+        <div class="grid2">
+          <div class="fld"><label for="fAdults">성인 인원 <span style="font-weight:400;color:var(--muted)">(1인 5,000원)</span></label><input id="fAdults" type="number" min="0" max="300" inputmode="numeric" value="1"></div>
+          <div class="fld"><label for="fMinors">미성년 인원 <span style="font-weight:400;color:var(--muted)">(무료)</span></label><input id="fMinors" type="number" min="0" max="300" inputmode="numeric" value="0"></div>
+        </div>
+        <div class="total"><span>참가비 합계 <span id="fPeople" style="font-size:13px"></span></span><b id="fAmount">5,000원</b></div>
+        <button class="btn" id="submitBtn" type="button">참가 신청하기</button>
+        <div class="msg" id="fMsg"></div>
+      </div>
+      <div class="done" id="doneBox">
+        <div class="check">✓</div>
+        <h3>신청이 완료되었습니다</h3>
+        <p id="doneText"></p>
+        <a class="btn toss" id="doneToss" href="#">토스로 <span id="doneAmt"></span> 보내기</a>
+        <div class="acct" style="text-align:left">
+          <div><div style="font-size:13px;color:var(--muted)">농협 · 예금주 삼괴연합회</div><div class="num">355-0074-8148-33</div></div>
+          <button class="copy" type="button" data-copy="355-0074-8148-33">계좌번호 복사</button>
+        </div>
+        <p class="note">입금자명은 <b>신청자 이름</b>으로 해 주세요.</p>
+        <button class="btn" type="button" id="againBtn" style="background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);margin-top:4px">다른 교회·인원 추가 신청</button>
       </div>
     </section>
 
     <section class="card" id="status">
-      <h2>신청 현황</h2>
+      <h2>교회별 신청 현황</h2>
       <div class="stats">
         <div class="stat"><div class="n" id="sChurch">–</div><div class="k">참여 교회</div></div>
         <div class="stat"><div class="n" id="sAdult">–</div><div class="k">성인</div></div>
@@ -94,91 +147,189 @@
       <div class="updated" id="updated"></div>
     </section>
 
+    <!-- 정회원 · 임원: 신청 내역 -->
+    <section class="card" id="members">
+      <h2>신청 내역 <span class="badge">정회원 공개</span></h2>
+      <div id="memberArea"><div class="lock">신청 내역(신청자 이름)은 <b>정회원</b>에게만 공개됩니다. <a href="login.html">로그인</a> 후 확인해 주세요.</div></div>
+      <div id="officerLink" class="hide" style="margin-top:16px"><a class="btn gold" href="walk-admin.html">임원 · 상세 내역과 그래프 보기 →</a></div>
+    </section>
+
     <section class="card" id="pay">
       <h2>참가비 납부</h2>
-      <div class="calc">
-        <div><label for="adults">성인 인원</label><input id="adults" type="number" min="0" inputmode="numeric" value="1"></div>
-        <div><label for="minors">미성년 인원 (무료)</label><input id="minors" type="number" min="0" inputmode="numeric" value="0"></div>
+      <div class="grid2">
+        <div class="fld"><label for="adults">성인 인원</label><input id="adults" type="number" min="0" inputmode="numeric" value="1"></div>
+        <div class="fld"><label for="minors">미성년 인원 (무료)</label><input id="minors" type="number" min="0" inputmode="numeric" value="0"></div>
       </div>
       <div class="total"><span>납부할 참가비</span><b id="amount">5,000원</b></div>
       <a class="btn toss" id="tossBtn" href="#">토스로 보내기</a>
       <div class="acct">
         <div><div style="font-size:13px;color:var(--muted)">농협 · 예금주 삼괴연합회</div><div class="num">355-0074-8148-33</div></div>
-        <button class="copy" id="copyBtn" type="button">계좌번호 복사</button>
+        <button class="copy" type="button" data-copy="355-0074-8148-33">계좌번호 복사</button>
       </div>
       <p class="note">입금자명은 <b>신청자 이름</b>으로 해 주세요. ‘토스로 보내기’는 토스 앱이 설치된 휴대폰에서 열립니다. 컴퓨터에서는 계좌번호를 복사해 송금해 주세요.</p>
     </section>
+    </div>
   </main>
 
   <div class="toast" id="toast"></div>
-
   <footer>© 2026 삼괴지역 기독교 연합회 · 행사 문의 김낭주 목사 <a href="tel:01042715090" style="color:#fff">010-4271-5090</a></footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=11"></script>
+  <script src="churches.js?v=2"></script>
   <script>
-    // 구글 시트 '교회별 집계' 탭을 웹에 게시한 CSV (신청자 개인 정보는 포함되지 않음)
-    var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQiPtAyR235UFrdCyvvX8jVYv9K1PrNec60l6U79Nn5_BMOOcjCSGh4V7iIC5mNrJZKGHUtp0pGcZyh/pub?gid=1590561078&single=true&output=csv';
-    var FEE = 5000, ACCOUNT = '3550074814833', BANK = '농협';
+  (function(){
+    var EVENT = '2026-6', FEE = 5000, ACCOUNT = '3550074814833', BANK = '농협';
+    var DEADLINE = new Date('2026-10-19T00:00:00+09:00');   // 10월 18일(주일)까지 운영
+    // 구글 시트에도 같은 내용이 쌓이도록 구글 설문지로 함께 보냄 (관리용 백업)
+    var GFORM = 'https://docs.google.com/forms/d/e/1FAIpQLSdVvJoaMOAQoXe85rnL49cxMEEV-seUXcW8w11JOIdDNcPuIw/formResponse';
+    var GF = { name:'entry.631568265', church:'entry.1367141888', adults:'entry.1763203783', minors:'entry.1758193888' };
 
+    var $ = function(id){ return document.getElementById(id); };
     function won(n){ return Number(n||0).toLocaleString('ko-KR'); }
-    function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-    function parseCSV(text){
-      var rows=[], row=[], cur='', q=false;
-      for(var i=0;i<text.length;i++){
-        var c=text[i];
-        if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
-        else if(c==='"') q=true;
-        else if(c===','){ row.push(cur); cur=''; }
-        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(cur); rows.push(row); row=[]; cur=''; }
-        else cur+=c;
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+    function int(v){ var n=parseInt(v,10); return isNaN(n)||n<0?0:n; }
+    function toast(m){ var t=$('toast'); t.textContent=m; t.classList.add('on'); setTimeout(function(){t.classList.remove('on');},1900); }
+    function tossUrl(amt){ return 'supertoss://send?bank='+encodeURIComponent(BANK)+'&accountNo='+ACCOUNT+(amt?'&amount='+amt:'')+'&origin=qr'; }
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    function bindToss(a){ a.addEventListener('click',function(){ if(!isMobile) toast('토스 송금은 휴대폰에서 열립니다. 계좌번호를 복사해 주세요.'); }); }
+
+    var me = null, profile = null, isMember = false, isOfficer = false;
+    var closed = new Date() >= DEADLINE;
+
+    // ----- 마감 처리 -----
+    if (closed) {
+      $('openArea').classList.add('hide'); $('closedCard').classList.remove('hide');
+      $('leadText').textContent = '10월 18일(주일)로 참가 신청을 마감했습니다.';
+    }
+
+    // ----- 교회 목록 -----
+    try { $('churchList').innerHTML = (window.CHURCHES||[]).map(function(c){ return '<option value="'+esc(c.name)+'">'; }).join(''); } catch(e){}
+
+    // ----- 신청 폼 -----
+    function updForm(){
+      var a=int($('fAdults').value), m=int($('fMinors').value);
+      $('fAmount').textContent = won(a*FEE)+'원';
+      $('fPeople').textContent = '(총 '+(a+m)+'명)';
+    }
+    $('fAdults').addEventListener('input',updForm); $('fMinors').addEventListener('input',updForm); updForm();
+
+    function showErr(m){ var e=$('fMsg'); e.className='msg err'; e.textContent=m; }
+    $('submitBtn').addEventListener('click', async function(){
+      var name=$('fName').value.trim(), church=$('fChurch').value.trim();
+      var a=int($('fAdults').value), m=int($('fMinors').value);
+      $('fMsg').className='msg';
+      if(!name) return showErr('신청자 이름을 적어 주세요.');
+      if(!church) return showErr('신청 교회를 적어 주세요.');
+      if(a+m<=0) return showErr('인원을 1명 이상 적어 주세요.');
+      if(a>300||m>300) return showErr('인원을 다시 확인해 주세요.');
+      if(!window.sb) return showErr('지금은 신청을 받을 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      var btn=this; btn.disabled=true; btn.textContent='신청 중…';
+      var r = await window.sb.from('walk_applications').insert({ event:EVENT, name:name, church:church, adults:a, minors:m });
+      btn.disabled=false; btn.textContent='참가 신청하기';
+      if(r.error){
+        showErr(/row-level security/i.test(r.error.message) ? '참가 신청 기간이 끝났습니다.' : window.krErr(r.error.message));
+        return;
       }
-      if(cur!==''||row.length){ row.push(cur); rows.push(row); }
-      return rows;
+      // 구글 시트 백업 (실패해도 신청은 이미 완료됨)
+      try {
+        var fd = new URLSearchParams(); fd.append(GF.name,name); fd.append(GF.church,church); fd.append(GF.adults,a); fd.append(GF.minors,m);
+        fetch(GFORM,{method:'POST',mode:'no-cors',body:fd});
+      } catch(e){}
+      var amt=a*FEE;
+      $('doneText').innerHTML = '<b>'+esc(church)+'</b> · '+esc(name)+'<br>성인 '+a+'명 · 미성년 '+m+'명 · 참가비 <b>'+won(amt)+'원</b>';
+      $('doneAmt').textContent = won(amt)+'원';
+      $('doneToss').setAttribute('href', tossUrl(amt));
+      $('doneToss').classList.toggle('hide', amt===0);
+      $('applyForm').classList.add('hide'); $('doneBox').style.display='block';
+      $('adults').value=a; $('minors').value=m; updPay();
+      loadSummary(); if(isMember) loadMembers();
+      $('apply').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    $('againBtn').addEventListener('click',function(){
+      $('doneBox').style.display='none'; $('applyForm').classList.remove('hide');
+      $('fAdults').value=1; $('fMinors').value=0; updForm();
+      if(!profile){ $('fName').value=''; $('fChurch').value=''; }
+    });
+
+    // ----- 교회별 현황 (누구나) -----
+    async function loadSummary(){
+      if(!window.sb){ $('tableWrap').innerHTML='<div class="empty">현황을 불러오지 못했습니다.</div>'; return; }
+      var r = await window.sb.rpc('walk_summary',{ p_event:EVENT });
+      if(r.error){ $('tableWrap').innerHTML='<div class="empty">현황을 불러오지 못했습니다. 잠시 후 새로고침해 주세요.</div>'; return; }
+      var rows=r.data||[], t={apps:0,adult:0,minor:0};
+      rows.forEach(function(x){ t.apps+=+x.apps; t.adult+=+x.adults; t.minor+=+x.minors; });
+      $('sChurch').textContent=rows.length; $('sAdult').textContent=won(t.adult); $('sMinor').textContent=won(t.minor); $('sTotal').textContent=won(t.adult+t.minor);
+      if(!rows.length){ $('tableWrap').innerHTML='<div class="empty">아직 신청이 없습니다. 첫 번째로 신청해 주세요!</div>'; }
+      else {
+        var h='<table><thead><tr><th>교회</th><th class="hide-sm">신청</th><th>성인</th><th>미성년</th><th>총 인원</th><th>참가비</th></tr></thead><tbody>';
+        rows.forEach(function(x){ h+='<tr><td>'+esc(x.church)+'</td><td class="hide-sm">'+won(x.apps)+'</td><td>'+won(x.adults)+'</td><td>'+won(x.minors)+'</td><td>'+won(+x.adults + +x.minors)+'</td><td>'+won(x.adults*FEE)+'원</td></tr>'; });
+        h+='</tbody><tfoot><tr><td>합계</td><td class="hide-sm">'+won(t.apps)+'</td><td>'+won(t.adult)+'</td><td>'+won(t.minor)+'</td><td>'+won(t.adult+t.minor)+'</td><td>'+won(t.adult*FEE)+'원</td></tr></tfoot></table>';
+        $('tableWrap').innerHTML=h;
+      }
+      $('updated').textContent='최근 확인 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     }
 
-    function loadStatus(){
-      fetch(CSV_URL + '&t=' + Date.now()).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
-      .then(function(text){
-        var rows = parseCSV(text).slice(1).filter(function(r){ return r[0] && r[0].trim(); });
-        var t = {apps:0, adult:0, minor:0, total:0, fee:0};
-        rows.forEach(function(r){ t.apps+=+r[1]||0; t.adult+=+r[2]||0; t.minor+=+r[3]||0; t.total+=+r[4]||0; t.fee+=+r[5]||0; });
-        document.getElementById('sChurch').textContent = rows.length;
-        document.getElementById('sAdult').textContent = won(t.adult);
-        document.getElementById('sMinor').textContent = won(t.minor);
-        document.getElementById('sTotal').textContent = won(t.total);
-        var wrap = document.getElementById('tableWrap');
-        if(!rows.length){ wrap.innerHTML = '<div class="empty">아직 신청이 없습니다. 첫 번째로 신청해 주세요!</div>'; }
-        else {
-          var h = '<table><thead><tr><th>교회</th><th class="hide-sm">신청 건수</th><th>성인</th><th>미성년</th><th>총 인원</th><th>참가비</th></tr></thead><tbody>';
-          rows.forEach(function(r){
-            h += '<tr><td>'+esc(r[0])+'</td><td class="hide-sm">'+won(r[1])+'</td><td>'+won(r[2])+'</td><td>'+won(r[3])+'</td><td>'+won(r[4])+'</td><td>'+won(r[5])+'원</td></tr>';
-          });
-          h += '</tbody><tfoot><tr><td>합계</td><td class="hide-sm">'+won(t.apps)+'</td><td>'+won(t.adult)+'</td><td>'+won(t.minor)+'</td><td>'+won(t.total)+'</td><td>'+won(t.fee)+'원</td></tr></tfoot></table>';
-          wrap.innerHTML = h;
-        }
-        document.getElementById('updated').textContent = '최근 확인 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) + ' · 신청 후 반영까지 몇 분 걸릴 수 있습니다';
-      })
-      .catch(function(){ document.getElementById('tableWrap').innerHTML = '<div class="empty">현황을 불러오지 못했습니다. 잠시 후 새로고침해 주세요.</div>'; });
+    // ----- 신청 내역 (정회원·임원) -----
+    async function loadMembers(){
+      var r = await window.sb.from('walk_applications').select('created_at,name,church,adults,minors,user_id').eq('event',EVENT).order('created_at',{ascending:false});
+      if(r.error){ $('memberArea').innerHTML='<div class="empty">신청 내역을 불러오지 못했습니다.</div>'; return; }
+      var rows=r.data||[];
+      if(!isMember){
+        // 일반회원: 본인이 로그인해서 낸 신청만
+        if(!rows.length){ $('memberArea').innerHTML='<div class="lock">전체 신청 내역은 <b>정회원</b>에게 공개됩니다. 회원 구분은 <a href="mypage.html">마이페이지</a>에서 확인하세요.</div>'; return; }
+      }
+      if(!rows.length){ $('memberArea').innerHTML='<div class="empty">아직 신청이 없습니다.</div>'; return; }
+      var h=(isMember?'':'<p class="lock" style="margin:0 0 10px">내가 낸 신청만 보입니다. 전체 내역은 정회원에게 공개됩니다.</p>')+
+        '<table><thead><tr><th>신청자</th><th class="l">교회</th><th>성인</th><th>미성년</th><th class="hide-sm">신청일</th></tr></thead><tbody>';
+      rows.forEach(function(x){
+        var d=new Date(x.created_at);
+        h+='<tr><td>'+esc(x.name)+(me&&x.user_id===me.id?' <span class="badge" style="margin-left:2px">나</span>':'')+'</td><td class="l">'+esc(x.church)+'</td><td>'+x.adults+'</td><td>'+x.minors+'</td><td class="hide-sm">'+(d.getMonth()+1)+'/'+d.getDate()+'</td></tr>';
+      });
+      $('memberArea').innerHTML=h+'</tbody></table>';
     }
 
-    function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on'); setTimeout(function(){t.classList.remove('on');},1800); }
-    function updatePay(){
-      var a = Math.max(0, parseInt(document.getElementById('adults').value,10)||0);
-      var amt = a * FEE;
-      document.getElementById('amount').textContent = won(amt) + '원';
-      var url = 'supertoss://send?bank=' + encodeURIComponent(BANK) + '&accountNo=' + ACCOUNT + (amt ? '&amount=' + amt : '') + '&origin=qr';
-      document.getElementById('tossBtn').setAttribute('href', url);
+    // ----- 로그인 상태 반영 -----
+    async function initUser(){
+      if(!window.sb) return;
+      try {
+        var s = await window.sb.auth.getSession();
+        me = s.data && s.data.session ? s.data.session.user : null;
+        if(!me) return;
+        profile = await window.getMyProfile();
+        isOfficer = !!(window.isSuperAdmin(me) || (profile && profile.officer_role));
+        isMember = isOfficer || !!(profile && profile.member_type === '정회원');
+        if(closed){ if(isOfficer) $('closedOfficer').classList.remove('hide'); return; }
+        // 기본 정보 자동 입력
+        var pn = (profile && profile.name) || (me.user_metadata && me.user_metadata.name) || '';
+        var pc = (profile && profile.church) || (me.user_metadata && me.user_metadata.church) || '';
+        if(pn && !$('fName').value) $('fName').value = pn;
+        if(pc && !$('fChurch').value) $('fChurch').value = pc;
+        if(pn || pc) $('prefill').style.display='block';
+        if(isOfficer) $('officerLink').classList.remove('hide');
+        loadMembers();
+      } catch(e){}
     }
-    document.getElementById('adults').addEventListener('input', updatePay);
-    document.getElementById('minors').addEventListener('input', updatePay);
-    document.getElementById('tossBtn').addEventListener('click', function(){
-      if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ toast('토스 송금은 휴대폰에서 열립니다. 계좌번호를 복사해 주세요.'); }
+
+    // ----- 납부 계산기 -----
+    function updPay(){
+      var a=int($('adults').value), amt=a*FEE;
+      $('amount').textContent=won(amt)+'원';
+      $('tossBtn').setAttribute('href', tossUrl(amt));
+    }
+    $('adults').addEventListener('input',updPay); $('minors').addEventListener('input',updPay); updPay();
+    bindToss($('tossBtn')); bindToss($('doneToss'));
+    Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'),function(b){
+      b.addEventListener('click',function(){
+        var v=b.getAttribute('data-copy');
+        (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(function(){toast('계좌번호를 복사했습니다');}).catch(function(){window.prompt('계좌번호를 복사해 주세요',v);});
+      });
     });
-    document.getElementById('copyBtn').addEventListener('click', function(){
-      var v='355-0074-8148-33';
-      (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function(){ toast('계좌번호를 복사했습니다'); })
-      .catch(function(){ window.prompt('계좌번호를 복사해 주세요', v); });
-    });
-    updatePay(); loadStatus(); setInterval(loadStatus, 60000);
+
+    initUser();
+    if(!closed){ loadSummary(); setInterval(loadSummary,60000); }
+  })();
   </script>
 </body>
 </html>
