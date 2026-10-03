@@ -187,6 +187,11 @@
       transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
     .quick-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:#e3dccb;}
     .quick-tile .qa{color:var(--accent);font-weight:800;}
+    .quick-walk{background:linear-gradient(120deg,#032257 0%,#0d3a7a 60%,#1a4f8f 100%)!important;color:#fff!important;border-color:transparent!important;}
+    .quick-walk .qa{color:#d4bf8c!important;font-size:1.15em;}
+    .quick-walk .qw-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#b89b5e;color:#1a1a1a;font-size:12px;font-weight:700;vertical-align:1px;}
+    .quick-walk:hover{box-shadow:0 10px 30px rgba(3,34,87,.35)!important;}
+    @media (max-width:600px){ .quick-walk .qw-tag{display:table;margin:0 0 8px;} }
     @media (max-width:960px){ .quick-grid{grid-template-columns:repeat(2,1fr);} }
 
     /* ===================== 소개 ===================== */
@@ -712,7 +717,7 @@
           <a href="officer.html" class="quick-tile press">임원방 · 전용 자료실 <span class="qa">→</span></a>
           <a href="history.html" class="quick-tile press">걸어온 길 · 연혁 <span class="qa">→</span></a>
           <a href="march.html" class="quick-tile press">삼일만세운동본부 <span class="qa">→</span></a>
-          <a href="walk.html" class="quick-tile press" style="grid-column:1/-1">제6회 3·1 만세길 걷기 · 참가 신청과 신청 현황 <span class="qa">→</span></a>
+          <a href="walk.html" class="quick-tile press quick-walk" style="grid-column:1/-1"><span><span class="qw-tag">10.18 주일 · 참가 신청 중</span>제6회 3·1 만세길 걷기 · 참가 신청과 신청 현황</span><span class="qa">→</span></a>
         </div>
 
       </div>
