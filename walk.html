@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>제6회 3·1 만세길 걷기 신청 | 삼괴지역 기독교 연합회</title>
+  <meta name="description" content="제6회 3·1 만세길 걷기 — 참가 신청, 교회별 신청 현황, 참가비 납부(토스) 안내">
+  <link rel="canonical" href="https://samgoe-cc.or.kr/walk.html" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <style>
+    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
+      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--toss:#0064ff;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 18px 70px;}
+    .eyebrow{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:.2em;margin:0 0 10px;}
+    .title{margin:0;font-weight:700;font-size:clamp(26px,5vw,34px);color:var(--ink);line-height:1.3;}
+    .sub{margin:12px 0 28px;font-size:15.5px;color:var(--muted);line-height:1.9;}
+    .card{background:var(--canvas);border:1px solid var(--hairline);padding:24px 22px;margin-bottom:18px;border-radius:10px;}
+    .card h2{margin:0 0 14px;font-size:19px;color:var(--ink);}
+    .info{display:grid;grid-template-columns:84px 1fr;gap:14px 12px;font-size:15.5px;line-height:1.8;}
+    .info dt{font-weight:700;color:var(--ink);} .info dd{margin:0;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 24px;border:0;border-radius:8px;
+      background:var(--primary);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;}
+    .btn:hover{background:var(--primary-active);}
+    .btn.toss{background:var(--toss);} .btn.toss:hover{background:#0050cc;}
+    .btn.line{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+    .stat{background:var(--surface-soft);border-radius:8px;padding:14px 10px;text-align:center;}
+    .stat .n{font-size:24px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;}
+    .stat .k{font-size:12.5px;color:var(--muted);margin-top:2px;}
+    table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;}
+    th,td{padding:10px 8px;border-bottom:1px solid var(--hairline);text-align:right;}
+    th:first-child,td:first-child{text-align:left;}
+    th{font-size:12.5px;color:var(--muted);font-weight:600;}
+    tfoot td{font-weight:700;color:var(--ink);border-bottom:0;border-top:2px solid var(--ink);}
+    .note{font-size:13.5px;color:var(--muted);margin-top:14px;line-height:1.9;}
+    .empty{padding:18px 0;text-align:center;color:var(--muted);font-size:14px;}
+    .calc{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+    .calc label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .calc input{width:100%;padding:12px;border:1px solid var(--hairline-strong);border-radius:8px;font-size:17px;font-family:inherit;}
+    .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px;background:#f3efe4;border-radius:8px;margin-bottom:14px;}
+    .total b{font-size:26px;color:var(--primary);font-variant-numeric:tabular-nums;}
+    .acct{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border:1px dashed var(--hairline-strong);border-radius:8px;margin-top:12px;font-size:15px;}
+    .acct .num{font-weight:800;color:var(--primary);font-size:20px;letter-spacing:.03em;}
+    .copy{border:1px solid var(--hairline-strong);background:#fff;border-radius:6px;padding:7px 12px;font-size:13px;font-family:inherit;cursor:pointer;}
+    .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;}
+    .toast.on{opacity:1;}
+    .updated{font-size:12px;color:var(--muted);text-align:right;margin-top:8px;}
+    footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;line-height:1.8;}
+    @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr);} .hide-sm{display:none;} th,td{padding:9px 5px;}}
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="assets/theme.css?v=2" />
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><a href="index.html" style="font-weight:400;font-size:12px;color:rgba(255,255,255,.7)">홈으로</a></div></header>
+
+  <main class="wrap">
+    <p class="eyebrow">2026 · 제6회</p>
+    <h1 class="title">3·1 만세길 걷기 참가 신청</h1>
+    <p class="sub">교회별로 함께 걸을 인원을 신청해 주세요. 신청이 들어오면 아래 현황에 자동으로 반영됩니다.</p>
+
+    <section class="card">
+      <h2>행사 안내</h2>
+      <dl class="info">
+        <dt>일시</dt><dd>2026년 10월 18일(주일) 오후 2시 ~ 5시</dd>
+        <dt>장소</dt><dd>쌍봉산 근린공원</dd>
+        <dt>참가비</dt><dd>성인 1인 5,000원 · 미성년자 무료</dd>
+        <dt>납부 계좌</dt><dd><b style="color:var(--primary);font-weight:800">농협 355-0074-8148-33</b> (예금주 삼괴연합회)</dd>
+        <dt>주최·주관</dt><dd>주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회</dd>
+      </dl>
+      <div style="margin-top:20px">
+        <a class="btn" id="applyBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSdVvJoaMOAQoXe85rnL49cxMEEV-seUXcW8w11JOIdDNcPuIw/viewform" target="_blank" rel="noopener">참가 신청하기 →</a>
+      </div>
+    </section>
+
+    <section class="card" id="status">
+      <h2>신청 현황</h2>
+      <div class="stats">
+        <div class="stat"><div class="n" id="sChurch">–</div><div class="k">참여 교회</div></div>
+        <div class="stat"><div class="n" id="sAdult">–</div><div class="k">성인</div></div>
+        <div class="stat"><div class="n" id="sMinor">–</div><div class="k">미성년</div></div>
+        <div class="stat"><div class="n" id="sTotal">–</div><div class="k">총 인원</div></div>
+      </div>
+      <div id="tableWrap"><div class="empty">불러오는 중…</div></div>
+      <div class="updated" id="updated"></div>
+    </section>
+
+    <section class="card" id="pay">
+      <h2>참가비 납부</h2>
+      <div class="calc">
+        <div><label for="adults">성인 인원</label><input id="adults" type="number" min="0" inputmode="numeric" value="1"></div>
+        <div><label for="minors">미성년 인원 (무료)</label><input id="minors" type="number" min="0" inputmode="numeric" value="0"></div>
+      </div>
+      <div class="total"><span>납부할 참가비</span><b id="amount">5,000원</b></div>
+      <a class="btn toss" id="tossBtn" href="#">토스로 보내기</a>
+      <div class="acct">
+        <div><div style="font-size:13px;color:var(--muted)">농협 · 예금주 삼괴연합회</div><div class="num">355-0074-8148-33</div></div>
+        <button class="copy" id="copyBtn" type="button">계좌번호 복사</button>
+      </div>
+      <p class="note">입금자명은 <b>신청자 이름</b>으로 해 주세요. ‘토스로 보내기’는 토스 앱이 설치된 휴대폰에서 열립니다. 컴퓨터에서는 계좌번호를 복사해 송금해 주세요.</p>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>© 2026 삼괴지역 기독교 연합회 · 행사 문의 김낭주 목사 <a href="tel:01042715090" style="color:#fff">010-4271-5090</a></footer>
+
+  <script>
+    // 구글 시트 '교회별 집계' 탭을 웹에 게시한 CSV (신청자 개인 정보는 포함되지 않음)
+    var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQiPtAyR235UFrdCyvvX8jVYv9K1PrNec60l6U79Nn5_BMOOcjCSGh4V7iIC5mNrJZKGHUtp0pGcZyh/pub?gid=1590561078&single=true&output=csv';
+    var FEE = 5000, ACCOUNT = '3550074814833', BANK = '농협';
+
+    function won(n){ return Number(n||0).toLocaleString('ko-KR'); }
+    function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+    function parseCSV(text){
+      var rows=[], row=[], cur='', q=false;
+      for(var i=0;i<text.length;i++){
+        var c=text[i];
+        if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+        else if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+        else cur+=c;
+      }
+      if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+      return rows;
+    }
+
+    function loadStatus(){
+      fetch(CSV_URL + '&t=' + Date.now()).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function(text){
+        var rows = parseCSV(text).slice(1).filter(function(r){ return r[0] && r[0].trim(); });
+        var t = {apps:0, adult:0, minor:0, total:0, fee:0};
+        rows.forEach(function(r){ t.apps+=+r[1]||0; t.adult+=+r[2]||0; t.minor+=+r[3]||0; t.total+=+r[4]||0; t.fee+=+r[5]||0; });
+        document.getElementById('sChurch').textContent = rows.length;
+        document.getElementById('sAdult').textContent = won(t.adult);
+        document.getElementById('sMinor').textContent = won(t.minor);
+        document.getElementById('sTotal').textContent = won(t.total);
+        var wrap = document.getElementById('tableWrap');
+        if(!rows.length){ wrap.innerHTML = '<div class="empty">아직 신청이 없습니다. 첫 번째로 신청해 주세요!</div>'; }
+        else {
+          var h = '<table><thead><tr><th>교회</th><th class="hide-sm">신청 건수</th><th>성인</th><th>미성년</th><th>총 인원</th><th>참가비</th></tr></thead><tbody>';
+          rows.forEach(function(r){
+            h += '<tr><td>'+esc(r[0])+'</td><td class="hide-sm">'+won(r[1])+'</td><td>'+won(r[2])+'</td><td>'+won(r[3])+'</td><td>'+won(r[4])+'</td><td>'+won(r[5])+'원</td></tr>';
+          });
+          h += '</tbody><tfoot><tr><td>합계</td><td class="hide-sm">'+won(t.apps)+'</td><td>'+won(t.adult)+'</td><td>'+won(t.minor)+'</td><td>'+won(t.total)+'</td><td>'+won(t.fee)+'원</td></tr></tfoot></table>';
+          wrap.innerHTML = h;
+        }
+        document.getElementById('updated').textContent = '최근 확인 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) + ' · 신청 후 반영까지 몇 분 걸릴 수 있습니다';
+      })
+      .catch(function(){ document.getElementById('tableWrap').innerHTML = '<div class="empty">현황을 불러오지 못했습니다. 잠시 후 새로고침해 주세요.</div>'; });
+    }
+
+    function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('on'); setTimeout(function(){t.classList.remove('on');},1800); }
+    function updatePay(){
+      var a = Math.max(0, parseInt(document.getElementById('adults').value,10)||0);
+      var amt = a * FEE;
+      document.getElementById('amount').textContent = won(amt) + '원';
+      var url = 'supertoss://send?bank=' + encodeURIComponent(BANK) + '&accountNo=' + ACCOUNT + (amt ? '&amount=' + amt : '') + '&origin=qr';
+      document.getElementById('tossBtn').setAttribute('href', url);
+    }
+    document.getElementById('adults').addEventListener('input', updatePay);
+    document.getElementById('minors').addEventListener('input', updatePay);
+    document.getElementById('tossBtn').addEventListener('click', function(){
+      if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ toast('토스 송금은 휴대폰에서 열립니다. 계좌번호를 복사해 주세요.'); }
+    });
+    document.getElementById('copyBtn').addEventListener('click', function(){
+      var v='355-0074-8148-33';
+      (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function(){ toast('계좌번호를 복사했습니다'); })
+      .catch(function(){ window.prompt('계좌번호를 복사해 주세요', v); });
+    });
+    updatePay(); loadStatus(); setInterval(loadStatus, 60000);
+  </script>
+</body>
+</html>
