@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>제6회 3·1 만세길 걷기 신청 | 삼괴지역 기독교 연합회</title>
-  <meta name="description" content="제6회 3·1 만세길 걷기 — 참가 신청, 교회별 신청 현황, 참가비 납부(토스) 안내">
+  <meta name="description" content="제6회 3·1 만세길 걷기 — 참가 신청, 신청 내역 확인, 참가비 납부(토스) 안내">
   <link rel="canonical" href="https://samgoe-cc.or.kr/walk.html" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -70,6 +70,9 @@
     .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;}
     .toast.on{opacity:1;}
     .updated{font-size:12px;color:var(--muted);text-align:right;margin-top:8px;}
+    .paid-y{color:var(--ok);font-weight:700;} .paid-n{color:var(--muted);}
+    .sub-h{margin:26px 0 12px;padding-top:20px;border-top:1px solid var(--hairline);font-size:16px;color:var(--ink);}
+    #lookupResult{margin-top:16px;}
     .hide{display:none!important;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;line-height:1.8;}
     @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr);} .hide-sm{display:none;} th,td{padding:9px 5px;} .grid2{gap:10px;}}
@@ -83,7 +86,7 @@
   <main class="wrap">
     <p class="eyebrow">2026 · 제6회</p>
     <h1 class="title">3·1 만세길 걷기 참가 신청</h1>
-    <p class="sub" id="leadText">로그인하지 않아도 신청할 수 있습니다. 신청 즉시 아래 교회별 현황에 반영됩니다. <b>10월 18일(주일)까지</b> 받습니다.</p>
+    <p class="sub" id="leadText">로그인하지 않아도 신청할 수 있습니다. 신청한 내용은 아래 ‘신청 내역 확인’에서 이름과 교회 이름으로 확인할 수 있습니다. <b>10월 18일(주일)까지</b> 받습니다.</p>
 
     <!-- 마감 후 -->
     <section class="card closed hide" id="closedCard">
@@ -135,8 +138,9 @@
       </div>
     </section>
 
-    <section class="card" id="status">
-      <h2>교회별 신청 현황</h2>
+    <!-- 임원 · 최고관리자만 -->
+    <section class="card hide" id="status">
+      <h2>교회별 신청 현황 <span class="badge">임원 공개</span></h2>
       <div class="stats">
         <div class="stat"><div class="n" id="sChurch">–</div><div class="k">참여 교회</div></div>
         <div class="stat"><div class="n" id="sAdult">–</div><div class="k">성인</div></div>
@@ -147,10 +151,23 @@
       <div class="updated" id="updated"></div>
     </section>
 
-    <!-- 정회원 · 임원: 신청 내역 -->
+    <!-- 신청 내역 확인: 누구나 이름 + 교회로 / 정회원 · 임원은 전체 내역도 -->
     <section class="card" id="members">
-      <h2>신청 내역 <span class="badge">정회원 공개</span></h2>
-      <div id="memberArea"><div class="lock">신청 내역(신청자 이름)은 <b>정회원</b>에게만 공개됩니다. <a href="login.html">로그인</a> 후 확인해 주세요.</div></div>
+      <h2>신청 내역 확인</h2>
+      <form id="lookupForm" novalidate>
+        <p class="lock" style="margin:0 0 14px">신청할 때 적은 <b>신청자 이름</b>과 <b>교회 이름</b>을 넣으면 로그인하지 않아도 내 신청 내역을 볼 수 있습니다.</p>
+        <div class="grid2">
+          <div class="fld"><label for="qName">신청자 이름</label><input id="qName" type="text" maxlength="40" autocomplete="name" placeholder="홍길동"></div>
+          <div class="fld"><label for="qChurch">교회 이름</label><input id="qChurch" type="text" maxlength="60" list="churchList" placeholder="교회 이름을 입력하거나 고르세요"></div>
+        </div>
+        <button class="btn" id="lookupBtn" type="submit">내 신청 내역 보기</button>
+        <div class="msg" id="qMsg"></div>
+      </form>
+      <div id="lookupResult"></div>
+      <div id="memberWrap" class="hide">
+        <h3 class="sub-h">전체 신청 내역 <span class="badge">정회원 공개</span></h3>
+        <div id="memberArea"><div class="empty">불러오는 중…</div></div>
+      </div>
       <div id="officerLink" class="hide" style="margin-top:16px"><a class="btn gold" href="walk-admin.html">임원 · 상세 내역과 그래프 보기 →</a></div>
     </section>
 
@@ -244,7 +261,8 @@
       $('doneToss').classList.toggle('hide', amt===0);
       $('applyForm').classList.add('hide'); $('doneBox').style.display='block';
       $('adults').value=a; $('minors').value=m; updPay();
-      loadSummary(); if(isMember) loadMembers();
+      $('qName').value=name; $('qChurch').value=church; $('lookupResult').innerHTML='';
+      if(isOfficer) loadSummary(); if(isMember) loadMembers();
       $('apply').scrollIntoView({behavior:'smooth',block:'start'});
     });
     $('againBtn').addEventListener('click',function(){
@@ -253,7 +271,7 @@
       if(!profile){ $('fName').value=''; $('fChurch').value=''; }
     });
 
-    // ----- 교회별 현황 (누구나) -----
+    // ----- 교회별 현황 (임원·최고관리자) -----
     async function loadSummary(){
       if(!window.sb){ $('tableWrap').innerHTML='<div class="empty">현황을 불러오지 못했습니다.</div>'; return; }
       var r = await window.sb.rpc('walk_summary',{ p_event:EVENT });
@@ -271,18 +289,46 @@
       $('updated').textContent='최근 확인 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     }
 
-    // ----- 신청 내역 (정회원·임원) -----
+    // ----- 내 신청 확인 (누구나 — 이름 + 교회) -----
+    var lookupBusy = false;
+    function lookupErr(m){ var e=$('qMsg'); e.className='msg err'; e.textContent=m; }
+    $('lookupForm').addEventListener('submit', async function(ev){
+      ev.preventDefault();
+      if(lookupBusy) return;
+      var name=$('qName').value.trim(), church=$('qChurch').value.trim();
+      $('qMsg').className='msg';
+      if(!name) return lookupErr('신청자 이름을 적어 주세요.');
+      if(!church) return lookupErr('교회 이름을 적어 주세요.');
+      if(!window.sb) return lookupErr('지금은 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      lookupBusy=true; var btn=$('lookupBtn'); btn.disabled=true; btn.textContent='확인 중…';
+      var r = await window.sb.rpc('walk_lookup',{ p_name:name, p_church:church, p_event:EVENT });
+      lookupBusy=false; btn.disabled=false; btn.textContent='내 신청 내역 보기';
+      if(r.error){ $('lookupResult').innerHTML=''; return lookupErr('신청 내역을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
+      var rows=r.data||[];
+      if(!rows.length){
+        $('lookupResult').innerHTML='<div class="empty">‘'+esc(church)+' · '+esc(name)+'’ 이름으로 접수된 신청이 없습니다.<br>신청할 때 적은 이름·교회 이름과 똑같이 적었는지 확인해 주세요.</div>';
+        return;
+      }
+      var t={a:0,m:0};
+      var h='<table><thead><tr><th class="l">신청일</th><th class="l hide-sm">교회</th><th>성인</th><th>미성년</th><th>참가비</th><th>입금</th></tr></thead><tbody>';
+      rows.forEach(function(x){
+        var d=new Date(x.created_at), amt=x.adults*FEE; t.a+=x.adults; t.m+=x.minors;
+        h+='<tr><td class="l">'+(d.getMonth()+1)+'/'+d.getDate()+' '+d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+'</td><td class="l hide-sm">'+esc(x.church)+'</td><td>'+x.adults+'</td><td>'+x.minors+'</td><td>'+won(amt)+'원</td><td>'+
+          (amt===0?'<span class="paid-n">–</span>':x.paid?'<span class="paid-y">확인</span>':'<span class="paid-n">확인 전</span>')+'</td></tr>';
+      });
+      h+='</tbody>';
+      if(rows.length>1) h+='<tfoot><tr><td class="l">합계</td><td class="hide-sm"></td><td>'+t.a+'</td><td>'+t.m+'</td><td>'+won(t.a*FEE)+'원</td><td></td></tr></tfoot>';
+      $('lookupResult').innerHTML='<p class="lock" style="margin:0 0 6px"><b>'+esc(rows[0].church)+'</b> · '+esc(rows[0].name)+' 님의 신청 '+rows.length+'건</p>'+h+'</table>'+
+        '<p class="note" style="margin-top:10px">입금 확인은 임원이 통장 내역을 보고 표시합니다. 고칠 내용이 있으면 행사 문의(010-4271-5090)로 연락해 주세요.</p>';
+    });
+
+    // ----- 전체 신청 내역 (정회원·임원) -----
     async function loadMembers(){
       var r = await window.sb.from('walk_applications').select('created_at,name,church,adults,minors,user_id').eq('event',EVENT).order('created_at',{ascending:false});
       if(r.error){ $('memberArea').innerHTML='<div class="empty">신청 내역을 불러오지 못했습니다.</div>'; return; }
       var rows=r.data||[];
-      if(!isMember){
-        // 일반회원: 본인이 로그인해서 낸 신청만
-        if(!rows.length){ $('memberArea').innerHTML='<div class="lock">전체 신청 내역은 <b>정회원</b>에게 공개됩니다. 회원 구분은 <a href="mypage.html">마이페이지</a>에서 확인하세요.</div>'; return; }
-      }
       if(!rows.length){ $('memberArea').innerHTML='<div class="empty">아직 신청이 없습니다.</div>'; return; }
-      var h=(isMember?'':'<p class="lock" style="margin:0 0 10px">내가 낸 신청만 보입니다. 전체 내역은 정회원에게 공개됩니다.</p>')+
-        '<table><thead><tr><th>신청자</th><th class="l">교회</th><th>성인</th><th>미성년</th><th class="hide-sm">신청일</th></tr></thead><tbody>';
+      var h='<table><thead><tr><th>신청자</th><th class="l">교회</th><th>성인</th><th>미성년</th><th class="hide-sm">신청일</th></tr></thead><tbody>';
       rows.forEach(function(x){
         var d=new Date(x.created_at);
         h+='<tr><td>'+esc(x.name)+(me&&x.user_id===me.id?' <span class="badge" style="margin-left:2px">나</span>':'')+'</td><td class="l">'+esc(x.church)+'</td><td>'+x.adults+'</td><td>'+x.minors+'</td><td class="hide-sm">'+(d.getMonth()+1)+'/'+d.getDate()+'</td></tr>';
@@ -306,9 +352,15 @@
         var pc = (profile && profile.church) || (me.user_metadata && me.user_metadata.church) || '';
         if(pn && !$('fName').value) $('fName').value = pn;
         if(pc && !$('fChurch').value) $('fChurch').value = pc;
+        if(pn && !$('qName').value) $('qName').value = pn;
+        if(pc && !$('qChurch').value) $('qChurch').value = pc;
         if(pn || pc) $('prefill').style.display='block';
-        if(isOfficer) $('officerLink').classList.remove('hide');
-        loadMembers();
+        if(isOfficer){
+          $('officerLink').classList.remove('hide');
+          $('status').classList.remove('hide');
+          loadSummary(); setInterval(loadSummary,60000);
+        }
+        if(isMember){ $('memberWrap').classList.remove('hide'); loadMembers(); }
       } catch(e){}
     }
 
@@ -328,7 +380,6 @@
     });
 
     initUser();
-    if(!closed){ loadSummary(); setInterval(loadSummary,60000); }
   })();
   </script>
 </body>
