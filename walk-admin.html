@@ -50,6 +50,11 @@
     .del{border:0;background:none;color:var(--err);cursor:pointer;font-size:12.5px;font-family:inherit;}
     input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer;}
     .empty{padding:24px;text-align:center;color:var(--muted);}
+    .sbtn:disabled{opacity:.5;cursor:default;}
+    .sbtn.big{min-height:44px;padding:0 20px;font-size:15px;}
+    .arc-status{font-size:14px;color:var(--bodytext);margin:0 0 12px;line-height:1.8;}
+    .arc-status a,.arc-msg a{color:var(--primary);font-weight:700;text-decoration:underline;}
+    .arc-msg{margin-top:10px;font-size:13.5px;color:var(--muted);line-height:1.7;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
     @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .grid{grid-template-columns:1fr;} }
   </style>
@@ -93,6 +98,15 @@
         <a class="sbtn" href="https://docs.google.com/spreadsheets/d/13OmBo-Ym4hHD6zAz4JzCpKAkPy3x-zKYuHf44wXSYMM/edit" target="_blank" rel="noopener">구글 시트 열기</a>
       </div>
       <div class="tblWrap" id="tbl"><div class="empty">불러오는 중…</div></div>
+    </div>
+
+    <!-- 행사가 끝난 뒤: 서기 · 대표회장(회장)이 임원 자료방으로 보관 -->
+    <div class="card" id="arcCard" style="margin-top:18px">
+      <h2>임원 자료방으로 옮기기</h2>
+      <p class="cap">행사가 끝난 뒤 신청 상세 내역을 임원 자료방에 보관합니다. 보기 · 인쇄용 문서와 엑셀용 파일 두 개가 올라가고, 이 화면의 기록도 그대로 남습니다. <b>서기 · 대표회장</b>만 누를 수 있습니다.</p>
+      <div class="arc-status" id="arcStatus">확인 중…</div>
+      <button class="sbtn pri big" id="arcBtn" type="button" disabled>임원 자료방으로 옮기기</button>
+      <div class="arc-msg" id="arcMsg"></div>
     </div>
   </main>
 
@@ -189,11 +203,102 @@
       rows=rows.filter(function(x){return x.id!==id;}); render();
     });
     $('q').addEventListener('input',renderTable); $('fPaid').addEventListener('change',renderTable);
-    $('csvBtn').addEventListener('click',function(){
+    function stamp(iso){ var k=kdate(iso); return k.getFullYear()+'-'+pad(k.getMonth()+1)+'-'+pad(k.getDate())+' '+pad(k.getHours())+':'+pad(k.getMinutes()); }
+    function buildCsv(){
       var lines=[['신청 시각','신청자','교회','성인','미성년','총 인원','참가비','입금 확인']];
-      rows.forEach(function(r){ var k=kdate(r.created_at); lines.push([k.getFullYear()+'-'+pad(k.getMonth()+1)+'-'+pad(k.getDate())+' '+pad(k.getHours())+':'+pad(k.getMinutes()), r.name, r.church, r.adults, r.minors, r.adults+r.minors, r.adults*FEE, r.paid?'O':'']); });
-      var csv='﻿'+lines.map(function(l){return l.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\r\n');
-      var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='만세길걷기_신청기록_2026.csv'; a.click();
+      rows.forEach(function(r){ lines.push([stamp(r.created_at), r.name, r.church, r.adults, r.minors, r.adults+r.minors, r.adults*FEE, r.paid?'O':'']); });
+      return '﻿'+lines.map(function(l){return l.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\r\n');
+    }
+    $('csvBtn').addEventListener('click',function(){
+      var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buildCsv()],{type:'text/csv;charset=utf-8'})); a.download='만세길걷기_신청기록_2026.csv'; a.click();
+    });
+
+    // ----- 임원 자료방으로 옮기기 (행사 후 · 서기 · 대표회장) -----
+    var EVENT_TITLE='제6회 3·1 만세길 걷기', me=null, myProfile=null, canArchive=false, arcBusy=false, lastArc=null;
+    function buildReport(who){
+      var list=rows.slice().sort(function(a,b){return a.created_at<b.created_at?-1:1;});
+      var t={adult:0,minor:0,paidAmt:0,paidCnt:0}, by={};
+      list.forEach(function(r){
+        t.adult+=r.adults; t.minor+=r.minors; if(r.paid){t.paidAmt+=r.adults*FEE; t.paidCnt++;}
+        var c=(r.church||'').trim(); by[c]=by[c]||{n:0,a:0,m:0,p:0}; by[c].n++; by[c].a+=r.adults; by[c].m+=r.minors; if(r.paid) by[c].p+=r.adults*FEE;
+      });
+      var fee=t.adult*FEE, ch=Object.keys(by).sort(function(a,b){return (by[b].a+by[b].m)-(by[a].a+by[a].m)||(a<b?-1:1);});
+      function kpi(k,n){ return '<div class="kpi"><div class="k">'+k+'</div><div class="n">'+n+'</div></div>'; }
+      var css='body{font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#262626;margin:32px auto;max-width:960px;padding:0 18px;line-height:1.6;word-break:keep-all}'+
+        'h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:28px 0 8px;color:#032257}.meta{color:#6b6b6b;font-size:13px;margin:0 0 18px}'+
+        '.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{border:1px solid #e6e3dd;border-radius:6px;padding:10px 12px}.kpi .k{font-size:12px;color:#6b6b6b}.kpi .n{font-size:17px;font-weight:700}'+
+        '.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #e6e3dd;padding:7px 6px;text-align:right;white-space:nowrap}'+
+        'th{background:#f7f5f0;color:#555;font-weight:600}.l{text-align:left}tfoot td{font-weight:700;border-top:2px solid #262626}'+
+        '@media print{body{margin:0}tr{page-break-inside:avoid}}@media(max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}';
+      var h='<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+EVENT_TITLE+' 신청 기록</title><style>'+css+'</style></head><body>'+
+        '<h1>'+EVENT_TITLE+' · 신청 기록</h1>'+
+        '<p class="meta">2026년 10월 18일(주일) 오후 2시 ~ 5시 · 쌍봉산 근린공원 · 주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회<br>'+
+          stamp(new Date().toISOString())+' 임원 자료방 보관 · '+esc(who)+'</p>'+
+        '<div class="kpis">'+kpi('신청 건수',won(list.length)+'건')+kpi('참여 교회',ch.length+'곳')+kpi('총 인원',won(t.adult+t.minor)+'명 <small>(성인 '+t.adult+' / 미성년 '+t.minor+')</small>')+
+          kpi('참가비 합계',won(fee)+'원')+kpi('입금 확인액',won(t.paidAmt)+'원')+kpi('미입금액',won(fee-t.paidAmt)+'원')+kpi('입금 확인 건수',t.paidCnt+' / '+list.length+'건')+'</div>'+
+        '<h2>교회별 합계</h2><div class="tw"><table><thead><tr><th class="l">교회</th><th>신청</th><th>성인</th><th>미성년</th><th>총 인원</th><th>참가비</th><th>입금 확인액</th></tr></thead><tbody>'+
+        ch.map(function(c){ var b=by[c]; return '<tr><td class="l">'+esc(c)+'</td><td>'+b.n+'</td><td>'+b.a+'</td><td>'+b.m+'</td><td>'+(b.a+b.m)+'</td><td>'+won(b.a*FEE)+'원</td><td>'+won(b.p)+'원</td></tr>'; }).join('')+
+        '</tbody><tfoot><tr><td class="l">합계</td><td>'+list.length+'</td><td>'+t.adult+'</td><td>'+t.minor+'</td><td>'+(t.adult+t.minor)+'</td><td>'+won(fee)+'원</td><td>'+won(t.paidAmt)+'원</td></tr></tfoot></table></div>'+
+        '<h2>신청 상세 내역</h2><div class="tw"><table><thead><tr><th>번호</th><th class="l">신청 시각</th><th class="l">신청자</th><th class="l">교회</th><th>성인</th><th>미성년</th><th>참가비</th><th>입금 확인</th></tr></thead><tbody>'+
+        list.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td class="l">'+stamp(r.created_at)+'</td><td class="l">'+esc(r.name)+'</td><td class="l">'+esc(r.church)+'</td><td>'+r.adults+'</td><td>'+r.minors+'</td><td>'+won(r.adults*FEE)+'원</td><td>'+(r.adults*FEE===0?'–':(r.paid?'확인':'미입금'))+'</td></tr>'; }).join('')+
+        '</tbody></table></div>'+
+        '<p class="meta" style="margin-top:24px">삼괴지역 기독교 연합회 · 임원 전용 자료 — 신청자 이름 등 개인정보가 들어 있으니 밖으로 돌리지 마세요.</p></body></html>';
+      return h;
+    }
+    async function uploadFile(name, type, text){
+      var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
+      if(!r2) throw new Error('파일 저장소(Cloudflare) 설정이 없습니다.');
+      var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:'';
+      var resp=await fetch(r2+'/file',{ method:'POST', headers:{ 'Authorization':'Bearer '+token, 'Content-Type':type, 'X-Filename':encodeURIComponent(name) }, body:new Blob([text],{type:type}) });
+      var j=await resp.json().catch(function(){return {};});
+      if(!resp.ok) throw new Error(j.error||('업로드 실패('+resp.status+')'));
+      return j;
+    }
+    async function loadArchive(){
+      var r=await window.sb.from('walk_archives').select('created_at,archived_by_name,apps').eq('event',EVENT).order('created_at',{ascending:false}).limit(1);
+      lastArc=(!r.error && r.data && r.data[0]) || null;
+      drawArc();
+    }
+    function drawArc(){
+      var closed=new Date()>=DEADLINE, btn=$('arcBtn');
+      $('arcStatus').innerHTML = lastArc
+        ? '✓ '+stamp(lastArc.created_at)+' · '+esc(lastArc.archived_by_name||'임원')+' 님이 옮겼습니다 (신청 '+lastArc.apps+'건). <a href="officer.html#files">임원 자료방에서 보기 →</a>'
+        : (closed ? '아직 옮기지 않았습니다.' : '행사가 끝난 뒤(10월 19일부터) 누를 수 있습니다.');
+      btn.textContent = arcBusy ? '옮기는 중…' : (lastArc ? '지금 내용으로 다시 옮기기' : '임원 자료방으로 옮기기');
+      btn.disabled = arcBusy || !closed || !canArchive;
+      if(!canArchive) $('arcMsg').textContent='이 단추는 서기 · 대표회장만 누를 수 있습니다.';
+    }
+    $('arcBtn').addEventListener('click', async function(){
+      if(arcBusy || !canArchive || new Date()<DEADLINE) return;
+      arcBusy=true; drawArc(); $('arcMsg').textContent='최신 기록을 불러오는 중…';
+      await load();
+      if(!rows.length){ arcBusy=false; drawArc(); $('arcMsg').textContent='옮길 신청 기록이 없습니다.'; return; }
+      if(!confirm((lastArc?'이미 옮긴 기록이 있습니다. 지금 내용으로 한 번 더 보관할까요?\n\n':'')+'신청 '+rows.length+'건을 임원 자료방에 보관합니다.\n(이 화면의 기록은 그대로 남습니다)')){
+        arcBusy=false; drawArc(); $('arcMsg').textContent=''; return;
+      }
+      var who=(myProfile&&myProfile.name)||(me&&me.email)||'임원', k=kdate(new Date().toISOString());
+      var base='제6회_3·1만세길걷기_신청기록_'+k.getFullYear()+pad(k.getMonth()+1)+pad(k.getDate());
+      var files=[
+        { name:base+'_보기용.html', type:'text/html; charset=utf-8', text:buildReport(who), title:EVENT_TITLE+' 신청 기록 (보기 · 인쇄용)' },
+        { name:base+'_엑셀용.csv', type:'text/csv; charset=utf-8', text:buildCsv(), title:EVENT_TITLE+' 신청 기록 (엑셀용)' } ];
+      try{
+        var ids=[], t={a:0,m:0}; rows.forEach(function(r){ t.a+=r.adults; t.m+=r.minors; });
+        for(var i=0;i<files.length;i++){
+          var f=files[i]; $('arcMsg').textContent='임원 자료방에 올리는 중… ('+(i+1)+'/'+files.length+')';
+          var j=await uploadFile(f.name, f.type, f.text);
+          var ins=await window.sb.from('officer_files').insert({ title:f.title, name:f.name, path:j.key, url:j.url, size:j.size, mime:j.mime,
+            author_id:me.id, author_name:who }).select('id').single();
+          if(ins.error) throw ins.error;
+          ids.push(ins.data.id);
+        }
+        var a=await window.sb.from('walk_archives').insert({ event:EVENT, archived_by:me.id, archived_by_name:who, apps:rows.length, adults:t.a, minors:t.m, file_ids:ids });
+        if(a.error) throw a.error;
+        $('arcMsg').innerHTML='임원 자료방에 옮겼습니다. <a href="officer.html#files">자료방에서 보기 →</a>';
+        await loadArchive();
+      }catch(e){
+        $('arcMsg').textContent='옮기지 못했습니다: '+window.krErr((e&&e.message)||String(e));
+      }
+      arcBusy=false; drawArc();
     });
 
     async function load(){
@@ -204,7 +309,10 @@
 
     (async function(){
       var res=await window.requireOfficer(); if(!res) return;
+      me=res.user; myProfile=res.profile;
+      canArchive=window.isSuperAdmin(me) || ['서기','회장'].indexOf(myProfile.officer_role)>=0;   // 서기 · 대표회장(회장)
       $('loading').style.display='none'; $('content').style.display='block';
+      loadArchive();
       var closed=new Date()>=DEADLINE; var st=$('state'); st.className='state '+(closed?'closed':'open'); st.textContent=closed?'신청 마감':'신청 받는 중';
       await load(); setInterval(load,120000);
     })();

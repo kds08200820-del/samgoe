@@ -249,6 +249,7 @@
         if(tab==='archive') renderArchive();
       });
     });
+    if(location.hash==='#files'){ var ft=document.querySelector('.tab[data-tab="files"]'); if(ft) ft.click(); }
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------
     var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','보고서','순서지'];

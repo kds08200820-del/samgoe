@@ -86,6 +86,8 @@
     .edit-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px;}
     .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);} .btn.ghost:hover{background:var(--surface-soft);}
     .lt{font-weight:400;color:var(--muted);}
+    .fld input.pin{max-width:200px;letter-spacing:.3em;}
+    .sub-h.first{margin-top:0;padding-top:0;border-top:0;}
     .hide{display:none!important;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;line-height:1.8;}
     @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr);} .hide-sm{display:none;} th,td{padding:9px 5px;} .grid2{gap:10px;}}
@@ -99,7 +101,7 @@
   <main class="wrap">
     <p class="eyebrow">2026 · 제6회</p>
     <h1 class="title">3·1 만세길 걷기 참가 신청</h1>
-    <p class="sub" id="leadText">로그인하지 않아도 신청할 수 있습니다. 신청한 내용은 아래 ‘신청 내역 확인’에서 이름과 교회 이름으로 확인하고 고칠 수 있습니다. <b>10월 18일(주일)까지</b> 받습니다.</p>
+    <p class="sub" id="leadText">로그인하지 않아도 신청할 수 있습니다. 신청할 때 정한 <b>신청 비밀번호(숫자 4자리)</b>로 아래 ‘신청 내역 확인’에서 확인하고 고칠 수 있습니다. <b>10월 18일(주일)까지</b> 받습니다.</p>
 
     <!-- 마감 후 -->
     <section class="card closed hide" id="closedCard">
@@ -133,6 +135,9 @@
           <div class="fld"><label for="fAdults">성인 인원 <span style="font-weight:400;color:var(--muted)">(1인 5,000원)</span></label><input id="fAdults" type="number" min="0" max="300" inputmode="numeric" value="1"></div>
           <div class="fld"><label for="fMinors">미성년 인원 <span style="font-weight:400;color:var(--muted)">(무료)</span></label><input id="fMinors" type="number" min="0" max="300" inputmode="numeric" value="0"></div>
         </div>
+        <div class="fld"><label for="fPin">신청 비밀번호 <span class="lt">(숫자 4자리)</span></label>
+          <input id="fPin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="숫자 4자리">
+          <div class="hint">신청 내역을 확인하거나 고칠 때 이름 · 교회와 함께 넣습니다. 꼭 기억해 주세요.</div></div>
         <div class="total"><span>참가비 합계 <span id="fPeople" style="font-size:13px"></span></span><b id="fAmount">5,000원</b></div>
         <button class="btn" id="submitBtn" type="button">참가 신청하기</button>
         <div class="msg" id="fMsg"></div>
@@ -146,14 +151,14 @@
           <div><div style="font-size:13px;color:var(--muted)">농협 · 예금주 삼괴연합회</div><div class="num">355-0074-8148-33</div></div>
           <button class="copy" type="button" data-copy="355-0074-8148-33">계좌번호 복사</button>
         </div>
-        <p class="note">입금자명은 <b>신청자 이름</b>으로 해 주세요. 고칠 내용이 있으면 아래 ‘신청 내역 확인’에서 고칠 수 있습니다.</p>
+        <p class="note">입금자명은 <b>신청자 이름</b>으로 해 주세요. 고칠 내용이 있으면 아래 ‘신청 내역 확인’에서 이름 · 교회 · 신청 비밀번호로 고칠 수 있습니다.</p>
         <button class="btn" type="button" id="againBtn" style="background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);margin-top:4px">다른 교회·인원 추가 신청</button>
       </div>
     </section>
 
-    <!-- 임원 · 최고관리자: 교회별 표까지 / 정회원: 숫자만 -->
+    <!-- 임원 · 최고관리자만 -->
     <section class="card hide" id="status">
-      <h2><span id="statusTitle">교회별 신청 현황</span> <span class="badge" id="statusBadge">임원 공개</span></h2>
+      <h2>교회별 신청 현황 <span class="badge">임원 공개</span></h2>
       <div class="stats">
         <div class="stat"><div class="n" id="sChurch">–</div><div class="k">참여 교회</div></div>
         <div class="stat"><div class="n" id="sAdult">–</div><div class="k">성인</div></div>
@@ -164,15 +169,22 @@
       <div class="updated" id="updated"></div>
     </section>
 
-    <!-- 신청 내역 확인: 누구나 이름 + 교회로 / 임원은 전체 내역도 -->
+    <!-- 신청 내역 확인: 로그인 없이 이름 + 교회 + 비밀번호 / 로그인하면 우리 교회 / 임원은 전체 -->
     <section class="card" id="members">
       <h2>신청 내역 확인</h2>
+      <div id="churchWrap" class="hide">
+        <h3 class="sub-h first"><span id="churchTitle"></span> 신청 내역 <span class="badge">우리 교회만</span></h3>
+        <div id="churchResult"><div class="empty">불러오는 중…</div></div>
+        <h3 class="sub-h">이름 · 신청 비밀번호로 확인</h3>
+      </div>
       <form id="lookupForm" novalidate>
-        <p class="lock" style="margin:0 0 14px">신청할 때 적은 <b>신청자 이름</b>과 <b>교회 이름</b>을 넣으면 로그인하지 않아도 내 신청 내역을 보고 고칠 수 있습니다.</p>
+        <p class="lock" style="margin:0 0 14px">신청할 때 적은 <b>신청자 이름 · 교회 이름 · 신청 비밀번호</b>를 넣으면 로그인하지 않아도 내 신청 내역을 보고 고칠 수 있습니다.<span id="loginHint"> 로그인하면 우리 교회 신청 내역이 바로 보입니다.</span></p>
         <div class="grid2">
           <div class="fld"><label for="qName">신청자 이름</label><input id="qName" type="text" maxlength="40" autocomplete="name" placeholder="홍길동"></div>
           <div class="fld"><label for="qChurch">교회 이름</label><input id="qChurch" type="text" maxlength="60" list="churchList" placeholder="교회 이름을 입력하거나 고르세요"></div>
         </div>
+        <div class="fld"><label for="qPin">신청 비밀번호 <span class="lt">(숫자 4자리)</span></label>
+          <input id="qPin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="숫자 4자리"></div>
         <button class="btn" id="lookupBtn" type="submit">내 신청 내역 보기</button>
         <div class="msg" id="qMsg"></div>
       </form>
@@ -249,18 +261,19 @@
     function showErr(m){ var e=$('fMsg'); e.className='msg err'; e.textContent=m; }
     $('submitBtn').addEventListener('click', async function(){
       var name=$('fName').value.trim(), church=$('fChurch').value.trim();
-      var a=int($('fAdults').value), m=int($('fMinors').value);
+      var a=int($('fAdults').value), m=int($('fMinors').value), pin=$('fPin').value.trim();
       $('fMsg').className='msg';
       if(!name) return showErr('신청자 이름을 적어 주세요.');
       if(!church) return showErr('신청 교회를 적어 주세요.');
       if(a+m<=0) return showErr('인원을 1명 이상 적어 주세요.');
       if(a>300||m>300) return showErr('인원을 다시 확인해 주세요.');
+      if(!/^[0-9]{4}$/.test(pin)) return showErr('신청 비밀번호를 숫자 4자리로 적어 주세요.');
       if(!window.sb) return showErr('지금은 신청을 받을 수 없습니다. 잠시 후 다시 시도해 주세요.');
-      var btn=this; btn.disabled=true; btn.textContent='신청 중…';
-      var r = await window.sb.from('walk_applications').insert({ event:EVENT, name:name, church:church, adults:a, minors:m });
+      var btn=this; if(btn.disabled) return; btn.disabled=true; btn.textContent='신청 중…';
+      var r = await window.sb.rpc('walk_apply',{ p_name:name, p_church:church, p_adults:a, p_minors:m, p_pin:pin, p_event:EVENT });
       btn.disabled=false; btn.textContent='참가 신청하기';
       if(r.error){
-        showErr(/row-level security/i.test(r.error.message) ? '참가 신청 기간이 끝났습니다.' : window.krErr(r.error.message));
+        showErr(/[가-힣]/.test(r.error.message) ? r.error.message : window.krErr(r.error.message));
         return;
       }
       // 구글 시트 백업 (실패해도 신청은 이미 완료됨)
@@ -275,13 +288,14 @@
       $('doneToss').classList.toggle('hide', amt===0);
       $('applyForm').classList.add('hide'); $('doneBox').style.display='block';
       $('adults').value=a; $('minors').value=m; updPay();
-      $('qName').value=name; $('qChurch').value=church; runLookup(name, church);
+      $('qName').value=name; $('qChurch').value=church; $('qPin').value=pin;
+      if(L.church.name) loadMyChurch(true); else runLookup(name, church, pin);
       refreshViews();
       $('apply').scrollIntoView({behavior:'smooth',block:'start'});
     });
     $('againBtn').addEventListener('click',function(){
       $('doneBox').style.display='none'; $('applyForm').classList.remove('hide');
-      $('fAdults').value=1; $('fMinors').value=0; updForm();
+      $('fAdults').value=1; $('fMinors').value=0; $('fPin').value=''; updForm();
       if(!profile){ $('fName').value=''; $('fChurch').value=''; }
     });
 
@@ -303,88 +317,96 @@
       $('updated').textContent='최근 확인 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     }
 
-    // ----- 숫자만 (정회원 — 이름 · 교회 이름 없음) -----
-    async function loadTotals(){
-      var r = await window.sb.rpc('walk_totals',{ p_event:EVENT });
-      if(r.error){ $('updated').textContent='숫자를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.'; return; }
-      var x=(r.data||[])[0]||{churches:0,adults:0,minors:0};
-      $('sChurch').textContent=won(x.churches); $('sAdult').textContent=won(x.adults); $('sMinor').textContent=won(x.minors); $('sTotal').textContent=won(+x.adults + +x.minors);
-      $('updated').textContent='최근 확인 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-    }
-
-    // ----- 내 신청 확인 · 고치기 (누구나 — 이름 + 교회) -----
-    var lookupBusy = false, saveBusy = false, editing = -1, look = { name:'', church:'', rows:[] };
+    // ----- 신청 내역: 로그인 없이(이름 + 교회 + 비밀번호) · 로그인하면 우리 교회 -----
+    var lookupBusy = false, saveBusy = false, edit = null;
+    var L = { look:{ rows:[], name:'', church:'', pin:'' }, church:{ rows:[], name:'' } };
+    function box(key){ return $(key==='look' ? 'lookupResult' : 'churchResult'); }
     function lookupErr(m){ var e=$('qMsg'); e.className='msg err'; e.textContent=m; }
     function when(s){ var d=new Date(s); return (d.getMonth()+1)+'/'+d.getDate()+' '+d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}); }
-    function refreshViews(){ if(isOfficer){ loadSummary(); loadMembers(); } else if(isMember) loadTotals(); }
+    function refreshViews(){ if(isOfficer){ loadSummary(); loadMembers(); } }
 
-    async function runLookup(name, church){
+    async function runLookup(name, church, pin){
       lookupBusy=true; var btn=$('lookupBtn'); btn.disabled=true; btn.textContent='확인 중…';
-      var r = await window.sb.rpc('walk_lookup',{ p_name:name, p_church:church, p_event:EVENT });
+      var r = await window.sb.rpc('walk_lookup',{ p_name:name, p_church:church, p_pin:pin, p_event:EVENT });
       lookupBusy=false; btn.disabled=false; btn.textContent='내 신청 내역 보기';
-      if(r.error){ $('lookupResult').innerHTML=''; return lookupErr('신청 내역을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
-      look = { name:name, church:church, rows:r.data||[] }; editing = -1;
-      renderLookup(); fillPay();
+      if(r.error){ box('look').innerHTML=''; return lookupErr('신청 내역을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
+      L.look = { rows:r.data||[], name:name, church:church, pin:pin }; if(edit && edit.key==='look') edit=null;
+      if(!L.look.rows.length){
+        box('look').innerHTML='<div class="empty">이름 · 교회 · 신청 비밀번호가 모두 맞는 신청이 없습니다.<br>신청할 때 적은 그대로 넣었는지 확인해 주세요. 비밀번호를 5번 틀리면 10분 동안 조회되지 않습니다.</div>';
+        return;
+      }
+      renderList('look'); fillPay('look');
+    }
+
+    // 로그인: 내 회원정보의 교회와 같은 교회 신청만 (서버가 걸러 줌)
+    async function loadMyChurch(fill){
+      var r = await window.sb.rpc('walk_my_church',{ p_event:EVENT });
+      if(r.error){ box('church').innerHTML='<div class="empty">우리 교회 신청 내역을 불러오지 못했습니다.</div>'; return; }
+      L.church.rows = r.data||[]; if(edit && edit.key==='church') edit=null;
+      if(!L.church.rows.length){ box('church').innerHTML='<div class="empty">아직 '+esc(L.church.name)+' 신청이 없습니다.</div>'; return; }
+      renderList('church'); if(fill) fillPay('church');
+    }
+
+    function renderList(key){
+      var rows=L[key].rows, t={a:0,m:0};
+      var h = key==='look'
+        ? '<p class="lock" style="margin:0"><b>'+esc(rows[0].church)+'</b> · '+esc(rows[0].name)+' 님의 신청 '+rows.length+'건</p>'
+        : '<p class="lock" style="margin:0"><b>'+esc(L.church.name)+'</b> 신청 '+rows.length+'건 · 우리 교회로 로그인한 회원에게만 보입니다.</p>';
+      rows.forEach(function(x,i){
+        var amt=x.adults*FEE; t.a+=x.adults; t.m+=x.minors;
+        var pay = amt===0 ? '' : ' · 입금 '+(x.paid?'<span class="paid-y">확인</span>':'<span class="paid-n">확인 전</span>');
+        var who = key==='church' ? '<b style="color:var(--ink)">'+esc(x.name)+'</b> · ' : '';
+        h+='<div class="app-item" data-list="'+key+'" data-i="'+i+'"><div class="app-row"><div><div class="app-meta">'+who+when(x.created_at)+' 신청'+pay+'</div>'+
+          '<div class="app-line">성인 <b>'+x.adults+'</b> · 미성년 <b>'+x.minors+'</b> · 참가비 <b>'+won(amt)+'원</b></div></div>'+
+          (key==='look' || x.mine ? '<button type="button" class="mini" data-list="'+key+'" data-edit="'+i+'">수정</button>' : '')+'</div></div>';
+      });
+      if(rows.length>1) h+='<p class="app-sum">합계 · 성인 <b>'+t.a+'</b> · 미성년 <b>'+t.m+'</b> · 참가비 <b>'+won(t.a*FEE)+'원</b></p>';
+      h+= key==='look'
+        ? '<p class="note" style="margin-top:12px">입금 확인은 임원이 통장 내역을 보고 표시합니다. 입금이 확인된 신청의 성인 인원을 바꾸려면 행사 문의(010-4271-5090)로 연락해 주세요.</p>'
+        : '<p class="note" style="margin-top:12px">‘수정’은 내가 로그인해서 낸 신청에만 있습니다. 다른 분이 낸 신청은 그분이 이름 · 교회 · 신청 비밀번호로 고칩니다.</p>';
+      box(key).innerHTML=h;
     }
 
     // 조회된 신청 가운데 입금 확인 전인 것으로 '참가비 납부' 칸(토스 금액)을 채움
-    function fillPay(){
-      var rows=look.rows; if(!rows.length) return;
+    function fillPay(key){
+      var rows=L[key].rows; if(!rows.length) return;
       var due=rows.filter(function(x){ return x.adults>0; }), unpaid=due.filter(function(x){ return !x.paid; });
       var a=0, m=0; unpaid.forEach(function(x){ a+=x.adults; m+=x.minors; });
       $('adults').value=a; $('minors').value=m; updPay();
-      var who='<b>'+esc(rows[0].church)+' · '+esc(rows[0].name)+'</b> 님';
+      var who = key==='look' ? '<b>'+esc(rows[0].church)+' · '+esc(rows[0].name)+'</b> 님' : '<b>'+esc(L.church.name)+'</b>';
       $('payFrom').innerHTML = !due.length ? who+'의 신청은 참가비가 없습니다 (미성년 무료).'
         : !unpaid.length ? who+'의 참가비 입금이 모두 확인되었습니다.'
         : who+'의 신청 내역(입금 확인 전 '+unpaid.length+'건)으로 인원과 참가비를 채웠습니다.';
       $('payFrom').style.display='block';
     }
 
-    function renderLookup(){
-      var rows=look.rows;
-      if(!rows.length){
-        $('lookupResult').innerHTML='<div class="empty">‘'+esc(look.church)+' · '+esc(look.name)+'’ 이름으로 접수된 신청이 없습니다.<br>신청할 때 적은 이름·교회 이름과 똑같이 적었는지 확인해 주세요.</div>';
-        return;
-      }
-      var t={a:0,m:0};
-      var h='<p class="lock" style="margin:0"><b>'+esc(rows[0].church)+'</b> · '+esc(rows[0].name)+' 님의 신청 '+rows.length+'건</p>';
-      rows.forEach(function(x,i){
-        var amt=x.adults*FEE; t.a+=x.adults; t.m+=x.minors;
-        var pay = amt===0 ? '' : ' · 입금 '+(x.paid?'<span class="paid-y">확인</span>':'<span class="paid-n">확인 전</span>');
-        h+='<div class="app-item" data-i="'+i+'"><div class="app-row"><div><div class="app-meta">'+when(x.created_at)+' 신청'+pay+'</div>'+
-          '<div class="app-line">성인 <b>'+x.adults+'</b> · 미성년 <b>'+x.minors+'</b> · 참가비 <b>'+won(amt)+'원</b></div></div>'+
-          '<button type="button" class="mini" data-edit="'+i+'">수정</button></div></div>';
-      });
-      if(rows.length>1) h+='<p class="app-sum">합계 · 성인 <b>'+t.a+'</b> · 미성년 <b>'+t.m+'</b> · 참가비 <b>'+won(t.a*FEE)+'원</b></p>';
-      h+='<p class="note" style="margin-top:12px">입금 확인은 임원이 통장 내역을 보고 표시합니다. 입금이 확인된 신청의 성인 인원을 바꾸려면 행사 문의(010-4271-5090)로 연락해 주세요.</p>';
-      $('lookupResult').innerHTML=h;
-    }
-
     $('lookupForm').addEventListener('submit', function(ev){
       ev.preventDefault();
       if(lookupBusy) return;
-      var name=$('qName').value.trim(), church=$('qChurch').value.trim();
+      var name=$('qName').value.trim(), church=$('qChurch').value.trim(), pin=$('qPin').value.trim();
       $('qMsg').className='msg';
       if(!name) return lookupErr('신청자 이름을 적어 주세요.');
       if(!church) return lookupErr('교회 이름을 적어 주세요.');
+      if(!/^[0-9]{4}$/.test(pin)) return lookupErr('신청 비밀번호를 숫자 4자리로 적어 주세요.');
       if(!window.sb) return lookupErr('지금은 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.');
-      runLookup(name, church);
+      runLookup(name, church, pin);
     });
 
     // 수정: 한 번에 한 건만, 그 신청 칸 안에서 바로 고침
-    $('lookupResult').addEventListener('click',function(e){ var b=e.target.closest('[data-edit]'); if(b) openEdit(+b.getAttribute('data-edit')); });
+    $('members').addEventListener('click',function(e){
+      var b=e.target.closest('[data-edit]'); if(b) openEdit(b.getAttribute('data-list'), +b.getAttribute('data-edit'));
+    });
 
     function closeEdit(focusBack){
-      var f=$('editForm'); editing=-1; if(!f) return;
+      var f=$('editForm'); edit=null; if(!f) return;
       var b=f.parentNode.querySelector('[data-edit]');
-      f.remove(); b.classList.remove('hide');
-      if(focusBack) b.focus();
+      f.remove(); if(b){ b.classList.remove('hide'); if(focusBack) b.focus(); }
     }
     function updEdit(){ var a=int($('eAdults').value), m=int($('eMinors').value); $('eAmount').textContent=won(a*FEE)+'원'; $('ePeople').textContent='(총 '+(a+m)+'명)'; }
-    function openEdit(i){
+    function openEdit(key, i){
       closeEdit(false);
-      var x=look.rows[i], item=document.querySelector('#lookupResult .app-item[data-i="'+i+'"]'); if(!x||!item) return;
-      editing=i;
+      var x=L[key].rows[i], item=document.querySelector('.app-item[data-list="'+key+'"][data-i="'+i+'"]'); if(!x||!item) return;
+      edit={ key:key, i:i };
       item.querySelector('[data-edit]').classList.add('hide');
       var f=document.createElement('form'); f.className='app-edit'; f.id='editForm'; f.noValidate=true;
       f.innerHTML=
@@ -407,8 +429,8 @@
     }
     async function saveEdit(ev){
       ev.preventDefault();
-      if(saveBusy) return;
-      var x=look.rows[editing]; if(!x) return;
+      if(saveBusy || !edit) return;
+      var key=edit.key, x=L[key].rows[edit.i]; if(!x) return;
       var name=$('eName').value.trim(), church=$('eChurch').value.trim(), a=int($('eAdults').value), m=int($('eMinors').value);
       function err(t){ var e=$('eMsg'); e.className='msg err'; e.textContent=t; }
       $('eMsg').className='msg';
@@ -417,14 +439,21 @@
       if(a+m<=0) return err('인원을 1명 이상 적어 주세요.');
       if(a>300||m>300) return err('인원을 다시 확인해 주세요.');
       if(name===x.name && church===x.church && a===x.adults && m===x.minors){ closeEdit(true); return toast('바뀐 내용이 없습니다'); }
+      var auth = key==='look' ? { p_name:L.look.name, p_church:L.look.church, p_pin:L.look.pin } : { p_name:null, p_church:null, p_pin:null };
       saveBusy=true; var btn=$('eSave'); btn.disabled=true; btn.textContent='저장 중…';
-      var r = await window.sb.rpc('walk_update_mine',{ p_id:x.id, p_name:look.name, p_church:look.church, p_new_name:name, p_new_church:church, p_adults:a, p_minors:m });
+      var r = await window.sb.rpc('walk_update_mine',{ p_id:x.id, p_name:auth.p_name, p_church:auth.p_church, p_pin:auth.p_pin,
+        p_new_name:name, p_new_church:church, p_adults:a, p_minors:m });
       saveBusy=false; btn.disabled=false; btn.textContent='고친 내용 저장';
       if(r.error) return err(/[가-힣]/.test(r.error.message) ? r.error.message : '저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');
       toast('신청 내용을 고쳤습니다');
-      // 이름·교회를 고쳤으면 고친 이름으로 다시 조회
-      $('qName').value=name; $('qChurch').value=church;
-      await runLookup(name, church);
+      if(key==='look'){
+        // 이름 · 교회를 고쳤으면 고친 이름으로 다시 조회 (비밀번호는 그대로)
+        $('qName').value=name; $('qChurch').value=church;
+        await runLookup(name, church, L.look.pin);
+        if(L.church.name) loadMyChurch(false);
+      } else {
+        await loadMyChurch(true);
+      }
       refreshViews();
     }
 
@@ -461,18 +490,17 @@
         if(pn && !$('qName').value) $('qName').value = pn;
         if(pc && !$('qChurch').value) $('qChurch').value = pc;
         if(pn || pc) $('prefill').style.display='block';
-        // 로그인한 본인(이름 + 교회)의 신청을 바로 불러와 '신청 내역 확인'과 '참가비 납부'에 연동
-        if($('qName').value.trim() && $('qChurch').value.trim()) runLookup($('qName').value.trim(), $('qChurch').value.trim());
+        // 로그인: 내 회원정보의 교회 신청을 바로 불러와 '신청 내역 확인'과 '참가비 납부(토스 금액)'에 연동
+        if(profile && profile.church){
+          L.church.name = profile.church; $('churchTitle').textContent = profile.church;
+          $('churchWrap').classList.remove('hide'); $('loginHint').classList.add('hide');
+          loadMyChurch(true);
+        }
         if(isOfficer){
           $('officerLink').classList.remove('hide');
           $('status').classList.remove('hide');
           loadSummary(); setInterval(loadSummary,60000);
           $('memberWrap').classList.remove('hide'); loadMembers();
-        } else if(isMember){
-          $('statusTitle').textContent='신청 현황'; $('statusBadge').textContent='정회원 공개';
-          $('tableWrap').innerHTML='<p class="lock" style="margin:0">교회 이름과 신청자 이름은 임원에게만 공개됩니다.</p>';
-          $('status').classList.remove('hide');
-          loadTotals(); setInterval(loadTotals,60000);
         }
       } catch(e){}
     }
