@@ -80,7 +80,10 @@
     .app-sum{margin:12px 2px 0;font-size:14.5px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
     .mini{flex:none;min-height:40px;padding:0 16px;border:1px solid var(--hairline-strong);background:#fff;border-radius:8px;font-size:14px;font-weight:700;
       font-family:inherit;color:var(--primary);cursor:pointer;user-select:none;}
-    .mini:hover{background:var(--surface-soft);}
+    .mini:hover{background:var(--surface-soft);} .mini:disabled{opacity:.5;cursor:default;}
+    .mini.danger{color:var(--err);}
+    .app-btns{flex:none;display:flex;gap:6px;}
+    @media (max-width:560px){ .app-row{flex-wrap:wrap;} .app-btns{width:100%;} .app-btns .mini{flex:1;} }
     .app-edit{margin-top:14px;padding-top:16px;border-top:1px dashed var(--hairline-strong);}
     .app-edit .fld input:disabled{background:var(--surface-soft);color:var(--muted);}
     .edit-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px;}
@@ -358,12 +361,13 @@
         var who = key==='church' ? '<b style="color:var(--ink)">'+esc(x.name)+'</b> · ' : '';
         h+='<div class="app-item" data-list="'+key+'" data-i="'+i+'"><div class="app-row"><div><div class="app-meta">'+who+when(x.created_at)+' 신청'+pay+'</div>'+
           '<div class="app-line">성인 <b>'+x.adults+'</b> · 미성년 <b>'+x.minors+'</b> · 참가비 <b>'+won(amt)+'원</b></div></div>'+
-          (key==='look' || x.mine ? '<button type="button" class="mini" data-list="'+key+'" data-edit="'+i+'">수정</button>' : '')+'</div></div>';
+          (key==='look' || x.mine ? '<div class="app-btns"><button type="button" class="mini" data-list="'+key+'" data-edit="'+i+'">수정</button>'+
+            (x.paid && x.adults>0 ? '' : '<button type="button" class="mini danger" data-list="'+key+'" data-del="'+i+'">삭제</button>')+'</div>' : '')+'</div></div>';
       });
       if(rows.length>1) h+='<p class="app-sum">합계 · 성인 <b>'+t.a+'</b> · 미성년 <b>'+t.m+'</b> · 참가비 <b>'+won(t.a*FEE)+'원</b></p>';
       h+= key==='look'
-        ? '<p class="note" style="margin-top:12px">입금 확인은 임원이 통장 내역을 보고 표시합니다. 입금이 확인된 신청의 성인 인원을 바꾸려면 행사 문의(010-4271-5090)로 연락해 주세요.</p>'
-        : '<p class="note" style="margin-top:12px">‘수정’은 내가 로그인해서 낸 신청에만 있습니다. 다른 분이 낸 신청은 그분이 이름 · 교회 · 신청 비밀번호로 고칩니다.</p>';
+        ? '<p class="note" style="margin-top:12px">입금 확인은 임원이 통장 내역을 보고 표시합니다. 입금이 확인된 신청은 성인 인원을 바꾸거나 삭제할 수 없으니 행사 문의(010-4271-5090)로 연락해 주세요.</p>'
+        : '<p class="note" style="margin-top:12px">‘수정 · 삭제’는 내가 로그인해서 낸 신청에만 있습니다. 다른 분이 낸 신청은 그분이 이름 · 교회 · 신청 비밀번호로 고치거나 삭제합니다.</p>';
       box(key).innerHTML=h;
     }
 
@@ -392,22 +396,24 @@
       runLookup(name, church, pin);
     });
 
-    // 수정: 한 번에 한 건만, 그 신청 칸 안에서 바로 고침
+    // 수정: 한 번에 한 건만, 그 신청 칸 안에서 바로 고침 / 삭제: 확인 후
     $('members').addEventListener('click',function(e){
-      var b=e.target.closest('[data-edit]'); if(b) openEdit(b.getAttribute('data-list'), +b.getAttribute('data-edit'));
+      var b=e.target.closest('[data-edit]'); if(b) return openEdit(b.getAttribute('data-list'), +b.getAttribute('data-edit'));
+      var d=e.target.closest('[data-del]'); if(d) delApp(d.getAttribute('data-list'), +d.getAttribute('data-del'));
     });
 
     function closeEdit(focusBack){
       var f=$('editForm'); edit=null; if(!f) return;
-      var b=f.parentNode.querySelector('[data-edit]');
-      f.remove(); if(b){ b.classList.remove('hide'); if(focusBack) b.focus(); }
+      var item=f.parentNode, btns=item.querySelector('.app-btns'), b=item.querySelector('[data-edit]');
+      f.remove(); if(btns) btns.classList.remove('hide'); if(b && focusBack) b.focus();
     }
     function updEdit(){ var a=int($('eAdults').value), m=int($('eMinors').value); $('eAmount').textContent=won(a*FEE)+'원'; $('ePeople').textContent='(총 '+(a+m)+'명)'; }
     function openEdit(key, i){
       closeEdit(false);
       var x=L[key].rows[i], item=document.querySelector('.app-item[data-list="'+key+'"][data-i="'+i+'"]'); if(!x||!item) return;
       edit={ key:key, i:i };
-      item.querySelector('[data-edit]').classList.add('hide');
+      var em=item.querySelector('.del-msg'); if(em) em.remove();
+      item.querySelector('.app-btns').classList.add('hide');
       var f=document.createElement('form'); f.className='app-edit'; f.id='editForm'; f.noValidate=true;
       f.innerHTML=
         '<div class="grid2"><div class="fld"><label for="eName">신청자 이름</label><input id="eName" type="text" maxlength="40" autocomplete="name"></div>'+
@@ -453,6 +459,39 @@
         if(L.church.name) loadMyChurch(false);
       } else {
         await loadMyChurch(true);
+      }
+      refreshViews();
+    }
+
+    // 삭제 — 신청한 본인만 (서버가 이름 · 교회 · 비밀번호 또는 로그인으로 확인)
+    var delBusy = false;
+    function clearPay(){
+      $('adults').value=0; $('minors').value=0; updPay();
+      $('payFrom').innerHTML='남은 신청이 없어 납부할 참가비가 없습니다.'; $('payFrom').style.display='block';
+    }
+    async function delApp(key, i){
+      if(delBusy) return;
+      var x=L[key].rows[i], item=document.querySelector('.app-item[data-list="'+key+'"][data-i="'+i+'"]'); if(!x||!item) return;
+      if(!confirm('‘'+x.church+' · '+x.name+'’ 신청 (성인 '+x.adults+'명 · 미성년 '+x.minors+'명)을 삭제할까요?\n삭제하면 되돌릴 수 없습니다.')) return;
+      closeEdit(false);
+      var b=item.querySelector('[data-del]'); delBusy=true; b.disabled=true; b.textContent='삭제 중…';
+      var auth = key==='look' ? L.look : null;
+      var r = await window.sb.rpc('walk_delete_mine',{ p_id:x.id, p_name:auth?auth.name:null, p_church:auth?auth.church:null, p_pin:auth?auth.pin:null });
+      delBusy=false;
+      if(r.error){
+        b.disabled=false; b.textContent='삭제';
+        var e=item.querySelector('.del-msg'); if(!e){ e=document.createElement('div'); e.className='msg err del-msg'; item.appendChild(e); }
+        e.textContent=/[가-힣]/.test(r.error.message) ? r.error.message : '삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+        return;
+      }
+      toast('신청을 삭제했습니다');
+      if(key==='look'){
+        await runLookup(L.look.name, L.look.church, L.look.pin);
+        if(!L.look.rows.length){ box('look').innerHTML='<div class="empty">신청을 삭제했습니다. 이 이름 · 비밀번호로 남은 신청이 없습니다.</div>'; clearPay(); }
+        if(L.church.name) loadMyChurch(false);
+      } else {
+        await loadMyChurch(true);
+        if(!L.church.rows.length) clearPay();
       }
       refreshViews();
     }

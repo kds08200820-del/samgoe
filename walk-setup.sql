@@ -4,10 +4,11 @@
 --  권한 — 교회 이름 · 신청자 이름 · 인원 · 금액은 '그 교회'와 임원만 봅니다
 --   · 신청(등록): 누구나 (로그인 없이도 가능, 신청 비밀번호 숫자 4자리 필수) — 2026-10-18 자정(한국시각)까지만
 --                 walk_apply 함수로만 받음 (비밀번호는 암호화해서 저장)
---   · 내 신청 확인 · 고치기 (로그인 없이): 신청자 이름 + 교회 이름 + 신청 비밀번호가 모두 맞을 때 그 신청만
---                 (walk_lookup · walk_update_mine, 비밀번호 5번 틀리면 10분 동안 조회 막힘, 고치기는 마감 전까지)
+--   · 내 신청 확인 · 고치기 · 삭제 (로그인 없이): 신청자 이름 + 교회 이름 + 신청 비밀번호가 모두 맞을 때 그 신청만
+--                 (walk_lookup · walk_update_mine · walk_delete_mine, 비밀번호 5번 틀리면 10분 동안 조회 막힘,
+--                  고치기 · 삭제는 마감 전까지, 입금 확인된 신청은 삭제 불가)
 --   · 우리 교회 신청 보기 (로그인): 내 회원정보의 교회와 같은 교회의 신청만 (walk_my_church)
---                 고치기는 내가 로그인해서 낸 신청만
+--                 고치기 · 삭제는 내가 로그인해서 낸 신청만
 --   · 교회별 합계 · 전체 신청 내역: 임원 · 최고관리자만 (walk_summary, 표 직접 조회)
 --   · 입금 확인 체크 · 삭제: 임원 · 최고관리자
 -- ============================================================
@@ -170,7 +171,23 @@ $$;
 revoke all on function public.walk_my_church(text) from public, anon;
 grant execute on function public.walk_my_church(text) to authenticated;
 
--- 내 신청 고치기 — (이름 + 교회 + 신청 비밀번호) 또는 (내가 로그인해서 낸 신청), 마감 전까지.
+-- 신청한 본인인지 — (이름 + 교회 + 신청 비밀번호) 또는 (내가 로그인해서 낸 신청)
+--   고치기 · 삭제 함수 안에서만 씀 (밖에서 직접 부르면 비밀번호 맞히기에 쓰일 수 있어 막음)
+create or replace function public.walk_is_mine(w public.walk_applications, p_name text, p_church text, p_pin text)
+returns boolean language sql stable set search_path = public, extensions as $$
+  select coalesce(
+       (auth.uid() is not null and coalesce(w.user_id = auth.uid(), false))
+    or (coalesce(p_pin, '') ~ '^[0-9]{4}$' and w.pin_hash is not null
+        and (w.pin_locked_until is null or w.pin_locked_until <= now())
+        and public.walk_norm(p_name) <> '' and public.walk_norm(p_church) <> ''
+        and public.walk_norm(w.name)   = public.walk_norm(p_name)
+        and public.walk_norm(w.church) = public.walk_norm(p_church)
+        and crypt(p_pin, w.pin_hash) = w.pin_hash)
+  , false);
+$$;
+revoke all on function public.walk_is_mine(public.walk_applications, text, text, text) from public, anon, authenticated;
+
+-- 내 신청 고치기 — 신청한 본인만, 마감 전까지.
 --   입금이 확인된 신청은 성인 인원(참가비)을 바꿀 수 없음 → 행사 문의로
 drop function if exists public.walk_update_mine(uuid, text, text, text, text, int, int);
 create or replace function public.walk_update_mine(
@@ -183,15 +200,7 @@ begin
     raise exception '참가 신청 기간이 끝나 고칠 수 없습니다.';
   end if;
   select * into w from public.walk_applications a where a.id = p_id for update;
-  if not found or not coalesce(
-       (auth.uid() is not null and coalesce(w.user_id = auth.uid(), false))
-    or (coalesce(p_pin, '') ~ '^[0-9]{4}$' and w.pin_hash is not null
-        and (w.pin_locked_until is null or w.pin_locked_until <= now())
-        and public.walk_norm(p_name) <> '' and public.walk_norm(p_church) <> ''
-        and public.walk_norm(w.name)   = public.walk_norm(p_name)
-        and public.walk_norm(w.church) = public.walk_norm(p_church)
-        and crypt(p_pin, w.pin_hash) = w.pin_hash)
-  , false) then
+  if not found or not public.walk_is_mine(w, p_name, p_church, p_pin) then
     raise exception '신청을 찾지 못했습니다. 이름 · 교회 · 신청 비밀번호를 다시 확인해 주세요.';
   end if;
   perform public.walk_check(p_new_name, p_new_church, p_adults, p_minors);
@@ -204,6 +213,27 @@ begin
 end $$;
 revoke all on function public.walk_update_mine(uuid, text, text, text, text, text, int, int) from public;
 grant execute on function public.walk_update_mine(uuid, text, text, text, text, text, int, int) to anon, authenticated;
+
+-- 내 신청 삭제 — 신청한 본인만, 마감 전까지.
+--   입금이 확인된 신청(참가비 있음)은 삭제할 수 없음 → 환불 등은 행사 문의로
+create or replace function public.walk_delete_mine(p_id uuid, p_name text, p_church text, p_pin text)
+returns void language plpgsql security definer set search_path = public, extensions as $$
+declare w public.walk_applications;
+begin
+  if now() >= timestamptz '2026-10-19 00:00:00+09' then
+    raise exception '참가 신청 기간이 끝나 삭제할 수 없습니다. 행사 문의(010-4271-5090)로 연락해 주세요.';
+  end if;
+  select * into w from public.walk_applications a where a.id = p_id for update;
+  if not found or not public.walk_is_mine(w, p_name, p_church, p_pin) then
+    raise exception '신청을 찾지 못했습니다. 이름 · 교회 · 신청 비밀번호를 다시 확인해 주세요.';
+  end if;
+  if w.paid and w.adults > 0 then
+    raise exception '입금이 확인된 신청은 삭제할 수 없습니다. 환불 등은 행사 문의(010-4271-5090)로 연락해 주세요.';
+  end if;
+  delete from public.walk_applications where id = w.id;
+end $$;
+revoke all on function public.walk_delete_mine(uuid, text, text, text) from public;
+grant execute on function public.walk_delete_mine(uuid, text, text, text) to anon, authenticated;
 
 -- ============================================================
 --  행사가 끝난 뒤 신청 기록을 '임원 자료방'으로 옮기기 — 서기 · 회장(대표회장)만 (최고관리자 포함)
