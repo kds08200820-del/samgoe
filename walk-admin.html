@@ -59,7 +59,7 @@
     @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .grid{grid-template-columns:1fr;} }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=2" />
+  <link rel="stylesheet" href="assets/theme.css?v=3" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
@@ -232,7 +232,7 @@
         '@media print{body{margin:0}tr{page-break-inside:avoid}}@media(max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}}';
       var h='<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+EVENT_TITLE+' 신청 기록</title><style>'+css+'</style></head><body>'+
         '<h1>'+EVENT_TITLE+' · 신청 기록</h1>'+
-        '<p class="meta">2026년 10월 18일(주일) 오후 2시 ~ 5시 · 쌍봉산 근린공원 · 주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회<br>'+
+        '<p class="meta">2026년 10월 18일(주일) 오후 2시 ~ 5시 · 쌍봉산 근린공원 · 주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회 · 후원 CTS 기독교TV<br>'+
           stamp(new Date().toISOString())+' 임원 자료방 보관 · '+esc(who)+'</p>'+
         '<div class="kpis">'+kpi('신청 건수',won(list.length)+'건')+kpi('참여 교회',ch.length+'곳')+kpi('총 인원',won(t.adult+t.minor)+'명 <small>(성인 '+t.adult+' / 미성년 '+t.minor+')</small>')+
           kpi('참가비 합계',won(fee)+'원')+kpi('입금 확인액',won(t.paidAmt)+'원')+kpi('미입금액',won(fee-t.paidAmt)+'원')+kpi('입금 확인 건수',t.paidCnt+' / '+list.length+'건')+'</div>'+
