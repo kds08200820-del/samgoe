@@ -233,12 +233,13 @@
     <div class="tabs">
       <div class="tab on" data-tab="basket">문서 바구니 <span class="tcnt" id="pendingCount"></span></div>
       <div class="tab" data-tab="docs">자료실</div>
+      <div class="tab" data-tab="meeting">임원회의</div>
     </div>
 
-    <!-- 임원회의 게시판 (자료실 안에서 표시) -->
-    <div class="subview" id="paneMeeting" style="display:none;">
+    <!-- 임원회의 (연도별 회의 글 + 회의 자료) -->
+    <div class="pane" id="paneMeeting">
       <div class="writeBox">
-        <h3>회의 글 작성</h3>
+        <h3>임원회의 기록하기</h3>
         <div class="frow">
           <div class="fld"><label>제목</label><input id="mTitle" type="text" maxlength="100" placeholder="예: 3월 임원회의 안건" /></div>
           <div class="fld"><label>회의 날짜</label><input id="mDate" type="date" /></div>
@@ -246,6 +247,7 @@
         <div class="fld"><label>내용</label><textarea id="mBody" maxlength="4000" placeholder="안건·회의록·공지 내용을 적어 주세요."></textarea></div>
         <div style="display:flex;align-items:center;gap:12px;"><button class="btn" id="mSubmit">등록</button><span class="prog" id="mProg"></span></div>
       </div>
+      <div class="secHead" style="margin-top:6px;"><h3>연도별 임원회의 내역</h3><span class="prog" id="meetingMeta" style="margin:0"></span></div>
       <div class="list" id="meetingList"></div>
       <div class="empty" id="meetingEmpty" style="display:none;">아직 등록된 회의 글이 없습니다.</div>
     </div>
@@ -301,7 +303,7 @@
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=11"></script>
-  <script src="officer-docs.js?v=7"></script>
+  <script src="officer-docs.js?v=8"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
     var MPOSTS = [], MC = {};
@@ -327,11 +329,13 @@
         document.querySelectorAll('.pane').forEach(function(x){ x.classList.remove('on'); });
         t.classList.add('on');
         var tab = t.getAttribute('data-tab');
-        var paneId = tab==='docs'?'paneDocs':'paneBasket';
+        var paneId = {docs:'paneDocs',meeting:'paneMeeting'}[tab]||'paneBasket';
+        if(tab==='meeting') loadMeetings();
         document.getElementById(paneId).classList.add('on');
       });
     });
-    if(location.hash==='#docs'||location.hash==='#archive'||location.hash==='#meeting'){ var dt=document.querySelector('.tab[data-tab="docs"]'); if(dt) dt.click(); }
+    if(location.hash==='#docs'||location.hash==='#archive'){ var dt=document.querySelector('.tab[data-tab="docs"]'); if(dt) dt.click(); }
+    if(location.hash==='#meeting'){ var mt=document.querySelector('.tab[data-tab="meeting"]'); if(mt) mt.click(); }
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------
     var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','공문','보고서','순서지','기타'];
@@ -418,15 +422,33 @@
       var list = document.getElementById('meetingList'), empty = document.getElementById('meetingEmpty');
       if(r[0].error){ list.innerHTML=''; empty.style.display='block'; empty.innerHTML='불러오기 오류 — 관리자: <b>officer-room-setup.sql</b> 실행이 필요할 수 있습니다.<br><span style="font-size:12px">('+esc(r[0].error.message)+')</span>'; return; }
       MPOSTS = r[0].data||[]; MC={}; (r[1].data||[]).forEach(function(c){ (MC[c.post_id]=MC[c.post_id]||[]).push(c); });
-      if(!MPOSTS.length){ list.innerHTML=''; empty.style.display='block'; empty.textContent='아직 등록된 회의 글이 없습니다.'; return; }
+      var mfiles = window.meetingFiles ? window.meetingFiles() : [];
+      if(!MPOSTS.length && !mfiles.length){ list.innerHTML=''; empty.style.display='block'; empty.textContent='아직 등록된 회의 글이 없습니다.'; return; }
       empty.style.display='none';
-      list.innerHTML = MPOSTS.map(function(p){
-        var n=(MC[p.id]||[]).length;
-        return '<div class="row" data-id="'+p.id+'"><div class="ic">📝</div><div class="main">'+
-          '<div class="t">'+esc(p.title)+'</div>'+
-          '<div class="m">'+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · 댓글 '+n+'</div></div>'+
-          '<div class="side"><span class="m" style="color:var(--muted)">'+fmtDT(p.created_at)+'</span></div></div>';
-      }).join('');
+      var items = [];
+      MPOSTS.forEach(function(p){ var y = (p.meeting_date||p.created_at||'').slice(0,4); items.push({ kind:'post', year:+y||0, sort:(p.meeting_date||p.created_at||''), p:p }); });
+      mfiles.forEach(function(f){ items.push({ kind:'file', year:f.year||0, sort:(f.year?String(f.year):'')+(f.created_at||''), f:f }); });
+      items.sort(function(a,b){ if(a.year!==b.year) return b.year-a.year; if(a.kind!==b.kind) return a.kind==='post'?-1:1; return a.sort<b.sort?1:-1; });
+      var html='', last=null;
+      items.forEach(function(it){
+        var y = it.year ? it.year+'년' : '연도 미상';
+        if(y!==last){ html += '<div class="ygrp">'+y+'</div>'; last=y; }
+        if(it.kind==='post'){
+          var p=it.p, n=(MC[p.id]||[]).length;
+          html += '<div class="row" data-id="'+p.id+'"><div class="ic">📝</div><div class="main">'+
+            '<div class="t">'+esc(p.title)+'</div>'+
+            '<div class="m">회의 글 · '+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · 댓글 '+n+'</div></div>'+
+            '<div class="side"><span class="m" style="color:var(--muted)">'+fmtDT(p.created_at)+'</span></div></div>';
+        } else {
+          var f=it.f, arc=/^arc(db)?:/.test(f.path||'');
+          html += '<div class="row" style="cursor:default" data-fid="'+f.id+'"><div class="ic">'+(arc?'📜':fileIcon(f.name))+'</div><div class="main">'+
+            '<div class="t">'+esc(f.title||f.name)+'</div>'+
+            '<div class="m">회의 자료 · '+esc(window.folderName?window.folderName(f.folder_id):'')+(arc?'':' · '+esc(f.name)+' · '+esc(f.author_name||''))+'</div></div>'+
+            '<div class="side">'+(arc?'<button class="btn ghost sm mopen">열기</button>':'<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>')+'</div></div>';
+        }
+      });
+      list.innerHTML = html;
+      document.getElementById('meetingMeta').textContent = '회의 글 '+MPOSTS.length+'건 · 회의 자료 '+mfiles.length+'건';
     }
     // ---------- 회의 글 작성 ----------
     async function submitMeeting(){
@@ -541,9 +563,12 @@
       await loadDBDocs();
       try{ await cleanArchiveDocs(); }catch(_){ }
       await window.initDocs();
+      await loadMeetings();
 
       document.getElementById('mSubmit').addEventListener('click', submitMeeting);
-      document.getElementById('meetingList').addEventListener('click', function(e){ var row=e.target.closest&&e.target.closest('.row'); if(row&&row.getAttribute('data-id')) openDetail(row.getAttribute('data-id')); });
+      document.getElementById('meetingList').addEventListener('click', function(e){
+        var op=e.target.closest&&e.target.closest('.mopen'); if(op){ var fr=op.closest('.row'); if(fr&&window.openFileById) window.openFileById(fr.getAttribute('data-fid')); return; }
+        var row=e.target.closest&&e.target.closest('.row'); if(row&&row.getAttribute('data-id')) openDetail(row.getAttribute('data-id')); });
       document.getElementById('detailOverlay').addEventListener('click', function(e){ if(e.target===this) requestClose(); });
       document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ if(docOpen) requestCloseDoc(); else requestClose(); } });
 

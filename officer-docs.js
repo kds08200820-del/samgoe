@@ -194,8 +194,7 @@
     });
     var un = all.filter(function(f){ return !f.folder_id; }).length;
     if(un) html += '<div class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></div>';
-    html += '<div class="tn sep">게시판 · 기록</div>'+
-      '<div class="tn'+(view.folder==='@meeting'?' on':'')+'" data-f="@meeting">임원회의 게시판</div>'+
+    html += '<div class="tn sep">기록</div>'+
       '<a class="tn" href="walk-admin.html">행사 신청 기록 →</a>';
     tree.innerHTML = html;
   }
@@ -214,17 +213,8 @@
     }
     return true;
   }
-  function showSub(which){
-    var filesEl = document.getElementById('docFiles'), sub = document.getElementById('docSub');
-    var m = document.getElementById('paneMeeting');
-    if(which){ filesEl.style.display='none'; sub.style.display='';
-      if(m.parentNode!==sub) sub.appendChild(m); m.style.display='';
-    } else { filesEl.style.display=''; sub.style.display='none'; }
-  }
   function renderDocs(){
     renderTree(); renderFilters();
-    if(view.folder==='@meeting'){ showSub(view.folder); return; }
-    showSub(null);
     var all = FILES.filter(function(f){ return f.status!=='pending'; });
     var res = all.filter(matches);
     var head = document.getElementById('docHead');
@@ -369,6 +359,13 @@
     }
     await loadAll();
   }
+  window.meetingFiles = function(){
+    var root = folderByCode('meeting'); if(!root) return [];
+    var ids = descendants(root.id);
+    return FILES.filter(function(f){ return f.status!=='pending' && ids.indexOf(f.folder_id)>=0; });
+  };
+  window.folderName = function(id){ return pathName(id); };
+  window.openFileById = function(id){ openArc(id); };
   window.initDocs = async function(){
     if(!(await loadAll())) return;
     try{ await migrateArchive(); }catch(e){ console.error(e); }
@@ -393,7 +390,7 @@
 
     document.getElementById('folderTree').addEventListener('click', function(e){ var n=e.target.closest&&e.target.closest('.tn'); if(!n) return; view.folder=n.getAttribute('data-f'); renderDocs(); });
     document.getElementById('docYear').addEventListener('change', function(){ view.year=this.value; renderDocs(); });
-    var timer=null; document.getElementById('docSearch').addEventListener('input', function(){ var v=this.value.trim(); clearTimeout(timer); timer=setTimeout(function(){ view.q=v; if(view.folder.charAt(0)==='@') view.folder=''; renderDocs(); },150); });
+    var timer=null; document.getElementById('docSearch').addEventListener('input', function(){ var v=this.value.trim(); clearTimeout(timer); timer=setTimeout(function(){ view.q=v; renderDocs(); },150); });
     document.getElementById('docList').addEventListener('click', function(e){
       var row=e.target.closest&&e.target.closest('.drow'); if(!row) return;
       if(e.target.closest('.dopen')) openArc(row.getAttribute('data-id'));
