@@ -12,9 +12,9 @@
   // ---------- 자동 분류 규칙 (파일명·제목 기준) ----------
   var RULES = [
     { code:'gongmun_grant', re:/보조금|공모|교부|지원신청|선정|활성화\s*사업|집행\s*매뉴얼|정산/ },
-    { code:'media_press',   re:/언론|보도|기사|신문|방송|취재|TV/ },
-    { code:'gongmun_in',    re:/회신|수신|통보|안내문|알림|공고/ },
+    { code:'gongmun_in',    re:/(^|[^집])회신|수신|통보|안내문|알림|공고/ },
     { code:'gongmun_out',   re:/공문|발신|요청서|신청서|신고|협조|도로점유|제출/ },
+    { code:'media_press',   re:/언론|보도|기사|신문|방송|취재|TV/ },
     { code:'meeting_ga',    re:/총회/ },
     { code:'meeting_ofc',   re:/임원\s*회의|임원회|회의록|회의\s*결과|안건/ },
     { code:'meeting_mon',   re:/월례/ },
