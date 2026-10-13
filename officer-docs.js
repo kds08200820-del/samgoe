@@ -12,8 +12,9 @@
   // ---------- 자동 분류 규칙 (파일명·제목 기준) ----------
   var RULES = [
     { code:'gongmun_grant', re:/보조금|공모|교부|지원신청|선정|활성화\s*사업|집행\s*매뉴얼|정산/ },
-    { code:'gongmun_in',    re:/회신|수신|통보|안내문|알림|협조\s*요청|화성시|읍사무소|면사무소|시청|공고/ },
-    { code:'gongmun_out',   re:/공문|발신|요청서|신청서|도로점유|제출/ },
+    { code:'media_press',   re:/언론|보도|기사|신문|방송|취재|TV/ },
+    { code:'gongmun_in',    re:/회신|수신|통보|안내문|알림|공고/ },
+    { code:'gongmun_out',   re:/공문|발신|요청서|신청서|신고|협조|도로점유|제출/ },
     { code:'meeting_ga',    re:/총회/ },
     { code:'meeting_ofc',   re:/임원\s*회의|임원회|회의록|회의\s*결과|안건/ },
     { code:'meeting_mon',   re:/월례/ },
@@ -22,7 +23,6 @@
     { code:'edu',           re:/교육|세미나|강의|강좌|연수|자료집|워크숍|훈련/ },
     { code:'history_manse', re:/3[.\s·]?1\s*운동|스코필드|제암리|독립|항일|역사|유적|사적/ },
     { code:'history_org',   re:/연혁|기록물|연합회\s*역사|창립|발자취/ },
-    { code:'media_press',   re:/언론|보도|기사|신문|방송|취재|TV/ },
     { code:'media_design',  re:/포스터|현수막|현수기|배너|시안|초대장|홍보문|리플렛|전단/ },
     { code:'event_manse',   re:/만세길|걷기|라이딩/ },
     { code:'event_easter',  re:/부활절|부활주일/ },
