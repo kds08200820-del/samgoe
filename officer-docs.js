@@ -37,6 +37,7 @@
   var IMG_RE = /\.(jpe?g|png|gif|webp|heic|mov|mp4)$/i;
 
   function guessYear(s){
+    var yt = (typeof yearFromTitle==='function') ? yearFromTitle(s.trim()) : null; if(yt) return yt;
     var m = s.match(/(20[0-3]\d)/); if(m) return +m[1];
     m = s.match(/(^|[^0-9])(1\d|2\d)\s*년/); if(m) return 2000 + (+m[2]);
     return null;
@@ -366,9 +367,27 @@
   };
   window.folderName = function(id){ return pathName(id); };
   window.openFileById = function(id){ openArc(id); };
+  // 제목에 적힌 연도가 저장된 연도와 다르면 바로잡는다 (예: 업로드 연도 2026 → 문서 연도 2019)
+  function yearFromTitle(t){
+    t = String(t||'');
+    var m = t.match(/^\s*(?:[0-9]{4}\.[0-9]{2}\.[0-9]{2}\s+)?'?\s*((?:19|20)\d\d)(?=[_\s\-.년]|\d{4})/); if(m) return +m[1];
+    m = t.match(/((?:19|20)\d\d)\s*년/); if(m) return +m[1];
+    m = t.match(/((?:19|20)\d\d)[.\-](\d{1,2})[.\-](\d{1,2})/); if(m) return +m[1];
+    m = t.match(/(?:^|[^0-9])((?:19|20)\d\d)(?:[^0-9]|$)/); if(m) return +m[1];
+    return null;
+  }
+  async function fixYears(){
+    var bad = FILES.filter(function(f){ var y = yearFromTitle(f.title||f.name); return y && y!==f.year; });
+    for(var i=0;i<bad.length;i++){
+      var f = bad[i];
+      await window.sb.from('officer_files').update({ year: yearFromTitle(f.title||f.name) }).eq('id', f.id);
+    }
+    if(bad.length) await loadAll();
+  }
   window.initDocs = async function(){
     if(!(await loadAll())) return;
     try{ await migrateArchive(); }catch(e){ console.error(e); }
+    try{ await fixYears(); }catch(e){ console.error(e); }
     await autoFileLegacy();
     renderPending(); renderDocs();
 
