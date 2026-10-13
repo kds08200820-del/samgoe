@@ -29,8 +29,11 @@
     { code:'event_815',     re:/광복절|8[.\s·]?15|3[.\s·]?1\s*절|삼일절/ },
     { code:'event_newyear', re:/신년|하례|조찬|연합\s*기도회|성회|수요기도/ },
     { code:'event_xmas',    re:/성탄|크리스마스/ },
-    { code:'event_etc',     re:/순서지|기획안|추진계획|진행표|식순|큐시트|명단|야유회|세미나\s*참석|단합|여행|행사/ }
+    { code:'event_etc',     re:/순서지|기획안|추진계획|진행표|식순|큐시트|명단|야유회|세미나\s*참석|단합|여행|행사/ },
+    { code:'meeting_ofc',   re:/보고서|보고/ }
   ];
+  var ARC_TYPE_FALLBACK = { '총회자료':'meeting_ga', '회의록':'meeting_ofc', '월례·임원회의':'meeting_mon', '공문':'gongmun', '보고서':'meeting_ofc', '순서지':'event_etc' };
+  function isArc(f){ return /^arc(db)?:/.test(f.path||''); }
   var IMG_RE = /\.(jpe?g|png|gif|webp|heic|mov|mp4)$/i;
 
   function guessYear(s){
@@ -193,7 +196,6 @@
     if(un) html += '<div class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></div>';
     html += '<div class="tn sep">게시판 · 기록</div>'+
       '<div class="tn'+(view.folder==='@meeting'?' on':'')+'" data-f="@meeting">임원회의 게시판</div>'+
-      '<div class="tn'+(view.folder==='@archive'?' on':'')+'" data-f="@archive">역사 자료 아카이브</div>'+
       '<a class="tn" href="walk-admin.html">행사 신청 기록 →</a>';
     tree.innerHTML = html;
   }
@@ -214,16 +216,14 @@
   }
   function showSub(which){
     var filesEl = document.getElementById('docFiles'), sub = document.getElementById('docSub');
-    var m = document.getElementById('paneMeeting'), a = document.getElementById('paneArchive');
+    var m = document.getElementById('paneMeeting');
     if(which){ filesEl.style.display='none'; sub.style.display='';
-      if(m.parentNode!==sub) sub.appendChild(m); if(a.parentNode!==sub) sub.appendChild(a);
-      m.style.display = which==='@meeting'?'':'none'; a.style.display = which==='@archive'?'':'none';
-      if(which==='@archive' && window.renderArchive) window.renderArchive();
+      if(m.parentNode!==sub) sub.appendChild(m); m.style.display='';
     } else { filesEl.style.display=''; sub.style.display='none'; }
   }
   function renderDocs(){
     renderTree(); renderFilters();
-    if(view.folder==='@meeting' || view.folder==='@archive'){ showSub(view.folder); return; }
+    if(view.folder==='@meeting'){ showSub(view.folder); return; }
     showSub(null);
     var all = FILES.filter(function(f){ return f.status!=='pending'; });
     var res = all.filter(matches);
@@ -240,10 +240,14 @@
     res.forEach(function(f){
       if(groupByYear){ var y = f.year||'연도 미상'; if(y!==lastY){ html += '<div class="ygrp">'+y+(f.year?'년':'')+'</div>'; lastY=y; } }
       var canRm = me && (f.author_id===me.id || isAdminUser);
-      html += '<div class="row drow" data-id="'+f.id+'"><div class="ic">'+fileIcon(f.name)+'</div><div class="main">'+
+      var arc = isArc(f);
+      var meta = arc ? esc(pathName(f.folder_id))+' · 기록물'+(f.memo?' · '+esc(f.memo):'')
+                     : esc(pathName(f.folder_id))+' · '+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'')+' · '+fmtDT(f.created_at)+(f.memo?' · '+esc(f.memo):'');
+      var open = arc ? '<button class="btn ghost sm dopen">열기</button>' : '<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>';
+      html += '<div class="row drow" data-id="'+f.id+'"><div class="ic">'+(arc?'📜':fileIcon(f.name))+'</div><div class="main">'+
         '<div class="t">'+esc(f.title||f.name)+'</div>'+
-        '<div class="m">'+esc(pathName(f.folder_id))+' · '+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'')+' · '+fmtDT(f.created_at)+(f.memo?' · '+esc(f.memo):'')+'</div></div>'+
-        '<div class="side"><a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a><button class="btn ghost sm dedit">정보 수정</button>'+(canRm?'<button class="btn danger sm ddel">삭제</button>':'')+'</div></div>';
+        '<div class="m">'+meta+'</div></div>'+
+        '<div class="side">'+open+'<button class="btn ghost sm dedit">정보 수정</button>'+(canRm?'<button class="btn danger sm ddel">삭제</button>':'')+'</div></div>';
     });
     list.innerHTML = html;
   }
@@ -277,7 +281,7 @@
     if(!confirm('“'+(f.title||f.name)+'” 자료를 삭제할까요?')) return;
     try{
       var r2=(window.R2_WORKER_URL||'').replace(/\/$/,'');
-      if(r2){ var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:''; await fetch(r2+'/file-delete',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({key:f.path})}); }
+      if(r2 && !isArc(f)){ var sess=await window.sb.auth.getSession(); var token=sess.data&&sess.data.session?sess.data.session.access_token:''; await fetch(r2+'/file-delete',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({key:f.path})}); }
       var d=await window.sb.from('officer_files').delete().eq('id',id); if(d.error) throw d.error;
       await loadAll(); renderPending(); renderDocs();
     }catch(err){ alert('삭제 실패: '+(err.message||err)); }
@@ -330,8 +334,44 @@
     }
   }
   window.refileUnfiled = async function(){ await autoFileLegacy(); renderPending(); renderDocs(); };
+  function openArc(id){
+    var f = FILES.find(function(x){ return x.id===id; }); if(!f || !window.openDoc) return;
+    var title = f.title||f.name;
+    if(f.path.indexOf('arcdb:')===0){
+      window.sb.from('archive_docs').select('html').eq('id', f.path.slice(6)).single().then(function(r){
+        if(r.error||!r.data){ alert('문서를 여는 데 실패했습니다.'); return; }
+        window.openDoc({ html:r.data.html||'', title:title });
+      });
+    } else {
+      window.openDoc({ src:f.url, title:title });
+    }
+  }
+  // 역사 자료 아카이브(정적 HTML + 업로드 변환본)를 자료실 항목으로 한 번만 옮긴다 (관리자)
+  async function migrateArchive(){
+    if(!isAdminUser || !window.mergedDocs || !FOLDERS.length) return;
+    var have = {}; FILES.forEach(function(f){ if(isArc(f)) have[f.path]=true; });
+    var docs = window.mergedDocs(); var rows = [];
+    docs.forEach(function(d){
+      var path = d.kind==='db' ? 'arcdb:'+d.key : 'arc:'+d.key;
+      if(have[path]) return;
+      var nm = String(d.name||'').replace(/^[0-9.]+\s+/, '').replace(/^'(.*)'$/, '$1').trim();
+      var g = classify(nm + ' ' + (d.type||''), '');
+      var fid = g.folder_id; var fe = folderByCode('etc');
+      if((!fid || (fe && fid===fe.id)) && ARC_TYPE_FALLBACK[d.type]){ var ff = folderByCode(ARC_TYPE_FALLBACK[d.type]); if(ff) fid = ff.id; }
+      rows.push({ title: nm, name: nm + '.html', path: path, url: d.href || '#', size: null, mime: 'text/html',
+        status:'filed', folder_id: fid, year: (d.year ? +d.year : null) || g.year, memo: d.type||null,
+        author_id: me.id, author_name: '기록물', filed_at: new Date().toISOString(), filed_by: me.id });
+    });
+    if(!rows.length) return;
+    for(var i=0;i<rows.length;i+=40){
+      var ins = await window.sb.from('officer_files').insert(rows.slice(i,i+40));
+      if(ins.error){ console.error('archive migrate', ins.error); break; }
+    }
+    await loadAll();
+  }
   window.initDocs = async function(){
     if(!(await loadAll())) return;
+    try{ await migrateArchive(); }catch(e){ console.error(e); }
     await autoFileLegacy();
     renderPending(); renderDocs();
 
@@ -356,7 +396,8 @@
     var timer=null; document.getElementById('docSearch').addEventListener('input', function(){ var v=this.value.trim(); clearTimeout(timer); timer=setTimeout(function(){ view.q=v; if(view.folder.charAt(0)==='@') view.folder=''; renderDocs(); },150); });
     document.getElementById('docList').addEventListener('click', function(e){
       var row=e.target.closest&&e.target.closest('.drow'); if(!row) return;
-      if(e.target.closest('.dedit')) openEdit(row.getAttribute('data-id'));
+      if(e.target.closest('.dopen')) openArc(row.getAttribute('data-id'));
+      else if(e.target.closest('.dedit')) openEdit(row.getAttribute('data-id'));
       else if(e.target.closest('.ddel')) delFile(row.getAttribute('data-id'));
     });
     document.getElementById('newFolder').addEventListener('click', openNewFolder);
