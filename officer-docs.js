@@ -116,7 +116,7 @@
         var g = classify(file.name, '');
         var ins = await window.sb.from('officer_files').insert({
           name:file.name, path:j.key, url:j.url, size:j.size, mime:j.mime,
-          status:'pending', suggested_folder_id:g.folder_id, year:g.year, role:g.role||null,
+          status:'pending', suggested_folder_id:g.folder_id, year:g.year, role:(myProfile&&myProfile.officer_role)||null,
           author_id:me.id, author_name:(myProfile&&myProfile.name)||(me.email||'임원')
         });
         if(ins.error) throw ins.error;
@@ -146,7 +146,6 @@
         '<div class="pctl">'+
           '<label>자료실 <span class="sug">'+(sug?'자동 추천':'추천 없음')+'</span><select class="pf">'+folderOptions(sug)+'</select></label>'+
           '<label>연도<input class="py" type="number" min="1990" max="2099" value="'+(f.year||'')+'" placeholder="연도" /></label>'+
-          '<label>역할<select class="pr">'+roleOptions(f.role||'')+'</select></label>'+
           '<div class="pbtns"><button class="btn sm approve">승인 · 이동</button><button class="btn danger sm pdel">삭제</button></div>'+
         '</div></div>';
     }).join('');
@@ -157,8 +156,7 @@
     if(!fid){ alert('자료실을 선택해 주세요.'); return; }
     var title = row.querySelector('.pt').value.trim() || null;
     var year = parseInt(row.querySelector('.py').value,10) || null;
-    var role = row.querySelector('.pr').value || null;
-    var up = await window.sb.from('officer_files').update({ status:'filed', folder_id:fid, title:title, year:year, role:role, filed_at:new Date().toISOString(), filed_by:me.id }).eq('id',id);
+    var up = await window.sb.from('officer_files').update({ status:'filed', folder_id:fid, title:title, year:year, filed_at:new Date().toISOString(), filed_by:me.id }).eq('id',id);
     if(up.error){ alert('이동 실패: '+up.error.message); return false; }
     return true;
   }
@@ -202,13 +200,11 @@
   function renderFilters(){
     var years = []; FILES.forEach(function(f){ if(f.year && years.indexOf(f.year)<0) years.push(f.year); }); years.sort(function(a,b){ return b-a; });
     var ys = document.getElementById('docYear'); ys.innerHTML = '<option value="">모든 연도</option>'+years.map(function(y){ return '<option value="'+y+'"'+(String(view.year)===String(y)?' selected':'')+'>'+y+'년</option>'; }).join('');
-    var rs = document.getElementById('docRole'); rs.innerHTML = '<option value="">모든 역할</option>'+ROLES.map(function(r){ return '<option'+(view.role===r?' selected':'')+'>'+r+'</option>'; }).join('');
   }
   function matches(f){
     if(view.folder==='__none'){ if(f.folder_id) return false; }
     else if(view.folder){ if(descendants(view.folder).indexOf(f.folder_id)<0) return false; }
     if(view.year && String(f.year)!==String(view.year)) return false;
-    if(view.role && f.role!==view.role) return false;
     if(view.q){
       var hay = [f.title, f.name, f.memo, (f.tags||[]).join(' '), f.year, f.role, pathName(f.folder_id), f.author_name].join(' ').toLowerCase();
       var terms = view.q.toLowerCase().split(/\s+/).filter(Boolean);
@@ -244,7 +240,7 @@
       var canRm = me && (f.author_id===me.id || isAdminUser);
       html += '<div class="row drow" data-id="'+f.id+'"><div class="ic">'+fileIcon(f.name)+'</div><div class="main">'+
         '<div class="t">'+esc(f.title||f.name)+'</div>'+
-        '<div class="m">'+esc(pathName(f.folder_id))+(f.role?' · '+esc(f.role):'')+' · '+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'')+' · '+fmtDT(f.created_at)+(f.memo?' · '+esc(f.memo):'')+'</div></div>'+
+        '<div class="m">'+esc(pathName(f.folder_id))+' · '+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'')+' · '+fmtDT(f.created_at)+(f.memo?' · '+esc(f.memo):'')+'</div></div>'+
         '<div class="side"><a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a><button class="btn ghost sm dedit">정보 수정</button>'+(canRm?'<button class="btn danger sm ddel">삭제</button>':'')+'</div></div>';
     });
     list.innerHTML = html;
@@ -257,7 +253,7 @@
       '<div class="pctl">'+
         '<label>자료실<select id="eFolder">'+folderOptions(f.folder_id)+'</select></label>'+
         '<label>연도<input id="eYear" type="number" min="1990" max="2099" value="'+(f.year||'')+'" /></label>'+
-        '<label>역할<select id="eRole">'+roleOptions(f.role||'')+'</select></label></div>'+
+        '</div>'+
       '<div class="fld"><label>메모 <span style="font-weight:400;color:var(--muted)">(검색에 포함됩니다)</span></label><input id="eMemo" type="text" maxlength="200" value="'+esc(f.memo||'')+'" /></div>'+
       '<div style="display:flex;gap:8px;"><button class="btn sm" id="eSave">저장</button><button class="btn ghost sm" id="eCancel">취소</button><span class="prog" id="eProg"></span></div></div>';
     box.style.display=''; box.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -267,7 +263,6 @@
         title: document.getElementById('eTitle').value.trim()||null,
         folder_id: document.getElementById('eFolder').value||null,
         year: parseInt(document.getElementById('eYear').value,10)||null,
-        role: document.getElementById('eRole').value||null,
         memo: document.getElementById('eMemo').value.trim()||null
       }).eq('id',id);
       if(up.error){ document.getElementById('eProg').textContent='저장 실패: '+up.error.message; return; }
@@ -348,7 +343,6 @@
 
     document.getElementById('folderTree').addEventListener('click', function(e){ var n=e.target.closest&&e.target.closest('.tn'); if(!n) return; view.folder=n.getAttribute('data-f'); renderDocs(); });
     document.getElementById('docYear').addEventListener('change', function(){ view.year=this.value; renderDocs(); });
-    document.getElementById('docRole').addEventListener('change', function(){ view.role=this.value; renderDocs(); });
     var timer=null; document.getElementById('docSearch').addEventListener('input', function(){ var v=this.value.trim(); clearTimeout(timer); timer=setTimeout(function(){ view.q=v; if(view.folder.charAt(0)==='@') view.folder=''; renderDocs(); },150); });
     document.getElementById('docList').addEventListener('click', function(e){
       var row=e.target.closest&&e.target.closest('.drow'); if(!row) return;

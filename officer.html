@@ -140,7 +140,7 @@
     .ptop .pt{flex:1;min-width:200px;padding:8px 10px;border:1px solid var(--hairline-strong);font-size:15px;font-weight:700;font-family:inherit;color:var(--ink);border-radius:0;}
     .ptop .pt:focus{outline:none;border:2px solid var(--ink);}
     .ptop .pm{flex-basis:100%;font-size:12px;color:var(--muted);}
-    .pctl{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;margin-top:10px;}
+    .pctl{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:end;margin-top:10px;}
     .pctl label{display:block;font-size:12px;font-weight:700;color:var(--ink);}
     .pctl label .sug{font-weight:400;color:var(--primary);margin-left:4px;}
     .pctl select,.pctl input{display:block;width:100%;margin-top:4px;height:38px;padding:0 10px;border:1px solid var(--hairline-strong);background:#fff;font-family:inherit;font-size:14px;font-weight:300;color:var(--ink);border-radius:0;}
@@ -222,7 +222,6 @@
       <div class="docTop">
         <input id="docSearch" type="search" placeholder="자료 검색 — 제목 · 파일명 · 메모 · 연도 · 자료실 이름" />
         <select id="docYear"></select>
-        <select id="docRole"></select>
       </div>
       <div class="docGrid">
         <aside class="docSide">
@@ -273,7 +272,7 @@
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=11"></script>
-  <script src="officer-docs.js?v=2"></script>
+  <script src="officer-docs.js?v=3"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
     var MPOSTS = [], MC = {};
