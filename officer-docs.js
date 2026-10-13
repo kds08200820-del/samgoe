@@ -18,11 +18,11 @@
     { code:'meeting_ofc',   re:/임원\s*회의|임원회|회의록|회의\s*결과|안건/ },
     { code:'meeting_mon',   re:/월례/ },
     { code:'finance',       re:/결산|예산|통장|사용내역|영수증|회계|지출|수입|정산서|입금/ },
-    { code:'rules',         re:/회칙|규정|조직|가입원서|서식|양식|명부/ },
+    { code:'rules',         re:/회칙|규정|조직|가입원서|서식|양식|명부|봉투|우편|라벨|명함/ },
     { code:'edu',           re:/교육|세미나|강의|강좌|연수|자료집|워크숍|훈련/ },
     { code:'history_manse', re:/3[.\s·]?1\s*운동|스코필드|제암리|독립|항일|역사|유적|사적/ },
     { code:'history_org',   re:/연혁|기록물|연합회\s*역사|창립|발자취/ },
-    { code:'media_press',   re:/언론|보도|기사|신문|방송|취재/ },
+    { code:'media_press',   re:/언론|보도|기사|신문|방송|취재|TV/ },
     { code:'media_design',  re:/포스터|현수막|현수기|배너|시안|초대장|홍보문|리플렛|전단/ },
     { code:'event_manse',   re:/만세길|걷기|라이딩/ },
     { code:'event_easter',  re:/부활절|부활주일/ },
@@ -229,6 +229,8 @@
     var res = all.filter(matches);
     var head = document.getElementById('docHead');
     head.textContent = (view.folder==='__none'?'미분류':(view.folder?pathName(view.folder):'전체 자료'))+' · '+res.length+'건'+(view.q?' (검색: '+view.q+')':'');
+    var unN = all.filter(function(f){ return !f.folder_id; }).length;
+    if(unN){ head.innerHTML += ' <button class="btn sm" style="margin-left:10px" onclick="window.refileUnfiled()">미분류 '+unN+'건 자동 정리</button>'; }
     var list = document.getElementById('docList');
     if(!res.length){ list.innerHTML = '<div class="empty">'+(view.q?'검색 결과가 없습니다.':'자료가 없습니다.')+'</div>'; return; }
     // 연도 내림차순 → 최근 등록순
@@ -314,12 +316,20 @@
   async function autoFileLegacy(){
     var unfiled = FILES.filter(function(f){ return f.status!=='pending' && !f.folder_id; });
     if(!unfiled.length || !FOLDERS.length) return;
+    var errs = [];
     for(var i=0;i<unfiled.length;i++){
       var f = unfiled[i]; var g = classify(f.name, f.title); if(!g.folder_id) continue;
-      await window.sb.from('officer_files').update({ folder_id:g.folder_id, year:f.year||g.year, role:f.role||g.role||null, filed_at:new Date().toISOString(), filed_by:me.id }).eq('id',f.id);
+      var up = await window.sb.from('officer_files').update({ folder_id:g.folder_id, year:f.year||g.year, filed_at:new Date().toISOString(), filed_by:me.id }).eq('id',f.id).select('id');
+      if(up.error) errs.push(up.error.message);
+      else if(!up.data || !up.data.length) errs.push('수정 권한 없음(0건 반영)');
     }
     await loadAll();
+    if(errs.length){
+      var n = document.getElementById('fileNotice'); n.style.display='';
+      n.innerHTML = '⚠️ 미분류 자료 자동 정리에 실패했습니다: '+esc(errs[0])+'<br><span style="font-size:12px">관리자: <b>doc-basket-setup.sql</b>을 다시 실행해 주세요.</span>';
+    }
   }
+  window.refileUnfiled = async function(){ await autoFileLegacy(); renderPending(); renderDocs(); };
   window.initDocs = async function(){
     if(!(await loadAll())) return;
     await autoFileLegacy();

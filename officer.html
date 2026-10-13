@@ -168,6 +168,55 @@
     .row.drow{cursor:default;}
     @media (max-width:720px){ .docGrid{grid-template-columns:1fr;} .docSide{position:static;} .pctl{grid-template-columns:1fr 1fr;} .docTop{flex-wrap:wrap;} .docTop input{flex-basis:100%;} }
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
+
+    /* ===== 부드러운 라운드 UI ===== */
+    :root{--r-lg:16px;--r-md:12px;--r-sm:10px;--shadow:0 1px 2px rgba(13,29,58,.04),0 6px 20px rgba(13,29,58,.06);--ring:0 0 0 3px rgba(3,34,87,.12);}
+    body{font-weight:400;}
+    .badge{border-radius:8px;letter-spacing:1px;}
+    .title{letter-spacing:-0.5px;}
+    /* 탭: 알약형 세그먼트 */
+    .tabs{display:inline-flex;gap:4px;padding:4px;background:#ece9e2;border:0;border-radius:999px;margin-bottom:26px;}
+    .tab{padding:9px 20px;font-size:14px;border:0;margin:0;border-radius:999px;color:var(--muted);transition:background .15s,color .15s;}
+    .tab:hover{color:var(--ink);}
+    .tab.on{background:#fff;color:var(--primary);border:0;box-shadow:0 1px 3px rgba(13,29,58,.12);}
+    .tcnt{border-radius:999px;}
+    /* 카드·목록 */
+    .writeBox,.list,.docSide,.legacy,.notice,.arcList,.arcAdd,.modal{border-radius:var(--r-lg);}
+    .writeBox,.list,.docSide{box-shadow:var(--shadow);border-color:#ebe8e1;}
+    .list{overflow:hidden;}
+    .row,.prow,.arcItem{border-top-color:#f0eee9;}
+    .row:hover,.arcItem:hover{background:#faf9f6;}
+    .ygrp{background:#f6f4ef;border-top-color:#f0eee9;}
+    /* 입력 */
+    .fld input,.fld textarea,.docTop input,.docTop select,.pctl select,.pctl input,.ptop .pt,.arcFilters select,.arcFilters input,.arcAdd select,.cmtForm textarea{
+      border-radius:var(--r-sm);border:1px solid #ddd8ce;background:#fff;transition:border-color .15s,box-shadow .15s;}
+    .fld input:focus,.fld textarea:focus,.docTop input:focus,.docTop select:focus,.pctl select:focus,.pctl input:focus,.ptop .pt:focus,.arcFilters select:focus,.arcFilters input:focus,.cmtForm textarea:focus{
+      border:1px solid var(--primary);box-shadow:var(--ring);outline:none;}
+    .docTop input{padding-left:40px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='M20 20l-3.5-3.5'/></svg>");background-repeat:no-repeat;background-position:14px center;}
+    /* 버튼 */
+    .btn,.btn.sm,.btn.ghost,.btn.danger{border-radius:999px;}
+    .btn.ghost{border-color:#ddd8ce;}
+    .btn.ghost:hover{background:#f3f1ec;border-color:#cfc9bd;}
+    .docBar button,.mclose{border-radius:999px;}
+    /* 드롭 영역 */
+    .drop{border-radius:var(--r-md);border:2px dashed #d6d1c6;background:#faf9f6;padding:34px 20px;}
+    .drop.over{border-color:var(--primary);background:#eef2fa;}
+    /* 자료실 트리 */
+    .docSide{padding:10px 8px;}
+    .tn{border-radius:var(--r-sm);padding:8px 12px;margin:1px 0;}
+    .tn.sub{padding-left:24px;}
+    .tn.on{background:var(--primary);}
+    .tn.sep{border-radius:0;}
+    .sideBtns{padding:10px 6px 2px;}
+    /* 분류 대기 카드 */
+    .prow{padding:16px 20px;}
+    .legacy{border-radius:var(--r-md);}
+    /* 모달·뷰어 */
+    .overlay{background:rgba(13,29,58,.45);backdrop-filter:blur(2px);}
+    .modal{overflow:hidden;box-shadow:0 20px 60px rgba(13,29,58,.25);}
+    .docOv iframe{border-radius:var(--r-lg) var(--r-lg) 0 0;}
+    .home{border-radius:999px;}
+    @media (max-width:720px){ .tabs{display:flex;} .tab{flex:1;text-align:center;padding:9px 10px;} }
   </style>
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
@@ -272,7 +321,7 @@
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=11"></script>
-  <script src="officer-docs.js?v=3"></script>
+  <script src="officer-docs.js?v=4"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
     var MPOSTS = [], MC = {};
