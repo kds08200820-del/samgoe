@@ -159,6 +159,9 @@
     .tn:hover{background:var(--surface-soft);}
     .tn.on{background:var(--primary);color:#fff;}
     .tn .c{font-size:11px;color:var(--muted);} .tn.on .c{color:rgba(255,255,255,.8);}
+    .tn.sep{margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline);font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);cursor:default;}
+    .tn.sep:hover{background:none;}
+    .subview .writeBox{margin-top:0;}
     .sideBtns{display:flex;gap:6px;padding:10px 12px 4px;border-top:1px solid var(--hairline);margin-top:8px;flex-wrap:wrap;}
     .docHead{font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
     .ygrp{padding:8px 20px;background:var(--surface-soft);font-size:12px;font-weight:700;color:var(--muted);border-top:1px solid var(--hairline);}
@@ -179,15 +182,12 @@
     <p class="who"><b id="ofcName"></b> <b id="ofcRole" style="color:var(--primary)"></b> · <span id="ofcChurch"></span></p>
 
     <div class="tabs">
-      <div class="tab on" data-tab="meeting">임원회의 게시판</div>
-      <div class="tab" data-tab="basket">문서 바구니 <span class="tcnt" id="pendingCount"></span></div>
+      <div class="tab on" data-tab="basket">문서 바구니 <span class="tcnt" id="pendingCount"></span></div>
       <div class="tab" data-tab="docs">자료실</div>
-      <div class="tab" data-tab="archive">역사 자료 아카이브</div>
-      <a class="tab" href="walk-admin.html" style="text-decoration:none">행사 신청 기록 →</a>
     </div>
 
-    <!-- 임원회의 게시판 -->
-    <div class="pane on" id="paneMeeting">
+    <!-- 임원회의 게시판 (자료실 안에서 표시) -->
+    <div class="subview" id="paneMeeting" style="display:none;">
       <div class="writeBox">
         <h3>회의 글 작성</h3>
         <div class="frow">
@@ -202,7 +202,7 @@
     </div>
 
     <!-- 문서 바구니 (넣는 곳) -->
-    <div class="pane" id="paneBasket">
+    <div class="pane on" id="paneBasket">
       <div class="notice" id="fileNotice" style="display:none;"></div>
       <p class="who" style="margin:0 0 14px;">파일을 바구니에 담으면 <b>자동으로 분류</b>되어 아래 <b>분류 대기</b>에 올라옵니다. 분류를 확인하고 <b>승인</b>하면 자료실로 옮겨집니다.</p>
       <div class="writeBox">
@@ -231,14 +231,14 @@
         </aside>
         <div class="docMain">
           <div id="docEdit" style="display:none;"></div>
-          <div class="docHead" id="docHead"></div>
-          <div class="list" id="docList"></div>
+          <div id="docFiles"><div class="docHead" id="docHead"></div><div class="list" id="docList"></div></div>
+          <div id="docSub"></div>
         </div>
       </div>
     </div>
 
-    <!-- 역사 자료 아카이브 -->
-    <div class="pane" id="paneArchive">
+    <!-- 역사 자료 아카이브 (자료실 안에서 표시) -->
+    <div class="subview" id="paneArchive" style="display:none;">
       <p class="who" style="margin:0 0 14px;">삼기연이 보관해 온 회의록·총회자료·순서지·보고서입니다. 제목을 누르면 문서가 <b>이 화면 안에서 열리고, 뒤로가기로 닫힙니다.</b><br><span style="font-size:12px;">※ 계좌·개인정보가 포함된 회계·공문 자료는 공개 노출을 막기 위해 여기에 두지 않았습니다. 그런 자료는 위 <b>임원 자료방</b>에 올려 보관하세요.</span></p>
       <div class="arcAdd" id="arcAdd" style="display:none;">
         <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:10px;">＋ 자료 추가 <span style="font-weight:400;color:var(--muted);font-size:12px">· .docx / .hwpx 를 올리면 자동 변환되어 목록에 추가됩니다</span></div>
@@ -273,7 +273,7 @@
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=11"></script>
-  <script src="officer-docs.js?v=1"></script>
+  <script src="officer-docs.js?v=2"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
     var MPOSTS = [], MC = {};
@@ -299,13 +299,11 @@
         document.querySelectorAll('.pane').forEach(function(x){ x.classList.remove('on'); });
         t.classList.add('on');
         var tab = t.getAttribute('data-tab');
-        var paneId = {meeting:'paneMeeting',basket:'paneBasket',docs:'paneDocs',archive:'paneArchive'}[tab]||'paneMeeting';
+        var paneId = tab==='docs'?'paneDocs':'paneBasket';
         document.getElementById(paneId).classList.add('on');
-        if(tab==='archive') renderArchive();
       });
     });
-    if(location.hash==='#files'||location.hash==='#basket'){ var ft=document.querySelector('.tab[data-tab="basket"]'); if(ft) ft.click(); }
-    if(location.hash==='#docs'){ var dt=document.querySelector('.tab[data-tab="docs"]'); if(dt) dt.click(); }
+    if(location.hash==='#docs'||location.hash==='#archive'||location.hash==='#meeting'){ var dt=document.querySelector('.tab[data-tab="docs"]'); if(dt) dt.click(); }
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------
     var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','보고서','순서지'];
@@ -337,6 +335,7 @@
         document.getElementById('archiveSearch').addEventListener('input', renderArchive);
       }
     }
+    window.renderArchive = renderArchive;
     function renderArchive(){
       initArchiveFilters();
       var docs = mergedDocs();
