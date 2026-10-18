@@ -42,8 +42,8 @@
     $('meLine').textContent = (profile.name || me.email) + '님' + (perms.role ? ' · ' + perms.role : '') +
       (perms.admin ? ' · 최고관리자' : '') + (perms.manager ? ' · 운영임원(명단·회원 관리, 개인정보 자료 열람)' : '');
     document.querySelectorAll('[data-mgr]').forEach(function (el) { el.hidden = !perms.manager; });
-    setupTabs(); setupDocs(); setupRoster(); setupUpload();
-    loadDocs(); loadRoster(); if (perms.manager) loadMembers();
+    setupTabs(); setupDocs(); setupRoster(); setupUpload(); setupWalks();
+    loadDocs(); loadRoster(); loadWalks(); if (perms.manager) loadMembers();
     $('bylawsBtn').addEventListener('click', openBylaws);
   })();
 
@@ -432,5 +432,72 @@
     }
     log.textContent += '\n완료: 성공 ' + ok + '건, 실패 ' + fail + '건';
     $('dirPick').disabled = false; bulk = null; loadDocs();
+  }
+
+  // ---------------- 3·1 만세길 걷기 참가 교회 (manse-walk-setup.sql) ----------------
+  //  참가 신청은 삼기연 홈페이지에서 받고, 행사가 끝나면 삼기연 임원방의 '삼일만세운동본부로 이관'으로 교회별 인원이 들어옴
+  var RUNS = [], WCH = [];
+  function n0(v) { return Number(v || 0).toLocaleString('ko-KR'); }
+  function dot(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? m[1] + '.' + m[2] + '.' + m[3] : ''; }
+  function when(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate() + ' ' + d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }); }
+  function setupWalks() {
+    $('wkSel').addEventListener('change', renderWalks);
+    $('wkQ').addEventListener('input', renderWalks);
+    $('wkPrint').addEventListener('click', function () { window.print(); });
+  }
+  async function loadWalks() {
+    var a = await window.msb.from('walk_runs').select('*').order('walk_no', { ascending: false });
+    var b = a.error ? a : await window.msb.from('walk_churches').select('*');
+    if (a.error || b.error) {
+      var m = String(((a.error || b.error) || {}).message || '');
+      $('wkSum').innerHTML = ''; $('wkTable').innerHTML = '<tr><td>' + esc(/walk_runs|walk_churches|does not exist|schema cache/i.test(m)
+        ? '걷기 참가 교회 기록을 쓰려면 먼저 Supabase SQL Editor에서 manse-walk-setup.sql을 실행해 주세요.' : window.mErr(a.error || b.error)) + '</td></tr>';
+      return;
+    }
+    RUNS = a.data || []; WCH = b.data || [];
+    var sel = $('wkSel'), cur = sel.value;
+    sel.innerHTML = RUNS.map(function (r) { return '<option value="' + r.walk_no + '">제' + r.walk_no + '회' + (r.event_date ? ' · ' + dot(r.event_date) : '') + ' — 교회 ' + r.churches + '곳</option>'; }).join('') +
+      (RUNS.length > 1 ? '<option value="all">회차별 비교 (교회마다 몇 번 참가했는지)</option>' : '');
+    sel.value = cur && sel.querySelector('option[value="' + cur + '"]') ? cur : (RUNS[0] ? String(RUNS[0].walk_no) : '');
+    renderWalks();
+  }
+  function renderWalks() {
+    var v = $('wkSel').value, q = $('wkQ').value.trim().replace(/\s/g, '');
+    var hit = function (c) { return !q || c.replace(/\s/g, '').indexOf(q) >= 0; };
+    if (!RUNS.length) {
+      $('wkCount').textContent = ''; $('wkSum').innerHTML = '';
+      $('wkTable').innerHTML = '<tr><td style="padding:28px;text-align:center;color:var(--muted)">아직 이관된 기록이 없습니다. 삼기연 임원방 → 행사 신청 기록 → <b>삼일만세운동본부로 이관</b>을 누르면 회차마다 여기에 쌓입니다.</td></tr>';
+      return;
+    }
+    if (v === 'all') {   // 교회 × 회차
+      var runs = RUNS.slice().sort(function (a, b) { return a.walk_no - b.walk_no; }), by = {};
+      WCH.forEach(function (c) { var x = by[c.church] || (by[c.church] = { church: c.church, region: c.region, cnt: 0, sum: 0, per: {} });
+        x.per[c.walk_no] = c.adults + c.minors; x.cnt++; x.sum += c.adults + c.minors; if (!x.region && c.region) x.region = c.region; });
+      var list = Object.keys(by).map(function (k) { return by[k]; }).filter(function (x) { return hit(x.church); })
+        .sort(function (a, b) { return b.cnt - a.cnt || b.sum - a.sum || a.church.localeCompare(b.church, 'ko'); });
+      $('wkCount').textContent = '교회 ' + list.length + '곳';
+      $('wkSum').innerHTML = '<p class="m-help" style="margin:0 0 10px">칸의 숫자는 그 회차 참가 인원(성인 + 미성년)입니다. 여러 해 함께한 교회부터 보입니다.</p>';
+      $('wkTable').innerHTML = '<tr><th>교회</th><th>지역</th>' + runs.map(function (r) { return '<th style="text-align:right">제' + r.walk_no + '회</th>'; }).join('') +
+        '<th style="text-align:right">참가 횟수</th></tr>' +
+        (list.map(function (x) { return '<tr><td><b>' + esc(x.church) + '</b></td><td>' + esc(x.region || '') + '</td>' +
+          runs.map(function (r) { var n = x.per[r.walk_no]; return '<td style="text-align:right">' + (n != null ? n0(n) : '<span style="color:var(--faint)">–</span>') + '</td>'; }).join('') +
+          '<td style="text-align:right"><b>' + x.cnt + '회</b></td></tr>'; }).join('') || '<tr><td colspan="' + (runs.length + 3) + '">찾는 교회가 없습니다.</td></tr>');
+      return;
+    }
+    var run = RUNS.filter(function (r) { return String(r.walk_no) === v; })[0] || RUNS[0];
+    var rows = WCH.filter(function (c) { return c.walk_no === run.walk_no && hit(c.church); })
+      .sort(function (a, b) { return (b.adults + b.minors) - (a.adults + a.minors) || a.church.localeCompare(b.church, 'ko'); });
+    var t = rows.reduce(function (s, c) { s.apps += c.apps; s.a += c.adults; s.m += c.minors; return s; }, { apps: 0, a: 0, m: 0 });
+    $('wkCount').textContent = '교회 ' + rows.length + '곳';
+    $('wkSum').innerHTML = '<h2 class="wk-h">' + esc(run.title || ('제' + run.walk_no + '회 3·1 만세길 걷기')) + '</h2>' +
+      '<p class="m-help" style="margin:0 0 12px">' + [run.event_date ? dot(run.event_date) : '', run.place || ''].filter(Boolean).map(esc).join(' · ') +
+      (run.sent_at ? ' · ' + when(run.sent_at) + ' ' + esc(run.sent_by_name || '') + ' 이관' : '') + '</p>' +
+      '<div class="wk-kpis"><div><b>' + rows.length + '</b><span>참가 교회</span></div><div><b>' + n0(t.a + t.m) + '</b><span>참가 인원</span></div>' +
+      '<div><b>' + n0(t.a) + '</b><span>성인</span></div><div><b>' + n0(t.m) + '</b><span>미성년</span></div><div><b>' + n0(t.apps) + '</b><span>신청 건수</span></div></div>';
+    $('wkTable').innerHTML = '<tr><th style="width:44px;text-align:center">순</th><th>교회</th><th>지역</th><th style="text-align:right">신청</th><th style="text-align:right">성인</th><th style="text-align:right">미성년</th><th style="text-align:right">합계</th></tr>' +
+      (rows.map(function (c, i) { return '<tr><td style="text-align:center;color:var(--muted)">' + (i + 1) + '</td><td><b>' + esc(c.church) + '</b></td><td>' + esc(c.region || '') + '</td>' +
+        '<td style="text-align:right">' + n0(c.apps) + '</td><td style="text-align:right">' + n0(c.adults) + '</td><td style="text-align:right">' + n0(c.minors) + '</td><td style="text-align:right"><b>' + n0(c.adults + c.minors) + '</b></td></tr>'; }).join('') ||
+        '<tr><td colspan="7">찾는 교회가 없습니다.</td></tr>') +
+      (rows.length ? '<tr class="wk-total"><td></td><td><b>합계</b></td><td></td><td style="text-align:right"><b>' + n0(t.apps) + '</b></td><td style="text-align:right"><b>' + n0(t.a) + '</b></td><td style="text-align:right"><b>' + n0(t.m) + '</b></td><td style="text-align:right"><b>' + n0(t.a + t.m) + '</b></td></tr>' : '');
   }
 })();

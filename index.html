@@ -231,6 +231,11 @@
     .pz-grp p{margin:0;display:flex;flex-wrap:wrap;gap:4px;}
     .pz-grp span{min-width:38px;padding:3px 5px;border-radius:6px;background:var(--soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;color:var(--body);}
     .pz-grp span.hit{background:#032257;color:#fff;font-weight:800;}
+    /* 첫 화면에 게시한 걷기대회 회차 (walk_events.hero — 임원방 행사 관리) — 게시 중이면 경품 안내 대신 나옴 */
+    .hero.ev-on .hero-focus{display:none;}
+    .hero-event{max-width:720px;margin:0 auto;}
+    .hero-event .hf-badge b{margin-left:4px;}
+    .he-intro{margin:-12px auto 26px;max-width:580px;font-size:clamp(15px,2vw,16.5px);line-height:1.8;color:var(--body);word-break:keep-all;}
     .pz-ofc-wrap{margin:18px 0 0;}
     .pz-ofc{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 24px;border-radius:999px;background:#b89b5e;color:#1a1a1a;
       font-size:16px;font-weight:800;box-shadow:0 6px 18px rgba(138,109,52,.22);user-select:none;-webkit-user-select:none;}
@@ -611,6 +616,18 @@
     <canvas id="heroCanvas" aria-hidden="true"></canvas>
     <div class="in">
       <img class="hero-logo" src="assets/logo-trans.png" alt="삼기연" style="height:44px;width:auto;margin:0 auto 26px;" />
+      <!-- 첫 화면 게시 회차 (walk-events-setup.sql · 임원방 → 행사 신청 기록 → 행사 정보에서 '첫 화면에 게시') — 게시 중이면 아래 경품 안내 대신 나옴 -->
+      <div class="hero-event" id="heroEvent" hidden>
+        <div class="hf-badge" id="heBadge">참가 신청 중</div>
+        <h2 class="hf-title" id="heTitle"></h2>
+        <p class="hf-when" id="heWhen"></p>
+        <p class="he-intro" id="heIntro" hidden></p>
+        <div class="hf-cta">
+          <a href="walk.html#apply" class="hf-go press" id="heGo">참가 신청하기 →</a>
+          <a href="walk.html#members" class="hf-sub press" id="heSub">신청 내역 확인</a>
+        </div>
+        <p class="hf-note" id="heNote"></p>
+      </div>
       <!-- 제6회 3·1 만세길 걷기(10/18)를 마친 뒤: 감사 인사 + 경품 당첨 확인 · 당첨 인증 (prize-setup.sql) -->
       <div class="hero-focus">
         <div class="hf-badge">제6회 3·1 만세길 걷기 · 경품 추첨 결과</div>
@@ -883,7 +900,7 @@
           <a href="officer.html" class="quick-tile press">임원방 · 전용 자료실 <span class="qa">→</span></a>
           <a href="history.html" class="quick-tile press">걸어온 길 · 연혁 <span class="qa">→</span></a>
           <a href="march.html" class="quick-tile press">삼일만세운동본부 <span class="qa">→</span></a>
-          <a href="#prize" class="quick-tile press quick-walk" style="grid-column:1/-1"><span><span class="qw-tag">10.18 · 경품 추첨 결과</span>제6회 3·1 만세길 걷기 · 경품 당첨 확인과 당첨 인증</span><span class="qa">→</span></a>
+          <a href="#prize" class="quick-tile press quick-walk" id="quickWalk" style="grid-column:1/-1"><span><span class="qw-tag" id="qwTag">10.18 · 경품 추첨 결과</span><span id="qwText">제6회 3·1 만세길 걷기 · 경품 당첨 확인과 당첨 인증</span></span><span class="qa">→</span></a>
           <a href="install.html" class="quick-tile press quick-app" style="grid-column:1/-1"><span><span class="qp-tag">휴대폰 홈 화면에</span>삼기연 앱 설치 안내 · 안드로이드 · 아이폰 그림으로 따라 하기</span><span class="qa">→</span></a>
         </div>
 
@@ -1823,6 +1840,30 @@ window.samMarquee = function(row, speed){
       busy=false; btn.disabled=false; render();
     }
   });
+})();
+</script>
+<script src="walk-events.js?v=1"></script>
+<script>
+// ===================== 첫 화면 — 게시한 만세길 걷기 회차 (walk_events.hero) =====================
+//  임원방 → 행사 신청 기록 → 행사 정보에서 '두 홈페이지 첫 화면에 게시'를 켜면 경품 안내 대신 이 안내가 나옴
+(async function(){
+  if(!window.sb || !window.WalkEv) return;
+  var r; try{ r=await window.sb.from('walk_events').select(WalkEv.COLS).eq('hero',true).order('no',{ascending:false}).limit(1); }catch(_){ return; }
+  var ev=r && !r.error && r.data && r.data[0]; if(!ev) return;
+  var $=function(id){ return document.getElementById(id); };
+  var st=WalkEv.state(ev), dd=WalkEv.dday(ev.event_date), q='walk.html?e='+encodeURIComponent(ev.event);
+  var badge={ open:'참가 신청 중', soon:'참가 신청 안내', closed:'행사 안내', draft:'행사 안내' }[st];
+  $('heBadge').innerHTML=badge+(dd?' <b>'+dd+'</b>':'');
+  $('heTitle').innerHTML=String(ev.title).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }).replace(/^(제\d+회)\s*/,'$1<br>');
+  $('heWhen').innerHTML=[ev.event_date?WalkEv.longDate(ev.event_date)+(ev.time_text?' '+ev.time_text:''):'', ev.place||''].filter(Boolean)
+    .map(function(t){ return t.replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }).join('<br>');
+  if(ev.intro){ $('heIntro').textContent=ev.intro; $('heIntro').hidden=false; }
+  $('heGo').href=q+(st==='open'?'#apply':''); $('heGo').textContent=st==='open'?'참가 신청하기 →':'행사 안내 보기 →';
+  $('heSub').href=q+'#members'; $('heSub').style.display=st==='open'?'':'none';
+  $('heNote').textContent=[st==='open'&&ev.apply_until?WalkEv.shortDate(ev.apply_until)+'까지 받습니다':(st==='soon'?'참가 신청은 곧 시작합니다':''), ev.host||''].filter(Boolean).join(' · ');
+  $('heroEvent').hidden=false; $('top').classList.add('ev-on');
+  var tile=$('quickWalk');
+  if(tile){ tile.href=q; $('qwTag').textContent=(ev.event_date?WalkEv.dotDate(ev.event_date).slice(5)+' · ':'')+badge; $('qwText').textContent=ev.title+(st==='open'?' · 참가 신청과 신청 내역 확인':' · 행사 안내'); }
 })();
 </script>
 <script>

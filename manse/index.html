@@ -85,6 +85,17 @@
     footer.ft .lk a:hover,footer.ft .lk button:hover{color:#e8e8e8;}
     footer.ft .cp{max-width:1080px;margin:18px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);font-size:12.5px;line-height:1.8;}
     @media (max-width:760px){ .snav .brand span{display:none;} .gbar .nm{display:none;} }
+    /* 3·1 만세길 걷기 — 삼기연 임원방에서 '첫 화면 게시'한 회차 (참가 신청은 삼기연 홈페이지에서) */
+    .mz-walkban{display:flex;align-items:center;gap:14px;max-width:680px;margin:30px auto 0;padding:16px 18px;border-radius:16px;background:#fff;color:#1a1a1a;
+      text-align:left;box-shadow:0 12px 30px rgba(0,0,0,.35);transition:transform .15s;}
+    .mz-walkban[hidden]{display:none;}
+    .mz-walkban:hover{transform:translateY(-2px);}
+    .mz-walkban .wb-tag{flex:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;white-space:nowrap;}
+    .mz-walkban .wb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+    .mz-walkban .wb-main b{font-size:17px;line-height:1.4;}
+    .mz-walkban .wb-main span{font-size:13.5px;line-height:1.5;color:#555;}
+    .mz-walkban .wb-go{flex:none;background:#111;color:#fff;font-size:14px;font-weight:800;padding:10px 16px;border-radius:999px;white-space:nowrap;}
+    @media (max-width:640px){ .mz-walkban{flex-direction:column;align-items:flex-start;gap:10px;} .mz-walkban .wb-go{align-self:stretch;text-align:center;} }
   </style>
   <link rel="stylesheet" href="../assets/audiobook/player.css" />
   <link rel="stylesheet" href="../assets/audiobook/section.css" />
@@ -110,6 +121,12 @@
     <span class="tag">삼괴삼일만세운동본부 · 경기도 비영리민간단체</span>
     <h1><span class="mz-name">삼일만세운동본부</span>선조들이 걸었던<br>그 길 위에서</h1>
     <p>우정읍과 장안면은 1919년 3·1독립만세운동이 뜨겁게 일어났던 역사의 현장입니다. 삼일만세운동본부는 그 정신을 기억하고 계승하는 독립 단체로, 매년 우정읍 화수리에서 시작된 만세길을 화성시·지역 단체·시민과 함께 걷습니다.</p>
+    <!-- 3·1 만세길 걷기 — 삼기연 임원방 → 행사 신청 기록 → 행사 정보에서 '두 홈페이지 첫 화면에 게시'한 회차 -->
+    <a class="mz-walkban" id="walkBan" href="../walk.html" hidden>
+      <span class="wb-tag" id="wbTag">참가 신청 중</span>
+      <span class="wb-main"><b id="wbTitle"></b><span id="wbSub"></span></span>
+      <span class="wb-go" id="wbGo">참가 신청하기 →</span>
+    </a>
     <div class="mz-stats">
       <div class="mz-stat"><b>5회</b><span>3·1만세길 걷기 (2021~2025)</span></div>
       <div class="mz-stat"><b>1,800+</b><span>걷기대회 누적 참가</span></div>
@@ -401,6 +418,27 @@
   <script src="archive/archive.js?v=5"></script>
   <script src="archive/admin.js?v=5"></script>
   <script src="app.js?v=1"></script>
+  <script src="../walk-events.js?v=1"></script>
+  <script>
+  // 첫 화면 — 게시한 3·1 만세길 걷기 회차 (삼기연 walk_events · 공개 정보만 읽음)
+  (async function () {
+    var URL_ = window.SAMGOE_SUPABASE_URL, KEY = window.SAMGOE_SUPABASE_KEY;
+    if (!window.supabase || !URL_ || !KEY || !window.WalkEv) return;
+    try {
+      var c = window.supabase.createClient(URL_, KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'samgoe-public' } });
+      var r = await c.from('walk_events').select(WalkEv.COLS).eq('hero', true).order('no', { ascending: false }).limit(1);
+      var ev = !r.error && r.data && r.data[0]; if (!ev) return;
+      var st = WalkEv.state(ev), dd = WalkEv.dday(ev.event_date), $ = function (id) { return document.getElementById(id); };
+      $('wbTag').textContent = ({ open: '참가 신청 중', soon: '참가 신청 안내', closed: '행사 안내', draft: '행사 안내' })[st] + (dd ? ' ' + dd : '');
+      $('wbTitle').textContent = ev.title;
+      $('wbSub').textContent = [ev.event_date ? WalkEv.longDate(ev.event_date) + (ev.time_text ? ' ' + ev.time_text : '') : '', ev.place || '',
+        st === 'open' && ev.apply_until ? WalkEv.shortDate(ev.apply_until) + '까지 신청' : ''].filter(Boolean).join(' · ');
+      $('wbGo').textContent = st === 'open' ? '참가 신청하기 →' : '행사 안내 보기 →';
+      $('walkBan').href = '../walk.html?e=' + encodeURIComponent(ev.event) + (st === 'open' ? '#apply' : '');
+      $('walkBan').hidden = false;
+    } catch (_) {}
+  })();
+  </script>
   <script src="../assets/audiobook/player.js" defer></script>
 </body>
 </html>

@@ -12,6 +12,24 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
   <link rel="stylesheet" href="manse.css?v=4" />
+  <style>
+    /* 걷기 참가 교회 (manse-walk-setup.sql) */
+    .wk-h{margin:0 0 4px;font-size:20px;}
+    .wk-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 14px;}
+    .wk-kpis div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+    .wk-kpis b{display:block;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;}
+    .wk-kpis span{font-size:12.5px;color:var(--muted);}
+    #wkTable td,#wkTable th{font-variant-numeric:tabular-nums;}
+    #wkTable tr.wk-total td{border-top:2px solid var(--ink);}
+    #p-walks table.o-table{min-width:560px;}
+    @media (max-width:640px){ .wk-kpis{grid-template-columns:repeat(2,1fr);} }
+    @media print{
+      .m-bar,.o-head,.o-tabs,.o-tools,.o-note,.m-footer{display:none!important;}
+      .o-panel{display:none!important;} #p-walks.o-panel.on{display:block!important;}
+      .o-table-wrap{overflow:visible;border:0;} #p-walks table.o-table{min-width:0;font-size:12.5px;}
+      .wk-kpis div{border-color:#999;}
+    }
+  </style>
 </head>
 <body>
   <header class="m-bar"><div class="in">
@@ -33,6 +51,7 @@
       </div>
       <nav class="o-tabs" role="tablist">
         <button class="o-tab" role="tab" data-tab="docs" aria-selected="true">공문·자료</button>
+        <button class="o-tab" role="tab" data-tab="walks" aria-selected="false">걷기 참가 교회</button>
         <button class="o-tab" role="tab" data-tab="roster" aria-selected="false">임원 명단</button>
         <button class="o-tab" role="tab" data-tab="members" aria-selected="false" data-mgr hidden>회원 관리</button>
         <button class="o-tab" role="tab" data-tab="upload" aria-selected="false">자료 올리기</button>
@@ -47,6 +66,19 @@
         </div>
         <div class="o-cats" id="fCats"></div>
         <div id="docList"><div class="o-empty">불러오는 중…</div></div>
+      </section>
+
+      <!-- 3·1 만세길 걷기 참가 교회 (manse-walk-setup.sql) — 삼기연 임원방에서 이관 -->
+      <section class="o-panel" id="p-walks">
+        <div class="o-note">3·1 만세길 걷기 참가 신청은 삼괴지역기독교연합회 홈페이지에서 받고, 행사가 끝나면 삼기연 임원방(행사 신청 기록)의 <b>'삼일만세운동본부로 이관'</b> 단추로 교회별 참가 인원이 이곳에 회차마다 쌓입니다. 신청자 개인 이름은 오지 않습니다.</div>
+        <div class="o-tools">
+          <select class="m-in" id="wkSel" aria-label="회차 고르기"></select>
+          <input class="m-in grow" id="wkQ" type="search" placeholder="교회 이름 찾기" />
+          <span class="chip gray" id="wkCount"></span>
+          <button class="m-btn ghost sm" type="button" id="wkPrint">인쇄</button>
+        </div>
+        <div id="wkSum"></div>
+        <div class="o-table-wrap"><table class="o-table" id="wkTable"><tr><td>불러오는 중…</td></tr></table></div>
       </section>
 
       <!-- 임원 명단 -->
@@ -141,6 +173,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=3"></script>
   <script src="auth.js?v=4"></script>
-  <script src="officer.js?v=3"></script>
+  <script src="officer.js?v=4"></script>
 </body>
 </html>
