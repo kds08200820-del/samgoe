@@ -196,7 +196,8 @@
     var un = all.filter(function(f){ return !f.folder_id; }).length;
     if(un) html += '<div class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></div>';
     html += '<div class="tn sep">기록</div>'+
-      '<a class="tn" href="walk-admin.html">행사 신청 기록 →</a>';
+      '<a class="tn" href="walk-admin.html">행사 신청 기록 →</a>'+
+      '<a class="tn" href="walk-admin.html#prize">경품 당첨 인증 현황 →</a>';
     tree.innerHTML = html;
   }
   function renderFilters(){
