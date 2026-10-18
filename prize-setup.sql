@@ -164,3 +164,11 @@ returns int language sql security definer set search_path = public stable as $$
 $$;
 revoke all on function public.walk_total(text) from public;
 grant execute on function public.walk_total(text) to anon, authenticated;
+
+-- 7) 홈페이지가 새 표 · 함수를 바로 알아보도록 + 실행 확인
+--    성공하면 결과 창에 한 줄이 나옵니다: 당첨 기록 369 · 당첨 번호 366 · 총 참가자(신청 인원 합계)
+--    ('Success. No rows returned'만 나오면 전체가 실행되지 않은 것 — 전체를 선택해 다시 Run)
+notify pgrst, 'reload schema';
+select (select count(*) from public.prize_winners where event = '2026-6')                as "당첨 기록 (369)",
+       (select count(distinct ticket) from public.prize_winners where event = '2026-6')  as "당첨 번호 (366)",
+       public.walk_total('2026-6')                                                     as "총 참가자";
