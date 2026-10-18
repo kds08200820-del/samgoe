@@ -231,6 +231,12 @@
     .pz-grp p{margin:0;display:flex;flex-wrap:wrap;gap:4px;}
     .pz-grp span{min-width:38px;padding:3px 5px;border-radius:6px;background:var(--soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;color:var(--body);}
     .pz-grp span.hit{background:#032257;color:#fff;font-weight:800;}
+    .pz-ofc-wrap{margin:18px 0 0;}
+    .pz-ofc{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 24px;border-radius:999px;background:#b89b5e;color:#1a1a1a;
+      font-size:16px;font-weight:800;box-shadow:0 6px 18px rgba(138,109,52,.22);user-select:none;-webkit-user-select:none;}
+    .pz-ofc small{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.55);}
+    .pz-ofc::after{content:'→';}
+    .pz-ofc:hover{background:#a88b4f;} .pz-ofc:active{transform:scale(.97);}
     @media (max-width:480px){
       .pz-box{padding:20px 14px 14px;border-radius:16px;}
       .pz-btn{padding:0 20px;}
@@ -643,6 +649,8 @@
           <p id="pzWait" class="pz-wait" hidden>당첨 인증은 준비 중입니다. 잠시 뒤 다시 들어와 주세요.</p>
           <details class="pz-all"><summary>전체 당첨 번호 보기</summary><div id="pzAll"></div></details>
         </div>
+        <!-- 임원에게만 보임 (로그인한 임원) — 당첨자 명단 · 교회별 인쇄 (prize-winners.html) -->
+        <div class="officer-only pz-ofc-wrap"><a class="pz-ofc" href="prize-winners.html">임원 · 경품 당첨자 명단 보기<small>교회별 인쇄</small></a></div>
         <p class="hf-note">주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회</p>
         <div class="hf-sponsor"><span>후원</span><img src="assets/img/cts-logo.png" alt="CTS 기독교TV" width="167" height="50" /><b>광복회 화성시지회</b></div>
       </div>

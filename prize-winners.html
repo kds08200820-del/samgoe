@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>경품 당첨자 명단 | 임원방 · 삼괴지역 기독교 연합회</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <style>
+    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
+      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1000px;margin:0 auto;width:100%;padding:0 22px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    #loading{padding:80px;text-align:center;color:var(--muted);} #content{display:none;}
+    .wrap{max-width:1000px;margin:0 auto;padding:36px 18px 70px;}
+    .crumb{font-size:13px;color:var(--muted);margin-bottom:10px;} .crumb a{color:var(--primary);font-weight:600;}
+    .title{margin:0;font-size:clamp(23px,4vw,30px);color:var(--ink);}
+    .sub{margin:8px 0 22px;font-size:14.5px;color:var(--muted);line-height:1.8;}
+    .sub a{color:var(--primary);font-weight:700;text-decoration:underline;}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+    .kpi{background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:16px;}
+    .kpi .k{font-size:12.5px;color:var(--muted);} .kpi .n{font-size:24px;font-weight:700;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;}
+    .kpi .n small{font-size:13px;font-weight:500;color:var(--muted);margin-left:2px;}
+    .kpi.navy{background:var(--primary);border-color:var(--primary);} .kpi.navy .k{color:rgba(255,255,255,.7);} .kpi.navy .n,.kpi.navy .n small{color:#fff;}
+    .tools{position:sticky;top:44px;z-index:10;display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center;margin:0 0 16px;padding:12px;
+      background:#fff;border:1px solid var(--hairline);border-radius:10px;}
+    .tools select,.tools input[type=search]{min-height:42px;padding:0 11px;border:1px solid var(--hairline-strong);border-radius:8px;font-family:inherit;font-size:14.5px;background:#fff;color:var(--ink);}
+    .tools select{flex:1 1 220px;min-width:0;} .tools input[type=search]{flex:1 1 160px;min-width:0;}
+    .tools .opt{display:inline-flex;align-items:center;gap:6px;min-height:42px;font-size:13.5px;color:var(--bodytext);cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .tools .opt input{width:18px;height:18px;margin:0;accent-color:var(--primary);}
+    .tools .sp{flex:1 1 0;}
+    .sbtn{min-height:42px;padding:0 16px;border:1px solid var(--hairline-strong);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;font-weight:600;
+      cursor:pointer;color:var(--ink);user-select:none;-webkit-user-select:none;}
+    .sbtn.pri{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .sbtn.pri:hover{background:var(--primary-active);}
+    .sbtn:disabled{opacity:.5;cursor:default;}
+    .sec{background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:20px;margin-bottom:14px;}
+    .sec-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;}
+    .sec-h h2{margin:0;font-size:19px;color:var(--ink);}
+    .sec-h .rg{font-size:12px;font-weight:700;color:var(--gold-ink);}
+    .sec-h .meta{font-size:13.5px;color:var(--muted);}
+    .sum{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px;}
+    .sum span{padding:4px 10px;border-radius:20px;background:#fbf5e6;border:1px solid #e6d6ad;font-size:13px;font-weight:600;color:var(--gold-ink);}
+    .tblWrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;min-width:480px;}
+    th,td{padding:9px 8px;border-bottom:1px solid var(--hairline);text-align:left;vertical-align:top;}
+    th{font-size:12.5px;color:var(--muted);font-weight:600;background:#faf9f6;white-space:nowrap;}
+    td.no,th.no{width:40px;text-align:center;color:var(--muted);}
+    td.tk{width:64px;font-weight:700;color:var(--ink);white-space:nowrap;}
+    td.nm{font-weight:600;color:var(--ink);white-space:nowrap;}
+    td.tm{width:96px;color:var(--muted);font-size:13px;white-space:nowrap;}
+    th.sign,td.sign{display:none;}
+    .chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 14px;}
+    .chips span{min-width:40px;padding:3px 6px;border-radius:6px;background:var(--surface-soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
+    .un h3{margin:12px 0 2px;font-size:14.5px;color:var(--ink);} .un h3 small{margin-left:6px;font-size:12.5px;font-weight:500;color:var(--muted);}
+    .empty{padding:28px;text-align:center;color:var(--muted);line-height:1.7;}
+    .pr-head,.pr-foot{display:none;}
+    footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
+    @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .tools{position:static;} .tools .sp{display:none;} }
+
+    /* 인쇄 — 화면의 단추 · 숫자 상자는 빼고 명단만. '교회마다 새 쪽'을 켜면 교회마다 새 종이에서 시작 */
+    @media print{
+      @page{size:A4;margin:14mm 12mm;}
+      body{background:#fff;color:#000;font-weight:400;}
+      .bar,.crumb,.sub,.kpis,.tools,footer{display:none!important;}
+      #content{display:block!important;} .wrap{max-width:none;padding:0;}
+      .title{font-size:20px;margin:0 0 12px;}
+      .sec{border:0;border-radius:0;padding:0;margin:0 0 22px;}
+      body.pb .sec + .sec{break-before:page;}
+      body.no-un .sec.un{display:none;}
+      .pr-head{display:block;margin:0 0 4px;font-size:11px;color:#555;}
+      .pr-foot{display:block;margin-top:16px;font-size:11px;color:#555;}
+      .sec-h h2{font-size:18px;}
+      .sum span{background:none;border-color:#999;color:#000;}
+      .tblWrap{overflow:visible;}
+      table{min-width:0;font-size:12.5px;}
+      th{background:#eee!important;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      th,td{border-bottom:1px solid #999;padding:6px 6px;}
+      thead{display:table-header-group;} tr{break-inside:avoid;}
+      th.sign,td.sign{display:table-cell;width:110px;}
+      .chips span{border:1px solid #bbb;background:none;}
+    }
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="assets/theme.css?v=3" />
+</head>
+<body class="pb">
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <div id="loading">확인 중…</div>
+
+  <main class="wrap" id="content">
+    <div class="crumb"><a href="officer.html">← 임원방</a> · <a href="walk-admin.html#prize">경품 당첨 인증 현황</a></div>
+    <h1 class="title">제6회 3·1 만세길 걷기 · 경품 당첨자 명단</h1>
+    <p class="sub">당첨자가 홈페이지 첫 화면에서 당첨 인증할 때 적은 이름 · 소속 교회로 묶었습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다.
+      인증하지 않은 번호는 이름을 알 수 없어 맨 아래에 번호만 나옵니다. 인증샷 보기 · 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.</p>
+
+    <div class="kpis">
+      <div class="kpi navy"><div class="k">당첨 번호</div><div class="n" id="kAll">–</div></div>
+      <div class="kpi"><div class="k">인증된 번호 (이름 확인)</div><div class="n" id="kDone" style="color:var(--ok)">–</div></div>
+      <div class="kpi"><div class="k">아직 인증 안 된 번호</div><div class="n" id="kUn">–</div></div>
+      <div class="kpi"><div class="k">당첨자 소속 교회 · 단체</div><div class="n" id="kCh">–</div></div>
+    </div>
+
+    <div class="tools">
+      <select id="fChurch" aria-label="교회 고르기"><option value="">전체 교회 · 단체</option></select>
+      <input id="q" type="search" placeholder="이름 · 번호 찾기" aria-label="이름 또는 번호로 찾기">
+      <label class="opt"><input type="checkbox" id="optPb" checked> 교회마다 새 쪽에 인쇄</label>
+      <label class="opt" id="optUnWrap"><input type="checkbox" id="optUn" checked> 인증 안 된 번호도 인쇄</label>
+      <span class="sp"></span>
+      <button class="sbtn" id="reloadBtn" type="button">새로 불러오기</button>
+      <button class="sbtn pri" id="printBtn" type="button">인쇄하기</button>
+    </div>
+
+    <div id="list"><div class="empty">불러오는 중…</div></div>
+  </main>
+
+  <footer>© 2026 삼괴지역 기독교 연합회 · 임원 전용</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=11"></script>
+  <script src="churches.js?v=2"></script>
+  <script>
+  (function(){
+    var EVENT='2026-6', TITLE='제6회 3·1 만세길 걷기 · 경품 당첨자 명단';
+    var $=function(id){return document.getElementById(id);};
+    function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function pad(n){return (n<10?'0':'')+n;}
+    function kdate(iso){ var d=new Date(iso); return new Date(d.toLocaleString('en-US',{timeZone:'Asia/Seoul'})); }
+    function short(iso){ var k=kdate(iso); return (k.getMonth()+1)+'/'+k.getDate()+' '+pad(k.getHours())+':'+pad(k.getMinutes()); }
+    function stamp(iso){ var k=kdate(iso); return k.getFullYear()+'-'+pad(k.getMonth()+1)+'-'+pad(k.getDate())+' '+pad(k.getHours())+':'+pad(k.getMinutes()); }
+    function norm(s){ return String(s||'').replace(/\s/g,''); }
+    function ko(a,b){ return a.localeCompare(b,'ko'); }
+
+    // 소속 맞추기 — 회원교회 명단(churches.js)과 띄어쓰기 · '교회' 유무가 달라도 같은 교회로 묶음
+    var CH={}; (window.CHURCHES||[]).forEach(function(c){ CH[norm(c.name)]=c; });
+    function canon(raw){
+      var k=norm(raw);
+      if(!k) return { key:'__none', label:'소속 미입력', region:'', none:true };
+      var c=CH[k]||CH[k+'교회'];
+      if(c) return { key:norm(c.name), label:c.name, region:c.region||'' };
+      return { key:k, label:String(raw).trim(), region:'' };
+    }
+
+    var claims=[], winRows=[], groups=[], who='임원', busy=false;
+
+    function build(){
+      var by={}; groups=[];
+      claims.forEach(function(x){
+        var c=canon(x.church), g=by[c.key];
+        if(!g){ g=by[c.key]={ key:c.key, label:c.label, region:c.region, none:!!c.none, rows:[] }; groups.push(g); }
+        g.rows.push(x);
+      });
+      groups.forEach(function(g){ g.rows.sort(function(a,b){ return ko(a.name,b.name) || a.ticket-b.ticket; }); });
+      groups.sort(function(a,b){ if(a.none!==b.none) return a.none?1:-1; return ko(a.label,b.label); });
+    }
+    function people(rows){ var s={}; rows.forEach(function(x){ s[norm(x.name)]=1; }); return Object.keys(s).length; }
+    function prizeSum(rows){   // 상품별 수량 (한 번호가 두 상품에 뽑힌 경우 ' · '로 이어져 있음)
+      var cnt={}, order=[];
+      rows.forEach(function(x){ String(x.prize||'').split(' · ').forEach(function(p){ if(!p) return; if(!cnt[p]){ cnt[p]=0; order.push(p); } cnt[p]++; }); });
+      return order.sort(function(a,b){ return cnt[b]-cnt[a] || ko(a,b); }).map(function(p){ return '<span>'+esc(p)+' '+cnt[p]+'</span>'; }).join('');
+    }
+
+    function renderSelect(){
+      var cur=$('fChurch').value, named=groups.filter(function(g){ return !g.none; }).length;
+      $('fChurch').innerHTML='<option value="">전체 교회 · 단체 ('+named+'곳)</option>'+
+        groups.map(function(g){ return '<option value="'+esc(g.key)+'">'+esc(g.label)+' — '+g.rows.length+'개</option>'; }).join('');
+      if(cur && groups.some(function(g){ return g.key===cur; })) $('fChurch').value=cur;
+    }
+
+    function render(){
+      var sel=$('fChurch').value, q=$('q').value.trim(), qn=norm(q);
+      var done={}; claims.forEach(function(x){ done[x.ticket]=1; });
+      var all={}; winRows.forEach(function(w){ all[w.ticket]=1; });
+      var unCnt=Object.keys(all).filter(function(t){ return !done[t]; }).length;
+      $('kAll').innerHTML=Object.keys(all).length+'<small>개</small>';
+      $('kDone').innerHTML=claims.length+'<small>개</small>';
+      $('kUn').innerHTML=unCnt+'<small>개</small>';
+      $('kCh').innerHTML=groups.filter(function(g){ return !g.none; }).length+'<small>곳</small>';
+      document.body.classList.toggle('pb', $('optPb').checked);
+      document.body.classList.toggle('no-un', !$('optUn').checked);
+      $('optUnWrap').style.display = sel ? 'none' : '';
+
+      var h='', foot='<p class="pr-foot">'+stamp(new Date().toISOString())+' 출력 · '+esc(who)+' · 임원 전용 — 이름이 들어 있으니 경품을 나눈 뒤에는 버려 주세요.</p>';
+      groups.forEach(function(g){
+        if(sel && g.key!==sel) return;
+        var rows=g.rows.filter(function(x){ return !qn || norm(x.name+' '+x.church).indexOf(qn)>=0 || String(x.ticket)===q; });
+        if(!rows.length) return;
+        h+='<section class="sec"><p class="pr-head">'+esc(TITLE)+'</p>'+
+          '<div class="sec-h"><h2>'+esc(g.label)+'</h2>'+(g.region?'<span class="rg">'+esc(g.region)+'</span>':'')+
+            '<span class="meta">당첨자 '+people(rows)+'명 · 번호 '+rows.length+'개</span></div>'+
+          '<div class="sum">'+prizeSum(rows)+'</div>'+
+          '<div class="tblWrap"><table><thead><tr><th class="no">순</th><th>번호</th><th>상품</th><th>이름</th><th>인증 시각</th><th class="sign">받은 분 확인</th></tr></thead><tbody>'+
+          rows.map(function(x,i){ return '<tr><td class="no">'+(i+1)+'</td><td class="tk">'+x.ticket+'번</td><td>'+esc(x.prize)+'</td><td class="nm">'+esc(x.name)+'</td><td class="tm">'+short(x.created_at)+'</td><td class="sign"></td></tr>'; }).join('')+
+          '</tbody></table></div></section>';
+      });
+      if(!sel && !qn){
+        // 아직 인증 안 된 번호 — 상품별로
+        var byP={}, order=[];
+        winRows.forEach(function(w){ if(done[w.ticket]) return; if(!byP[w.prize]){ byP[w.prize]=[]; order.push(w.prize); } if(byP[w.prize].indexOf(w.ticket)<0) byP[w.prize].push(w.ticket); });
+        h+='<section class="sec un"><p class="pr-head">'+esc(TITLE)+'</p><div class="sec-h"><h2>아직 인증 안 된 당첨 번호</h2><span class="meta">'+unCnt+'개 · 이름을 알 수 없어 번호만 나옵니다</span></div>'+
+          (order.length ? order.map(function(p){ var a=byP[p].sort(function(x,y){return x-y;}); return '<h3>'+esc(p)+'<small>'+a.length+'개</small></h3><div class="chips">'+a.map(function(n){ return '<span>'+n+'</span>'; }).join('')+'</div>'; }).join('')
+            : '<div class="empty">모든 당첨 번호가 인증되었습니다.</div>')+'</section>';
+      }
+      $('list').innerHTML = h ? h+foot
+        : '<div class="empty">'+(claims.length?'찾는 이름 · 번호가 없습니다.':'아직 당첨 인증이 없습니다 — 당첨자가 홈페이지 첫 화면에서 인증하면 여기에 교회별로 모입니다.')+'</div>';
+    }
+
+    async function load(){
+      if(busy) return; busy=true; $('reloadBtn').disabled=true; $('reloadBtn').textContent='불러오는 중…';
+      try{
+        var c=await window.sb.from('prize_claims').select('ticket,prize,name,church,created_at').eq('event',EVENT).order('ticket');
+        if(c.error) throw c.error;
+        var w=await window.sb.from('prize_winners').select('ticket,prize,seq').eq('event',EVENT).order('seq').order('ticket');
+        if(w.error) throw w.error;
+        claims=c.data||[]; winRows=w.data||[];
+        build(); renderSelect(); render();
+      }catch(e){
+        var m=String((e&&e.message)||e);
+        $('list').innerHTML='<div class="empty">불러오지 못했습니다: '+esc(window.krErr(m))+(/prize_|does not exist|schema cache/i.test(m)?'<br>Supabase SQL Editor에서 prize-setup.sql을 먼저 실행해 주세요.':'')+'</div>';
+      }
+      busy=false; $('reloadBtn').disabled=false; $('reloadBtn').textContent='새로 불러오기';
+    }
+
+    $('fChurch').addEventListener('change',render);
+    $('q').addEventListener('input',render);
+    $('optPb').addEventListener('change',render);
+    $('optUn').addEventListener('change',render);
+    $('reloadBtn').addEventListener('click',load);
+    // 인쇄 — PDF로 저장할 때 파일 이름에 교회 이름이 들어가도록 잠시 제목을 바꿈
+    var savedTitle=document.title;
+    window.addEventListener('beforeprint',function(){ var o=$('fChurch').selectedOptions[0];
+      document.title='경품당첨자_'+($('fChurch').value&&o?o.textContent.split(' — ')[0].replace(/\s/g,''):'전체'); });
+    window.addEventListener('afterprint',function(){ document.title=savedTitle; });
+    $('printBtn').addEventListener('click',function(){ render(); window.print(); });
+
+    (async function(){
+      var res=await window.requireOfficer(); if(!res) return;
+      who=(res.profile&&res.profile.name)||(res.user&&res.user.email)||'임원';
+      $('loading').style.display='none'; $('content').style.display='block';
+      load();
+    })();
+  })();
+  </script>
+</body>
+</html>
