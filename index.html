@@ -612,7 +612,6 @@
         <h2 class="pz-title">비가 오는 가운데에도<br>함께 걸어 주셔서 감사합니다</h2>
         <p class="pz-thanks">10월 18일(주일) 쌍봉산 근린공원에서 열린 제6회 3·1 만세길 걷기를 은혜 가운데 마쳤습니다. 궂은 날씨에도 끝까지 자리를 지키며 만세길을 함께 걸어 주신 모든 분께 진심으로 감사드립니다.</p>
         <div class="pz-stats">
-          <div id="pzTotalBox" hidden><b id="pzTotal">–</b><span>총 참가자</span></div>
           <div><b id="pzWinCnt">–</b><span>경품 당첨</span></div>
         </div>
         <div class="pz-box" id="prize">
@@ -1667,13 +1666,6 @@ window.samMarquee = function(row, speed){
     return '<div class="pz-grp"><b>'+esc(g.name)+'<small>'+g.nums.length+'명</small></b><p>'+
       g.nums.map(function(n){ return '<span data-n="'+n+'">'+n+'</span>'; }).join('')+'</p></div>';
   }).join('');
-
-  // 총 참가자 (참가 신청 인원 합계)
-  (async function(){
-    if(!window.sb) return;
-    try{ var r=await window.sb.rpc('walk_total',{p_event:EVENT});
-      if(!r.error && r.data>0){ $('pzTotal').textContent=Number(r.data).toLocaleString('ko-KR')+'명'; $('pzTotalBox').hidden=false; } }catch(e){}
-  })();
 
   // ----- 번호 확인 (여러 번호를 이어서) -----
   var list=[], picked={}, claimReady=null;   // list: {n, prizes|null, claimed: null(확인 중)|true|false}
