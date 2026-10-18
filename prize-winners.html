@@ -50,14 +50,39 @@
     .sum{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px;}
     .sum span{padding:4px 10px;border-radius:20px;background:#fbf5e6;border:1px solid #e6d6ad;font-size:13px;font-weight:600;color:var(--gold-ink);}
     .tblWrap{overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;min-width:480px;}
+    table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;min-width:600px;}
     th,td{padding:9px 8px;border-bottom:1px solid var(--hairline);text-align:left;vertical-align:top;}
     th{font-size:12.5px;color:var(--muted);font-weight:600;background:#faf9f6;white-space:nowrap;}
     td.no,th.no{width:40px;text-align:center;color:var(--muted);}
-    td.tk{width:64px;font-weight:700;color:var(--ink);white-space:nowrap;}
-    td.nm{font-weight:600;color:var(--ink);white-space:nowrap;}
-    td.tm{width:96px;color:var(--muted);font-size:13px;white-space:nowrap;}
-    th.sign,td.sign{display:none;}
+    /* 경품 란(번호 · 상품)과 지원자 란(이름 · 인증 시각 · 인증 사진)을 색과 굵은 선으로 나눔 */
+    th.gh{font-size:13px;font-weight:800;text-align:center;letter-spacing:.04em;}
+    th.gp,td.gp{background:#fcf7ea;} th.gp.gh{background:#f3e7c6;color:var(--gold-ink);}
+    th.gw,td.gw{background:#f3f6fb;} th.gw.gh{background:#dfe7f3;color:var(--primary);}
+    .gw-start{border-left:3px solid var(--primary)!important;}
+    .gp-start{border-left:3px solid var(--gold)!important;}
+    td .ln{line-height:1.7;white-space:nowrap;}
+    td.tk .ln{font-weight:700;color:var(--ink);}
+    td.nm{font-weight:700;color:var(--ink);white-space:nowrap;}
+    td.tm{color:var(--muted);font-size:13px;white-space:nowrap;}
+    td.sign{width:110px;}
+    .ths{display:flex;flex-wrap:wrap;gap:6px;min-width:120px;}
+    .th{width:64px;height:64px;padding:0;border:1px solid var(--hairline-strong);border-radius:8px;overflow:hidden;background:#eee;cursor:zoom-in;
+      user-select:none;-webkit-user-select:none;}
+    .th img{width:100%;height:100%;object-fit:cover;display:block;}
+    .th:focus-visible{outline:3px solid rgba(3,34,87,.35);outline-offset:2px;}
+    .ph-none{font-size:12.5px;color:var(--muted);}
+    /* 인증 사진 크게 보기 */
+    .lb{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,14,24,.86);overscroll-behavior:contain;}
+    .lb[hidden]{display:none;}
+    .lb-box{display:flex;flex-direction:column;gap:10px;max-width:min(1000px,100%);max-height:100%;}
+    .lb-box img{display:block;max-width:100%;max-height:calc(100vh - 120px);object-fit:contain;margin:0 auto;border-radius:8px;background:#111;}
+    .lb-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;color:#fff;font-size:14px;}
+    .lb-cap{line-height:1.5;}
+    .lb-btns{display:flex;gap:6px;}
+    .lb-btns button,.lb-btns a{min-width:44px;min-height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.08);color:#fff;
+      font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;}
+    .lb-btns button:disabled{opacity:.35;cursor:default;}
+    .lb-btns button:hover:not(:disabled),.lb-btns a:hover{background:rgba(255,255,255,.18);}
     .chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 14px;}
     .chips span{min-width:40px;padding:3px 6px;border-radius:6px;background:var(--surface-soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
     .un h3{margin:12px 0 2px;font-size:14.5px;color:var(--ink);} .un h3 small{margin-left:6px;font-size:12.5px;font-weight:500;color:var(--muted);}
@@ -84,9 +109,11 @@
       table{min-width:0;font-size:12.5px;}
       th{background:#eee!important;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       th,td{border-bottom:1px solid #999;padding:6px 6px;}
+      th.gh,th.gp,th.gw,td.gp,td.gw{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       thead{display:table-header-group;} tr{break-inside:avoid;}
-      th.sign,td.sign{display:table-cell;width:110px;}
+      .th{width:72px;height:72px;border-color:#999;}
       .chips span{border:1px solid #bbb;background:none;}
+      .lb{display:none!important;}
     }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
@@ -99,8 +126,8 @@
   <main class="wrap" id="content">
     <div class="crumb"><a href="officer.html">← 임원방</a> · <a href="walk-admin.html#prize">경품 당첨 인증 현황</a></div>
     <h1 class="title">제6회 3·1 만세길 걷기 · 경품 당첨자 명단</h1>
-    <p class="sub">당첨자가 홈페이지 첫 화면에서 당첨 인증할 때 적은 이름 · 소속 교회로 묶었습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다.
-      인증하지 않은 번호는 이름을 알 수 없어 맨 아래에 번호만 나옵니다. 인증샷 보기 · 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.</p>
+    <p class="sub">당첨자가 홈페이지 첫 화면에서 당첨 인증할 때 적은 이름 · 소속 교회로 묶었습니다. 한 줄이 한 사람의 인증이고, 왼쪽 <b style="color:var(--gold-ink)">경품</b> 란에 번호 · 상품, 오른쪽 <b style="color:var(--primary)">지원자</b> 란에 이름 · 인증 시각 · 인증 사진이 나옵니다.
+      사진을 누르면 크게 볼 수 있습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다. 인증하지 않은 번호는 이름을 알 수 없어 맨 아래에 번호만 나옵니다. 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.</p>
 
     <div class="kpis">
       <div class="kpi navy"><div class="k">당첨 번호</div><div class="n" id="kAll">–</div></div>
@@ -114,6 +141,7 @@
       <input id="q" type="search" placeholder="이름 · 번호 찾기" aria-label="이름 또는 번호로 찾기">
       <label class="opt"><input type="checkbox" id="optPb" checked> 교회마다 새 쪽에 인쇄</label>
       <label class="opt" id="optUnWrap"><input type="checkbox" id="optUn" checked> 인증 안 된 번호도 인쇄</label>
+      <label class="opt"><input type="checkbox" id="optPh"> 인증 사진도 인쇄</label>
       <span class="sp"></span>
       <button class="sbtn" id="reloadBtn" type="button">새로 불러오기</button>
       <button class="sbtn pri" id="printBtn" type="button">인쇄하기</button>
@@ -121,6 +149,22 @@
 
     <div id="list"><div class="empty">불러오는 중…</div></div>
   </main>
+
+  <!-- 인증 사진 크게 보기 — 바깥(어두운 곳) 누르기 · Esc · × 로 닫힘, ← → 로 넘김 -->
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lbCap" hidden>
+    <div class="lb-box">
+      <img id="lbImg" alt="당첨 인증 사진">
+      <div class="lb-bar">
+        <span class="lb-cap" id="lbCap"></span>
+        <span class="lb-btns">
+          <button type="button" id="lbPrev" aria-label="이전 사진">‹</button>
+          <button type="button" id="lbNext" aria-label="다음 사진">›</button>
+          <a id="lbOpen" href="#" target="_blank" rel="noopener">원본</a>
+          <button type="button" id="lbX" aria-label="닫기">×</button>
+        </span>
+      </div>
+    </div>
+  </div>
 
   <footer>© 2026 삼괴지역 기독교 연합회 · 임원 전용</footer>
 
@@ -151,18 +195,27 @@
     }
 
     var claims=[], winRows=[], groups=[], who='임원', busy=false;
+    var signed={}, photoErr='', BATCH={}, printing=false;   // signed: 사진 경로 → 임시 보기 주소(6시간)
 
+    // 교회별로 묶고, 교회 안에서는 '한 번에 올린 인증'(한 사람) 단위로 한 줄
     function build(){
-      var by={}; groups=[];
+      var by={}; groups=[]; BATCH={};
       claims.forEach(function(x){
         var c=canon(x.church), g=by[c.key];
-        if(!g){ g=by[c.key]={ key:c.key, label:c.label, region:c.region, none:!!c.none, rows:[] }; groups.push(g); }
+        if(!g){ g=by[c.key]={ key:c.key, label:c.label, region:c.region, none:!!c.none, rows:[], batches:[] }; groups.push(g); }
         g.rows.push(x);
+        var b=BATCH[x.batch_id];
+        if(!b){ b=BATCH[x.batch_id]={ id:x.batch_id, name:x.name, church:x.church||'', created_at:x.created_at, photos:x.photo_paths||[], items:[] }; g.batches.push(b); }
+        b.items.push({ ticket:x.ticket, prize:x.prize });
       });
-      groups.forEach(function(g){ g.rows.sort(function(a,b){ return ko(a.name,b.name) || a.ticket-b.ticket; }); });
+      groups.forEach(function(g){
+        g.batches.forEach(function(b){ b.items.sort(function(a,c){ return a.ticket-c.ticket; }); });
+        g.batches.sort(function(a,b){ return ko(a.name,b.name) || a.items[0].ticket-b.items[0].ticket; });
+      });
       groups.sort(function(a,b){ if(a.none!==b.none) return a.none?1:-1; return ko(a.label,b.label); });
     }
-    function people(rows){ var s={}; rows.forEach(function(x){ s[norm(x.name)]=1; }); return Object.keys(s).length; }
+    function people(batches){ var s={}; batches.forEach(function(b){ s[norm(b.name)]=1; }); return Object.keys(s).length; }
+    function itemsOf(batches){ var a=[]; batches.forEach(function(b){ b.items.forEach(function(it){ a.push(it); }); }); return a; }
     function prizeSum(rows){   // 상품별 수량 (한 번호가 두 상품에 뽑힌 경우 ' · '로 이어져 있음)
       var cnt={}, order=[];
       rows.forEach(function(x){ String(x.prize||'').split(' · ').forEach(function(p){ if(!p) return; if(!cnt[p]){ cnt[p]=0; order.push(p); } cnt[p]++; }); });
@@ -190,16 +243,33 @@
       $('optUnWrap').style.display = sel ? 'none' : '';
 
       var h='', foot='<p class="pr-foot">'+stamp(new Date().toISOString())+' 출력 · '+esc(who)+' · 임원 전용 — 이름이 들어 있으니 경품을 나눈 뒤에는 버려 주세요.</p>';
+      // 표 칸: 화면에서는 인증 사진을 늘 보이고, 인쇄할 때는 '인증 사진도 인쇄'를 켰을 때만 + '받은 분 확인' 칸을 붙임
+      var withPh = !printing || $('optPh').checked, withSign = printing;
+      var head='<thead><tr><th class="no" rowspan="2">순</th><th class="gh gp gp-start" colspan="2">경품</th>'+
+        '<th class="gh gw gw-start" colspan="'+(withPh?3:2)+'">지원자 (당첨 인증한 분)</th>'+(withSign?'<th class="sign" rowspan="2">받은 분 확인</th>':'')+'</tr>'+
+        '<tr><th class="gp gp-start">번호</th><th class="gp">상품</th><th class="gw gw-start">이름</th><th class="gw">인증 시각</th>'+(withPh?'<th class="gw">인증 사진</th>':'')+'</tr></thead>';
       groups.forEach(function(g){
         if(sel && g.key!==sel) return;
-        var rows=g.rows.filter(function(x){ return !qn || norm(x.name+' '+x.church).indexOf(qn)>=0 || String(x.ticket)===q; });
-        if(!rows.length) return;
+        var bs=g.batches.filter(function(b){ return !qn || norm(b.name+' '+b.church).indexOf(qn)>=0 || b.items.some(function(it){ return String(it.ticket)===q; }); });
+        if(!bs.length) return;
+        var items=itemsOf(bs);
         h+='<section class="sec"><p class="pr-head">'+esc(TITLE)+'</p>'+
           '<div class="sec-h"><h2>'+esc(g.label)+'</h2>'+(g.region?'<span class="rg">'+esc(g.region)+'</span>':'')+
-            '<span class="meta">당첨자 '+people(rows)+'명 · 번호 '+rows.length+'개</span></div>'+
-          '<div class="sum">'+prizeSum(rows)+'</div>'+
-          '<div class="tblWrap"><table><thead><tr><th class="no">순</th><th>번호</th><th>상품</th><th>이름</th><th>인증 시각</th><th class="sign">받은 분 확인</th></tr></thead><tbody>'+
-          rows.map(function(x,i){ return '<tr><td class="no">'+(i+1)+'</td><td class="tk">'+x.ticket+'번</td><td>'+esc(x.prize)+'</td><td class="nm">'+esc(x.name)+'</td><td class="tm">'+short(x.created_at)+'</td><td class="sign"></td></tr>'; }).join('')+
+            '<span class="meta">당첨자 '+people(bs)+'명 · 번호 '+items.length+'개</span></div>'+
+          '<div class="sum">'+prizeSum(items)+'</div>'+
+          '<div class="tblWrap"><table>'+head+'<tbody>'+
+          bs.map(function(b,i){
+            var ph = !b.photos.length ? '<span class="ph-none">사진 없음</span>'
+              : (photoErr ? '<span class="ph-none">'+esc(photoErr)+'</span>'
+              : '<div class="ths">'+b.photos.map(function(p,j){ return signed[p]
+                  ? '<button type="button" class="th" data-b="'+esc(b.id)+'" data-i="'+j+'" aria-label="'+esc(b.name)+' 인증 사진 '+(j+1)+' 크게 보기"><img src="'+esc(signed[p])+'" alt="" loading="lazy"></button>'
+                  : '<span class="th" aria-hidden="true"></span>'; }).join('')+'</div>');
+            return '<tr><td class="no">'+(i+1)+'</td>'+
+              '<td class="gp gp-start tk">'+b.items.map(function(it){ return '<div class="ln">'+it.ticket+'번</div>'; }).join('')+'</td>'+
+              '<td class="gp">'+b.items.map(function(it){ return '<div class="ln">'+esc(it.prize)+'</div>'; }).join('')+'</td>'+
+              '<td class="gw gw-start nm">'+esc(b.name)+'</td><td class="gw tm">'+short(b.created_at)+'</td>'+
+              (withPh?'<td class="gw">'+ph+'</td>':'')+(withSign?'<td class="sign"></td>':'')+'</tr>';
+          }).join('')+
           '</tbody></table></div></section>';
       });
       if(!sel && !qn){
@@ -217,12 +287,13 @@
     async function load(){
       if(busy) return; busy=true; $('reloadBtn').disabled=true; $('reloadBtn').textContent='불러오는 중…';
       try{
-        var c=await window.sb.from('prize_claims').select('ticket,prize,name,church,created_at').eq('event',EVENT).order('ticket');
+        var c=await window.sb.from('prize_claims').select('ticket,prize,name,church,created_at,batch_id,photo_paths').eq('event',EVENT).order('ticket');
         if(c.error) throw c.error;
         var w=await window.sb.from('prize_winners').select('ticket,prize,seq').eq('event',EVENT).order('seq').order('ticket');
         if(w.error) throw w.error;
         claims=c.data||[]; winRows=w.data||[];
         build(); renderSelect(); render();
+        await signPhotos(); render();
       }catch(e){
         var m=String((e&&e.message)||e);
         $('list').innerHTML='<div class="empty">불러오지 못했습니다: '+esc(window.krErr(m))+(/prize_|does not exist|schema cache/i.test(m)?'<br>Supabase SQL Editor에서 prize-setup.sql을 먼저 실행해 주세요.':'')+'</div>';
@@ -230,17 +301,72 @@
       busy=false; $('reloadBtn').disabled=false; $('reloadBtn').textContent='새로 불러오기';
     }
 
+    // 인증 사진 — 비공개 저장소(prize-proofs)라 임원에게만 6시간짜리 보기 주소를 받아 옴 (처음 보는 사진만)
+    async function signPhotos(){
+      var need=[]; claims.forEach(function(x){ (x.photo_paths||[]).forEach(function(p){ if(!signed[p] && need.indexOf(p)<0) need.push(p); }); });
+      photoErr='';
+      for(var i=0;i<need.length;i+=100){
+        try{
+          var s=await window.sb.storage.from('prize-proofs').createSignedUrls(need.slice(i,i+100),21600);
+          if(s.error) throw s.error;
+          (s.data||[]).forEach(function(x){ if(x.signedUrl) signed[x.path]=x.signedUrl; });
+        }catch(e){ photoErr='사진을 불러오지 못했습니다'; }
+      }
+    }
+
+    // ----- 인증 사진 크게 보기 (바깥 누르기 · Esc · × 로 닫힘, ← → 로 넘김, 닫으면 누른 사진으로 초점 돌아감) -----
+    var LB={ list:[], i:0, cap:'', opener:null }, lb=$('lb');
+    function lbShow(){
+      var u=signed[LB.list[LB.i]]||'';
+      $('lbImg').src=u; $('lbOpen').href=u||'#';
+      $('lbCap').textContent=LB.cap+' · 사진 '+(LB.i+1)+' / '+LB.list.length;
+      $('lbPrev').disabled=LB.i<=0; $('lbNext').disabled=LB.i>=LB.list.length-1;
+    }
+    function lbOpen(b,i,opener){
+      LB.list=b.photos; LB.i=i; LB.opener=opener;
+      LB.cap=b.name+(b.church?' ('+b.church+')':'')+' · '+b.items.map(function(it){ return it.ticket+'번'; }).join(', ');
+      lbShow(); lb.hidden=false; document.body.style.overflow='hidden'; $('lbX').focus();
+    }
+    function lbClose(){
+      if(lb.hidden) return;
+      lb.hidden=true; $('lbImg').removeAttribute('src'); document.body.style.overflow='';
+      if(LB.opener && document.contains(LB.opener)) LB.opener.focus();
+    }
+    function lbGo(d){ var n=LB.i+d; if(n<0||n>=LB.list.length) return; LB.i=n; lbShow(); }
+    var lbDown=false;
+    lb.addEventListener('mousedown',function(e){ lbDown=(e.target===lb); });
+    lb.addEventListener('click',function(e){ if(lbDown && e.target===lb) lbClose(); lbDown=false; });
+    $('lbX').addEventListener('click',lbClose);
+    $('lbPrev').addEventListener('click',function(){ lbGo(-1); });
+    $('lbNext').addEventListener('click',function(){ lbGo(1); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ e.preventDefault(); lbClose(); }
+      else if(e.key==='ArrowLeft'){ e.preventDefault(); lbGo(-1); }
+      else if(e.key==='ArrowRight'){ e.preventDefault(); lbGo(1); }
+      else if(e.key==='Tab'){   // 창 안에서만 초점이 돎
+        var f=[$('lbPrev'),$('lbNext'),$('lbOpen'),$('lbX')].filter(function(el){ return !el.disabled; });
+        var k=f.indexOf(document.activeElement);
+        e.preventDefault(); f[(k+(e.shiftKey?-1:1)+f.length)%f.length].focus();
+      }
+    });
+    $('list').addEventListener('click',function(e){
+      var t=e.target.closest('button.th'); if(!t) return;
+      var b=BATCH[t.getAttribute('data-b')]; if(b) lbOpen(b, +t.getAttribute('data-i'), t);
+    });
+
     $('fChurch').addEventListener('change',render);
     $('q').addEventListener('input',render);
     $('optPb').addEventListener('change',render);
     $('optUn').addEventListener('change',render);
     $('reloadBtn').addEventListener('click',load);
-    // 인쇄 — PDF로 저장할 때 파일 이름에 교회 이름이 들어가도록 잠시 제목을 바꿈
+    // 인쇄 — 인쇄용 칸(받은 분 확인, 사진은 고른 경우만)으로 다시 그리고, PDF 파일 이름에 교회 이름이 들어가도록 잠시 제목을 바꿈
     var savedTitle=document.title;
     window.addEventListener('beforeprint',function(){ var o=$('fChurch').selectedOptions[0];
+      lbClose(); if(!printing){ printing=true; render(); }
       document.title='경품당첨자_'+($('fChurch').value&&o?o.textContent.split(' — ')[0].replace(/\s/g,''):'전체'); });
-    window.addEventListener('afterprint',function(){ document.title=savedTitle; });
-    $('printBtn').addEventListener('click',function(){ render(); window.print(); });
+    window.addEventListener('afterprint',function(){ document.title=savedTitle; printing=false; render(); });
+    $('printBtn').addEventListener('click',function(){ printing=true; render(); window.print(); });
 
     (async function(){
       var res=await window.requireOfficer(); if(!res) return;
