@@ -14,13 +14,22 @@
     o.photos = (e.photos || []).map(function (p) {
       return { f: p[0], full: ROOT + 'photos/' + e.id + '/' + p[0], thumb: ROOT + 'photos/' + e.id + '/t/' + p[0], w: p[1], h: p[2], c: p[3] || '' };
     });
+    o.yt = [];                                 // 유튜브 영상 {id, v(영상 ID), t(제목), canDel} — admin.js가 채움
     return o;
   });
   var byId = {};
   function reindex() { byId = {}; EV.forEach(function (e) { byId[e.id] = e; }); }
   function sortEV() { EV.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; }); }
   sortEV(); reindex();
-  function cover(e) { var p = e.photos[e.cover || 0] || e.photos[0]; return p ? p.thumb : ''; }
+  // 표지: 사진이 있으면 사진, 없으면 첫 유튜브 영상의 썸네일(유튜브 서버에서 받음)
+  function ytThumb(v, big) { return 'https://i.ytimg.com/vi/' + v + (big ? '/hqdefault.jpg' : '/mqdefault.jpg'); }
+  function cover(e) { var p = e.photos[e.cover || 0] || e.photos[0]; return p ? p.thumb : (e.yt && e.yt[0] ? ytThumb(e.yt[0].v) : ''); }
+  function counts(e) {
+    var s = [];
+    if (e.photos.length) s.push('사진 ' + e.photos.length);
+    if (e.yt && e.yt.length) s.push('영상 ' + e.yt.length);
+    return s.length ? '<span class="cnt">' + s.join(' · ') + '</span>' : '';
+  }
   // 임원으로 로그인하면(admin.js가 body에 mz-officer 표시) 카드마다 '사진 추가' 칩
   function addChip(e) { return document.body.classList.contains('mz-officer') ? '<span class="mz-addph" data-addph="' + esc(e.id) + '">📷 사진 추가</span>' : ''; }
 
@@ -55,7 +64,7 @@
     $('actGrid').innerHTML = show.map(function (e) {
       var c = cover(e);
       return '<button type="button" class="mz-ev" data-ev="' + esc(e.id) + '">' +
-        (c ? '<span class="ph" style="background-image:url(\'' + c + '\')">' + (e.photos.length ? '<span class="cnt">사진 ' + e.photos.length + '</span>' : '') + addChip(e) + '</span>'
+        (c ? '<span class="ph" style="background-image:url(\'' + c + '\')">' + counts(e) + addChip(e) + '</span>'
            : '<span class="ph none"><img src="' + ROOT + '../img/logo-192.png" alt="" />' + addChip(e) + '</span>') +
         '<span class="bd"><span class="meta"><span>' + fmtDate(e.date) + '</span><span class="cat">' + esc(e.cat) + '</span></span>' +
         '<h3>' + esc(e.title) + '</h3>' + (e.place ? '<span class="pl">' + esc(e.place) + '</span>' : '') + '</span></button>';
@@ -107,6 +116,28 @@
     }).join('');
     $('dlgCount').textContent = e.photos.length ? '사진 ' + e.photos.length + '장' : '아직 사진이 없습니다.';
   }
+  // 영상: 홈페이지에 올린 파일(mp4) + 유튜브. 유튜브는 썸네일만 먼저 보이고, 누르면 그 자리에서 재생
+  function renderVids(e) {
+    $('dlgVids').innerHTML = (e.videos || []).map(function (v) {
+      return '<div><video controls preload="none" playsinline poster="' + ROOT + 'video/' + v[0] + '.jpg"><source src="' + ROOT + 'video/' + v[0] + '.mp4" type="video/mp4"></video><div class="cap">' + esc(v[1]) + '</div></div>';
+    }).concat((e.yt || []).map(function (y) {
+      return '<div class="mz-yt"><button type="button" class="yt-play" data-yt="' + esc(y.v) + '" aria-label="영상 재생' + (y.t ? ': ' + esc(y.t) : '') + '">' +
+        '<img loading="lazy" src="' + ytThumb(y.v, true) + '" alt=""><span class="pb" aria-hidden="true"></span></button>' +
+        (y.canDel ? '<button type="button" class="mz-del" data-delyt="' + esc(y.id) + '" aria-label="영상 빼기" title="이 영상을 목록에서 빼기">×</button>' : '') +
+        '<div class="cap">' + esc(y.t || '유튜브 영상') + '</div></div>';
+    })).join('');
+  }
+  $('dlgVids').addEventListener('click', function (e) {
+    var d = e.target.closest('button[data-delyt]');
+    if (d) { document.dispatchEvent(new CustomEvent('mz:delvideo', { detail: { event: cur.id, id: d.dataset.delyt } })); return; }
+    var b = e.target.closest('button[data-yt]'); if (!b) return;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(b.dataset.yt) + '?autoplay=1&rel=0&playsinline=1';
+    f.title = b.getAttribute('aria-label');
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    b.replaceWith(f); f.focus();
+  });
   function openEvent(id, push) {
     var e = byId[id]; if (!e) return;
     cur = e; lastFocus = document.activeElement;
@@ -118,9 +149,7 @@
     var links = (e.docs || []).map(function (f) { return '<a class="mz-btn ghost" style="height:38px;font-size:14px" href="' + ROOT + 'docs/' + encodeURIComponent(f) + '" target="_blank" rel="noopener">📄 ' + esc(docTitle(f)) + '</a>'; })
       .concat((e.links || []).map(function (l) { return '<a class="mz-btn ghost" style="height:38px;font-size:14px" href="' + esc(l[1]) + '" target="_blank" rel="noopener">▶ ' + esc(l[0]) + '</a>'; }));
     $('dlgLinks').innerHTML = links.join('');
-    $('dlgVids').innerHTML = (e.videos || []).map(function (v) {
-      return '<div><video controls preload="none" playsinline poster="' + ROOT + 'video/' + v[0] + '.jpg"><source src="' + ROOT + 'video/' + v[0] + '.mp4" type="video/mp4"></video><div class="cap">' + esc(v[1]) + '</div></div>';
-    }).join('');
+    renderVids(e);
     renderThumbs(e);
     dlg.classList.add('on'); document.body.classList.add('mz-lock'); dlg.scrollTop = 0;
     $('dlgClose').focus();
@@ -130,11 +159,18 @@
   function closeEvent() {
     dlg.classList.remove('on'); document.body.classList.remove('mz-lock');
     dlg.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (_) {} });
+    dlg.querySelectorAll('iframe').forEach(function (f) { f.remove(); });   // 재생 중인 유튜브 멈춤
     try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
+  // 바깥(배경)에서 누르고 같은 곳에서 뗐을 때만 닫음 — 창 안에서 글을 끌어 고르다 밖에서 놓아도 안 닫힘
+  function backdropClose(el, close) {
+    var down = false;
+    el.addEventListener('mousedown', function (e) { down = e.target === el; });
+    el.addEventListener('click', function (e) { if (down && e.target === el) close(); down = false; });
+  }
   $('dlgClose').addEventListener('click', closeEvent);
-  dlg.addEventListener('click', function (e) { if (e.target === dlg) closeEvent(); });
+  backdropClose(dlg, closeEvent);
   $('dlgThumbs').addEventListener('click', function (e) {
     var d = e.target.closest('button[data-del]');
     if (d) { document.dispatchEvent(new CustomEvent('mz:delphoto', { detail: { event: cur.id, id: d.dataset.del } })); return; }
@@ -155,7 +191,7 @@
   $('vPrev').addEventListener('click', function () { step(-1); });
   $('vNext').addEventListener('click', function () { step(1); });
   $('vClose').addEventListener('click', closeViewer);
-  viewer.addEventListener('click', function (e) { if (e.target === viewer) closeViewer(); });
+  backdropClose(viewer, closeViewer);
   var sx = null;
   viewer.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
   viewer.addEventListener('touchend', function (e) { if (sx == null) return; var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 45) step(dx < 0 ? 1 : -1); sx = null; });
@@ -172,8 +208,8 @@
   window.MZ = {
     get: function (id) { return byId[id]; },
     current: function () { return cur; },
-    // 홈페이지에서 추가된 기록·사진을 합친 뒤 다시 그림
-    merge: function (newEvents, photosByEvent) {
+    // 홈페이지에서 추가된 기록·사진·유튜브 영상을 합친 뒤 다시 그림
+    merge: function (newEvents, photosByEvent, videosByEvent) {
       (newEvents || []).forEach(function (e) {
         if (!byId[e.id]) { e.photos = []; EV.push(e); }
         else { var keep = byId[e.id].photos; Object.assign(byId[e.id], e); byId[e.id].photos = keep; }
@@ -184,9 +220,10 @@
         // 저장소로 옮겨진 처음 사진(경로 '<행사>/s-<파일>')은 원래 파일 대신 저장소 것만 보여 줌(중복 방지)
         db.forEach(function (p) { var m = /\/s-([^\/]+)$/.exec(p.path || ''); if (m) moved[m[1]] = 1; });
         e.photos = e.photos.filter(function (p) { return !p.db && !moved[p.f]; }).concat(db);
+        if (videosByEvent) e.yt = videosByEvent[e.id] || [];
       });
       renderAll();
-      if (cur && dlg.classList.contains('on')) { cur = byId[cur.id] || cur; renderThumbs(cur); }
+      if (cur && dlg.classList.contains('on')) { cur = byId[cur.id] || cur; renderThumbs(cur); if (videosByEvent) renderVids(cur); }
     },
     remove: function (id) { EV = EV.filter(function (e) { return e.id !== id; }); reindex(); renderAll(); },
     rerender: function () { renderAll(); },
