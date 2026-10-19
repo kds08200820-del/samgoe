@@ -27,7 +27,8 @@ create policy "pw_read" on public.prize_winners for select to anon, authenticate
 
 -- 당첨 번호 넣기 — 실행할 때마다 지우고 새로 넣음.
 --   번호를 고칠 때는 아래 숫자만 고쳐서 이 파일 전체를 다시 Run 하면 됩니다.
---   56 · 214번은 두 번 뽑힘(한 번호에 두 장이 들어감) → 무효로 뺌.
+--   5 · 56 · 214번은 무효표 — 개수에는 넣고 상품 이름을 '무효표'로 기록 (당첨 인증은 받지 않음).
+--   (56 · 214번은 두 번 뽑힘, 5번은 15번을 잘못 적은 번호)
 delete from public.prize_winners where event = '2026-6';
 insert into public.prize_winners (event, ticket, prize, seq)
 select '2026-6', t.n, p.prize, p.seq
@@ -50,6 +51,7 @@ from (values
   (16, '보조배터리 + 쌀 500g', array[368,93,345,226,398,35,325,382,367,393,13,120,296,258,229,164,128,188,208,351,16,314,22,353,388,100,47,228,179,181,150,149,196,83,326,109,210,362,127,57,29,241,250,259,10,237,391,32,378,302,339,352,7,126,207,90,170,89,160,256,344,117,107,11,85,216,91,55,187,342,320,97,104,311,395,174,37,295,385,118,20,209,205,153,12,184,307,171,140,245,379,272,291,365,230,166,286,360,151,268,204,263,236,377,141,348,130,357,48,77,243,193,341,19,270,33,161,84,86,177,178,278,200,125,220,133,163,121,371,142,401,3,39,79,169,199,334,4,176,138,364,297,224,172,115,370,67,394]),
   (17, '보조배터리', array[2,273,309,356,235,45,155,242,203,331,38,251,159,106,281,191,253,249,129,123,135,361,347,267,189,397,301,146,313,190,247,317,233,218,119,113,381,194,255,9,400,319,358,62,402,122,87,168,257]),
   (19, '차량용 공기청정기', array[165,276,59,227,323,246,312,366,383,42]),
+  (99, '무효표', array[5,56,214]),
   (20, '에너지바 1박스', array[350,108,46,162,134,354,60,112,64,28,390,327,34,324,185,232,387,17,223,213,211,25,403,287,15,201,26,173,41,137,27,221,24])
 ) as p(seq, prize, nums)
 cross join lateral unnest(p.nums) as t(n)
@@ -141,6 +143,9 @@ begin
     end if;
   end loop;
   foreach v_t in array p_tickets loop
+    if exists (select 1 from public.prize_winners w where w.event = p_event and w.ticket = v_t and w.prize = '무효표') then
+      raise exception '%번은 무효표라 당첨 인증을 받지 않습니다.', v_t;
+    end if;
     if not exists (select 1 from public.prize_winners w where w.event = p_event and w.ticket = v_t) then
       raise exception '%번은 당첨 번호가 아닙니다. 번호를 다시 확인해 주세요.', v_t;
     end if;
@@ -167,9 +172,9 @@ revoke all on function public.walk_total(text) from public;
 grant execute on function public.walk_total(text) to anon, authenticated;
 
 -- 7) 홈페이지가 새 표 · 함수를 바로 알아보도록 + 실행 확인
---    성공하면 결과 창에 한 줄이 나옵니다: 당첨 기록 374 · 당첨 번호 374 · 총 참가자(신청 인원 합계)
+--    성공하면 결과 창에 한 줄이 나옵니다: 당첨 기록 377 · 당첨 번호 377(무효표 3 포함) · 총 참가자(신청 인원 합계)
 --    ('Success. No rows returned'만 나오면 전체가 실행되지 않은 것 — 전체를 선택해 다시 Run)
 notify pgrst, 'reload schema';
-select (select count(*) from public.prize_winners where event = '2026-6')                as "당첨 기록 (374)",
-       (select count(distinct ticket) from public.prize_winners where event = '2026-6')  as "당첨 번호 (374)",
+select (select count(*) from public.prize_winners where event = '2026-6')                as "당첨 기록 (377)",
+       (select count(distinct ticket) from public.prize_winners where event = '2026-6')  as "당첨 번호 (377, 무효표 3 포함)",
        public.walk_total('2026-6')                                                     as "총 참가자";

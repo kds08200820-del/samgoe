@@ -410,7 +410,7 @@
     });
 
     // ----- 경품 당첨 인증 (prize-setup.sql) -----
-    var claims=[], winners={}, signed={}, pzBusy=false, prizeOn=true;
+    var claims=[], winners={}, voids=[], signed={}, pzBusy=false, prizeOn=true;   // voids: 무효표 번호 (경품 없음, 인증 안 받음)
     function churchKey(c){ return String(c||'').replace(/\s/g,''); }
     async function loadPrize(){
       if(!prizeOn) return;
@@ -419,7 +419,11 @@
         $('pzChurchTbl').innerHTML=m; $('pzTbl').innerHTML=''; return; }
       claims=c.data||[];
       var w=await window.sb.from('prize_winners').select('ticket,prize,seq').eq('event',EVENT).order('seq');
-      winners={}; (w.data||[]).forEach(function(x){ (winners[x.ticket]=winners[x.ticket]||[]).push(x.prize); });
+      winners={}; voids=[];
+      (w.data||[]).forEach(function(x){
+        if(x.prize==='무효표'){ if(voids.indexOf(x.ticket)<0) voids.push(x.ticket); return; }
+        (winners[x.ticket]=winners[x.ticket]||[]).push(x.prize); });
+      voids.sort(function(a,b){ return a-b; });
       // 경품 추첨이 없는 회차는 경품 칸을 숨김
       prizeOn = !!((w.data||[]).length || claims.length);
       $('prize').hidden = !prizeOn; $('prizeJump').hidden = !prizeOn;
@@ -463,7 +467,8 @@
               '<td class="l"><div class="ph">'+b.photos.map(function(p,i){ return signed[p]?'<a href="'+esc(signed[p])+'" target="_blank" rel="noopener"><img src="'+esc(signed[p])+'" alt="인증샷 '+(i+1)+'" loading="lazy"></a>':'<a aria-label="사진 없음"></a>'; }).join('')+'</div></td>'+
               '<td class="c"><button class="del" data-pzdel="'+b.id+'">삭제</button></td></tr>'; }).join('')+'</tbody></table>'
         : '<div class="empty">'+(bs.length?'조건에 맞는 인증이 없습니다.':'아직 인증이 없습니다.')+'</div>';
-      $('pzUn').innerHTML = un.length ? un.map(function(n){ return '<span title="'+esc((winners[n]||[]).join(' · '))+'">'+n+'</span>'; }).join('') : '<span style="background:none">모두 인증되었습니다.</span>';
+      $('pzUn').innerHTML = (un.length ? un.map(function(n){ return '<span title="'+esc((winners[n]||[]).join(' · '))+'">'+n+'</span>'; }).join('') : '<span style="background:none">모두 인증되었습니다.</span>')+
+        (voids.length ? '<span style="background:none;min-width:0;color:#8a4b4b;font-weight:600">· 무효표 '+voids.length+'장 (경품 없음 · 인증 안 받음): '+voids.join(', ')+'</span>' : '');
     }
     $('pzQ').addEventListener('input',renderPrize);
     $('pzTbl').addEventListener('click',async function(e){

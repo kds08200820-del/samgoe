@@ -86,6 +86,7 @@
     .chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 14px;}
     .chips span{min-width:40px;padding:3px 6px;border-radius:6px;background:var(--surface-soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
     .un h3{margin:12px 0 2px;font-size:14.5px;color:var(--ink);} .un h3 small{margin-left:6px;font-size:12.5px;font-weight:500;color:var(--muted);}
+    .un h3.void{color:#8a4b4b;} .chips.void span{background:#f4ecec;color:#8a4b4b;text-decoration:line-through;}
     .empty{padding:28px;text-align:center;color:var(--muted);line-height:1.7;}
     .pr-head,.pr-foot{display:none;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
@@ -232,9 +233,11 @@
     function render(){
       var sel=$('fChurch').value, q=$('q').value.trim(), qn=norm(q);
       var done={}; claims.forEach(function(x){ done[x.ticket]=1; });
-      var all={}; winRows.forEach(function(w){ all[w.ticket]=1; });
+      // 무효표(상품 이름 '무효표')는 개수에는 넣되 인증 대상에서는 뺌
+      var all={}, voids=[]; winRows.forEach(function(w){ if(w.prize==='무효표'){ if(voids.indexOf(w.ticket)<0) voids.push(w.ticket); } else all[w.ticket]=1; });
+      voids.sort(function(a,b){ return a-b; });
       var unCnt=Object.keys(all).filter(function(t){ return !done[t]; }).length;
-      $('kAll').innerHTML=Object.keys(all).length+'<small>개</small>';
+      $('kAll').innerHTML=(Object.keys(all).length+voids.length)+'<small>개'+(voids.length?' (무효표 '+voids.length+' 포함)':'')+'</small>';
       $('kDone').innerHTML=claims.length+'<small>개</small>';
       $('kUn').innerHTML=unCnt+'<small>개</small>';
       $('kCh').innerHTML=groups.filter(function(g){ return !g.none; }).length+'<small>곳</small>';
@@ -275,10 +278,11 @@
       if(!sel && !qn){
         // 아직 인증 안 된 번호 — 상품별로
         var byP={}, order=[];
-        winRows.forEach(function(w){ if(done[w.ticket]) return; if(!byP[w.prize]){ byP[w.prize]=[]; order.push(w.prize); } if(byP[w.prize].indexOf(w.ticket)<0) byP[w.prize].push(w.ticket); });
+        winRows.forEach(function(w){ if(done[w.ticket] || w.prize==='무효표') return; if(!byP[w.prize]){ byP[w.prize]=[]; order.push(w.prize); } if(byP[w.prize].indexOf(w.ticket)<0) byP[w.prize].push(w.ticket); });
         h+='<section class="sec un"><p class="pr-head">'+esc(TITLE)+'</p><div class="sec-h"><h2>아직 인증 안 된 당첨 번호</h2><span class="meta">'+unCnt+'개 · 이름을 알 수 없어 번호만 나옵니다</span></div>'+
           (order.length ? order.map(function(p){ var a=byP[p].sort(function(x,y){return x-y;}); return '<h3>'+esc(p)+'<small>'+a.length+'개</small></h3><div class="chips">'+a.map(function(n){ return '<span>'+n+'</span>'; }).join('')+'</div>'; }).join('')
-            : '<div class="empty">모든 당첨 번호가 인증되었습니다.</div>')+'</section>';
+            : '<div class="empty">모든 당첨 번호가 인증되었습니다.</div>')+
+          (voids.length ? '<h3 class="void">무효표<small>'+voids.length+'장 · 경품 없음 · 인증 받지 않음</small></h3><div class="chips void">'+voids.map(function(n){ return '<span>'+n+'</span>'; }).join('')+'</div>' : '')+'</section>';
       }
       $('list').innerHTML = h ? h+foot
         : '<div class="empty">'+(claims.length?'찾는 이름 · 번호가 없습니다.':'아직 당첨 인증이 없습니다 — 당첨자가 홈페이지 첫 화면에서 인증하면 여기에 교회별로 모입니다.')+'</div>';

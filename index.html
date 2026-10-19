@@ -231,6 +231,13 @@
     .pz-grp p{margin:0;display:flex;flex-wrap:wrap;gap:4px;}
     .pz-grp span{min-width:38px;padding:3px 5px;border-radius:6px;background:var(--soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;color:var(--body);}
     .pz-grp span.hit{background:#032257;color:#fff;font-weight:800;}
+    /* 무효표 — 개수에는 넣고 '무효표'로 표시, 당첨 인증은 받지 않음 */
+    .pz-li.void{background:#f4f1f1;border-color:#e2d6d6;}
+    .pz-li.void .p{color:#8a4b4b;font-weight:700;}
+    .pz-li .t.void{background:#8a4b4b;color:#fff;}
+    .pz-grp.void b{color:#8a4b4b;}
+    .pz-grp.void span{background:#f4ecec;color:#8a4b4b;text-decoration:line-through;}
+    .pz-grp.void span.hit{background:#8a4b4b;color:#fff;text-decoration:none;}
     /* 첫 화면에 게시한 걷기대회 회차 (walk_events.hero — 임원방 행사 관리) — 게시 중이면 경품 안내 대신 나옴 */
     .hero.ev-on .hero-focus{display:none;}
     .hero-event{max-width:720px;margin:0 auto;}
@@ -635,7 +642,7 @@
         <h2 class="pz-title">비가 오는 가운데에도<br>함께 걸어 주셔서 감사합니다</h2>
         <p class="pz-thanks">10월 18일(주일) 쌍봉산 근린공원에서 열린 제6회 3·1 만세길 걷기를 은혜 가운데 마쳤습니다. 궂은 날씨에도 끝까지 자리를 지키며 만세길을 함께 걸어 주신 모든 분께 진심으로 감사드립니다.</p>
         <div class="pz-stats">
-          <div><b id="pzWinCnt">–</b><span>경품 당첨</span></div>
+          <div><b id="pzWinCnt">–</b><span id="pzWinLbl">경품 당첨</span></div>
         </div>
         <div class="pz-box" id="prize">
           <form id="pzFind" autocomplete="off" novalidate>
@@ -1677,6 +1684,8 @@ window.samMarquee = function(row, speed){
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
   function krErr(m){ return window.krErr ? window.krErr(m) : String(m||'알 수 없는 오류'); }
 
+  // 무효표 — 추첨 기록에 넣되 경품은 없음 (prize-setup.sql 의 '무효표' 줄과 같은 번호)
+  var VOID=[5,56,214];
   // 번호 → 상품 (한 번호가 두 상품에 뽑힌 경우도 모두), 전체 목록은 상품 이름별로 묶음
   var WIN={}, GROUPS=[], byName={};
   PRIZES.forEach(function(p){
@@ -1686,9 +1695,12 @@ window.samMarquee = function(row, speed){
       if(byName[p[1]].nums.indexOf(n)<0) byName[p[1]].nums.push(n); });
   });
   GROUPS.forEach(function(g){ g.nums.sort(function(a,b){return a-b;}); });
-  $('pzWinCnt').textContent=Object.keys(WIN).length.toLocaleString('ko-KR')+'명';
+  if(VOID.length) GROUPS.push({name:'무효표', nums:VOID.slice().sort(function(a,b){return a-b;}), void:true});
+  // 개수: 당첨 번호 + 무효표 (예: 374 + 3 = 377)
+  $('pzWinCnt').textContent=(Object.keys(WIN).length+VOID.length).toLocaleString('ko-KR')+(VOID.length?'장':'명');
+  if(VOID.length) $('pzWinLbl').textContent='경품 추첨 번호표 · 무효표 '+VOID.length+'장 포함';
   $('pzAll').innerHTML=GROUPS.map(function(g){
-    return '<div class="pz-grp"><b>'+esc(g.name)+'<small>'+g.nums.length+'명</small></b><p>'+
+    return '<div class="pz-grp'+(g.void?' void':'')+'"><b>'+esc(g.name)+'<small>'+g.nums.length+(g.void?'장 · 경품 없음':'명')+'</small></b><p>'+
       g.nums.map(function(n){ return '<span data-n="'+n+'">'+n+'</span>'; }).join('')+'</p></div>';
   }).join('');
 
@@ -1701,7 +1713,7 @@ window.samMarquee = function(row, speed){
     e.preventDefault();
     var input=$('pzNum'), nums=(input.value.match(/\d+/g)||[]).map(Number).filter(function(n){ return n>0 && n<10000; });
     if(!nums.length){ input.focus(); if(!list.length) showHead('번호를 숫자로 넣어 주세요.'); return; }
-    nums.forEach(function(n){ if(!find(n) && list.length<50){ list.push({n:n, prizes:WIN[n]||null, claimed:null}); picked[n]=true; } });
+    nums.forEach(function(n){ if(!find(n) && list.length<50){ list.push({n:n, prizes:WIN[n]||null, void:VOID.indexOf(n)>=0, claimed:null}); picked[n]=true; } });
     input.value=''; $('pzDone').hidden=true;
     render(); checkClaimed();
     if(window.matchMedia('(pointer:coarse)').matches) input.blur(); else input.focus();
@@ -1717,18 +1729,20 @@ window.samMarquee = function(row, speed){
     var box=$('pzResult');
     Array.prototype.forEach.call($('pzAll').querySelectorAll('span.hit'),function(s){ s.classList.remove('hit'); });
     if(!list.length){ box.innerHTML=''; renderClaim(); return; }
-    var wins=list.filter(function(it){ return it.prizes; });
+    var wins=list.filter(function(it){ return it.prizes; }), voids=list.filter(function(it){ return it.void; });
     var h = wins.length
       ? '<p class="pz-head">축하합니다! '+(list.length>1?wins.length+'개 번호가 ':'')+'당첨되었습니다</p>'
-      : '<p class="pz-head miss">아쉽게도 당첨 번호가 아닙니다</p><p class="pz-sub">비 오는 날 함께 걸어 주신 것만으로 감사합니다. 번호를 다시 한 번 확인해 주세요.</p>';
+      : (voids.length
+        ? '<p class="pz-head miss">무효표로 기록된 번호입니다</p><p class="pz-sub">추첨에서 무효 처리되어 경품이 없습니다. 궁금하신 점은 사무총장에게 문의해 주세요.</p>'
+        : '<p class="pz-head miss">아쉽게도 당첨 번호가 아닙니다</p><p class="pz-sub">비 오는 날 함께 걸어 주신 것만으로 감사합니다. 번호를 다시 한 번 확인해 주세요.</p>');
     h+='<ul class="pz-list">'+list.map(function(it){
-      var tag = !it.prizes ? '<span class="t">당첨 아님</span>' : (it.claimed===true ? '<span class="t ok">인증 완료</span>' : '<span class="t">당첨</span>');
-      return '<li class="pz-li'+(it.prizes?' win':'')+'"><span class="n">'+it.n+'번</span><span class="p">'+(it.prizes?esc(it.prizes.join(' · ')):'당첨 번호가 아닙니다')+'</span>'+tag+
+      var tag = it.void ? '<span class="t void">무효표</span>' : (!it.prizes ? '<span class="t">당첨 아님</span>' : (it.claimed===true ? '<span class="t ok">인증 완료</span>' : '<span class="t">당첨</span>'));
+      return '<li class="pz-li'+(it.prizes?' win':(it.void?' void':''))+'"><span class="n">'+it.n+'번</span><span class="p">'+(it.prizes?esc(it.prizes.join(' · ')):(it.void?'무효표 · 경품 없음':'당첨 번호가 아닙니다'))+'</span>'+tag+
         '<button type="button" class="pz-x" data-x="'+it.n+'" aria-label="'+it.n+'번 지우기">×</button></li>';
     }).join('')+'</ul>';
     if(list.length>1) h+='<button type="button" class="pz-clear">모두 지우기</button>';
     box.innerHTML=h;
-    wins.forEach(function(it){ Array.prototype.forEach.call($('pzAll').querySelectorAll('span[data-n="'+it.n+'"]'),function(s){ s.classList.add('hit'); }); });
+    wins.concat(voids).forEach(function(it){ Array.prototype.forEach.call($('pzAll').querySelectorAll('span[data-n="'+it.n+'"]'),function(s){ s.classList.add('hit'); }); });
     renderClaim();
   }
 
