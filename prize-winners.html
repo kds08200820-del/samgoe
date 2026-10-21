@@ -25,7 +25,7 @@
     .title{margin:0;font-size:clamp(23px,4vw,30px);color:var(--ink);}
     .sub{margin:8px 0 22px;font-size:14.5px;color:var(--muted);line-height:1.8;}
     .sub a{color:var(--primary);font-weight:700;text-decoration:underline;}
-    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
     .kpi{background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:16px;}
     .kpi .k{font-size:12.5px;color:var(--muted);} .kpi .n{font-size:24px;font-weight:700;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;}
     .kpi .n small{font-size:13px;font-weight:500;color:var(--muted);margin-left:2px;}
@@ -88,9 +88,37 @@
     .un h3{margin:12px 0 2px;font-size:14.5px;color:var(--ink);} .un h3 small{margin-left:6px;font-size:12.5px;font-weight:500;color:var(--muted);}
     .un h3.void{color:#8a4b4b;} .chips.void span{background:#f4ecec;color:#8a4b4b;text-decoration:line-through;}
     .empty{padding:28px;text-align:center;color:var(--muted);line-height:1.7;}
+    /* 수령 확인 — 번호 · 상품 · 수령 칸의 줄 높이를 맞춰 같은 번호끼리 나란히 */
+    td.gp .ln,td.gk .ln{min-height:40px;display:flex;align-items:center;}
+    th.gk,td.gk{background:#f1f8f3;} th.gk.gh{background:#d8eedf;color:var(--ok);}
+    .gk-start{border-left:3px solid var(--ok)!important;}
+    .pk{min-height:34px;padding:0 12px;border:1.5px solid var(--ok);border-radius:8px;background:#fff;color:var(--ok);font-family:inherit;font-size:13.5px;font-weight:700;
+      cursor:pointer;white-space:nowrap;user-select:none;-webkit-user-select:none;}
+    .pk:hover{background:#eafaf0;}
+    .pk.on{background:var(--ok);color:#fff;font-weight:600;font-size:12.5px;}
+    .pk.on:hover{background:#0b6232;}
+    .pk:disabled{opacity:.5;cursor:default;}
+    .pk-all{margin-left:auto;min-height:38px;padding:0 14px;border:0;border-radius:8px;background:var(--ok);color:#fff;font-family:inherit;font-size:13.5px;font-weight:700;
+      cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .pk-all:disabled{opacity:.5;cursor:default;}
+    .pk-done{margin-left:auto;font-size:13px;font-weight:700;color:var(--ok);}
+    .pk-note{margin:0 0 12px;padding:10px 14px;border-radius:8px;background:#fdf3e7;color:#8a5a1f;font-size:13.5px;line-height:1.6;}
+    .chips button{min-width:44px;min-height:32px;padding:3px 6px;border:1px solid transparent;border-radius:6px;background:var(--surface-soft);font-family:inherit;font-size:13px;
+      color:var(--bodytext);font-variant-numeric:tabular-nums;cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .chips button:hover{border-color:var(--ok);}
+    .chips button.on{background:var(--ok);color:#fff;}
+    .chips button:disabled{cursor:default;}
+    /* 경품 남은 수량 */
+    .stock table{min-width:520px;}
+    .stock td,.stock th{text-align:right;} .stock td.l,.stock th.l{text-align:left;}
+    .stock td.left{font-weight:800;color:var(--primary);}
+    .stock td.zero{color:var(--muted);font-weight:600;}
+    .stock tfoot td{font-weight:800;border-top:2px solid var(--ink);}
+    .bar-in{display:block;height:6px;margin-top:5px;border-radius:3px;background:#e7e2d6;overflow:hidden;}
+    .bar-in i{display:block;height:100%;background:var(--ok);}
     .pr-head,.pr-foot{display:none;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
-    @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .tools{position:static;} .tools .sp{display:none;} }
+    @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .tools{position:static;} .tools .sp{display:none;} .pk-all{margin-left:0;} }
 
     /* 인쇄 — 화면의 단추 · 숫자 상자는 빼고 명단만. '교회마다 새 쪽'을 켜면 교회마다 새 종이에서 시작 */
     @media print{
@@ -113,8 +141,12 @@
       th.gh,th.gp,th.gw,td.gp,td.gw{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       thead{display:table-header-group;} tr{break-inside:avoid;}
       .th{width:72px;height:72px;border-color:#999;}
-      .chips span{border:1px solid #bbb;background:none;}
-      .lb{display:none!important;}
+      .chips span,.chips button{border:1px solid #bbb;background:none;color:#000;}
+      .chips button.on{text-decoration:line-through;}
+      .lb,.stock,.pk-all,.pk-done,.pk-note{display:none!important;}
+      td.gp .ln,td.gk .ln{min-height:22px;}
+      .pk{border:0;padding:0;min-height:0;background:none!important;color:#000!important;font-size:12px;}
+      th.gk,td.gk{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
@@ -128,18 +160,24 @@
     <div class="crumb"><a href="officer.html">← 임원방</a> · <a href="walk-admin.html#prize">경품 당첨 인증 현황</a></div>
     <h1 class="title">제6회 3·1 만세길 걷기 · 경품 당첨자 명단</h1>
     <p class="sub">당첨자가 홈페이지 첫 화면에서 당첨 인증할 때 적은 이름 · 소속 교회로 묶었습니다. 한 줄이 한 사람의 인증이고, 왼쪽 <b style="color:var(--gold-ink)">경품</b> 란에 번호 · 상품, 오른쪽 <b style="color:var(--primary)">지원자</b> 란에 이름 · 인증 시각 · 인증 사진이 나옵니다.
-      사진을 누르면 크게 볼 수 있습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다. 인증하지 않은 번호는 이름을 알 수 없어 맨 아래에 번호만 나옵니다. 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.</p>
+      사진을 누르면 크게 볼 수 있습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다. 인증하지 않은 번호는 이름을 알 수 없어 맨 아래에 번호만 나옵니다. 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.<br>
+      <b style="color:var(--ok)">수령 확인</b> — 물건을 내줄 때 번호 옆 <b>수령 확인</b>을 누르거나, 교회가 한꺼번에 가져가면 교회 이름 옆 <b>남은 것 모두 수령 확인</b>을 누르세요. 잘못 눌렀으면 초록색 단추를 다시 누르면 취소됩니다. 맨 위 <b>경품 남은 수량</b>이 바로 줄어듭니다.</p>
 
     <div class="kpis">
       <div class="kpi navy"><div class="k">당첨 번호</div><div class="n" id="kAll">–</div></div>
       <div class="kpi"><div class="k">인증된 번호 (이름 확인)</div><div class="n" id="kDone" style="color:var(--ok)">–</div></div>
       <div class="kpi"><div class="k">아직 인증 안 된 번호</div><div class="n" id="kUn">–</div></div>
       <div class="kpi"><div class="k">당첨자 소속 교회 · 단체</div><div class="n" id="kCh">–</div></div>
+      <div class="kpi"><div class="k">수령 완료</div><div class="n" id="kPk" style="color:var(--ok)">–</div></div>
+      <div class="kpi"><div class="k">남은 경품</div><div class="n" id="kLeft" style="color:var(--primary)">–</div></div>
     </div>
+
+    <section class="sec stock" id="stock"><div class="empty">불러오는 중…</div></section>
 
     <div class="tools">
       <select id="fChurch" aria-label="교회 고르기"><option value="">전체 교회 · 단체</option></select>
       <input id="q" type="search" placeholder="이름 · 번호 찾기" aria-label="이름 또는 번호로 찾기">
+      <label class="opt"><input type="checkbox" id="optLeft"> 수령 안 한 것만</label>
       <label class="opt"><input type="checkbox" id="optPb" checked> 교회마다 새 쪽에 인쇄</label>
       <label class="opt" id="optUnWrap"><input type="checkbox" id="optUn" checked> 인증 안 된 번호도 인쇄</label>
       <label class="opt"><input type="checkbox" id="optPh"> 인증 사진도 인쇄</label>
@@ -197,6 +235,40 @@
 
     var claims=[], winRows=[], groups=[], who='임원', busy=false;
     var signed={}, photoErr='', BATCH={}, printing=false;   // signed: 사진 경로 → 임시 보기 주소(6시간)
+    var picks={}, pickErr='', pkBusy=false;                 // picks: 번호 → 수령 확인 기록 (prize-pickup-setup.sql)
+    function isPk(t){ return !!picks[t]; }
+    function prizeOf(t){ var a=[]; winRows.forEach(function(w){ if(w.ticket===t && a.indexOf(w.prize)<0) a.push(w.prize); }); return a.join(' · '); }
+    function pkTitle(t){ var p=picks[t]; return p ? (short(p.picked_at)+' · '+(p.picked_by_name||'임원')+' 확인') : ''; }
+    function pkCell(t){
+      if(printing) return '<div class="ln"><span class="pk">'+(isPk(t)?'✓ '+short(picks[t].picked_at):'&nbsp;')+'</span></div>';
+      if(pickErr) return '<div class="ln">–</div>';
+      return '<div class="ln"><button type="button" class="pk'+(isPk(t)?' on':'')+'" data-pk="'+t+'"'+(pkBusy?' disabled':'')+
+        (isPk(t)?' title="'+esc(pkTitle(t))+' — 다시 누르면 취소"':'')+' aria-label="'+t+'번 '+(isPk(t)?'수령 확인 취소':'수령 확인')+'">'+
+        (isPk(t)?'✓ 수령 '+short(picks[t].picked_at):'수령 확인')+'</button></div>';
+    }
+
+    // 경품 남은 수량 — 상품 이름별 (같은 이름은 추첨 회차가 달라도 합침, 무효표 제외)
+    function renderStock(){
+      var by={}, order=[], claimed={};
+      claims.forEach(function(x){ claimed[x.ticket]=1; });
+      winRows.forEach(function(w){ if(w.prize==='무효표') return; if(!by[w.prize]){ by[w.prize]={}; order.push(w.prize); } by[w.prize][w.ticket]=1; });
+      var tot={n:0,pk:0,wait:0};
+      var rows=order.map(function(p){
+        var ts=Object.keys(by[p]).map(Number), pk=ts.filter(isPk).length, wait=ts.filter(function(t){ return !isPk(t) && claimed[t]; }).length;
+        tot.n+=ts.length; tot.pk+=pk; tot.wait+=wait;
+        return {name:p, n:ts.length, pk:pk, wait:wait};
+      });
+      $('kPk').innerHTML=tot.pk+'<small>/ '+tot.n+'개</small>';
+      $('kLeft').innerHTML=(tot.n-tot.pk)+'<small>개</small>';
+      var note = pickErr==='setup' ? '<p class="pk-note">수령 확인 기능이 아직 켜지지 않았습니다. Supabase SQL Editor에서 prize-pickup-setup.sql을 실행하면 켜집니다.</p>'
+        : (pickErr ? '<p class="pk-note">수령 기록을 불러오지 못했습니다: '+esc(window.krErr(pickErr))+'</p>' : '');
+      $('stock').innerHTML='<div class="sec-h"><h2>경품 남은 수량</h2><span class="meta">수령 확인할 때마다 바로 줄어듭니다 · 무효표 제외</span></div>'+note+
+        '<div class="tblWrap" style="margin-top:12px"><table><thead><tr><th class="l">상품</th><th>경품 수량</th><th>수령 완료</th><th>남은 수량</th><th>남은 것 중 인증된 번호</th></tr></thead><tbody>'+
+        rows.map(function(r){ var left=r.n-r.pk;
+          return '<tr><td class="l">'+esc(r.name)+'<span class="bar-in" aria-hidden="true"><i style="width:'+(r.n?Math.round(r.pk/r.n*100):0)+'%"></i></span></td>'+
+            '<td>'+r.n+'</td><td>'+r.pk+'</td><td class="'+(left?'left':'zero')+'">'+(left?left:'0 · 다 나감')+'</td><td>'+r.wait+'</td></tr>'; }).join('')+
+        '</tbody><tfoot><tr><td class="l">합계</td><td>'+tot.n+'</td><td>'+tot.pk+'</td><td>'+(tot.n-tot.pk)+'</td><td>'+tot.wait+'</td></tr></tfoot></table></div>';
+    }
 
     // 교회별로 묶고, 교회 안에서는 '한 번에 올린 인증'(한 사람) 단위로 한 줄
     function build(){
@@ -241,6 +313,8 @@
       $('kDone').innerHTML=claims.length+'<small>개</small>';
       $('kUn').innerHTML=unCnt+'<small>개</small>';
       $('kCh').innerHTML=groups.filter(function(g){ return !g.none; }).length+'<small>곳</small>';
+      renderStock();
+      var onlyLeft=$('optLeft').checked;
       document.body.classList.toggle('pb', $('optPb').checked);
       document.body.classList.toggle('no-un', !$('optUn').checked);
       $('optUnWrap').style.display = sel ? 'none' : '';
@@ -248,17 +322,21 @@
       var h='', foot='<p class="pr-foot">'+stamp(new Date().toISOString())+' 출력 · '+esc(who)+' · 임원 전용 — 이름이 들어 있으니 경품을 나눈 뒤에는 버려 주세요.</p>';
       // 표 칸: 화면에서는 인증 사진을 늘 보이고, 인쇄할 때는 '인증 사진도 인쇄'를 켰을 때만 + '받은 분 확인' 칸을 붙임
       var withPh = !printing || $('optPh').checked, withSign = printing;
-      var head='<thead><tr><th class="no" rowspan="2">순</th><th class="gh gp gp-start" colspan="2">경품</th>'+
+      var head='<thead><tr><th class="no" rowspan="2">순</th><th class="gh gp gp-start" colspan="2">경품</th><th class="gh gk gk-start" rowspan="2">수령 확인</th>'+
         '<th class="gh gw gw-start" colspan="'+(withPh?3:2)+'">지원자 (당첨 인증한 분)</th>'+(withSign?'<th class="sign" rowspan="2">받은 분 확인</th>':'')+'</tr>'+
         '<tr><th class="gp gp-start">번호</th><th class="gp">상품</th><th class="gw gw-start">이름</th><th class="gw">인증 시각</th>'+(withPh?'<th class="gw">인증 사진</th>':'')+'</tr></thead>';
       groups.forEach(function(g){
         if(sel && g.key!==sel) return;
         var bs=g.batches.filter(function(b){ return !qn || norm(b.name+' '+b.church).indexOf(qn)>=0 || b.items.some(function(it){ return String(it.ticket)===q; }); });
+        if(onlyLeft) bs=bs.filter(function(b){ return b.items.some(function(it){ return !isPk(it.ticket); }); });
         if(!bs.length) return;
-        var items=itemsOf(bs);
+        var items=itemsOf(bs), left=items.filter(function(it){ return !isPk(it.ticket); }).map(function(it){ return it.ticket; });
+        var bulk = pickErr ? '' : (left.length
+          ? '<button type="button" class="pk-all" data-pkall="'+left.join(',')+'" data-label="'+esc(g.label)+'"'+(pkBusy?' disabled':'')+'>남은 '+left.length+'개 모두 수령 확인</button>'
+          : '<span class="pk-done">✓ 모두 수령</span>');
         h+='<section class="sec"><p class="pr-head">'+esc(TITLE)+'</p>'+
           '<div class="sec-h"><h2>'+esc(g.label)+'</h2>'+(g.region?'<span class="rg">'+esc(g.region)+'</span>':'')+
-            '<span class="meta">당첨자 '+people(bs)+'명 · 번호 '+items.length+'개</span></div>'+
+            '<span class="meta">당첨자 '+people(bs)+'명 · 번호 '+items.length+'개 · 수령 '+(items.length-left.length)+' / '+items.length+'</span>'+bulk+'</div>'+
           '<div class="sum">'+prizeSum(items)+'</div>'+
           '<div class="tblWrap"><table>'+head+'<tbody>'+
           bs.map(function(b,i){
@@ -270,6 +348,7 @@
             return '<tr><td class="no">'+(i+1)+'</td>'+
               '<td class="gp gp-start tk">'+b.items.map(function(it){ return '<div class="ln">'+it.ticket+'번</div>'; }).join('')+'</td>'+
               '<td class="gp">'+b.items.map(function(it){ return '<div class="ln">'+esc(it.prize)+'</div>'; }).join('')+'</td>'+
+              '<td class="gk gk-start">'+b.items.map(function(it){ return pkCell(it.ticket); }).join('')+'</td>'+
               '<td class="gw gw-start nm">'+esc(b.name)+'</td><td class="gw tm">'+short(b.created_at)+'</td>'+
               (withPh?'<td class="gw">'+ph+'</td>':'')+(withSign?'<td class="sign"></td>':'')+'</tr>';
           }).join('')+
@@ -278,14 +357,21 @@
       if(!sel && !qn){
         // 아직 인증 안 된 번호 — 상품별로
         var byP={}, order=[];
-        winRows.forEach(function(w){ if(done[w.ticket] || w.prize==='무효표') return; if(!byP[w.prize]){ byP[w.prize]=[]; order.push(w.prize); } if(byP[w.prize].indexOf(w.ticket)<0) byP[w.prize].push(w.ticket); });
-        h+='<section class="sec un"><p class="pr-head">'+esc(TITLE)+'</p><div class="sec-h"><h2>아직 인증 안 된 당첨 번호</h2><span class="meta">'+unCnt+'개 · 이름을 알 수 없어 번호만 나옵니다</span></div>'+
-          (order.length ? order.map(function(p){ var a=byP[p].sort(function(x,y){return x-y;}); return '<h3>'+esc(p)+'<small>'+a.length+'개</small></h3><div class="chips">'+a.map(function(n){ return '<span>'+n+'</span>'; }).join('')+'</div>'; }).join('')
-            : '<div class="empty">모든 당첨 번호가 인증되었습니다.</div>')+
+        winRows.forEach(function(w){ if(done[w.ticket] || w.prize==='무효표') return; if(onlyLeft && isPk(w.ticket)) return; if(!byP[w.prize]){ byP[w.prize]=[]; order.push(w.prize); } if(byP[w.prize].indexOf(w.ticket)<0) byP[w.prize].push(w.ticket); });
+        // 번호를 누르면 수령 확인 (홈페이지 인증 없이 번호표만 보여 주고 받아 가는 경우)
+        function chip(n){
+          if(printing || pickErr) return '<span>'+n+'</span>';
+          return '<button type="button" class="'+(isPk(n)?'on':'')+'" data-pku="'+n+'"'+(pkBusy?' disabled':'')+' title="'+(isPk(n)?esc(pkTitle(n))+' — 누르면 취소':'누르면 수령 확인')+'"'+
+            ' aria-label="'+n+'번 '+(isPk(n)?'수령 확인 취소':'수령 확인')+'">'+(isPk(n)?'✓ ':'')+n+'</button>';
+        }
+        h+='<section class="sec un"><p class="pr-head">'+esc(TITLE)+'</p><div class="sec-h"><h2>아직 인증 안 된 당첨 번호</h2><span class="meta">'+unCnt+'개 · 이름을 알 수 없어 번호만 나옵니다'+(pickErr?'':' · 번호표를 보여 주고 받아 가면 번호를 눌러 수령 확인')+'</span></div>'+
+          (order.length ? order.map(function(p){ var a=byP[p].sort(function(x,y){return x-y;}); return '<h3>'+esc(p)+'<small>'+a.length+'개</small></h3><div class="chips">'+a.map(chip).join('')+'</div>'; }).join('')
+            : '<div class="empty">'+(onlyLeft?'수령 안 한 번호가 없습니다.':'모든 당첨 번호가 인증되었습니다.')+'</div>')+
           (voids.length ? '<h3 class="void">무효표<small>'+voids.length+'장 · 경품 없음 · 인증 받지 않음</small></h3><div class="chips void">'+voids.map(function(n){ return '<span>'+n+'</span>'; }).join('')+'</div>' : '')+'</section>';
       }
       $('list').innerHTML = h ? h+foot
-        : '<div class="empty">'+(claims.length?'찾는 이름 · 번호가 없습니다.':'아직 당첨 인증이 없습니다 — 당첨자가 홈페이지 첫 화면에서 인증하면 여기에 교회별로 모입니다.')+'</div>';
+        : '<div class="empty">'+(!claims.length?'아직 당첨 인증이 없습니다 — 당첨자가 홈페이지 첫 화면에서 인증하면 여기에 교회별로 모입니다.'
+            :(onlyLeft?'이 조건에서 수령 안 한 경품이 없습니다.':'찾는 이름 · 번호가 없습니다.'))+'</div>';
     }
 
     async function load(){
@@ -296,6 +382,7 @@
         var w=await window.sb.from('prize_winners').select('ticket,prize,seq').eq('event',EVENT).order('seq').order('ticket');
         if(w.error) throw w.error;
         claims=c.data||[]; winRows=w.data||[];
+        await loadPicks();
         build(); renderSelect(); render();
         await signPhotos(); render();
       }catch(e){
@@ -303,6 +390,32 @@
         $('list').innerHTML='<div class="empty">불러오지 못했습니다: '+esc(window.krErr(m))+(/prize_|does not exist|schema cache/i.test(m)?'<br>Supabase SQL Editor에서 prize-setup.sql을 먼저 실행해 주세요.':'')+'</div>';
       }
       busy=false; $('reloadBtn').disabled=false; $('reloadBtn').textContent='새로 불러오기';
+    }
+
+    // ----- 수령 확인 (prize_pickups — 임원만) -----
+    async function loadPicks(){
+      try{
+        var p=await window.sb.from('prize_pickups').select('ticket,picked_at,picked_by_name').eq('event',EVENT);
+        if(p.error) throw p.error;
+        picks={}; (p.data||[]).forEach(function(x){ picks[x.ticket]=x; }); pickErr='';
+      }catch(e){ var m=String((e&&e.message)||e); pickErr=/prize_pickups|schema cache|does not exist/i.test(m)?'setup':m; }
+    }
+    // 저장 중에는 모든 수령 단추를 잠가 연타 · 동시 저장을 막고, 끝나면 서버에서 다시 받아 그림 (다른 임원이 누른 것도 함께 반영)
+    async function setPicked(ts, on, btn){
+      if(pkBusy || pickErr || !ts.length) return;
+      pkBusy=true;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-pk],[data-pkall],[data-pku]'),function(b){ b.disabled=true; });
+      if(btn) btn.textContent='저장 중…';
+      try{
+        var r = on
+          ? await window.sb.from('prize_pickups').upsert(ts.map(function(t){ return { event:EVENT, ticket:t, picked_by_name:who }; }),{ onConflict:'event,ticket', ignoreDuplicates:true })
+          : await window.sb.from('prize_pickups').delete().eq('event',EVENT).in('ticket',ts);
+        if(r.error) throw r.error;
+      }catch(e){ alert('저장하지 못했습니다: '+window.krErr(String((e&&e.message)||e))); }
+      await loadPicks();
+      pkBusy=false; render();
+      var back=$('list').querySelector('[data-pk="'+ts[0]+'"],[data-pku="'+ts[0]+'"]');   // 키보드로 누른 경우 초점을 그 자리로
+      if(back && ts.length===1) back.focus({preventScroll:true});
     }
 
     // 인증 사진 — 비공개 저장소(prize-proofs)라 임원에게만 6시간짜리 보기 주소를 받아 옴 (처음 보는 사진만)
@@ -355,9 +468,30 @@
       }
     });
     $('list').addEventListener('click',function(e){
-      var t=e.target.closest('button.th'); if(!t) return;
-      var b=BATCH[t.getAttribute('data-b')]; if(b) lbOpen(b, +t.getAttribute('data-i'), t);
+      var t=e.target.closest('button.th');
+      if(t){ var b=BATCH[t.getAttribute('data-b')]; if(b) lbOpen(b, +t.getAttribute('data-i'), t); return; }
+      var p=e.target.closest('[data-pk]');
+      if(p){ var n=+p.getAttribute('data-pk');
+        if(isPk(n)){ if(!confirm(n+'번 ('+prizeOf(n)+') 수령 확인을 취소할까요?')) return; setPicked([n],false,p); }
+        else setPicked([n],true,p);
+        return; }
+      var a=e.target.closest('[data-pkall]');
+      if(a){ var ts=a.getAttribute('data-pkall').split(',').map(Number);
+        if(!confirm(a.getAttribute('data-label')+' — 남은 '+ts.length+'개를 모두 수령 확인할까요?\n('+ts.join(', ')+'번)')) return;
+        setPicked(ts,true,a); return; }
+      var u=e.target.closest('[data-pku]');
+      if(u){ var m=+u.getAttribute('data-pku');
+        if(isPk(m)){ if(!confirm(m+'번 ('+prizeOf(m)+') 수령 확인을 취소할까요?')) return; setPicked([m],false,u); }
+        else { if(!confirm(m+'번 ('+prizeOf(m)+')은 홈페이지에서 당첨 인증을 하지 않은 번호입니다.\n번호표를 확인하셨으면 수령 확인할까요?')) return; setPicked([m],true,u); }
+      }
     });
+
+    $('optLeft').addEventListener('change',render);
+    // 여러 임원이 함께 나눠 줄 때를 위해 1분마다 수령 기록만 새로 받음 (저장 · 인쇄 중이거나 화면을 안 볼 때는 쉼)
+    setInterval(async function(){
+      if(busy || pkBusy || printing || document.hidden || !claims.length && !winRows.length) return;
+      await loadPicks(); if(!pkBusy && !printing) render();
+    },60000);
 
     $('fChurch').addEventListener('change',render);
     $('q').addEventListener('input',render);
