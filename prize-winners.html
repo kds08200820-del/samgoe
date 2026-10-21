@@ -93,7 +93,7 @@
     th.gk,td.gk{background:#f1f8f3;} th.gk.gh{background:#d8eedf;color:var(--ok);}
     .gk-start{border-left:3px solid var(--ok)!important;}
     .pk{min-height:34px;padding:0 12px;border:1.5px solid var(--ok);border-radius:8px;background:#fff;color:var(--ok);font-family:inherit;font-size:13.5px;font-weight:700;
-      cursor:pointer;white-space:nowrap;user-select:none;-webkit-user-select:none;}
+      cursor:pointer;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;user-select:none;-webkit-user-select:none;}
     .pk:hover{background:#eafaf0;}
     .pk.on{background:var(--ok);color:#fff;font-weight:600;font-size:12.5px;}
     .pk.on:hover{background:#0b6232;}
@@ -108,17 +108,37 @@
     .chips button:hover{border-color:var(--ok);}
     .chips button.on{background:var(--ok);color:#fff;}
     .chips button:disabled{cursor:default;}
-    /* 경품 남은 수량 */
-    .stock table{min-width:520px;}
+    /* 경품 남은 재고 (맨 아래) — 경품 수량 → 당첨 인증 → 수령 완료 → 남은 재고 */
+    #stock{scroll-margin-top:180px;}   /* 위에 붙은 도구 줄에 제목이 가리지 않게 */
+    a.kpi:hover{border-color:var(--primary);}
+    .kpi .go{margin-top:2px;font-size:12px;font-weight:600;color:var(--primary);}
+    .flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:12px 0 4px;}
+    .flow span{padding:6px 12px;border-radius:8px;background:var(--surface-soft);border:1px solid var(--hairline);font-size:13.5px;color:var(--bodytext);}
+    .flow span b{margin-left:4px;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums;}
+    .flow span.ok{background:#eafaf0;border-color:#bfe3cc;} .flow span.ok b{color:var(--ok);}
+    .flow span.left{background:var(--primary);border-color:var(--primary);color:rgba(255,255,255,.8);} .flow span.left b{color:#fff;}
+    .flow i{font-style:normal;color:var(--muted);}
+    .stock .fn{margin:6px 0 0;font-size:13px;color:var(--muted);line-height:1.6;}
+    .stock table{min-width:680px;}
     .stock td,.stock th{text-align:right;} .stock td.l,.stock th.l{text-align:left;}
     .stock td.left{font-weight:800;color:var(--primary);}
     .stock td.zero{color:var(--muted);font-weight:600;}
+    .stock td.dim,.stock th.dim{color:var(--muted);font-size:13px;}
     .stock tfoot td{font-weight:800;border-top:2px solid var(--ink);}
     .bar-in{display:block;height:6px;margin-top:5px;border-radius:3px;background:#e7e2d6;overflow:hidden;}
     .bar-in i{display:block;height:100%;background:var(--ok);}
     .pr-head,.pr-foot{display:none;}
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
-    @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .tools{position:static;} .tools .sp{display:none;} .pk-all{margin-left:0;} }
+    @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} .tools{position:static;} .tools .sp{display:none;} .pk-all{margin-left:0;} #stock{scroll-margin-top:56px;} }
+    /* 휴대폰 — 현장에서 수령 확인 단추가 옆으로 밀지 않아도 보이게: 순 칸 빼고, 날짜 빼고 시각만, 재고표는 세부 칸 뺌 */
+    @media (max-width:600px){
+      .sec{padding:16px 14px;}
+      td.no,th.no{display:none;}
+      th,td{padding:8px 5px;}
+      td.gp .ln{font-size:13.5px;}
+      .pk{padding:0 10px;} .pk .d{display:none;}
+      .stock table{min-width:0;} .stock th{white-space:normal;} .stock .dim{display:none;}
+    }
 
     /* 인쇄 — 화면의 단추 · 숫자 상자는 빼고 명단만. '교회마다 새 쪽'을 켜면 교회마다 새 종이에서 시작 */
     @media print{
@@ -143,7 +163,10 @@
       .th{width:72px;height:72px;border-color:#999;}
       .chips span,.chips button{border:1px solid #bbb;background:none;color:#000;}
       .chips button.on{text-decoration:line-through;}
-      .lb,.stock,.pk-all,.pk-done,.pk-note{display:none!important;}
+      .lb,.pk-all,.pk-done,.pk-note,.bar-in{display:none!important;}
+      body.part .stock{display:none!important;}   /* 교회를 골라 인쇄할 때는 재고표 빼고, 전체 인쇄일 때만 맨 끝에 붙임 */
+      .stock{break-inside:avoid;}
+      .flow span{background:none!important;border-color:#999!important;color:#000!important;} .flow span b{color:#000!important;}
       td.gp .ln,td.gk .ln{min-height:22px;}
       .pk{border:0;padding:0;min-height:0;background:none!important;color:#000!important;font-size:12px;}
       th.gk,td.gk{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -160,8 +183,8 @@
     <div class="crumb"><a href="officer.html">← 임원방</a> · <a href="walk-admin.html#prize">경품 당첨 인증 현황</a></div>
     <h1 class="title">제6회 3·1 만세길 걷기 · 경품 당첨자 명단</h1>
     <p class="sub">당첨자가 홈페이지 첫 화면에서 당첨 인증할 때 적은 이름 · 소속 교회로 묶었습니다. 한 줄이 한 사람의 인증이고, 왼쪽 <b style="color:var(--gold-ink)">경품</b> 란에 번호 · 상품, 오른쪽 <b style="color:var(--primary)">지원자</b> 란에 이름 · 인증 시각 · 인증 사진이 나옵니다.
-      사진을 누르면 크게 볼 수 있습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다. 인증하지 않은 번호는 이름을 알 수 없어 맨 아래에 번호만 나옵니다. 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.<br>
-      <b style="color:var(--ok)">수령 확인</b> — 물건을 내줄 때 번호 옆 <b>수령 확인</b>을 누르거나, 교회가 한꺼번에 가져가면 교회 이름 옆 <b>남은 것 모두 수령 확인</b>을 누르세요. 잘못 눌렀으면 초록색 단추를 다시 누르면 취소됩니다. 맨 위 <b>경품 남은 수량</b>이 바로 줄어듭니다.</p>
+      사진을 누르면 크게 볼 수 있습니다. 교회를 고르면 그 교회만 보이고, 그대로 인쇄됩니다. 인증하지 않은 번호는 이름을 알 수 없어 교회 명단 아래에 번호만 나옵니다. 잘못 올라온 인증 삭제는 <a href="walk-admin.html#prize">경품 당첨 인증 현황</a>에서 합니다.<br>
+      <b style="color:var(--ok)">수령 확인</b> — 현장에서 물건을 건네줄 때 번호 옆 <b>수령 확인</b>을 누르거나, 교회가 한꺼번에 가져가면 교회 이름 옆 <b>남은 것 모두 수령 확인</b>을 누르세요. 임원 직책이 있는 분은 누구나 누를 수 있고, 누른 분 이름과 시각이 단추에 남습니다. 잘못 눌렀으면 초록색 단추를 다시 누르면 취소됩니다. 맨 아래 <b>경품 남은 재고</b>가 바로 줄어듭니다.</p>
 
     <div class="kpis">
       <div class="kpi navy"><div class="k">당첨 번호</div><div class="n" id="kAll">–</div></div>
@@ -169,10 +192,10 @@
       <div class="kpi"><div class="k">아직 인증 안 된 번호</div><div class="n" id="kUn">–</div></div>
       <div class="kpi"><div class="k">당첨자 소속 교회 · 단체</div><div class="n" id="kCh">–</div></div>
       <div class="kpi"><div class="k">수령 완료</div><div class="n" id="kPk" style="color:var(--ok)">–</div></div>
-      <div class="kpi"><div class="k">남은 경품</div><div class="n" id="kLeft" style="color:var(--primary)">–</div></div>
+      <a class="kpi" href="#stock"><div class="k">남은 재고</div><div class="n" id="kLeft" style="color:var(--primary)">–</div><div class="go">↓ 맨 아래 재고표</div></a>
     </div>
 
-    <section class="sec stock" id="stock"><div class="empty">불러오는 중…</div></section>
+    <p class="pk-note" id="pkNote" hidden></p>
 
     <div class="tools">
       <select id="fChurch" aria-label="교회 고르기"><option value="">전체 교회 · 단체</option></select>
@@ -187,6 +210,9 @@
     </div>
 
     <div id="list"><div class="empty">불러오는 중…</div></div>
+
+    <section class="sec stock" id="stock"><div class="empty">불러오는 중…</div></section>
+    <p class="pr-foot" id="prFoot"></p>
   </main>
 
   <!-- 인증 사진 크게 보기 — 바깥(어두운 곳) 누르기 · Esc · × 로 닫힘, ← → 로 넘김 -->
@@ -239,35 +265,49 @@
     function isPk(t){ return !!picks[t]; }
     function prizeOf(t){ var a=[]; winRows.forEach(function(w){ if(w.ticket===t && a.indexOf(w.prize)<0) a.push(w.prize); }); return a.join(' · '); }
     function pkTitle(t){ var p=picks[t]; return p ? (short(p.picked_at)+' · '+(p.picked_by_name||'임원')+' 확인') : ''; }
+    // 수령한 번호는 단추에 시각 · 확인한 임원 이름을 그대로 보임 (휴대폰은 title이 안 보여서)
     function pkCell(t){
-      if(printing) return '<div class="ln"><span class="pk">'+(isPk(t)?'✓ '+short(picks[t].picked_at):'&nbsp;')+'</span></div>';
+      if(printing) return '<div class="ln"><span class="pk">'+(isPk(t)?'✓ '+esc(pkTitle(t)):'&nbsp;')+'</span></div>';
       if(pickErr) return '<div class="ln">–</div>';
       return '<div class="ln"><button type="button" class="pk'+(isPk(t)?' on':'')+'" data-pk="'+t+'"'+(pkBusy?' disabled':'')+
         (isPk(t)?' title="'+esc(pkTitle(t))+' — 다시 누르면 취소"':'')+' aria-label="'+t+'번 '+(isPk(t)?'수령 확인 취소':'수령 확인')+'">'+
-        (isPk(t)?'✓ 수령 '+short(picks[t].picked_at):'수령 확인')+'</button></div>';
+        (isPk(t)?'✓ <span class="d">'+short(picks[t].picked_at).replace(' ',' </span>')+' · '+esc(picks[t].picked_by_name||'임원'):'수령 확인')+'</button></div>';
     }
 
-    // 경품 남은 수량 — 상품 이름별 (같은 이름은 추첨 회차가 달라도 합침, 무효표 제외)
+    // 경품 남은 재고 (맨 아래) — 상품 이름별로 경품 수량 → 당첨 인증 → 수령 완료 → 남은 재고 (같은 이름은 추첨 회차가 달라도 합침, 무효표 제외)
+    //   남은 재고 = 인증하고 아직 안 받아 간 것 + 인증도 안 한 것. 번호표만 보여 주고 받아 간 것(인증 없음)도 수령 완료에 들어감
     function renderStock(){
       var by={}, order=[], claimed={};
       claims.forEach(function(x){ claimed[x.ticket]=1; });
       winRows.forEach(function(w){ if(w.prize==='무효표') return; if(!by[w.prize]){ by[w.prize]={}; order.push(w.prize); } by[w.prize][w.ticket]=1; });
-      var tot={n:0,pk:0,wait:0};
+      var tot={name:'합계',n:0,cl:0,pk:0,wait:0};
       var rows=order.map(function(p){
-        var ts=Object.keys(by[p]).map(Number), pk=ts.filter(isPk).length, wait=ts.filter(function(t){ return !isPk(t) && claimed[t]; }).length;
-        tot.n+=ts.length; tot.pk+=pk; tot.wait+=wait;
-        return {name:p, n:ts.length, pk:pk, wait:wait};
+        var ts=Object.keys(by[p]).map(Number), cl=ts.filter(function(t){ return claimed[t]; }).length,
+            pk=ts.filter(isPk).length, wait=ts.filter(function(t){ return !isPk(t) && claimed[t]; }).length;
+        tot.n+=ts.length; tot.cl+=cl; tot.pk+=pk; tot.wait+=wait;
+        return {name:p, n:ts.length, cl:cl, pk:pk, wait:wait};
       });
+      var left=tot.n-tot.pk;
       $('kPk').innerHTML=tot.pk+'<small>/ '+tot.n+'개</small>';
-      $('kLeft').innerHTML=(tot.n-tot.pk)+'<small>개</small>';
-      var note = pickErr==='setup' ? '<p class="pk-note">수령 확인 기능이 아직 켜지지 않았습니다. Supabase SQL Editor에서 prize-pickup-setup.sql을 실행하면 켜집니다.</p>'
-        : (pickErr ? '<p class="pk-note">수령 기록을 불러오지 못했습니다: '+esc(window.krErr(pickErr))+'</p>' : '');
-      $('stock').innerHTML='<div class="sec-h"><h2>경품 남은 수량</h2><span class="meta">수령 확인할 때마다 바로 줄어듭니다 · 무효표 제외</span></div>'+note+
-        '<div class="tblWrap" style="margin-top:12px"><table><thead><tr><th class="l">상품</th><th>경품 수량</th><th>수령 완료</th><th>남은 수량</th><th>남은 것 중 인증된 번호</th></tr></thead><tbody>'+
-        rows.map(function(r){ var left=r.n-r.pk;
-          return '<tr><td class="l">'+esc(r.name)+'<span class="bar-in" aria-hidden="true"><i style="width:'+(r.n?Math.round(r.pk/r.n*100):0)+'%"></i></span></td>'+
-            '<td>'+r.n+'</td><td>'+r.pk+'</td><td class="'+(left?'left':'zero')+'">'+(left?left:'0 · 다 나감')+'</td><td>'+r.wait+'</td></tr>'; }).join('')+
-        '</tbody><tfoot><tr><td class="l">합계</td><td>'+tot.n+'</td><td>'+tot.pk+'</td><td>'+(tot.n-tot.pk)+'</td><td>'+tot.wait+'</td></tr></tfoot></table></div>';
+      $('kLeft').innerHTML=left+'<small>개</small>';
+      // 수령 확인이 꺼져 있거나 못 불러오면 맨 위(도구 줄 위)에 알림 — 단추 대신 '–'가 나오는 까닭
+      $('pkNote').hidden=!pickErr;
+      $('pkNote').innerHTML = pickErr==='setup'
+        ? '<b>수령 확인이 아직 꺼져 있습니다.</b> 그래서 수령 확인 칸에 단추 대신 –가 나옵니다. 최고관리자가 Supabase → SQL Editor에서 <b>prize-pickup-setup.sql</b>을 한 번 실행하면 임원 누구나 이 화면에서 수령 확인을 누를 수 있습니다.'
+        : (pickErr ? '수령 기록을 불러오지 못했습니다: '+esc(window.krErr(pickErr))+' — <b>새로 불러오기</b>를 눌러 주세요.' : '');
+      function tr(r,foot){ var l=r.n-r.pk;
+        return '<tr><td class="l">'+esc(r.name)+(foot?'':'<span class="bar-in" aria-hidden="true"><i style="width:'+(r.n?Math.round(r.pk/r.n*100):0)+'%"></i></span>')+'</td>'+
+          '<td>'+r.n+'</td><td>'+r.cl+'</td><td>'+r.pk+'</td><td class="'+(l?'left':'zero')+'">'+(l?l:'0 · 다 나감')+'</td>'+
+          '<td class="dim">'+r.wait+'</td><td class="dim">'+(l-r.wait)+'</td></tr>'; }
+      $('stock').innerHTML='<p class="pr-head">'+esc(TITLE)+'</p>'+
+        '<div class="sec-h"><h2>경품 남은 재고</h2><span class="meta">전체 경품 기준 · 수령 확인할 때마다 바로 줄어듭니다 · 무효표 제외</span></div>'+
+        '<div class="flow"><span>경품<b>'+tot.n+'</b></span><i>→</i><span>당첨 인증<b>'+tot.cl+'</b></span><i>→</i>'+
+          '<span class="ok">수령 완료<b>'+tot.pk+'</b></span><i>→</i><span class="left">남은 재고<b>'+left+'</b></span></div>'+
+        '<p class="fn">남은 재고 '+left+'개 = 인증하고 아직 안 받아 감 '+tot.wait+'개 + 인증도 안 함 '+(left-tot.wait)+'개. 홈페이지 인증 없이 번호표만 보여 주고 받아 간 것도 수령 완료에 들어갑니다.</p>'+
+        '<div class="tblWrap" style="margin-top:12px"><table><thead><tr><th class="l">상품</th><th>경품 수량</th><th>당첨 인증</th><th>수령 완료</th><th>남은 재고</th>'+
+          '<th class="dim">└ 인증 후 안 받아 감</th><th class="dim">└ 인증 안 함</th></tr></thead><tbody>'+
+        rows.map(function(r){ return tr(r); }).join('')+
+        '</tbody><tfoot>'+tr(tot,true)+'</tfoot></table></div>';
     }
 
     // 교회별로 묶고, 교회 안에서는 '한 번에 올린 인증'(한 사람) 단위로 한 줄
@@ -317,9 +357,10 @@
       var onlyLeft=$('optLeft').checked;
       document.body.classList.toggle('pb', $('optPb').checked);
       document.body.classList.toggle('no-un', !$('optUn').checked);
+      document.body.classList.toggle('part', !!(sel||qn));   // 일부만 인쇄할 때는 맨 끝 재고표를 뺌
       $('optUnWrap').style.display = sel ? 'none' : '';
 
-      var h='', foot='<p class="pr-foot">'+stamp(new Date().toISOString())+' 출력 · '+esc(who)+' · 임원 전용 — 이름이 들어 있으니 경품을 나눈 뒤에는 버려 주세요.</p>';
+      var h='', foot=stamp(new Date().toISOString())+' 출력 · '+esc(who)+' · 임원 전용 — 이름이 들어 있으니 경품을 나눈 뒤에는 버려 주세요.';
       // 표 칸: 화면에서는 인증 사진을 늘 보이고, 인쇄할 때는 '인증 사진도 인쇄'를 켰을 때만 + '받은 분 확인' 칸을 붙임
       var withPh = !printing || $('optPh').checked, withSign = printing;
       var head='<thead><tr><th class="no" rowspan="2">순</th><th class="gh gp gp-start" colspan="2">경품</th><th class="gh gk gk-start" rowspan="2">수령 확인</th>'+
@@ -369,7 +410,8 @@
             : '<div class="empty">'+(onlyLeft?'수령 안 한 번호가 없습니다.':'모든 당첨 번호가 인증되었습니다.')+'</div>')+
           (voids.length ? '<h3 class="void">무효표<small>'+voids.length+'장 · 경품 없음 · 인증 받지 않음</small></h3><div class="chips void">'+voids.map(function(n){ return '<span>'+n+'</span>'; }).join('')+'</div>' : '')+'</section>';
       }
-      $('list').innerHTML = h ? h+foot
+      $('prFoot').innerHTML = h ? foot : '';
+      $('list').innerHTML = h ? h
         : '<div class="empty">'+(!claims.length?'아직 당첨 인증이 없습니다 — 당첨자가 홈페이지 첫 화면에서 인증하면 여기에 교회별로 모입니다.'
             :(onlyLeft?'이 조건에서 수령 안 한 경품이 없습니다.':'찾는 이름 · 번호가 없습니다.'))+'</div>';
     }
@@ -487,11 +529,11 @@
     });
 
     $('optLeft').addEventListener('change',render);
-    // 여러 임원이 함께 나눠 줄 때를 위해 1분마다 수령 기록만 새로 받음 (저장 · 인쇄 중이거나 화면을 안 볼 때는 쉼)
+    // 여러 임원이 현장에서 함께 나눠 줄 때를 위해 30초마다 수령 기록만 새로 받음 (저장 · 인쇄 중이거나 화면을 안 볼 때는 쉼)
     setInterval(async function(){
       if(busy || pkBusy || printing || document.hidden || !claims.length && !winRows.length) return;
       await loadPicks(); if(!pkBusy && !printing) render();
-    },60000);
+    },30000);
 
     $('fChurch').addEventListener('change',render);
     $('q').addEventListener('input',render);
