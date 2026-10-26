@@ -112,7 +112,10 @@
         location.href = 'index.html';
       });
     } else {
-      el.innerHTML = '<a href="login.html" style="color:rgba(255,255,255,0.9)">로그인</a>';
+      // 임원방 들어가는 곳은 로그인 옆 (맨 앞) — 누르면 로그인한 뒤 바로 임원방으로
+      el.innerHTML = '<a href="login.html?next=officer.html" style="color:#ffd479;font-weight:700">임원방</a>' +
+        '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>' +
+        '<a href="login.html" style="color:rgba(255,255,255,0.9)">로그인</a>';
     }
   }
   window.renderAuth = renderAuth;
@@ -144,7 +147,9 @@
     var r = await window.sb.auth.getSession();
     if (!r.data.session) {
       alert('로그인이 필요한 서비스입니다.');
-      location.href = 'login.html';
+      // 로그인한 뒤 이 화면으로 돌아오도록
+      var here = (location.pathname.split('/').pop() || 'index.html') + location.search + location.hash;
+      location.href = 'login.html?next=' + encodeURIComponent(here);
       return false;
     }
     return r.data.session.user;

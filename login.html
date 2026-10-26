@@ -71,12 +71,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
-  <script src="auth.js?v=12"></script>
+  <script src="auth.js?v=13"></script>
   <script>
     var f = document.getElementById('loginForm');
     var err = document.getElementById('err');
     var rememberBox = document.getElementById('remember');
     function showErr(m){ err.textContent = m; err.style.display = 'block'; }
+    // 로그인한 뒤 갈 곳 (?next=officer.html 등) — 이 홈페이지 안의 페이지만, 아니면 첫 화면
+    var NEXT = (function(){
+      var n = new URLSearchParams(location.search).get('next') || '';
+      return /^[A-Za-z0-9_-]+\.html(?:[?#][A-Za-z0-9_=&%#.-]*)?$/.test(n) ? n : 'index.html';
+    })();
+    if (/^officer\.html/.test(NEXT)) {
+      f.insertAdjacentHTML('beforebegin', '<p style="margin:0 0 14px;padding:10px 12px;background:#eef3fb;border:1px solid #cdddf3;color:#032257;font-size:14px;line-height:1.6;">임원방에 들어가려면 로그인해 주세요. 로그인하면 바로 임원방으로 갑니다.</p>');
+    }
 
     // 저장해 둔 이메일/설정 불러오기 (편의)
     try {
@@ -102,7 +110,7 @@
           password: document.getElementById('pw').value
         });
         if (res.error) { showErr(window.krErr(res.error.message)); }
-        else { location.href = 'index.html'; return; }
+        else { location.href = NEXT; return; }
       } catch (ex) { showErr(window.krErr(ex && ex.message)); }
       btn.disabled = false; btn.textContent = '로그인';
     });
