@@ -47,6 +47,7 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 ## 회계 관리 (삼기연 · 삼일만세운동본부 따로)
 
 - 처음 한 번: 삼기연 Supabase에서 `ledger-setup.sql`, 만세운동본부 Supabase에서 `manse/ledger-setup.sql` 실행.
+  휴대폰에서는 `setup-sql.html` — 단추 하나로 SQL 복사 (삼기연: 걷기 회차 + 행운권 + 회계 한 번에) → SQL Editor 열기.
 - `accounting.html` (임원방 → 회계 관리) — 삼기연 장부. 기록: 회계 · 회장 · 최고관리자, 보기 · 인쇄: 임원.
 - `manse/officer.html` → 회계 탭 — 만세운동본부 장부. 기록: 회계 · 부회계 · 대표회장 · 관리자, 보기 · 인쇄: 임원.
 - `ledger.js` · `ledger.css` — 두 곳이 같이 쓰는 장부 화면 (수입 · 지출 기록, 전기이월, 계정과목별 · 월별 표,

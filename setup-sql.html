@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>설치 SQL 복사 | 삼괴지역 기독교 연합회</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <style>
+    :root{--primary:#032257;--ink:#262626;--muted:#6b6b6b;--line:#e6e3dd;--soft:#f7f5f0;--dark:#0d1d3a;--ok:#0f7b3f;--bad:#c0392b;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--soft);color:var(--ink);word-break:keep-all;
+      font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;}
+    .bar{background:var(--dark);height:44px;display:flex;align-items:center;}
+    .bar a{max-width:640px;margin:0 auto;width:100%;padding:0 18px;font-size:13px;font-weight:700;color:rgba(255,255,255,.92);text-decoration:none;}
+    .wrap{max-width:640px;margin:0 auto;padding:26px 16px 60px;}
+    h1{margin:0 0 6px;font-size:24px;}
+    .sub{margin:0 0 20px;color:var(--muted);font-size:14.5px;line-height:1.7;}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin:0 0 16px;}
+    .card h2{margin:0 0 4px;font-size:18px;}
+    .card p.what{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.6;}
+    ol{margin:0;padding:0 0 0 20px;font-size:15px;line-height:1.7;}
+    ol li{margin:0 0 12px;}
+    .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;margin:8px 0 0;padding:0 16px;border:0;border-radius:10px;
+      background:var(--primary);color:#fff;font-family:inherit;font-size:16.5px;font-weight:700;text-decoration:none;cursor:pointer;}
+    .btn.line{background:#fff;color:var(--primary);border:1.5px solid var(--primary);}
+    .btn:disabled{opacity:.5;}
+    .msg{min-height:22px;margin:6px 0 0;font-size:14px;font-weight:700;}
+    .msg.ok{color:var(--ok);} .msg.bad{color:var(--bad);}
+    textarea{display:none;width:100%;height:140px;margin:8px 0 0;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:8px;}
+    textarea.show{display:block;}
+    .tip{margin:0;padding:12px 14px;border-radius:10px;background:#fdf3e7;color:#7a4f16;font-size:14px;line-height:1.7;}
+  </style>
+</head>
+<body>
+  <header class="bar"><a href="index.html">삼괴지역 기독교 연합회</a></header>
+  <main class="wrap">
+    <h1>설치 SQL 복사</h1>
+    <p class="sub">휴대폰에서도 됩니다. ① 복사 단추 → ② SQL Editor 열기 → ③ 빈 칸을 길게 눌러 붙여넣기 → ④ <b>Run</b>. 여러 번 실행해도 안전하고, 이미 있는 신청 · 경품 기록은 그대로 둡니다.</p>
+
+    <section class="card" data-set="samgoe">
+      <h2>1. 삼기연</h2>
+      <p class="what">걷기 회차 + 행운권 QR + 회계 관리 (한 번에)</p>
+      <ol>
+        <li>아래 단추로 복사
+          <button class="btn" type="button" data-copy disabled>불러오는 중…</button>
+          <div class="msg" data-msg></div>
+          <textarea readonly data-text></textarea>
+        </li>
+        <li>Supabase 삼기연 프로젝트의 SQL Editor 열기 (로그인 필요)
+          <a class="btn line" href="https://supabase.com/dashboard/project/xurdgazbcoxjaqkvlqff/sql/new" target="_blank" rel="noopener">SQL Editor 열기 ↗</a>
+        </li>
+        <li>편집 칸을 길게 눌러 <b>붙여넣기</b> → 오른쪽 아래 <b>Run</b><br>
+          결과 창에 <b>장부 기록 (처음엔 0)</b> 한 줄이 나오면 성공</li>
+      </ol>
+    </section>
+
+    <section class="card" data-set="manse">
+      <h2>2. 삼일만세운동본부</h2>
+      <p class="what">회계 관리 (만세운동본부 장부)</p>
+      <ol>
+        <li>아래 단추로 복사
+          <button class="btn" type="button" data-copy disabled>불러오는 중…</button>
+          <div class="msg" data-msg></div>
+          <textarea readonly data-text></textarea>
+        </li>
+        <li>Supabase에서 <b>만세운동본부 프로젝트</b>의 SQL Editor 열기
+          <a class="btn line" href="https://supabase.com/dashboard/project/elaockhopuvadamvwjeg/sql/new" target="_blank" rel="noopener">SQL Editor 열기 ↗</a>
+        </li>
+        <li>붙여넣기 → <b>Run</b> — 결과 창에 한 줄이 나오면 성공</li>
+      </ol>
+    </section>
+
+    <p class="tip">붙여넣기가 잘 안 되면: 복사 단추 아래에 나오는 글 상자를 길게 눌러 <b>전체 선택 → 복사</b>한 뒤 다시 붙여 넣으세요. 휴대폰에서 계속 어려우면 컴퓨터에서 같은 주소(samgoe-cc.or.kr/setup-sql.html)로 하시면 됩니다.</p>
+  </main>
+
+  <script>
+  (function(){
+    var SETS = {
+      samgoe: { files: ['walk-events-setup.sql', 'lucky-setup.sql', 'ledger-setup.sql'] },
+      manse:  { files: ['manse/ledger-setup.sql'] }
+    };
+    // 휴대폰(특히 아이폰)은 단추를 누른 그 순간에만 복사를 허락하므로, 글은 미리 불러 둠
+    function load(set){
+      return Promise.all(set.files.map(function(f){
+        return fetch(f + '?t=' + Date.now(), { cache: 'no-store' }).then(function(r){
+          if(!r.ok) throw new Error(f + ' (' + r.status + ')'); return r.text();
+        });
+      })).then(function(parts){ return parts.join('\n\n'); });
+    }
+    function legacyCopy(ta){
+      ta.classList.add('show'); ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      try { return document.execCommand('copy'); } catch(e){ return false; }
+    }
+    document.querySelectorAll('[data-set]').forEach(function(card){
+      var btn = card.querySelector('[data-copy]'), msg = card.querySelector('[data-msg]'), ta = card.querySelector('[data-text]');
+      var label = '📋 SQL 복사하기';
+      load(SETS[card.getAttribute('data-set')]).then(function(text){
+        ta.value = text; btn.disabled = false; btn.textContent = label;
+      }).catch(function(e){
+        btn.textContent = '불러오지 못했습니다'; msg.className = 'msg bad'; msg.textContent = '페이지를 새로 고쳐 주세요. ' + e.message;
+      });
+      btn.addEventListener('click', function(){
+        var lines = ta.value.split('\n').length;
+        function done(ok){
+          msg.className = 'msg ' + (ok ? 'ok' : 'bad');
+          msg.textContent = ok ? '✓ 복사했습니다 (' + lines.toLocaleString() + '줄) — 이제 SQL Editor를 여세요'
+                               : '자동 복사가 안 됩니다. 아래 글 상자를 길게 눌러 전체 선택 → 복사하세요.';
+          if(!ok) ta.classList.add('show');
+        }
+        if(navigator.clipboard && window.isSecureContext){
+          navigator.clipboard.writeText(ta.value).then(function(){ done(true); }, function(){ done(legacyCopy(ta)); });
+        } else done(legacyCopy(ta));
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
