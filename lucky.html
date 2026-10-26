@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>행운권 등록 | 3·1 만세길 걷기 · 삼괴지역 기독교 연합회</title>
+  <meta name="description" content="3·1 만세길 걷기 행운권 등록 — 행운권의 QR을 찍고 이름 · 생년월일 · 소속을 적어 주세요.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0d1d3a">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <style>
+    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
+      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
+      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
+      font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .bar{position:sticky;top:0;background:var(--dark);height:44px;display:flex;align-items:center;z-index:20;}
+    .bar .in{max-width:1024px;margin:0 auto;width:100%;padding:0 18px;display:flex;align-items:center;justify-content:space-between;}
+    .bar .in > a{font-size:13px;font-weight:700;color:rgba(255,255,255,0.92);}
+    #authArea{font-size:12px;}
+    .wrap{max-width:560px;margin:0 auto;padding:22px 16px 60px;}
+    .art{margin:0 0 18px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--hairline);}
+    .art img{display:block;width:100%;max-height:300px;object-fit:cover;}
+    .eyebrow{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:.2em;margin:0 0 8px;}
+    .title{margin:0;font-weight:700;font-size:clamp(24px,6.4vw,30px);color:var(--ink);line-height:1.3;}
+    .sub{margin:8px 0 20px;font-size:15px;color:var(--muted);line-height:1.7;}
+    .card{background:var(--canvas);border:1px solid var(--hairline);padding:22px 18px;margin-bottom:16px;border-radius:12px;}
+    .card h2{margin:0 0 10px;font-size:20px;color:var(--ink);line-height:1.4;}
+    .card p{margin:0 0 12px;font-size:15.5px;line-height:1.75;}
+    .ticket{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;margin:0 0 18px;border-radius:10px;
+      background:var(--primary);color:#fff;}
+    .ticket span{font-size:14px;font-weight:600;color:#e9dcb8;letter-spacing:.08em;}
+    .ticket b{font-size:28px;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums;}
+    .fld{margin-bottom:18px;}
+    .fld label{display:block;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:7px;}
+    .fld label small{font-size:13px;font-weight:500;color:var(--muted);margin-left:4px;}
+    .fld input{width:100%;min-height:52px;padding:12px 14px;border:1px solid var(--hairline-strong);border-radius:10px;font-size:18px;font-family:inherit;background:#fff;color:var(--ink);}
+    .fld input:focus{outline:none;border:2px solid var(--primary);padding:11px 13px;}
+    .fld input.bad{border-color:var(--err);}
+    .hint{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.6;}
+    .hint.ok{color:var(--ok);font-weight:600;} .hint.err{color:var(--err);}
+    .agree{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--hairline);border-radius:10px;background:#faf9f6;cursor:pointer;margin:4px 0 18px;}
+    .agree input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--primary);}
+    .agree b{display:block;font-size:15px;color:var(--ink);font-weight:700;}
+    .agree small{display:block;margin-top:4px;font-size:13px;line-height:1.6;color:var(--muted);}
+    .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;padding:0 20px;border:0;border-radius:10px;
+      background:var(--primary);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;user-select:none;-webkit-user-select:none;}
+    .btn:hover{background:var(--primary-active);} .btn:disabled{background:var(--hairline-strong);cursor:default;}
+    .btn.ghost{background:#fff;color:var(--primary);border:1.5px solid var(--hairline-strong);font-size:16px;min-height:50px;margin-top:10px;}
+    .btn.ghost:hover{background:var(--surface-soft);}
+    .msg{display:none;margin-top:12px;padding:12px 14px;font-size:15px;line-height:1.6;border-radius:10px;background:#fdecea;border:1px solid #f3c7c3;color:var(--err);}
+    .msg.on{display:block;}
+    .done{text-align:center;}
+    .done .check{width:60px;height:60px;border-radius:50%;background:#eafaf0;color:var(--ok);font-size:32px;line-height:60px;margin:4px auto 14px;font-weight:700;}
+    .done .ticket{justify-content:center;gap:14px;}
+    .small{font-size:14px!important;color:var(--muted);}
+    .tel{color:var(--primary);font-weight:700;text-decoration:underline;}
+    .codebox{display:flex;gap:8px;}
+    .codebox input{flex:1;min-width:0;min-height:52px;padding:0 14px;border:1px solid var(--hairline-strong);border-radius:10px;font-size:20px;font-family:inherit;
+      letter-spacing:.12em;text-transform:uppercase;font-variant-numeric:tabular-nums;}
+    .codebox input:focus{outline:none;border:2px solid var(--primary);padding:0 13px;}
+    .codebox .btn{width:auto;min-width:88px;}
+    .mine{list-style:none;margin:0;padding:0;}
+    .mine li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--hairline);font-size:15px;}
+    .mine li:first-child{border-top:0;}
+    .mine b{color:var(--primary);font-variant-numeric:tabular-nums;}
+    .mine span{color:var(--muted);font-size:13.5px;}
+    .helper{margin:-4px 0 18px!important;padding:11px 14px;border-radius:10px;background:#eef3fb;border:1px solid #cdddf3;color:var(--primary);font-size:14px!important;line-height:1.65!important;}
+    .foot{margin-top:24px;text-align:center;font-size:13px;color:var(--muted);line-height:1.8;}
+    .foot a{color:var(--primary);font-weight:600;}
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="assets/theme.css?v=3" />
+</head>
+<body>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+
+  <main class="wrap">
+    <div class="art" id="art" hidden><img id="artImg" alt=""></div>
+    <p class="eyebrow">행운권 등록</p>
+    <h1 class="title" id="evTitle">3·1 만세길 걷기</h1>
+    <p class="sub" id="evSub">행운권의 QR을 휴대폰 카메라로 찍으면 이 화면이 열립니다.</p>
+
+    <section class="card" id="vLoading"><p style="margin:0;color:var(--muted)">행운권을 확인하는 중…</p></section>
+
+    <!-- 등록 -->
+    <form class="card" id="vForm" novalidate hidden>
+      <div class="ticket"><span>행운권</span><b id="fNo"></b></div>
+      <p class="helper">어르신 · 가족을 도와 <b>대신 등록</b>해 드려도 됩니다. 그때는 <b>행운권 주인</b>의 이름 · 생년월일을 적어 주세요. 한 분은 한 장만 등록할 수 있습니다.</p>
+      <div class="fld"><label for="fName">이름</label><input id="fName" type="text" maxlength="40" autocomplete="off" enterkeyhint="next"></div>
+      <div class="fld">
+        <label for="fBirth">생년월일 <small>숫자 6자리</small></label>
+        <input id="fBirth" type="text" inputmode="numeric" maxlength="10" placeholder="예: 650312" autocomplete="off" enterkeyhint="next" aria-describedby="birthHint">
+        <div class="hint" id="birthHint">태어난 해 뒤 두 자리 · 월 · 일을 붙여 6자리로 적어 주세요.</div>
+      </div>
+      <div class="fld">
+        <label for="fChurch">소속</label>
+        <input id="fChurch" type="text" maxlength="60" list="churchList" placeholder="예: ○○교회 · 의용소방대 · 방범대" enterkeyhint="next">
+        <datalist id="churchList"></datalist>
+        <div class="hint">교회 · 의용소방대 · 방범대 · 직장 · 마을 등 소속을 적어 주세요. 소속이 없으면 '없음'이라고 적어 주세요.</div>
+      </div>
+      <div class="fld">
+        <label for="fPhone">휴대폰 번호 <small>선택</small></label>
+        <input id="fPhone" type="tel" inputmode="tel" maxlength="13" placeholder="예: 010-1234-5678" autocomplete="off" enterkeyhint="done">
+        <div class="hint">당첨되면 이 번호로 알려 드립니다. 어르신을 대신 등록할 때는 연락받을 가족 번호도 괜찮습니다. 비워 두셔도 됩니다.</div>
+      </div>
+      <label class="agree"><input type="checkbox" id="fAgree"><span><b>개인정보 수집 · 이용에 동의합니다 (필수)</b>
+        <small>모으는 것: 이름 · 생년월일 · 소속 · 휴대폰 번호(선택)<br>쓰는 곳: 행운권 경품 추첨 · 당첨 확인 · 당첨 안내 · 경품 전달<br>보관: 경품 전달을 마치면 지웁니다. 임원만 봅니다.<br>대신 등록할 때는 행운권 주인께 알리고 동의를 받아 주세요.</small></span></label>
+      <button class="btn" id="fSend" type="submit">등록하기</button>
+      <div class="msg" id="fMsg" role="alert"></div>
+    </form>
+
+    <!-- 등록 완료 -->
+    <section class="card done" id="vDone" hidden>
+      <div class="check" aria-hidden="true">✓</div>
+      <h2>등록되었습니다</h2>
+      <div class="ticket"><span>행운권</span><b id="dNo"></b></div>
+      <p id="dText"></p>
+      <p class="small">행운권에 <b>투표용</b> 칸(번호만 있는 쪽)이 있으면 점선을 따라 잘라서 투표함에 넣고, <b>개인용</b>(QR이 있는 쪽)은 추첨이 끝날 때까지 보관해 주세요.</p>
+      <button class="btn" id="dNext" type="button">다른 분 행운권도 등록하기</button>
+      <a class="btn ghost" href="index.html">홈페이지로 가기</a>
+    </section>
+
+    <!-- 이미 등록됨 -->
+    <section class="card" id="vTaken" hidden>
+      <h2>이미 등록된 행운권입니다</h2>
+      <div class="ticket"><span>행운권</span><b id="tNo"></b></div>
+      <p id="tText"></p>
+      <p class="small" id="tHelp"></p>
+    </section>
+
+    <!-- 등록을 받지 않음 -->
+    <section class="card" id="vClosed" hidden>
+      <h2>지금은 행운권 등록을 받지 않습니다</h2>
+      <div class="ticket"><span>행운권</span><b id="cNo"></b></div>
+      <p class="small" id="cHelp"></p>
+    </section>
+
+    <!-- 확인 코드 직접 넣기 (QR이 안 찍히거나 못 찾았을 때) -->
+    <form class="card" id="vCode" novalidate hidden>
+      <h2 id="kTitle">확인 코드 넣기</h2>
+      <p id="kText">QR이 찍히지 않으면 행운권의 QR 아래에 적힌 <b>확인 코드 8자리</b>(예: ABCD-2345)를 넣어 주세요.</p>
+      <div class="codebox">
+        <input id="kCode" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-2345" aria-label="확인 코드">
+        <button class="btn" id="kGo" type="submit">확인</button>
+      </div>
+      <div class="msg" id="kMsg" role="alert"></div>
+    </form>
+
+    <!-- 이 휴대폰에서 등록한 행운권 (이 기기에만 저장) -->
+    <section class="card" id="vMine" hidden>
+      <h2 style="font-size:17px">이 휴대폰으로 등록한 행운권 <small style="font-size:13px;font-weight:500;color:var(--muted)">대신 등록 포함</small></h2>
+      <ul class="mine" id="mineList"></ul>
+    </section>
+
+    <p class="foot" id="foot">주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회<br><a href="index.html">삼괴지역 기독교 연합회 홈페이지</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=3"></script>
+  <script src="auth.js?v=12"></script>
+  <script src="churches.js?v=2"></script>
+  <script src="walk-events.js?v=1"></script>
+  <script>
+  (function(){
+    // 행운권 QR 등록 (lucky-setup.sql 의 lucky_info · lucky_register) — 주소 ?c=확인 코드
+    var $=function(id){return document.getElementById(id);};
+    var VIEWS=['vLoading','vForm','vDone','vTaken','vClosed','vCode'];
+    var code=norm(new URLSearchParams(location.search).get('c')), info=null, busy=false, birth=null;
+    function norm(s){ return String(s||'').replace(/[^A-Za-z0-9]/g,'').toUpperCase(); }
+    function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function show(id){ VIEWS.forEach(function(v){ $(v).hidden = v!==id; }); }
+    function noText(n){ var s=String(n); while(s.length<3) s='0'+s; return 'No. '+s; }
+    // 이 기기에 남기는 이름은 가려서 (홍길동 → 홍*동) — 여러 사람이 한 휴대폰으로 등록할 때를 생각해
+    function mask(n){ n=Array.from(String(n||'').trim()); return n.length<=1?'*':n.length===2?n[0]+'*':n[0]+'*'.repeat(n.length-2)+n[n.length-1]; }
+    function store(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||'null'); localStorage.setItem(k,JSON.stringify(v)); }catch(_){ return null; } }
+    function kstamp(iso){
+      var d=new Date(new Date(iso).getTime()+9*3600000), h=d.getUTCHours(), m=d.getUTCMinutes();
+      return (d.getUTCMonth()+1)+'월 '+d.getUTCDate()+'일 '+(h<12?'오전 ':'오후 ')+((h+11)%12+1)+':'+(m<10?'0':'')+m;
+    }
+    // 행사 문의 — 전화번호는 눌러서 걸 수 있게
+    function contactHtml(){
+      var c=(info&&info.contact)||''; if(!c) return '행사 본부';
+      return esc(c).replace(/(0\d{1,2}-?\d{3,4}-?\d{4})/,function(p){ return '<a class="tel" href="tel:'+p.replace(/\D/g,'')+'">'+p+'</a>'; });
+    }
+
+    // 소속 고르기 — 회원교회 목록을 보여 주고, 다른 소속(의용소방대 · 방범대 등)은 직접 적음 · 지난번에 적은 소속
+    $('churchList').innerHTML=(window.CHURCHES||[]).map(function(c){ return '<option value="'+esc(c.name)+'">'; }).join('');
+    var last=store('lucky_last'); if(last&&last.church) $('fChurch').value=last.church;
+
+    // 생년월일 — 6자리(650312)로 적음. 19650312 · 1965.3.12 · 65.03.12 도 받음
+    //  6자리는 뒤 두 자리가 올해(예: 26)보다 크면 1900년대, 아니면 2000년대 — 아래에 몇 년생으로 읽었는지 보여 줌
+    function parseBirth(s){
+      s=String(s||'').trim(); var m, y, mo, d, digits=s.replace(/\D/g,''), now=new Date(Date.now()+9*3600000);
+      if((m=/^(\d{4})\D+(\d{1,2})\D+(\d{1,2})\D*$/.exec(s))){ y=+m[1]; mo=+m[2]; d=+m[3]; }
+      else if(/^\d{8}$/.test(digits) && !/\d\D+\d/.test(s.replace(/^\D+|\D+$/g,''))){ y=+digits.slice(0,4); mo=+digits.slice(4,6); d=+digits.slice(6); }
+      else if(/^\d{6}$/.test(digits) && /^\d{2}\D?\d{2}\D?\d{2}$/.test(s)){ var yy=+digits.slice(0,2); y=(yy>now.getUTCFullYear()%100?1900:2000)+yy; mo=+digits.slice(2,4); d=+digits.slice(4); }
+      else return null;
+      var t=new Date(Date.UTC(y,mo-1,d));
+      if(t.getUTCFullYear()!==y || t.getUTCMonth()!==mo-1 || t.getUTCDate()!==d) return null;
+      if(y<1900 || t.getTime()>now.getTime()) return null;
+      return { iso:y+'-'+(mo<10?'0':'')+mo+'-'+(d<10?'0':'')+d, text:y+'년 '+mo+'월 '+d+'일', short:digits.length===6 };
+    }
+    function birthHint(final){
+      var v=$('fBirth').value.trim(), h=$('birthHint'); birth=parseBirth(v);
+      $('fBirth').classList.toggle('bad', !!(final && v && !birth));
+      var dg=v.replace(/\D/g,'');
+      if(birth){ h.className='hint ok'; h.textContent='✓ '+birth.text+(birth.short && +birth.iso.slice(0,4)>=2000?' — 1900년대에 태어나셨으면 8자리로 적어 주세요. (예: 19250312)':''); }
+      // 6자리를 다 적었는데 날짜가 아니면 바로 알림 (19 · 20으로 시작하면 8자리를 적는 중일 수 있어 기다림)
+      else if(v && (final || dg.length>=8 || (dg.length===6 && !/^(19|20)/.test(dg)))){ h.className='hint err'; h.textContent='날짜가 맞지 않습니다. 숫자 6자리로 적어 주세요. (예: 1965년 3월 12일 → 650312)'; }
+      else { h.className='hint'; h.textContent='태어난 해 뒤 두 자리 · 월 · 일을 붙여 6자리로 적어 주세요.'; }
+    }
+    $('fBirth').addEventListener('input',function(){ birthHint(false); });
+    $('fBirth').addEventListener('blur',function(){ birthHint(true); });
+
+    function drawHead(){
+      if(!info) return;
+      document.title='행운권 등록 | '+info.title+' · 삼괴지역 기독교 연합회';
+      $('evTitle').textContent=info.title;
+      var sub=info.subtitle || [info.event_date?WalkEv.longDate(info.event_date):'', info.place||''].filter(Boolean).join(' · ');
+      $('evSub').textContent=sub || '행운권의 이름 · 생년월일 · 소속을 등록해 주세요.';
+      if(info.art_path && window.sb){
+        var u=window.sb.storage.from('lucky-art').getPublicUrl(info.art_path);
+        if(u&&u.data&&u.data.publicUrl){ $('artImg').src=u.data.publicUrl; $('artImg').alt=info.title; $('art').hidden=false; }
+      }
+    }
+    function drawMine(){
+      var list=(store('lucky_mine')||[]).filter(function(x){ return x && x.no; });
+      if(info) list=list.filter(function(x){ return x.e===info.event; });
+      $('vMine').hidden=!list.length;
+      $('mineList').innerHTML=list.map(function(x){ return '<li><b>'+noText(x.no)+'</b><span>'+esc(x.name||'')+(x.t?' · '+esc(kstamp(x.t)):'')+'</span></li>'; }).join('');
+    }
+
+    async function load(){
+      if(!code){ show('vCode'); drawMine(); return; }
+      if(!window.sb){ show('vCode'); $('kMsg').textContent='홈페이지 연결 설정을 찾지 못했습니다. 잠시 뒤 다시 열어 주세요.'; $('kMsg').classList.add('on'); return; }
+      show('vLoading');
+      var r=await window.sb.rpc('lucky_info',{ p_code:code });
+      if(r.error){
+        show('vCode'); $('kCode').value=code;
+        $('kMsg').textContent='행운권을 확인하지 못했습니다: '+window.krErr(r.error.message); $('kMsg').classList.add('on'); return;
+      }
+      info=(r.data||[])[0]||null;
+      if(!info){
+        show('vCode'); $('kCode').value=code.length===8?code.slice(0,4)+'-'+code.slice(4):code;
+        $('kTitle').textContent='행운권을 찾지 못했습니다';
+        $('kText').innerHTML='QR을 다시 찍어 보시고, 그래도 안 되면 행운권의 QR 아래에 적힌 <b>확인 코드 8자리</b>를 아래에 넣어 주세요.';
+        drawMine(); return;
+      }
+      drawHead(); drawMine();
+      var no=noText(info.no);
+      if(info.registered){
+        $('tNo').textContent=no;
+        $('tText').textContent=(info.masked_name?info.masked_name+' 님 · ':'')+(info.registered_at?kstamp(info.registered_at)+' 등록':'');
+        $('tHelp').innerHTML='본인이 등록하지 않았다면 행사 문의('+contactHtml()+')로 알려 주세요.';
+        show('vTaken'); return;
+      }
+      if(!info.open){
+        $('cNo').textContent=no; $('cHelp').innerHTML='궁금한 점은 행사 문의('+contactHtml()+')로 연락해 주세요.';
+        show('vClosed'); return;
+      }
+      $('fNo').textContent=no; show('vForm');
+    }
+
+    function fail(t, el){ $('fMsg').textContent=t; $('fMsg').classList.add('on'); if(el) el.focus(); }
+    $('vForm').addEventListener('submit',async function(e){
+      e.preventDefault(); if(busy || !info) return;
+      $('fMsg').classList.remove('on');
+      var name=$('fName').value.trim(), church=$('fChurch').value.trim(), phone=$('fPhone').value.replace(/\D/g,''); birthHint(true);
+      if(!name) return fail('이름을 적어 주세요.', $('fName'));
+      if(!birth) return fail('생년월일을 숫자 6자리로 적어 주세요. (예: 1965년 3월 12일 → 650312)', $('fBirth'));
+      if(!church) return fail("소속을 적어 주세요. (교회 · 의용소방대 · 방범대 등) 소속이 없으면 '없음'이라고 적어 주세요.", $('fChurch'));
+      if(phone && !/^01[016789]\d{7,8}$/.test(phone)) return fail('휴대폰 번호를 다시 확인해 주세요. (예: 010-1234-5678) 번호 없이 등록하려면 칸을 비워 주세요.', $('fPhone'));
+      if(!$('fAgree').checked) return fail('개인정보 수집 · 이용에 동의해 주세요.', $('fAgree'));
+      busy=true; $('fSend').disabled=true; $('fSend').textContent='등록하는 중…';
+      var r;
+      try{ r=await window.sb.rpc('lucky_register',{ p_code:code, p_name:name, p_birth:birth.iso, p_church:church, p_phone:phone||null }); }
+      catch(ex){ r={ error:ex }; }
+      busy=false; $('fSend').disabled=false; $('fSend').textContent='등록하기';
+      if(r.error){
+        var m=String(r.error.message||r.error);
+        if(/이미 등록된/.test(m)) return load();
+        // 한 분은 한 장만 — 이미 다른 행운권으로 등록된 분
+        if(/이미 행운권을 등록하셨습니다/.test(m)) return fail(m+' 잘못 등록된 것 같으면 행사 문의('+((info&&info.contact)||'행사 본부')+')로 알려 주세요.', $('fName'));
+        return fail(window.krErr(m));
+      }
+      store('lucky_last',{ church:church });
+      var mine=(store('lucky_mine')||[]).filter(function(x){ return !(x.e===info.event && x.no===info.no); });
+      mine.unshift({ e:info.event, no:info.no, name:mask(name), t:new Date().toISOString() });
+      store('lucky_mine', mine.slice(0,20));
+      $('dNo').textContent=noText(info.no);
+      $('dText').textContent=name+' 님, 행운권 등록을 마쳤습니다. 경품 추첨이 끝날 때까지 행운권을 잘 보관해 주세요.';
+      show('vDone'); drawMine(); window.scrollTo(0,0);
+    });
+
+    $('vCode').addEventListener('submit',function(e){
+      e.preventDefault(); $('kMsg').classList.remove('on');
+      var c=norm($('kCode').value);
+      if(c.length!==8){ $('kMsg').textContent='확인 코드 8자리를 넣어 주세요. (예: ABCD-2345)'; $('kMsg').classList.add('on'); $('kCode').focus(); return; }
+      code=c; try{ history.replaceState(null,'','lucky.html?c='+c); }catch(_){}
+      $('kTitle').textContent='확인 코드 넣기'; load();
+    });
+    // 다른 분 행운권도 등록하기 (어르신 · 가족 돕기) — 다음 행운권 QR을 찍거나 확인 코드를 넣음
+    $('dNext').addEventListener('click',function(){
+      $('kTitle').textContent='다른 분 행운권 등록하기';
+      $('kText').innerHTML='다음 행운권의 <b>QR을 휴대폰 카메라로</b> 찍어 주세요. 카메라로 안 되면 QR 아래에 적힌 <b>확인 코드 8자리</b>를 넣어 주세요.';
+      $('kCode').value=''; $('kMsg').classList.remove('on'); show('vCode'); window.scrollTo(0,0);
+    });
+
+    load();
+  })();
+  </script>
+</body>
+</html>

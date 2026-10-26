@@ -73,6 +73,11 @@
     return window.isSuperAdmin(user) || window.isStaffAdmin(profile) || !!(profile && profile.officer_role === '회장');
   };
 
+  // 임원방에 들어갈 수 있는 사람 = 임원 직책이 있거나, 최고관리자 · 회장 · 일반관리자(운영관리)
+  window.canEnterOfficerRoom = function (user, profile) {
+    return !!(user && (window.isSuperAdmin(user) || (profile && profile.officer_role) || window.isConsoleAdmin(user, profile)));
+  };
+
   // 현재 로그인 사용자의 프로필(이름/교회/구분/직책) 조회
   window.getMyProfile = async function () {
     if (!window.sb) return null;
@@ -93,9 +98,9 @@
     if (user) {
       var sep = '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>';
       var parts = [];
-      if (window.isConsoleAdmin(user, profile)) parts.push('<a href="operator.html" style="color:#ffd479;font-weight:700">운영관리</a>');
+      // 임원방 하나로 — 회원 · 임원 관리(관리자) · 운영관리 · 행운권 QR 등은 임원방 맨 위 메뉴에서 들어감
+      if (window.canEnterOfficerRoom(user, profile)) parts.push('<a href="officer.html" style="color:#ffd479;font-weight:700">임원방</a>');
       parts.push('<a href="inquiry.html" style="color:rgba(255,255,255,0.9)">문의</a>');
-      if (window.isAdmin(user, profile)) parts.push('<a href="admin.html" style="color:#8fc0ff;font-weight:700">관리자</a>');
       if (window.isSamo(user, profile)) parts.push('<a href="samo.html" style="color:#f6b6d0;font-weight:700">사모 게시판</a>');
       parts.push('<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>');
       parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
@@ -198,6 +203,19 @@
       return false;
     }
     return { user: user, profile: profile || {} };
+  };
+
+  // 임원방 가드 — 임원 + 관리자 · 운영관리 담당자까지. officer: 임원 자료(문서 · 회의)를 볼 수 있는지
+  window.requireOfficerRoom = async function () {
+    var user = await window.requireAuth();
+    if (!user) return false;
+    var profile = await window.getMyProfile();
+    if (!window.canEnterOfficerRoom(user, profile)) {
+      alert('임원만 이용할 수 있습니다.');
+      location.href = 'index.html';
+      return false;
+    }
+    return { user: user, profile: profile || {}, officer: window.isSuperAdmin(user) || !!(profile && profile.officer_role) };
   };
 
   // 사모 게시판 전용 가드 — 로그인 + 사모/사부(또는 최고관리자)여야 통과

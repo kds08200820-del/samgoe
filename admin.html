@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>관리자 | 삼괴지역 기독교 연합회</title>
+  <title>회원 · 임원 관리 | 임원방 · 삼괴지역 기독교 연합회</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
@@ -69,7 +69,8 @@
   <div id="loading">확인 중…</div>
 
   <div class="wrap" id="content">
-    <div class="head"><span class="badge">관리자</span><h1 class="title">회원 관리</h1></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px"><a href="officer.html" style="color:var(--primary);font-weight:600">← 임원방</a> · 회원 · 임원 관리</div>
+    <div class="head"><span class="badge">관리자</span><h1 class="title">회원 · 임원 관리</h1></div>
     <p class="who">로그인 계정: <b id="adminEmail"></b></p>
 
     <div class="stats">
@@ -119,7 +120,7 @@
       </table>
     </div>
 
-    <a class="home" href="index.html">← 홈으로 돌아가기</a>
+    <a class="home" href="officer.html">← 임원방으로 돌아가기</a>
   </div>
 
   <!-- 회원 추가/수정 모달 -->
@@ -154,7 +155,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="churches.js?v=2"></script>
-  <script src="auth.js?v=11"></script>
+  <script src="auth.js?v=12"></script>
   <script>
     (async function () {
       var user = await window.requireAdmin();
