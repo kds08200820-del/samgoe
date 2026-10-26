@@ -613,7 +613,7 @@
         (r?'':'<p class="cap" style="margin:0 0 12px;font-size:13px;color:var(--muted);line-height:1.6">휴대폰이 없는 분의 행운권을 임원이 대신 등록합니다. 한 분은 한 장만 등록할 수 있습니다.</p>')+
         '<form id="edForm" novalidate>'+
         '<label class="fl">이름 <input id="edName" maxlength="40" value="'+esc(t.name||'')+'"></label>'+
-        '<label class="fl">생년월일 <small>숫자 8자리 (예: 19650312)</small><input id="edBirth" inputmode="numeric" maxlength="10" value="'+(t.birth?String(t.birth).replace(/-/g,''):'')+'"></label>'+
+        '<label class="fl">생년월일 <small>숫자 6자리 (예: 650312) · 8자리도 됨</small><input id="edBirth" inputmode="numeric" maxlength="10" value="'+(t.birth?String(t.birth).replace(/-/g,''):'')+'"></label>'+
         '<label class="fl">교회 <input id="edChurch" maxlength="60" list="edChurches" value="'+esc(t.church||'')+'"></label>'+
         '<label class="fl">휴대폰 <small>선택 · 당첨 안내용</small><input id="edPhone" type="tel" inputmode="tel" maxlength="13" value="'+fmtPhone(t.phone)+'"></label>'+
         '<datalist id="edChurches">'+(window.CHURCHES||[]).map(function(c){ return '<option value="'+esc(c.name)+'">'; }).join('')+'</datalist>'+
@@ -632,7 +632,7 @@
         e.preventDefault();
         var name=$('edName').value.trim(), church=$('edChurch').value.trim(), b=parseBirth($('edBirth').value);
         if(!name) return msg('edMsg','이름을 적어 주세요.');
-        if(!b) return msg('edMsg','생년월일을 숫자 8자리로 적어 주세요. (예: 19650312)');
+        if(!b) return msg('edMsg','생년월일을 숫자 6자리로 적어 주세요. (예: 1965년 3월 12일 → 650312)');
         if(!church) return msg('edMsg','교회 이름을 적어 주세요.');
         var phone=$('edPhone').value.replace(/\D/g,'');
         if(phone && !/^01[016789]\d{7,8}$/.test(phone)) return msg('edMsg','휴대폰 번호를 다시 확인해 주세요. (예: 010-1234-5678) 없으면 비워 두세요.');
@@ -641,8 +641,11 @@
         await saveRow(t, { name:name, birth:b, church:church, phone:phone||null, registered_at:t.registered_at||new Date().toISOString(), updated_by:whoName });
       };
     }
+    // 6자리(650312)는 뒤 두 자리가 올해보다 크면 1900년대 — 등록 화면(lucky.html)과 같게. 8자리도 받음
     function parseBirth(s){
-      var d=String(s||'').replace(/\D/g,''); if(d.length!==8) return null;
+      var d=String(s||'').replace(/\D/g,'');
+      if(d.length===6){ var yy=+d.slice(0,2), cy=new Date(Date.now()+9*3600000).getUTCFullYear()%100; d=(yy>cy?'19':'20')+d; }
+      if(d.length!==8) return null;
       var y=+d.slice(0,4), m=+d.slice(4,6), dd=+d.slice(6), t=new Date(Date.UTC(y,m-1,dd));
       if(t.getUTCFullYear()!==y||t.getUTCMonth()!==m-1||t.getUTCDate()!==dd||y<1900||t.getTime()>Date.now()) return null;
       return d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6);

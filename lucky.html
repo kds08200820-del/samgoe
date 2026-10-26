@@ -92,9 +92,9 @@
       <p class="helper">어르신 · 가족을 도와 <b>대신 등록</b>해 드려도 됩니다. 그때는 <b>행운권 주인</b>의 이름 · 생년월일을 적어 주세요. 한 분은 한 장만 등록할 수 있습니다.</p>
       <div class="fld"><label for="fName">이름</label><input id="fName" type="text" maxlength="40" autocomplete="off" enterkeyhint="next"></div>
       <div class="fld">
-        <label for="fBirth">생년월일 <small>숫자 8자리</small></label>
-        <input id="fBirth" type="text" inputmode="numeric" maxlength="10" placeholder="예: 19650312" autocomplete="off" enterkeyhint="next" aria-describedby="birthHint">
-        <div class="hint" id="birthHint">태어난 해 · 월 · 일을 붙여서 적어 주세요.</div>
+        <label for="fBirth">생년월일 <small>숫자 6자리</small></label>
+        <input id="fBirth" type="text" inputmode="numeric" maxlength="10" placeholder="예: 650312" autocomplete="off" enterkeyhint="next" aria-describedby="birthHint">
+        <div class="hint" id="birthHint">태어난 해 뒤 두 자리 · 월 · 일을 붙여 6자리로 적어 주세요.</div>
       </div>
       <div class="fld">
         <label for="fChurch">교회</label>
@@ -191,24 +191,27 @@
     $('churchList').innerHTML=(window.CHURCHES||[]).map(function(c){ return '<option value="'+esc(c.name)+'">'; }).join('');
     var last=store('lucky_last'); if(last&&last.church) $('fChurch').value=last.church;
 
-    // 생년월일 — 19650312 · 1965.3.12 · 1965-03-12 · 650312(6자리) 모두 받음
+    // 생년월일 — 6자리(650312)로 적음. 19650312 · 1965.3.12 · 65.03.12 도 받음
+    //  6자리는 뒤 두 자리가 올해(예: 26)보다 크면 1900년대, 아니면 2000년대 — 아래에 몇 년생으로 읽었는지 보여 줌
     function parseBirth(s){
       s=String(s||'').trim(); var m, y, mo, d, digits=s.replace(/\D/g,''), now=new Date(Date.now()+9*3600000);
       if((m=/^(\d{4})\D+(\d{1,2})\D+(\d{1,2})\D*$/.exec(s))){ y=+m[1]; mo=+m[2]; d=+m[3]; }
       else if(/^\d{8}$/.test(digits) && !/\d\D+\d/.test(s.replace(/^\D+|\D+$/g,''))){ y=+digits.slice(0,4); mo=+digits.slice(4,6); d=+digits.slice(6); }
-      else if(/^\d{6}$/.test(digits) && /^\d{6}$/.test(s)){ var yy=+digits.slice(0,2); y=(yy>now.getUTCFullYear()%100?1900:2000)+yy; mo=+digits.slice(2,4); d=+digits.slice(4); }
+      else if(/^\d{6}$/.test(digits) && /^\d{2}\D?\d{2}\D?\d{2}$/.test(s)){ var yy=+digits.slice(0,2); y=(yy>now.getUTCFullYear()%100?1900:2000)+yy; mo=+digits.slice(2,4); d=+digits.slice(4); }
       else return null;
       var t=new Date(Date.UTC(y,mo-1,d));
       if(t.getUTCFullYear()!==y || t.getUTCMonth()!==mo-1 || t.getUTCDate()!==d) return null;
       if(y<1900 || t.getTime()>now.getTime()) return null;
-      return { iso:y+'-'+(mo<10?'0':'')+mo+'-'+(d<10?'0':'')+d, text:y+'년 '+mo+'월 '+d+'일' };
+      return { iso:y+'-'+(mo<10?'0':'')+mo+'-'+(d<10?'0':'')+d, text:y+'년 '+mo+'월 '+d+'일', short:digits.length===6 };
     }
     function birthHint(final){
       var v=$('fBirth').value.trim(), h=$('birthHint'); birth=parseBirth(v);
       $('fBirth').classList.toggle('bad', !!(final && v && !birth));
-      if(birth){ h.className='hint ok'; h.textContent='✓ '+birth.text; }
-      else if(v && (final || v.replace(/\D/g,'').length>=8)){ h.className='hint err'; h.textContent='날짜가 맞지 않습니다. 숫자 8자리로 적어 주세요. (예: 1965년 3월 12일 → 19650312)'; }
-      else { h.className='hint'; h.textContent='태어난 해 · 월 · 일을 붙여서 적어 주세요.'; }
+      var dg=v.replace(/\D/g,'');
+      if(birth){ h.className='hint ok'; h.textContent='✓ '+birth.text+(birth.short && +birth.iso.slice(0,4)>=2000?' — 1900년대에 태어나셨으면 8자리로 적어 주세요. (예: 19250312)':''); }
+      // 6자리를 다 적었는데 날짜가 아니면 바로 알림 (19 · 20으로 시작하면 8자리를 적는 중일 수 있어 기다림)
+      else if(v && (final || dg.length>=8 || (dg.length===6 && !/^(19|20)/.test(dg)))){ h.className='hint err'; h.textContent='날짜가 맞지 않습니다. 숫자 6자리로 적어 주세요. (예: 1965년 3월 12일 → 650312)'; }
+      else { h.className='hint'; h.textContent='태어난 해 뒤 두 자리 · 월 · 일을 붙여 6자리로 적어 주세요.'; }
     }
     $('fBirth').addEventListener('input',function(){ birthHint(false); });
     $('fBirth').addEventListener('blur',function(){ birthHint(true); });
@@ -268,7 +271,7 @@
       $('fMsg').classList.remove('on');
       var name=$('fName').value.trim(), church=$('fChurch').value.trim(), phone=$('fPhone').value.replace(/\D/g,''); birthHint(true);
       if(!name) return fail('이름을 적어 주세요.', $('fName'));
-      if(!birth) return fail('생년월일을 숫자 8자리로 적어 주세요. (예: 19650312)', $('fBirth'));
+      if(!birth) return fail('생년월일을 숫자 6자리로 적어 주세요. (예: 1965년 3월 12일 → 650312)', $('fBirth'));
       if(!church) return fail("교회 이름을 적어 주세요. 다니는 교회가 없으면 '없음'이라고 적어 주세요.", $('fChurch'));
       if(phone && !/^01[016789]\d{7,8}$/.test(phone)) return fail('휴대폰 번호를 다시 확인해 주세요. (예: 010-1234-5678) 번호 없이 등록하려면 칸을 비워 주세요.', $('fPhone'));
       if(!$('fAgree').checked) return fail('개인정보 수집 · 이용에 동의해 주세요.', $('fAgree'));
