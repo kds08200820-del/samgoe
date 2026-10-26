@@ -6,7 +6,7 @@
 --  번호만 알아서는 남의 행운권을 등록할 수 없습니다.
 --  권한
 --   · 행운권 한 장의 정보(번호 · 행사명 · 등록 여부): QR(확인 코드)을 가진 사람만 그 한 장 (lucky_info)
---   · 등록(이름 · 생년월일 · 교회 · 휴대폰 번호(선택)): QR을 가진 누구나, 로그인 없이, 한 장에 한 번 (lucky_register)
+--   · 등록(이름 · 생년월일 · 소속 · 휴대폰 번호(선택)) — 소속은 church 칸에 저장 (교회 · 의용소방대 · 방범대 등): QR을 가진 누구나, 로그인 없이, 한 장에 한 번 (lucky_register)
 --       다른 사람의 행운권도 대신 등록할 수 있음 (어르신 돕기) — 그 사람의 이름 · 생년월일로
 --       한 사람(이름 + 생년월일이 같은 사람)은 한 회차에 한 장만 등록됨 — 두 번째는 안내 문구와 함께 막음
 --   · 행운권 만들기(번호 범위) · 행사명 · 이미지 · 등록 받기 켜고 끄기: 임원 · 최고관리자
@@ -160,7 +160,7 @@ end $$;
 revoke all on function public.lucky_make(text, int, int) from public, anon;
 grant execute on function public.lucky_make(text, int, int) to authenticated;
 
--- 4) 행운권 한 장 보기 — 누구나, 확인 코드를 알 때만 (이름은 가려서, 생년월일 · 교회는 안 보임) ----
+-- 4) 행운권 한 장 보기 — 누구나, 확인 코드를 알 때만 (이름은 가려서, 생년월일 · 소속은 안 보임) ----
 drop function if exists public.lucky_info(text);
 create function public.lucky_info(p_code text)
 returns table (event text, no int, title text, subtitle text, art_path text, open boolean,
@@ -210,7 +210,7 @@ begin
     raise exception '생년월일을 다시 확인해 주세요.';
   end if;
   if char_length(btrim(coalesce(p_church, ''))) not between 1 and 60 then
-    raise exception '교회 이름을 적어 주세요.';
+    raise exception '소속을 적어 주세요. (교회 · 의용소방대 · 방범대 등) 소속이 없으면 ''없음''이라고 적어 주세요.';
   end if;
   if v_phone is not null and v_phone !~ '^01[016789][0-9]{7,8}$' then
     raise exception '휴대폰 번호를 다시 확인해 주세요. (예: 010-1234-5678) 번호 없이 등록하려면 칸을 비워 주세요.';
@@ -235,7 +235,7 @@ revoke all on function public.lucky_register(text, text, date, text, text) from 
 grant execute on function public.lucky_register(text, text, date, text, text) to anon, authenticated;
 
 -- 6) 등록 정보 모두 지우기 — 서기 · 대표회장 · 최고관리자. 경품 지급을 마친 뒤 개인정보 파기용.
---    행운권(번호 · QR)은 남기고 이름 · 생년월일 · 교회 · 휴대폰 번호만 지우며, 등록 받기도 끔. 지운 장 수를 돌려줌
+--    행운권(번호 · QR)은 남기고 이름 · 생년월일 · 소속 · 휴대폰 번호만 지우며, 등록 받기도 끔. 지운 장 수를 돌려줌
 create or replace function public.lucky_wipe(p_event text)
 returns int language plpgsql security definer set search_path = public as $$
 declare v_n int;

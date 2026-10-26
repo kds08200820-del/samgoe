@@ -177,7 +177,7 @@
     var L = LAYOUTS[opt.layout] || LAYOUTS.card8, W = L.w, H = L.h;
     var title = String(opt.title || '').trim() || '3·1 만세길 걷기', sub = String(opt.subtitle || '').trim();
     var digits = Math.max(3, String(opt.maxNo || 0).length);
-    var INSTR = 'QR을 찍어 이름 · 생년월일 · 교회를 등록하세요', INSTR_S = 'QR을 찍어 등록하세요';
+    var INSTR = 'QR을 찍어 이름 · 생년월일 · 소속을 등록하세요', INSTR_S = 'QR을 찍어 등록하세요';
     try {
       if (document.fonts && document.fonts.load) {
         var all = title + sub + '행운권개인용투표잘라서함에넣기' + INSTR;

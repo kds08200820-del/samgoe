@@ -41,7 +41,7 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - 처음 한 번: Supabase SQL Editor에서 `lucky-setup.sql` 실행 (`walk-events-setup.sql` 다음).
 - `lucky-admin.html` (임원방) — 회차 고르기 → 번호 범위로 행운권 만들기 → 행사명 · 이미지를
   넣고 인쇄용 PDF 만들기 → 등록 현황 보기 · 고치기 · 대신 등록 · CSV.
-- `lucky.html?c=확인코드` — 참가자가 QR을 찍으면 열리는 등록 화면 (이름 · 생년월일 · 교회).
+- `lucky.html?c=확인코드` — 참가자가 QR을 찍으면 열리는 등록 화면 (이름 · 생년월일 · 소속 · 휴대폰(선택)).
 - `lucky-print.js` — PDF · 미리 보기 그리기 (jsPDF + qrcode-generator).
 
 ## Notes
