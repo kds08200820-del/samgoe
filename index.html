@@ -322,6 +322,7 @@
     .quick-walk .qa{color:#d4bf8c!important;font-size:1.15em;}
     .quick-walk .qw-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#b89b5e;color:#1a1a1a;font-size:12px;font-weight:700;vertical-align:1px;}
     .quick-walk:hover{box-shadow:0 10px 30px rgba(3,34,87,.35)!important;}
+    .quick-walk[hidden]{display:none!important;}
     @media (max-width:600px){ .quick-walk .qw-tag{display:table;margin:0 0 8px;} }
     .quick-app .qp-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#f3efe4;color:#8a6d34;font-size:12px;font-weight:700;vertical-align:1px;}
     @media (max-width:600px){ .quick-app .qp-tag{display:table;margin:0 0 8px;} }
@@ -619,7 +620,8 @@
   </nav>
 
   <!-- ===================== HERO — 마우스 반응형 파티클 ===================== -->
-  <section id="top" class="hero walk-focus">
+  <!-- class에 walk-focus를 넣으면 아래 경품 안내(.hero-focus)가 원래 히어로 대신 크게 나옴 — 2026-10 경품 당첨 확인을 내리며 뺌 -->
+  <section id="top" class="hero">
     <canvas id="heroCanvas" aria-hidden="true"></canvas>
     <div class="in">
       <img class="hero-logo" src="assets/logo-trans.png" alt="삼기연" style="height:44px;width:auto;margin:0 auto 26px;" />
@@ -876,7 +878,7 @@
             <div class="ds-row"><span class="ds-when">3월</span><span class="ds-what">3·1절 기념 공감음악회</span></div>
             <div class="ds-row"><span class="ds-when">부활주일</span><span class="ds-what">부활절 연합예배 · 임원수련회</span></div>
             <div class="ds-row"><span class="ds-when">5~6월</span><span class="ds-what">목회자·사모 야유회</span></div>
-            <div class="ds-row"><span class="ds-when">10월</span><span class="ds-what"><a href="#prize" style="text-decoration:underline;text-underline-offset:3px">3·1만세길 걷기대회 · 경품 당첨 확인</a></span></div>
+            <div class="ds-row"><span class="ds-when">10월</span><span class="ds-what">3·1만세길 걷기대회</span></div>
             <div class="ds-row"><span class="ds-when">11월</span><span class="ds-what">정기총회 · 임원선출</span></div>
             <div class="ds-row"><span class="ds-when">연중</span><span class="ds-what">장학사업 · 작은 교회 후원</span></div>
           </div>
@@ -907,7 +909,8 @@
           <a href="officer.html" class="quick-tile press">임원방 · 전용 자료실 <span class="qa">→</span></a>
           <a href="history.html" class="quick-tile press">걸어온 길 · 연혁 <span class="qa">→</span></a>
           <a href="march.html" class="quick-tile press">삼일만세운동본부 <span class="qa">→</span></a>
-          <a href="#prize" class="quick-tile press quick-walk" id="quickWalk" style="grid-column:1/-1"><span><span class="qw-tag" id="qwTag">10.18 · 경품 추첨 결과</span><span id="qwText">제6회 3·1 만세길 걷기 · 경품 당첨 확인과 당첨 인증</span></span><span class="qa">→</span></a>
+          <!-- 첫 화면에 게시한 회차가 있을 때만 보임 (아래 walk_events.hero 스크립트가 켬) -->
+          <a href="walk.html" class="quick-tile press quick-walk" id="quickWalk" style="grid-column:1/-1" hidden><span><span class="qw-tag" id="qwTag">10.18 · 경품 추첨 결과</span><span id="qwText">제6회 3·1 만세길 걷기 · 경품 당첨 확인과 당첨 인증</span></span><span class="qa">→</span></a>
           <a href="install.html" class="quick-tile press quick-app" style="grid-column:1/-1"><span><span class="qp-tag">휴대폰 홈 화면에</span>삼기연 앱 설치 안내 · 안드로이드 · 아이폰 그림으로 따라 하기</span><span class="qa">→</span></a>
         </div>
 
@@ -1875,9 +1878,9 @@ window.samMarquee = function(row, speed){
   $('heGo').href=q+(st==='open'?'#apply':''); $('heGo').textContent=st==='open'?'참가 신청하기 →':'행사 안내 보기 →';
   $('heSub').href=q+'#members'; $('heSub').style.display=st==='open'?'':'none';
   $('heNote').textContent=[st==='open'&&ev.apply_until?WalkEv.shortDate(ev.apply_until)+'까지 받습니다':(st==='soon'?'참가 신청은 곧 시작합니다':''), ev.host||''].filter(Boolean).join(' · ');
-  $('heroEvent').hidden=false; $('top').classList.add('ev-on');
+  $('heroEvent').hidden=false; $('top').classList.add('ev-on','walk-focus');   // 원래 히어로 문구 대신 이 안내를 크게
   var tile=$('quickWalk');
-  if(tile){ tile.href=q; $('qwTag').textContent=(ev.event_date?WalkEv.dotDate(ev.event_date).slice(5)+' · ':'')+badge; $('qwText').textContent=ev.title+(st==='open'?' · 참가 신청과 신청 내역 확인':' · 행사 안내'); }
+  if(tile){ tile.hidden=false; tile.href=q; $('qwTag').textContent=(ev.event_date?WalkEv.dotDate(ev.event_date).slice(5)+' · ':'')+badge; $('qwText').textContent=ev.title+(st==='open'?' · 참가 신청과 신청 내역 확인':' · 행사 안내'); }
 })();
 </script>
 <script>
