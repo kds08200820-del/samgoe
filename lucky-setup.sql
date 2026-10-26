@@ -6,7 +6,9 @@
 --  번호만 알아서는 남의 행운권을 등록할 수 없습니다.
 --  권한
 --   · 행운권 한 장의 정보(번호 · 행사명 · 등록 여부): QR(확인 코드)을 가진 사람만 그 한 장 (lucky_info)
---   · 등록(이름 · 생년월일 · 교회): QR을 가진 누구나, 로그인 없이, 한 장에 한 번 (lucky_register)
+--   · 등록(이름 · 생년월일 · 교회 · 휴대폰 번호(선택)): QR을 가진 누구나, 로그인 없이, 한 장에 한 번 (lucky_register)
+--       다른 사람의 행운권도 대신 등록할 수 있음 (어르신 돕기) — 그 사람의 이름 · 생년월일로
+--       한 사람(이름 + 생년월일이 같은 사람)은 한 회차에 한 장만 등록됨 — 두 번째는 안내 문구와 함께 막음
 --   · 행운권 만들기(번호 범위) · 행사명 · 이미지 · 등록 받기 켜고 끄기: 임원 · 최고관리자
 --   · 등록 내용 보기 · 고치기 · 대신 등록 · 등록 취소: 임원 · 최고관리자
 --   · 만든 행운권 지우기: 임원, 아직 등록되지 않은 장만
@@ -66,11 +68,31 @@ create table if not exists public.lucky_tickets (
 create index if not exists lucky_tickets_reg_idx on public.lucky_tickets(event, registered_at);
 alter table public.lucky_tickets enable row level security;
 
+-- 당첨 안내를 받을 휴대폰 번호 (선택, 숫자만 — 01012345678)
+alter table public.lucky_tickets add column if not exists phone text;
+alter table public.lucky_tickets drop constraint if exists lucky_phone_check;
+alter table public.lucky_tickets add constraint lucky_phone_check
+  check (phone is null or (phone ~ '^01[016789][0-9]{7,8}$' and registered_at is not null));
+
+-- 한 사람은 한 회차에 한 장만 — 이름(띄어쓰기 · 대소문자 무시) + 생년월일이 같으면 같은 사람
+create or replace function public.lucky_pkey(p text)
+returns text language sql immutable as $$ select lower(regexp_replace(coalesce(p, ''), '\s', '', 'g')); $$;
+do $$
+begin
+  if exists (select 1 from public.lucky_tickets where registered_at is not null
+             group by event, public.lucky_pkey(name), birth having count(*) > 1) then
+    raise notice '같은 사람이 두 장 이상 등록된 기록이 있어 한 사람 한 장 규칙(색인)을 아직 걸지 못했습니다. 임원방에서 정리한 뒤 이 파일을 다시 실행해 주세요. (등록 화면에서는 이미 막힙니다)';
+  else
+    create unique index if not exists lucky_person_uniq on public.lucky_tickets (event, public.lucky_pkey(name), birth)
+      where registered_at is not null;
+  end if;
+end $$;
+
 -- 표에 직접 넣기는 막고(확인 코드는 서버에서만 만듦) lucky_make 함수로만 만듦
 -- 임원이 고칠 수 있는 칸은 등록 내용뿐 (번호 · 확인 코드는 못 바꿈)
 revoke all on public.lucky_tickets from anon, authenticated;
 grant select, delete on public.lucky_tickets to authenticated;
-grant update (name, birth, church, registered_at, reg_user, updated_by) on public.lucky_tickets to authenticated;
+grant update (name, birth, church, phone, registered_at, reg_user, updated_by) on public.lucky_tickets to authenticated;
 
 drop policy if exists "lt_read" on public.lucky_tickets;
 create policy "lt_read" on public.lucky_tickets for select to authenticated using ( public.is_officer() );
@@ -156,14 +178,16 @@ $$;
 revoke all on function public.lucky_info(text) from public;
 grant execute on function public.lucky_info(text) to anon, authenticated;
 
--- 5) 행운권 등록 — 누구나 (로그인 없이), 한 장에 한 번.
+-- 5) 행운권 등록 — 누구나 (로그인 없이), 한 장에 한 번. 다른 사람의 행운권도 대신 등록할 수 있음.
+--    한 사람(이름 + 생년월일)은 한 회차에 한 장만 — 두 번째 장은 막고 안내함
 --    같은 내용으로 한 번 더 보내면(단추 연타 · 재시도) 등록된 것으로 그대로 돌려줌
 drop function if exists public.lucky_register(text, text, date, text);
-create function public.lucky_register(p_code text, p_name text, p_birth date, p_church text)
+drop function if exists public.lucky_register(text, text, date, text, text);
+create function public.lucky_register(p_code text, p_name text, p_birth date, p_church text, p_phone text default null)
 returns table (event text, no int)
 language plpgsql security definer set search_path = public as $$
 #variable_conflict use_column
-declare t public.lucky_tickets;
+declare t public.lucky_tickets; v_phone text := nullif(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), '');
 begin
   select * into t from public.lucky_tickets x where x.code = public.lucky_norm(p_code) for update;
   if not found then
@@ -188,16 +212,30 @@ begin
   if char_length(btrim(coalesce(p_church, ''))) not between 1 and 60 then
     raise exception '교회 이름을 적어 주세요.';
   end if;
-  update public.lucky_tickets x
-     set name = btrim(p_name), birth = p_birth, church = btrim(p_church), registered_at = now(), reg_user = auth.uid()
-   where x.event = t.event and x.no = t.no;
+  if v_phone is not null and v_phone !~ '^01[016789][0-9]{7,8}$' then
+    raise exception '휴대폰 번호를 다시 확인해 주세요. (예: 010-1234-5678) 번호 없이 등록하려면 칸을 비워 주세요.';
+  end if;
+  if exists (select 1 from public.lucky_tickets x
+             where x.event = t.event and x.registered_at is not null and x.no <> t.no
+               and public.lucky_pkey(x.name) = public.lucky_pkey(p_name) and x.birth = p_birth) then
+    raise exception '% 님(% 생)은 이미 행운권을 등록하셨습니다. 한 분은 행운권 한 장만 등록할 수 있습니다.',
+      btrim(p_name), to_char(p_birth, 'YYYY.MM.DD');
+  end if;
+  begin
+    update public.lucky_tickets x
+       set name = btrim(p_name), birth = p_birth, church = btrim(p_church), phone = v_phone, registered_at = now(), reg_user = auth.uid()
+     where x.event = t.event and x.no = t.no;
+  exception when unique_violation then   -- 같은 사람이 두 장을 동시에 보낸 경우
+    raise exception '% 님(% 생)은 이미 행운권을 등록하셨습니다. 한 분은 행운권 한 장만 등록할 수 있습니다.',
+      btrim(p_name), to_char(p_birth, 'YYYY.MM.DD');
+  end;
   return query select t.event, t.no;
 end $$;
-revoke all on function public.lucky_register(text, text, date, text) from public;
-grant execute on function public.lucky_register(text, text, date, text) to anon, authenticated;
+revoke all on function public.lucky_register(text, text, date, text, text) from public;
+grant execute on function public.lucky_register(text, text, date, text, text) to anon, authenticated;
 
 -- 6) 등록 정보 모두 지우기 — 서기 · 대표회장 · 최고관리자. 경품 지급을 마친 뒤 개인정보 파기용.
---    행운권(번호 · QR)은 남기고 이름 · 생년월일 · 교회만 지우며, 등록 받기도 끔. 지운 장 수를 돌려줌
+--    행운권(번호 · QR)은 남기고 이름 · 생년월일 · 교회 · 휴대폰 번호만 지우며, 등록 받기도 끔. 지운 장 수를 돌려줌
 create or replace function public.lucky_wipe(p_event text)
 returns int language plpgsql security definer set search_path = public as $$
 declare v_n int;
@@ -208,7 +246,7 @@ begin
   insert into public.lucky_events (event, open) values (p_event, false)
   on conflict (event) do update set open = false;
   update public.lucky_tickets t
-     set name = null, birth = null, church = null, registered_at = null, reg_user = null, updated_by = null
+     set name = null, birth = null, church = null, phone = null, registered_at = null, reg_user = null, updated_by = null
    where t.event = p_event and t.registered_at is not null;
   get diagnostics v_n = row_count;
   return v_n;

@@ -149,9 +149,10 @@
     .cmtLogin a{color:var(--primary);font-weight:700;}
     .mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
     /* 라이트박스 */
-    .lb{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:60;display:none;align-items:center;justify-content:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:60;display:none;align-items:center;justify-content:center;
+      touch-action:pan-y pinch-zoom;overscroll-behavior:contain;}
     .lb.on{display:flex;}
-    .lb img{max-width:92vw;max-height:88vh;object-fit:contain;}
+    .lb img{max-width:92vw;max-height:88vh;object-fit:contain;-webkit-user-drag:none;user-select:none;-webkit-user-select:none;}
     .lb .x{position:absolute;top:18px;right:22px;width:44px;height:44px;border:0;background:rgba(255,255,255,0.12);color:#fff;font-size:26px;cursor:pointer;}
     .lb .nav{position:absolute;top:50%;transform:translateY(-50%);width:54px;height:64px;border:0;background:rgba(255,255,255,0.12);color:#fff;font-size:30px;cursor:pointer;}
     .lb .prev{left:16px;} .lb .next{right:16px;}
@@ -505,17 +506,23 @@
       var iPrev = document.getElementById('iPrev'), iNext = document.getElementById('iNext');
       if(iPrev) iPrev.addEventListener('click', function(e){ e.stopPropagation(); slideIdx=(slideIdx-1+photos.length)%photos.length; drawSlide(); });
       if(iNext) iNext.addEventListener('click', function(e){ e.stopPropagation(); slideIdx=(slideIdx+1)%photos.length; drawSlide(); });
-      if(track) modal.querySelectorAll('.imedia .track img').forEach(function(img){
-        img.addEventListener('click', function(){ openLightbox(photos.map(function(x){return x.url;}), parseInt(img.getAttribute('data-idx'),10)); });
+      // 사진을 누르면 크게 보기 — 지금 보이는 장으로. 사진 틀에 한 번만 걸어 둠
+      //  (쓸어 넘기기에서 손가락을 틀이 잡고 있으면 누른 곳이 사진이 아니라 틀로 잡혀서, 사진에 걸면 가끔 안 열림)
+      var mediaEl = modal.querySelector('.imedia'), swMoved = 0;
+      if(mediaEl && track) mediaEl.addEventListener('click', function(e){
+        if(swMoved > 8 || e.target.closest('.inav')) return;
+        openLightbox(photos.map(function(x){return x.url;}), slideIdx);
       });
       // 쓸어 넘기기 (모바일·마우스 드래그 공용) — 손을 따라 움직이고, 충분히 밀면 다음/이전 장
-      var mediaEl = modal.querySelector('.imedia');
       if(mediaEl && track && photos.length > 1){
-        var swX = null, swDx = 0, swMoved = 0;
+        var swX = null, swDx = 0;
         mediaEl.addEventListener('pointerdown', function(e){
           swX = e.clientX; swDx = 0; swMoved = 0;
           try{ mediaEl.setPointerCapture(e.pointerId); }catch(_){}
         });
+        // 옆으로 쓸 때는 브라우저가 화면 스크롤로 받지 않게 — 스크롤로 받으면 쓸어 넘긴 뒤 첫 번째 누름이 먹혀서
+        //  사진을 두 번 눌러야 크게 보임 (위아래 스크롤은 그대로)
+        sideSwipe(mediaEl, function(){ return swX !== null; });
         mediaEl.addEventListener('pointermove', function(e){
           if(swX === null) return;
           swDx = e.clientX - swX;
@@ -659,6 +666,17 @@
       });
     }
 
+    // 옆으로 쓸 때는 브라우저가 화면 스크롤로 받지 않게 — 스크롤로 받으면 쓸어 넘긴 뒤 첫 번째 누름이 먹혀서
+    //  사진을 두 번 눌러야 크게 보임. 위아래로 쓸거나 두 손가락(확대)일 때는 그대로 둠
+    function sideSwipe(el, active){
+      var x0=0, y0=0;
+      el.addEventListener('touchstart', function(e){ var t=e.touches[0]; x0=t.clientX; y0=t.clientY; }, { passive:true });
+      el.addEventListener('touchmove', function(e){
+        var t=e.touches[0], dx=Math.abs(t.clientX-x0), dy=Math.abs(t.clientY-y0);
+        if(active() && e.touches.length===1 && dx>10 && dx>dy*1.2 && e.cancelable) e.preventDefault();
+      }, { passive:false });
+    }
+
     // ---------- 라이트박스 ----------
     var lbPhotos=[], lbIdx=0;
     function openLightbox(urls, idx){ lbPhotos=urls; lbIdx=idx||0; drawLb(); document.getElementById('lightbox').classList.add('on'); pushModal('lightbox'); }
@@ -673,7 +691,35 @@
     document.getElementById('lbClose').addEventListener('click', requestCloseTop);
     document.getElementById('lbPrev').addEventListener('click', function(e){ e.stopPropagation(); lbIdx=(lbIdx-1+lbPhotos.length)%lbPhotos.length; drawLb(); });
     document.getElementById('lbNext').addEventListener('click', function(e){ e.stopPropagation(); lbIdx=(lbIdx+1)%lbPhotos.length; drawLb(); });
-    document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
+    // 쓸어 넘기기 (모바일) — 손가락을 따라 사진이 움직이고, 충분히 밀면 이전 · 다음 장 (확대해서 보는 중에는 쉼)
+    var lbX=null, lbDx=0, lbMoved=0;
+    (function(){
+      var lb=document.getElementById('lightbox'), img=document.getElementById('lbImg');
+      // 양옆 ‹ › 단추 위에서 시작해도 쓸어 넘길 수 있음 (엄지가 닿는 곳) — 닫기(×)만 뺌
+      lb.addEventListener('pointerdown', function(e){
+        lbMoved=0;
+        if(lbPhotos.length<2 || e.target.closest('.x') || (window.visualViewport && window.visualViewport.scale>1.01)) return;
+        lbX=e.clientX; lbDx=0; img.style.transition='none';
+      });
+      lb.addEventListener('pointermove', function(e){
+        if(lbX===null) return;
+        lbDx=e.clientX-lbX; lbMoved=Math.max(lbMoved,Math.abs(lbDx));
+        img.style.transform='translateX('+lbDx+'px)';
+      });
+      function end(){
+        if(lbX===null) return;
+        lbX=null; img.style.transition='transform .2s ease'; img.style.transform='';
+        if(Math.abs(lbDx)>Math.max(40, window.innerWidth*0.12)){ lbIdx=(lbIdx+(lbDx<0?1:-1)+lbPhotos.length)%lbPhotos.length; drawLb(); }
+      }
+      lb.addEventListener('pointerup', end);
+      lb.addEventListener('pointercancel', end);
+      img.addEventListener('dragstart', function(e){ e.preventDefault(); });
+      sideSwipe(lb, function(){ return lbX!==null; });
+      // 쓸어 넘긴 경우에는 ‹ › 단추 누름으로 치지 않음
+      lb.addEventListener('click', function(e){ if(lbMoved>8 && e.target!==lb){ e.preventDefault(); e.stopPropagation(); } }, true);
+    })();
+    // 바깥(검은 곳)을 누르면 닫기 — 쓸어 넘긴 경우는 닫지 않음
+    document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this && lbMoved<=8) requestCloseTop(); });
 
     // ---------- 글쓰기 팝업 ----------
     function openWrite(){ document.getElementById('writeOverlay').classList.add('on'); document.body.style.overflow='hidden'; pushModal('write'); }

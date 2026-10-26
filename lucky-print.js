@@ -20,9 +20,9 @@
   var PAGE = { w: 210, h: 297 };
 
   var LAYOUTS = {
-    card8:     { label: 'A4 한 장에 8장 · 95×68mm (기본)', cols: 2, rows: 4, w: 95, h: 68, stub: 20 },
-    card10:    { label: 'A4 한 장에 10장 · 90×54mm (명함 크기)', cols: 2, rows: 5, w: 90, h: 54, stub: 18 },
-    wide4:     { label: 'A4 한 장에 4장 · 190×68mm (큰 행운권)', cols: 1, rows: 4, w: 190, h: 68, stub: 34 },
+    card8:     { label: 'A4 한 장에 8장 · 95×68mm (기본)', cols: 2, rows: 4, w: 95, h: 68, stub: 22 },
+    card10:    { label: 'A4 한 장에 10장 · 90×54mm (명함 크기)', cols: 2, rows: 5, w: 90, h: 54, stub: 20 },
+    wide4:     { label: 'A4 한 장에 4장 · 190×68mm (큰 행운권)', cols: 1, rows: 4, w: 190, h: 68, stub: 36 },
     sticker24: { label: 'QR만 작게 · A4 한 장에 24개 · 64×34mm (스티커 · 라벨지)', cols: 3, rows: 8, w: 64, h: 34, gap: 2.5, sticker: true }
   };
 
@@ -81,6 +81,15 @@
     var w = measure(text, size, weight, font) + 0.4, h = size * 1.3, c = newCanvas(w, h), x = c.getContext('2d');
     x.font = weight + ' ' + (size * PXMM) + 'px ' + font; x.fillStyle = 'rgb(' + color.join(',') + ')'; x.textBaseline = 'middle';
     x.fillText(text, 0.2 * PXMM, c.height / 2);
+    return img(alias, c);
+  }
+  // 여러 줄 짧은 글 (가운데 맞춤)
+  function linesImg(alias, lines, size, weight, font, color, maxW) {
+    var w = 0; lines.forEach(function (l) { w = Math.max(w, measure(l, size, weight, font)); });
+    if (maxW && w > maxW) { size *= maxW / w; w = maxW; }
+    var lh = size * 1.3, c = newCanvas(w + 0.4, lh * lines.length), x = c.getContext('2d');
+    x.font = weight + ' ' + (size * PXMM) + 'px ' + font; x.fillStyle = 'rgb(' + color.join(',') + ')'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    lines.forEach(function (l, i) { x.fillText(l, c.width / 2, (i + 0.5) * lh * PXMM); });
     return img(alias, c);
   }
   // 행사명(굵게, 여러 줄) + 작은 글씨 — 칸(w×h mm)에 맞게 글자 크기를 줄여 가며 넣음
@@ -171,7 +180,7 @@
     var INSTR = 'QR을 찍어 이름 · 생년월일 · 교회를 등록하세요', INSTR_S = 'QR을 찍어 등록하세요';
     try {
       if (document.fonts && document.fonts.load) {
-        var all = title + sub + '행운권추첨용' + INSTR;
+        var all = title + sub + '행운권개인용투표잘라서함에넣기' + INSTR;
         await Promise.all([document.fonts.load('700 20px "Noto Serif KR"', title), document.fonts.load('500 20px "Pretendard Variable"', all),
           document.fonts.load('700 20px "Pretendard Variable"', all)]);
       }
@@ -203,7 +212,7 @@
 
     // 오른쪽: 행운권 · 번호 · QR · 확인 코드 · 안내
     var total = labelH + numH + 1 + qr + codeH + instrH, y = info.y + (info.h - total) / 2, cx = info.x + info.w / 2;
-    g.im.label = lineImg('label', '행운권', labelH / 1.3, 700, SANS, GOLD, info.w - 2);
+    g.im.label = lineImg('label', stubW ? '행운권 · 개인용' : '행운권', labelH / 1.3, 700, SANS, GOLD, info.w - 2);
     g.labelAt = { x: cx - g.im.label.w / 2, y: y };
     g.num = { x: cx, y: y + labelH + numH / 2, size: fitLatin(numSample, info.w - 2 * pad + 2, numH * 0.95, true), align: 'center' };
     g.qr = { x: cx - qr / 2, y: y + labelH + numH + 1, s: qr };
@@ -232,14 +241,18 @@
     }
     g.titleBox = tb;
 
-    // 절취선 오른쪽 추첨용 칸 — 번호만
+    // 절취선 오른쪽 투표용 칸 — 번호만 (잘라서 투표함에 넣음, 왼쪽 개인용은 QR로 등록하고 보관)
     if (stubW) {
       var sx = main.x + main.w, scx = sx + stubW / 2;
       g.stub = { x: sx, cx: scx, top: fr.y, bot: fr.y + fr.h };
-      g.im.stub = lineImg('stub', '추첨용', small ? 2.6 : 3, 700, SANS, GOLD, stubW - 2);
-      g.stubLabelAt = { x: scx - g.im.stub.w / 2, y: fr.y + fr.h / 2 - 9 };
-      g.stubNo = { x: scx, y: fr.y + fr.h / 2 - 1.6, size: 2.6 };
-      g.stubNum = { x: scx, y: fr.y + fr.h / 2 + 4, size: fitLatin(padNo(Math.pow(10, digits) - 1, digits), stubW - 3, small ? 6.5 : 7.5, true) };
+      g.im.stub = lineImg('stub', '투표용', small ? 2.9 : 3.3, 700, SANS, GOLD, stubW - 2);
+      g.im.stubNote = linesImg('stubnote', ['잘라서', '투표함에'], small ? 2.1 : 2.3, 500, SANS, MUTED, stubW - 2);
+      var ns = fitLatin(padNo(Math.pow(10, digits) - 1, digits), stubW - 3, small ? 6.5 : 7.5, true);
+      var tot = g.im.stub.h + 1.5 + 3 + ns * 1.1 + 2 + g.im.stubNote.h, sy = fr.y + (fr.h - tot) / 2;
+      g.stubLabelAt = { x: scx - g.im.stub.w / 2, y: sy }; sy += g.im.stub.h + 1.5;
+      g.stubNo = { x: scx, y: sy + 1.5, size: 2.6 }; sy += 3;
+      g.stubNum = { x: scx, y: sy + ns * 0.55, size: ns }; sy += ns * 1.1 + 2;
+      g.stubNoteAt = { x: scx - g.im.stubNote.w / 2, y: sy };
     }
     return g;
   }
@@ -268,6 +281,7 @@
       P.image(im.stub, ox + g.stubLabelAt.x, oy + g.stubLabelAt.y, im.stub.w, im.stub.h);
       P.text('No.', ox + g.stubNo.x, oy + g.stubNo.y, g.stubNo.size, false, MUTED, 'center');
       P.text(no, ox + g.stubNum.x, oy + g.stubNum.y, g.stubNum.size, true, NAVY, 'center');
+      P.image(im.stubNote, ox + g.stubNoteAt.x, oy + g.stubNoteAt.y, im.stubNote.w, im.stubNote.h);
     }
     P.frame(ox + g.fr.x, oy + g.fr.y, g.fr.w, g.fr.h, NAVY, 0.3);
   }

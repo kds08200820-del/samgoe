@@ -1612,6 +1612,15 @@ window.samMarquee = function(row, speed){
   wrap.addEventListener('pointermove', onMove);
   wrap.addEventListener('pointerup', onUp);
   wrap.addEventListener('pointercancel', onUp);
+  // 옆으로 쓸 때는 브라우저가 화면 스크롤로 받지 않게 — 스크롤로 받으면 쓸어 넘긴 뒤 첫 번째 누름이 먹힘 (위아래 스크롤은 그대로)
+  var tX = 0, tY = 0;
+  function onTouchStart(e){ var t = e.touches[0]; tX = t.clientX; tY = t.clientY; }
+  function onTouchMove(e){
+    var t = e.touches[0], dx = Math.abs(t.clientX - tX), dy = Math.abs(t.clientY - tY);
+    if(dragging && e.touches.length === 1 && dx > 10 && dx > dy * 1.2 && e.cancelable) e.preventDefault();
+  }
+  wrap.addEventListener('touchstart', onTouchStart, { passive:true });
+  wrap.addEventListener('touchmove', onTouchMove, { passive:false });
   // 드래그로 움직였으면 카드 클릭(링크 이동)은 무시
   function onClickCapture(e){ if(moved > 8){ e.preventDefault(); e.stopPropagation(); } }
   wrap.addEventListener('click', onClickCapture, true);
@@ -1641,6 +1650,8 @@ window.samMarquee = function(row, speed){
     wrap.removeEventListener('pointermove', onMove);
     wrap.removeEventListener('pointerup', onUp);
     wrap.removeEventListener('pointercancel', onUp);
+    wrap.removeEventListener('touchstart', onTouchStart, { passive:true });
+    wrap.removeEventListener('touchmove', onTouchMove, { passive:false });
     wrap.removeEventListener('click', onClickCapture, true);
     wrap.removeEventListener('dragstart', onDragStart);
     row._mqStop = null;
