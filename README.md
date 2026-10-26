@@ -44,6 +44,14 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - `lucky.html?c=확인코드` — 참가자가 QR을 찍으면 열리는 등록 화면 (이름 · 생년월일 · 소속 · 휴대폰(선택)).
 - `lucky-print.js` — PDF · 미리 보기 그리기 (jsPDF + qrcode-generator).
 
+## 회계 관리 (삼기연 · 삼일만세운동본부 따로)
+
+- 처음 한 번: 삼기연 Supabase에서 `ledger-setup.sql`, 만세운동본부 Supabase에서 `manse/ledger-setup.sql` 실행.
+- `accounting.html` (임원방 → 회계 관리) — 삼기연 장부. 기록: 회계 · 회장 · 최고관리자, 보기 · 인쇄: 임원.
+- `manse/officer.html` → 회계 탭 — 만세운동본부 장부. 기록: 회계 · 부회계 · 대표회장 · 관리자, 보기 · 인쇄: 임원.
+- `ledger.js` · `ledger.css` — 두 곳이 같이 쓰는 장부 화면 (수입 · 지출 기록, 전기이월, 계정과목별 · 월별 표,
+  변경 기록, 회계 보고 A4 인쇄, CSV). 장부는 각 프로젝트 DB에 따로 저장되어 섞이지 않습니다.
+
 ## Notes
 
 - The two logo PNGs are large (~2778×466). If page weight matters, downscaling
