@@ -44,6 +44,8 @@
     document.querySelectorAll('[data-mgr]').forEach(function (el) { el.hidden = !perms.manager; });
     setupTabs(); setupDocs(); setupRoster(); setupUpload(); setupWalks();
     loadDocs(); loadRoster(); loadWalks(); if (perms.manager) loadMembers();
+    // 걷기대회 총괄 — 관리 단추 · 회차별 결과 보고 (walk-report.js), 결과 보고 PDF는 공문 · 자료(행사 운영)로
+    if (window.WalkReport) window.WalkReport.init({ me: me, profile: profile, perms: perms, putFile: putFile, insertDoc: insertDoc, reloadDocs: loadDocs });
     $('bylawsBtn').addEventListener('click', openBylaws);
   })();
 

@@ -23,11 +23,57 @@
     #wkTable tr.wk-total td{border-top:2px solid var(--ink);}
     #p-walks table.o-table{min-width:560px;}
     @media (max-width:640px){ .wk-kpis{grid-template-columns:repeat(2,1fr);} }
+    /* 걷기대회 총괄 — 관리 단추 (삼괴연합회 홈페이지 화면을 엶) */
+    .wk-link{margin:0 0 12px;font-size:14px;line-height:1.8;color:var(--body);}
+    .wk-link .m-btn{margin-left:4px;vertical-align:middle;}
+    .wk-menu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 30px;}
+    .wk-menu a{display:flex;flex-direction:column;gap:3px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);transition:border-color .15s,box-shadow .15s;}
+    .wk-menu a:hover{border-color:var(--navy);box-shadow:var(--shadow);}
+    .wk-menu a span{font-size:22px;line-height:1;margin-bottom:6px;}
+    .wk-menu a b{font-size:16px;color:var(--ink);} .wk-menu a small{font-size:13px;color:var(--muted);line-height:1.5;}
+    .wk-menu a.hot{background:var(--night);border-color:var(--night);} .wk-menu a.hot b{color:#fff;} .wk-menu a.hot small{color:rgba(255,255,255,.7);}
+    .wk-menu a.off{opacity:.55;}
+    .wk-sec{margin:34px 0 12px;font-size:20px;padding-top:24px;border-top:1px solid var(--line);}
+    .wk-sec small{margin-left:6px;font-family:'Pretendard Variable',Pretendard,sans-serif;font-size:13px;font-weight:500;color:var(--muted);}
+    @media (max-width:760px){ .wk-menu{grid-template-columns:1fr 1fr;} .wk-menu a.hot{grid-column:1/-1;} .wk-menu a small{display:none;} .wk-menu a.hot small{display:block;} }
+    /* 회차별 결과 보고 (walk-report.js) — 화면 · PDF 같은 모양 */
+    .rp{color:var(--body);}
+    .rp-head h2{margin:0 0 4px;font-size:24px;} .rp-eyebrow{margin:0 0 6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--red);}
+    .rp-meta{margin:0 0 16px;font-size:13.5px;color:var(--muted);}
+    .rp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px;}
+    .rp-kpis div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+    .rp-kpis span{display:block;font-size:12.5px;color:var(--muted);} .rp-kpis b{display:block;margin-top:2px;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;}
+    .rp-kpis b small{font-size:12.5px;font-weight:500;color:var(--muted);}
+    .rp h3{margin:18px 0 8px;font-size:15.5px;color:var(--ink);}
+    .rp-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+    .rp-t{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;background:#fff;}
+    .rp-t th,.rp-t td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;}
+    .rp-t th{font-size:12px;color:var(--muted);font-weight:700;background:#fafafa;}
+    .rp-t .r{text-align:right;} .rp-t .c{text-align:center;} .rp-t tr.tot td{font-weight:700;border-top:2px solid var(--ink);}
+    .rp-dim{color:var(--faint);}
+    .rp-note{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.6;}
+    .rp-bars{display:flex;flex-direction:column;gap:5px;}
+    .rp-bar{display:grid;grid-template-columns:150px 1fr 64px;gap:8px;align-items:center;font-size:13px;}
+    .rp-bar .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
+    .rp-bar .b{height:14px;background:#f0f0f0;border-radius:3px;overflow:hidden;display:flex;}
+    .rp-bar .b i{display:block;height:100%;background:var(--night);}
+    .rp-bar .b.st i.s1,.rp-legend i.s1{background:var(--night);} .rp-bar .b.st i.s2,.rp-legend i.s2{background:#9a9a9a;} .rp-bar .b.st i.s3,.rp-legend i.s3{background:#dcdcdc;}
+    .rp-bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--body);}
+    .rp-legend{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;margin:0 0 8px;font-size:12px;color:var(--muted);}
+    .rp-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:-6px;}
+    .rp-more{margin:14px 0 0;} .rp-more summary{cursor:pointer;font-weight:700;color:var(--navy);padding:6px 0;}
+    @media (max-width:760px){ .rp-kpis{grid-template-columns:1fr 1fr;} .rp-2{grid-template-columns:1fr;gap:0;} .rp-bar{grid-template-columns:110px 1fr 56px;} }
+    /* PDF로 만들 때 쓰는 A4 한 쪽 (화면 밖에서 그림) */
+    .rp-print{position:absolute;left:-10000px;top:0;}
+    .rp.pg{width:794px;height:1123px;padding:46px 52px 64px;background:#fff;position:relative;overflow:hidden;font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
+    .rp.pg .rp-t{font-size:12.5px;} .rp.pg .rp-t th,.rp.pg .rp-t td{padding:5px 8px;}
+    .pg-foot{position:absolute;left:52px;right:52px;bottom:26px;padding-top:8px;border-top:1px solid #ddd;font-size:10.5px;color:#888;text-align:center;}
     @media print{
-      .m-bar,.o-head,.o-tabs,.o-tools,.o-note,.m-footer{display:none!important;}
+      .m-bar,.o-head,.o-tabs,.o-tools,.o-note,.m-footer,.wk-link,.wk-menu,#rpMsg{display:none!important;}
       .o-panel{display:none!important;} #p-walks.o-panel.on{display:block!important;}
       .o-table-wrap{overflow:visible;border:0;} #p-walks table.o-table{min-width:0;font-size:12.5px;}
       .wk-kpis div{border-color:#999;}
+      body.rp-printing .wk-church{display:none!important;} body:not(.rp-printing) .wk-report{display:none!important;}
     }
   </style>
 </head>
@@ -51,7 +97,7 @@
       </div>
       <nav class="o-tabs" role="tablist">
         <button class="o-tab" role="tab" data-tab="docs" aria-selected="true">공문·자료</button>
-        <button class="o-tab" role="tab" data-tab="walks" aria-selected="false">걷기 참가 교회</button>
+        <button class="o-tab" role="tab" data-tab="walks" aria-selected="false">걷기대회</button>
         <button class="o-tab" role="tab" data-tab="roster" aria-selected="false">임원 명단</button>
         <button class="o-tab" role="tab" data-tab="members" aria-selected="false" data-mgr hidden>회원 관리</button>
         <button class="o-tab" role="tab" data-tab="upload" aria-selected="false">자료 올리기</button>
@@ -68,9 +114,30 @@
         <div id="docList"><div class="o-empty">불러오는 중…</div></div>
       </section>
 
-      <!-- 3·1 만세길 걷기 참가 교회 (manse-walk-setup.sql) — 삼기연 임원방에서 이관 -->
+      <!-- 3·1 만세길 걷기 — 삼일만세운동본부 총괄 (walk-report.js) · 아래 교회별 참가 인원은 삼기연에서 이관 (manse-walk-setup.sql) -->
       <section class="o-panel" id="p-walks">
-        <div class="o-note">3·1 만세길 걷기 참가 신청은 삼괴지역기독교연합회 홈페이지에서 받고, 행사가 끝나면 삼기연 임원방(행사 신청 기록)의 <b>'삼일만세운동본부로 이관'</b> 단추로 교회별 참가 인원이 이곳에 회차마다 쌓입니다. 신청자 개인 이름은 오지 않습니다.</div>
+        <div class="o-note">3·1 만세길 걷기는 <b>삼일만세운동본부가 총괄</b>합니다. 참가 신청 · 행운권 QR · 경품 기록은 삼괴지역기독교연합회 홈페이지에 함께 쌓이므로, 아래 관리 단추와 결과 보고는 이 브라우저에서 <b>삼괴연합회 홈페이지에 임원으로 로그인</b>되어 있어야 열립니다.</div>
+        <p class="wk-link" id="wkLink">삼괴연합회 로그인을 확인하는 중…</p>
+        <nav class="wk-menu" id="wkMenu" aria-label="걷기대회 관리">
+          <a class="hot" href="../lucky-admin.html"><span aria-hidden="true">🎟️</span><b>행운권 QR 만들기 · 인쇄</b><small>번호 범위로 QR 만들기 · 이미지 넣어 PDF · 등록 현황</small></a>
+          <a href="../walk-admin.html"><span aria-hidden="true">🚶</span><b>행사(회차) · 신청 기록</b><small>회차 만들기 · 첫 화면 게시 · 신청 · 입금 확인</small></a>
+          <a href="../prize-winners.html"><span aria-hidden="true">🎁</span><b>경품 당첨자 명단</b><small>당첨 인증 · 수령 확인 · 교회별 인쇄</small></a>
+        </nav>
+
+        <div class="wk-report">
+          <h2 class="wk-sec">회차별 결과 보고 <small>참여 교회 · 시민 · 경품 — 이름은 가립니다</small></h2>
+          <div class="o-tools">
+            <select class="m-in" id="rpSel" aria-label="결과 보고 회차 고르기"></select>
+            <button class="m-btn sm" type="button" id="rpPdf" disabled>PDF로 자료실에 올리기</button>
+            <button class="m-btn ghost sm" type="button" id="rpPrint">인쇄</button>
+          </div>
+          <div class="m-msg" id="rpMsg" role="status"></div>
+          <div id="rpBody"><div class="o-empty">불러오는 중…</div></div>
+        </div>
+
+        <div class="wk-church">
+        <h2 class="wk-sec">교회별 참가 인원 <small>삼기연 임원방에서 이관한 기록</small></h2>
+        <p class="m-help" style="margin:-4px 0 12px">행사가 끝나면 삼기연 임원방(행사 신청 기록)의 <b>'삼일만세운동본부로 이관'</b> 단추로 교회별 참가 인원이 회차마다 여기에 쌓입니다. 신청자 개인 이름은 오지 않습니다.</p>
         <div class="o-tools">
           <select class="m-in" id="wkSel" aria-label="회차 고르기"></select>
           <input class="m-in grow" id="wkQ" type="search" placeholder="교회 이름 찾기" />
@@ -79,6 +146,7 @@
         </div>
         <div id="wkSum"></div>
         <div class="o-table-wrap"><table class="o-table" id="wkTable"><tr><td>불러오는 중…</td></tr></table></div>
+        </div>
       </section>
 
       <!-- 임원 명단 -->
@@ -173,6 +241,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=3"></script>
   <script src="auth.js?v=4"></script>
-  <script src="officer.js?v=4"></script>
+  <script src="../churches.js?v=2"></script>
+  <script src="../walk-events.js?v=1"></script>
+  <script src="walk-report.js?v=1"></script>
+  <script src="officer.js?v=5"></script>
 </body>
 </html>
