@@ -103,6 +103,7 @@
       <select id="evSel"><option>불러오는 중…</option></select>
       <button class="sbtn" id="evNew" type="button">+ 새 회차 만들기</button>
       <a class="sbtn" id="evPage" href="walk.html" target="_blank" rel="noopener">신청 페이지 보기 ↗</a>
+      <a class="sbtn" id="evLucky" href="lucky-admin.html">행운권 QR →</a>
     </div>
     <h1 class="title"><span id="evTitle">3·1 만세길 걷기</span> · 신청 기록 <span class="state" id="state"></span></h1>
     <p class="sub"><span id="evMeta"></span> · 신청 기간이 끝나도 이 기록은 임원방에 계속 남습니다. 입금 확인 칸을 체크하면 바로 저장됩니다.<span id="prizeJump"> · <a href="#prize" style="color:var(--primary);font-weight:700;text-decoration:underline">경품 당첨 인증 현황 보기 ↓</a></span></p>
@@ -501,6 +502,7 @@
       $('evSel').innerHTML=EVENTS.map(function(e){ return '<option value="'+esc(e.event)+'"'+(e.event===EVENT?' selected':'')+'>제'+e.no+'회'+
         (e.event_date?' · '+WalkEv.dotDate(e.event_date):'')+' — '+WalkEv.stateLabel(e)+(e.hero?' · 첫 화면 게시 중':'')+'</option>'; }).join('');
       $('evPage').href='walk.html?e='+encodeURIComponent(EVENT);
+      $('evLucky').href='lucky-admin.html?e='+encodeURIComponent(EVENT);
       $('gsheet').hidden = EVENT!=='2026-6';   // 구글 시트 백업은 제6회만
       $('evChips').innerHTML=(EV.hero?'<span class="chip gold">첫 화면 게시 중</span>':'')+(WalkEv.accepting(EV)?'<span class="chip on">신청 받는 중</span>':'');
       if(s==='draft'||s==='soon') $('evCard').open=true;
@@ -570,11 +572,11 @@
     });
     $('evDel').addEventListener('click',async function(){
       if(evBusy || rows.length || evMode!=='edit') return;
-      if(!confirm(EV.title+' 회차를 지울까요? 신청이 한 건도 없는 회차만 지울 수 있고, 되돌릴 수 없습니다.')) return;
+      if(!confirm(EV.title+' 회차를 지울까요? 신청이 한 건도 없고 행운권을 만들지 않은 회차만 지울 수 있고, 되돌릴 수 없습니다.')) return;
       evBusy=true; this.disabled=true;
       var r=await window.sb.from('walk_events').delete().eq('event',EVENT).select('event');
       evBusy=false; this.disabled=false;
-      if(r.error||!r.data||!r.data.length) return evMsg('지우지 못했습니다. 서기 · 대표회장만, 신청이 없는 회차만 지울 수 있습니다.');
+      if(r.error||!r.data||!r.data.length) return evMsg('지우지 못했습니다. 서기 · 대표회장만, 신청이 없고 행운권을 만들지 않은 회차만 지울 수 있습니다.');
       evDirty=false; location.href='walk-admin.html';
     });
 
