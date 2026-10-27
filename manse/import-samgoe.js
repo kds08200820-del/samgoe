@@ -56,6 +56,7 @@
 
   // ---------- 분류 ----------
   var FOLDER_CAT = { '발신 공문': '공문(발신)', '수신 공문': '공문(수신)', '보조금·공모사업': '공모·협약·보조금', '임원회의': '회의록', '총회': '회의록', '월례회': '회의록',
+                     '회의·계획': '회의록', '삼일만세운동본부 단체 자료': '단체 기본',
                      '만세길 걷기': '행사 운영', '행사 진행 자료': '행사 운영', '언론 보도': '홍보·언론', '포스터·현수막': '행사 운영', '행사 사진': '행사 운영',
                      '회계·결산': '회계·예산', '규정·서식': '단체 기본', '3·1운동·만세길 역사': '계획·보고', '연합회 연혁·기록': '계획·보고' };
   function catFor(name, folder) {
@@ -81,8 +82,11 @@
     return f.year || (m ? +m[0] : null) || +String(f.created_at || '').slice(0, 4) || new Date().getFullYear();
   }
   // 3·1 만세길 걷기 자료인지 — 이름이나 폴더에 '걷기'가 있으면 제N회 (없으면 그 해 회차), 역사 · 기념 자료는 본부 일반
-  function walkFor(text, folder, year) {
-    if (!/걷기/.test(text || '') && folder !== '만세길 걷기') return null;
+  // 삼기연 자료실 '3·1 만세길 걷기' 아래(본부 단체 자료 빼고)나 예전 '만세길 걷기' 폴더면 걷기 자료
+  var WALK_CODES = { walk_out: 1, walk_in: 1, walk_grant: 1, walk_meeting: 1, walk_press: 1, event_manse: 1 };
+  function walkFor(text, folder, year, code) {
+    if (code === 'walk_org') return null;
+    if (!/걷기/.test(text || '') && folder !== '만세길 걷기' && !WALK_CODES[code]) return null;
     var n = walkNoOf(text) || (year - WALK_BASE);
     return n >= 1 && n <= 99 ? n : null;
   }
@@ -95,7 +99,7 @@
   var SRC = null, PLAN = null, HAVE = null;
   async function readSamgoe() {
     var r = await Promise.all([
-      all(sg, 'officer_folders', 'id,name,parent_id'),
+      all(sg, 'officer_folders', 'id,name,parent_id,code'),
       all(sg, 'officer_files', 'id,title,name,path,url,size,mime,folder_id,author_name,created_at,year'),
       all(sg, 'gallery_posts', 'id,title,event_name,event_date,body,author_name,embed_url,embed_kind', function (q) { return q.order('event_date'); }),
       all(sg, 'press_articles', 'id,url,title,source,published,summary,image_url'),
@@ -103,8 +107,9 @@
     ]);
     var F = {}; r[0].forEach(function (f) { F[f.id] = f; });
     var fname = function (id) { var f = F[id]; if (!f) return ''; var p = f.parent_id && F[f.parent_id]; return (p ? p.name + ' › ' : '') + f.name; };
-    var files = r[1].filter(function (f) { var fn = F[f.folder_id] ? F[f.folder_id].name : ''; return /^(officer\/|arcdb:)/.test(f.path) && (MANSE_RE.test((f.title || '') + ' ' + f.name) || fn === '만세길 걷기' || fn === '3·1운동·만세길 역사'); });
-    files.forEach(function (f) { f.folder = F[f.folder_id] ? F[f.folder_id].name : ''; f.folderPath = fname(f.folder_id); });
+    var inWalkTree = function (id) { var f = F[id]; for (var i = 0; f && i < 5; i++, f = F[f.parent_id]) { if (f.code === 'walk') return true; } return false; };
+    var files = r[1].filter(function (f) { var fo = F[f.folder_id] || {}; return /^(officer\/|arcdb:)/.test(f.path) && (MANSE_RE.test((f.title || '') + ' ' + f.name) || fo.name === '만세길 걷기' || fo.name === '3·1운동·만세길 역사' || inWalkTree(f.folder_id)); });
+    files.forEach(function (f) { var fo = F[f.folder_id] || {}; f.folder = fo.name || ''; f.folderCode = fo.code || ''; f.folderPath = fname(f.folder_id); });
     var posts = r[2].filter(function (p) { return MANSE_RE.test(p.title + ' ' + (p.event_name || '')); });
     var pid = posts.map(function (p) { return p.id; }), photos = [];
     for (var i = 0; i < pid.length; i += 50) {
@@ -155,7 +160,7 @@
       var isHtml = /^arcdb:/.test(f.path), title = cleanTitle(f.title || f.name);
       var year = yearOf(f);
       P.docs.push({ id: f.id, f: f, title: title, cat: catFor(title + ' ' + f.name, f.folder), year: year, date: dateOf(f.name) || dateOf(f.title || ''),
-        walk: walkFor(title + ' ' + f.name, f.folder, year), html: isHtml, ext: isHtml ? 'html' : extOf(f.name), have: !!H.doc[f.id], on: !H.doc[f.id] });
+        walk: walkFor(title + ' ' + f.name, f.folder, year, f.folderCode), html: isHtml, ext: isHtml ? 'html' : extOf(f.name), have: !!H.doc[f.id], on: !H.doc[f.id] });
     });
     P.docs.sort(function (a, b) { return b.year - a.year || a.title.localeCompare(b.title, 'ko'); });
     // 2) 활동 기록 — 회차 사진이 홈페이지에 이미 있으면 건너뜀, 회차 사진이 없는 처음 기록(제1회 라이딩)엔 사진만 붙임

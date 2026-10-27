@@ -81,3 +81,23 @@ select v.code, v.name, p.id, v.sort from (values
 ) as v(code, name, parent_code, sort)
 join public.officer_folders p on p.code = v.parent_code
 on conflict (code) do nothing;
+
+-- 3·1 만세길 걷기 (삼일만세운동본부가 총괄하는 사업) — 공문 · 회의 자료라도 걷기 자료는 이 자료실로 따로
+insert into public.officer_folders (code, name, sort, description) values
+ ('walk', '3·1 만세길 걷기', 95, '삼일만세운동본부 사업 — 걷기 공문 · 보조금 · 회의 · 행사 진행 · 언론 보도 · 본부 단체 자료')
+on conflict (code) do nothing;
+insert into public.officer_folders (code, name, parent_id, sort)
+select v.code, v.name, p.id, v.sort from (values
+ ('walk_out',     '발신 공문',                   1),
+ ('walk_in',      '수신 공문',                   2),
+ ('walk_grant',   '보조금·공모사업',             3),
+ ('walk_meeting', '회의·계획',                   4),
+ ('walk_press',   '언론 보도',                   6),
+ ('walk_org',     '삼일만세운동본부 단체 자료',  7)
+) as v(code, name, sort)
+join public.officer_folders p on p.code = 'walk'
+on conflict (code) do nothing;
+-- 예전 '행사 진행 자료 › 만세길 걷기'는 '3·1 만세길 걷기 › 행사 진행 자료'로
+update public.officer_folders f set parent_id = p.id, name = '행사 진행 자료', sort = 5
+  from public.officer_folders p
+ where p.code = 'walk' and f.code = 'event_manse' and f.parent_id is distinct from p.id;

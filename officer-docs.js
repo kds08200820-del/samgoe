@@ -32,6 +32,23 @@
     { code:'event_etc',     re:/순서지|기획안|추진계획|진행표|식순|큐시트|명단|야유회|세미나\s*참석|단합|여행|행사/ },
     { code:'meeting_ofc',   re:/보고서|보고/ }
   ];
+  // 3·1 만세길 걷기 자료 (삼일만세운동본부 사업) — 공문 · 회의 자료라도 걷기 것은 '3·1 만세길 걷기' 자료실로 따로
+  var WALK_RE = /만세길|걷기|라이딩|만세운동본부/;
+  var WALK_RULES = [
+    { code:'walk_org',     re:/만세운동본부/, and:/회칙|단체\s*소개|봉투|본부\s*자료/ },
+    { code:'walk_press',   re:/언론\s*보도|보도\s*자료|기사|신문/ },
+    { code:'walk_grant',   re:/보조금|공모|교부|지원\s*신청|선정|활성화\s*사업|정산/ },
+    { code:'walk_meeting', re:/회의|간담회|전략|제안서|계획|평가/ },
+    { code:'walk_in',      re:/(^|[^집])회신|수신|통보|알림/ },
+    { code:'walk_out',     re:/공문|신고|협조|요청|대관|발신/ }
+  ];
+  function walkCode(s){
+    if(!WALK_RE.test(s) || !folderByCode('walk')) return null;
+    for(var i=0;i<WALK_RULES.length;i++){ var r=WALK_RULES[i]; if(r.re.test(s) && (!r.and || r.and.test(s)) && folderByCode(r.code)) return r.code; }
+    return 'event_manse';   // 순서지 · 포스터 · 명찰 · 사진 등 → 3·1 만세길 걷기 › 행사 진행 자료
+  }
+  function walkRoot(){ return folderByCode('walk'); }
+  function inWalk(folderId){ var w=walkRoot(); return !!(w && folderId && descendants(w.id).indexOf(folderId)>=0); }
   var ARC_TYPE_FALLBACK = { '총회자료':'meeting_ga', '회의록':'meeting_ofc', '월례·임원회의':'meeting_mon', '공문':'gongmun', '보고서':'meeting_ofc', '순서지':'event_etc' };
   function isArc(f){ return /^arc(db)?:/.test(f.path||''); }
   var IMG_RE = /\.(jpe?g|png|gif|webp|heic|mov|mp4)$/i;
@@ -46,10 +63,10 @@
   function folderByCode(code){ return FOLDERS.find(function(f){ return f.code===code; }); }
   function classify(name, title){
     var s = (title||'') + ' ' + (name||'');
-    var hit = null;
-    for(var i=0;i<RULES.length;i++){ if(RULES[i].re.test(s)){ hit = RULES[i].code; break; } }
+    var hit = walkCode(s);
+    if(!hit) for(var i=0;i<RULES.length;i++){ if(RULES[i].re.test(s)){ hit = RULES[i].code; break; } }
     // 사진·영상인데 행사 이름만 있으면 '행사 사진'
-    if(IMG_RE.test(name||'') && (!hit || /^event_/.test(hit) || hit==='history_manse')) hit = 'media_photo';
+    if(IMG_RE.test(name||'') && (!hit || (/^event_/.test(hit) && hit!=='event_manse') || hit==='history_manse')) hit = 'media_photo';
     if(!hit) hit = 'etc';
     var f = folderByCode(hit) || folderByCode('etc');
     return { folder_id: f ? f.id : null, year: guessYear(s), role: guessRole(s) };
@@ -187,16 +204,22 @@
   function renderTree(){
     var tree = document.getElementById('folderTree');
     var all = FILES.filter(function(f){ return f.status!=='pending'; });
+    var w = walkRoot();
     function cnt(id){ var ids=descendants(id); return all.filter(function(f){ return ids.indexOf(f.folder_id)>=0; }).length; }
-    var html = '<div class="tn'+(view.folder===''?' on':'')+'" data-f="">전체 자료 <span class="c">'+all.length+'</span></div>';
-    roots().forEach(function(r){
-      html += '<div class="tn root'+(view.folder===r.id?' on':'')+'" data-f="'+r.id+'">'+esc(r.name)+' <span class="c">'+cnt(r.id)+'</span></div>';
-      children(r.id).forEach(function(k){ html += '<div class="tn sub'+(view.folder===k.id?' on':'')+'" data-f="'+k.id+'">'+esc(k.name)+' <span class="c">'+cnt(k.id)+'</span></div>'; });
-    });
+    function node(r){
+      var h = '<div class="tn root'+(view.folder===r.id?' on':'')+'" data-f="'+r.id+'">'+esc(r.name)+' <span class="c">'+cnt(r.id)+'</span></div>';
+      children(r.id).forEach(function(k){ h += '<div class="tn sub'+(view.folder===k.id?' on':'')+'" data-f="'+k.id+'">'+esc(k.name)+' <span class="c">'+cnt(k.id)+'</span></div>'; });
+      return h;
+    }
+    var mine = all.filter(function(f){ return !inWalk(f.folder_id); });
+    var html = '<div class="tn'+(view.folder===''?' on':'')+'" data-f="">'+(w?'삼괴연합회 자료 전체':'전체 자료')+' <span class="c">'+mine.length+'</span></div>';
+    roots().forEach(function(r){ if(!w || r.id!==w.id) html += node(r); });
     var un = all.filter(function(f){ return !f.folder_id; }).length;
     if(un) html += '<div class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></div>';
-    html += '<div class="tn sep">기록</div>'+
-      '<a class="tn" href="manse/officer.html#walks">3·1 만세길 걷기 (삼일만세운동본부) →</a>';
+    // 3·1 만세길 걷기 — 삼일만세운동본부 사업 자료는 따로
+    html += '<div class="tn sep">3·1 만세길 걷기 · 삼일만세운동본부</div>';
+    if(w) html += node(w);
+    html += '<a class="tn" href="manse/officer.html#docs">삼일만세운동본부 관리자 메뉴 →</a>';
     tree.innerHTML = html;
   }
   function renderFilters(){
@@ -206,6 +229,7 @@
   function matches(f){
     if(view.folder==='__none'){ if(f.folder_id) return false; }
     else if(view.folder){ if(descendants(view.folder).indexOf(f.folder_id)<0) return false; }
+    else if(!view.q && inWalk(f.folder_id)) return false;   // 삼괴연합회 자료 전체: 걷기 자료는 따로 (찾기는 모두에서)
     if(view.year && String(f.year)!==String(view.year)) return false;
     if(view.q){
       var hay = [f.title, f.name, f.memo, (f.tags||[]).join(' '), f.year, f.role, pathName(f.folder_id), f.author_name].join(' ').toLowerCase();
@@ -219,7 +243,7 @@
     var all = FILES.filter(function(f){ return f.status!=='pending'; });
     var res = all.filter(matches);
     var head = document.getElementById('docHead');
-    head.textContent = (view.folder==='__none'?'미분류':(view.folder?pathName(view.folder):'전체 자료'))+' · '+res.length+'건'+(view.q?' (검색: '+view.q+')':'');
+    head.textContent = (view.folder==='__none'?'미분류':(view.folder?pathName(view.folder):(walkRoot()?(view.q?'모든 자료':'삼괴연합회 자료 전체'):'전체 자료')))+' · '+res.length+'건'+(view.q?' (검색: '+view.q+')':'');
     var unN = all.filter(function(f){ return !f.folder_id; }).length;
     if(unN){ head.innerHTML += ' <button class="btn sm" style="margin-left:10px" onclick="window.refileUnfiled()">미분류 '+unN+'건 자동 정리</button>'; }
     var list = document.getElementById('docList');
