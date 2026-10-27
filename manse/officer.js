@@ -160,8 +160,7 @@
       ? '<b>' + list.length + '건</b> · ' + on.map(esc).join(' · ') + ' <span class="o-of">(전체 ' + DOCS.length + '건)</span>'
       : '전체 <b>' + DOCS.length + '건</b> · 3·1 만세길 걷기 ' + DOCS.filter(function (d) { return d.walk_no; }).length + '건 · 본부 일반 ' + DOCS.filter(function (d) { return !d.walk_no; }).length + '건';
     $('fClear').hidden = !on.length;
-    if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>문서 바구니</b>에 파일을 담아 공문·자료를 올려 주세요.' +
-      (perms.manager ? '<br>10월 27일 전에 올린 자료는 <a href="move.html"><b>옛 자료 옮기기</b></a>, 삼괴연합회 자료실의 만세길 자료는 <a href="import-samgoe.html"><b>삼기연 만세길 자료 가져오기</b></a>로 가져올 수 있습니다.' : '') + '</div>'; return; }
+    if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>문서 바구니</b>에 파일을 담아 공문·자료를 올려 주세요.</div>'; return; }
     if (!list.length) { $('docList').innerHTML = '<div class="o-empty">조건에 맞는 자료가 없습니다.</div>'; return; }
     // 3·1 만세길 걷기 자료는 회차별로, 본부 일반 자료는 연도별로 — 두 묶음을 따로
     var walk = list.filter(function (d) { return d.walk_no; }), gen = list.filter(function (d) { return !d.walk_no; }), html = '';
@@ -606,7 +605,7 @@
 
   // ---------------- 3·1 만세길 걷기 참가 교회 (manse-walk-setup.sql) ----------------
   //  참가 신청은 이 홈페이지(walk.html)에서 받고, 교회별 인원은 신청 기록을 묶어서 보여 줌
-  //  신청 기록이 없는 지난 회차는 교회별 인원만 남은 기록(walk_runs · walk_churches — 옛 자료 옮기기로 들어옴)으로 보여 줌
+  //  신청 기록이 없는 지난 회차는 교회별 인원만 남은 기록(walk_runs · walk_churches — walk_import 로 넣은 지난 기록)으로 보여 줌
   var RUNS = [], WCH = [];
   function n0(v) { return Number(v || 0).toLocaleString('ko-KR'); }
   function dot(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? m[1] + '.' + m[2] + '.' + m[3] : ''; }
