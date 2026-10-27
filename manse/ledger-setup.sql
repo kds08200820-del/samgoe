@@ -9,6 +9,13 @@
 --   · 변경 기록(누가 언제 무엇을 넣고 · 고치고 · 지웠는지): 자동으로 남고 임원이 봄 — 고치거나 지울 수 없음
 -- ============================================================
 
+-- 0) 맞는 프로젝트인지 확인 — 삼기연(samgoe-cc) 프로젝트에서 실행하면 아무것도 바꾸지 않고 멈춤
+do $$ begin
+  if to_regprocedure('public.my_perms()') is null then
+    raise exception '이 SQL은 삼일만세운동본부 Supabase 프로젝트에서 실행해야 합니다. 지금 연 프로젝트(samgoe-cc 등)가 아닌 만세운동본부 프로젝트를 골라 주세요. (아무것도 바뀌지 않았습니다)';
+  end if;
+end $$;
+
 -- 1) 장부 ------------------------------------------------------
 create table if not exists public.ledger_entries (
   id              uuid primary key default gen_random_uuid(),

@@ -10,6 +10,14 @@
 --   · 신청은 '신청 받기'가 켜져 있고 신청 마감일까지만 (한국 시각, 마감일 당일 밤 12시 전까지)
 -- ============================================================
 
+-- 0) 맞는 프로젝트인지 확인 — 다른 프로젝트(삼일만세운동본부 등)에서 실행하면 아무것도 바꾸지 않고 멈춤
+do $$ begin
+  if to_regclass('public.walk_applications') is null or to_regprocedure('public.is_walk_archiver()') is null
+     or to_regprocedure('public.my_perms()') is not null then   -- my_perms 는 만세운동본부 프로젝트에만 있음
+    raise exception '이 SQL은 삼기연(samgoe-cc) Supabase 프로젝트에서 실행해야 합니다. 화면 맨 위의 프로젝트 이름이 samgoe-cc 인지 확인해 주세요. (아무것도 바뀌지 않았습니다)';
+  end if;
+end $$;
+
 -- 1) 회차 표 ---------------------------------------------------
 create table if not exists public.walk_events (
   event         text primary key,                 -- 회차 코드 (예: 2027-7) — 신청 기록이 이 코드로 묶임, 만든 뒤에는 바꾸지 않음
