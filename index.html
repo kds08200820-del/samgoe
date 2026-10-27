@@ -498,6 +498,7 @@
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
   <link rel="stylesheet" href="assets/theme.css?v=4" />
+  <link rel="stylesheet" href="assets/hero-motion.css?v=1" />
 </head>
 <body>
 <div style="width:100%;overflow-x:hidden;overflow-x:clip;">
@@ -535,7 +536,6 @@
 
   <!-- ===================== HERO — 마우스 반응형 파티클 ===================== -->
     <section id="top" class="hero">
-    <canvas id="heroCanvas" aria-hidden="true"></canvas>
     <div class="in">
       <img class="hero-logo" src="assets/logo-trans.png" alt="삼기연" style="height:44px;width:auto;margin:0 auto 26px;" />
       <!-- 첫 화면 게시 회차 — 삼일만세운동본부 관리자 메뉴 → 걷기대회 관리에서 '첫 화면에 게시' (만세 Supabase walk_events) -->
@@ -550,14 +550,57 @@
         </div>
         <p class="hf-note" id="heNote"></p>
       </div>
-      <div class="hero-default">
-      <div class="hero-tag">화성특례시 우정읍 · 장안면 &nbsp;|&nbsp; 49개 교회</div>
-      <h1>한 형제처럼, 한 마음으로<br>삼괴지역 기독교 연합회</h1>
-      <p class="hero-verse">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고”<span class="hero-verse-ref">— 시편 133:1</span></p>
-      <div class="hero-cta-row">
-        <a href="#dashboard" class="btn btn-solid press">한눈에 보기</a>
-        <a href="#about" class="btn btn-ghost press">연합회 소개</a>
-      </div>
+      <!-- 영상처럼 움직이는 히어로 (assets/hero-motion.css · hero-motion.js) — 17초 · 4장면 반복 -->
+      <div class="hero-default mv" id="mv">
+        <div class="mv-stage">
+          <section class="mv-scene" aria-label="삼괴지역 기독교 연합회">
+            <p class="mv-kick mv-up">화성특례시 우정읍 · 장안면</p>
+            <h1 class="mv-title"><span class="ln"><span>한 형제처럼, 한 마음으로</span></span><span class="ln"><span><em>삼괴지역 기독교 연합회</em></span></span></h1>
+            <div class="mv-rule"></div>
+            <p class="mv-sub mv-up" data-d="4"><b>2010년 설립</b> · 12개 교단 49개 교회가 교파를 넘어 한 식탁에</p>
+          </section>
+          <section class="mv-scene" aria-label="숫자로 보는 삼기연">
+            <p class="mv-kick mv-up">숫자로 보는 삼기연</p>
+            <h2 class="mv-h mv-up" data-d="1">작은 교회와 큰 교회가 함께</h2>
+            <div class="mv-kpis">
+              <div class="mv-kpi mv-up" data-d="2"><b data-to="49">49<i>곳</i></b><span>회원 교회</span><small>우정읍 31 · 장안면 18</small></div>
+              <div class="mv-kpi mv-up" data-d="3"><b data-to="12">12<i>개</i></b><span>참여 교단</span><small>교파를 넘어 한 형제로</small></div>
+              <div class="mv-kpi mv-up" data-d="4"><b data-to="46" data-mv="posts">46<i>건</i></b><span>활동 기록</span><small>예배 · 기도회 · 행사 갤러리</small></div>
+              <div class="mv-kpi mv-up" data-d="5"><b data-to="502" data-mv="photos">502<i>장</i></b><span>사진으로 남긴 순간</span><small>회원 교회가 함께 올린 사진</small></div>
+            </div>
+          </section>
+          <section class="mv-scene" aria-label="해마다 넓어지는 연합의 발걸음">
+            <p class="mv-kick mv-up">해마다 넓어지는 발걸음</p>
+            <h2 class="mv-h mv-up" data-d="1">연도별 연합 활동 기록</h2>
+            <p class="mv-cap mv-up" data-d="2">홈페이지 갤러리에 남긴 활동 · <span data-mv="range"></span></p>
+            <svg class="mv-chart" role="img" aria-label="연도별 활동 기록 막대 그래프와 누적선"></svg>
+            <div class="mv-legend mv-up" data-d="3"><span><i></i>그해 활동</span><span><i class="ln"></i>누적</span></div>
+          </section>
+          <section class="mv-scene" aria-label="걸어온 길">
+            <p class="mv-kick mv-up">걸어온 길</p>
+            <div class="mv-line">
+              <div class="mv-pt"><b>1919</b><span>우정·장안 3·1 만세운동, 신앙과 나라 사랑의 뿌리</span></div>
+              <div class="mv-pt"><b>2010</b><span>삼괴지역 기독교 연합회 설립</span></div>
+              <div class="mv-pt"><b>2012</b><span>신년축복성회에 지역민 300여 명</span></div>
+              <div class="mv-pt"><b>2024</b><span>3·1 만세길을 다시 걷다</span></div>
+              <div class="mv-pt"><b>2026</b><span>오늘, 그리고 내일</span></div>
+            </div>
+            <p class="mv-verse mv-up" data-d="6">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고”<small>시편 133:1</small></p>
+          </section>
+        </div>
+        <div class="mv-bar">
+          <button class="mv-play" type="button" aria-label="멈춤">
+            <svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>
+            <svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.2v11.6c0 .5.5.8.9.5l9-5.8c.4-.3.4-.8 0-1.1l-9-5.8C3.5.4 3 .7 3 1.2z"/></svg>
+          </button>
+          <div class="mv-chap" role="tablist" aria-label="장면">
+            <button type="button"><i></i>연합회</button><button type="button"><i></i>숫자</button><button type="button"><i></i>발걸음</button><button type="button"><i></i>걸어온 길</button>
+          </div>
+        </div>
+        <div class="mv-cta">
+          <a href="#dashboard" class="mv-btn solid press">한눈에 보기</a>
+          <a href="#about" class="mv-btn ghost press">연합회 소개</a>
+        </div>
       </div>
       <div class="hero-contact">문의 · 사무총장 010-4271-5090</div>
     </div>
@@ -2099,5 +2142,6 @@ if ('serviceWorker' in navigator) {
       var f=document.getElementById('hfDday'); if(f) f.textContent=d.textContent; }
   })();
   </script>
+<script src="assets/hero-motion.js?v=1"></script>
 </body>
 </html>
