@@ -81,10 +81,12 @@
     return '<li class="' + (key ? 'key' : '') + '"><div class="d">' + esc(t[0]) + '</div><div class="t">' + esc(t[1]) + '</div></li>';
   }).join('') + '</ul>';
   // 언론 보도는 press.js (갤러리 · 임원 추가)
-  $('docList').innerHTML = ['단체', '행사·언론'].map(function (g) {
-    var items = D.docs.filter(function (d) { return d.g === g; });
+  // 공개 자료실 — 3·1 만세길 걷기 자료는 따로 묶음 (제목에 만세길 · 걷기)
+  var isWalkDoc = function (d) { return /만세길|걷기/.test(d.t); };
+  $('docList').innerHTML = [['단체', '단체 등록·사업계획'], ['walk', '3·1 만세길 걷기'], ['행사·언론', '행사·언론 자료']].map(function (g) {
+    var items = D.docs.filter(function (d) { return g[0] === 'walk' ? isWalkDoc(d) : (d.g === g[0] && !isWalkDoc(d)); });
     if (!items.length) return '';
-    return '<div class="mz-list"><h3>' + esc(g === '단체' ? '단체 등록·사업계획' : '행사·언론 자료') + '</h3>' + items.map(function (d) {
+    return '<div class="mz-list' + (g[0] === 'walk' ? ' walk' : '') + '"><h3>' + esc(g[1]) + '</h3>' + items.map(function (d) {
       return '<div class="mz-item"><div><div class="t">' + esc(d.t) + '</div><div class="s">' + esc(d.d) + ' · PDF ' + d.p + '쪽 · ' +
         (d.s > 1048576 ? (d.s / 1048576).toFixed(1) + 'MB' : Math.round(d.s / 1024) + 'KB') + '</div></div>' +
         '<a class="go" href="' + ROOT + 'docs/' + encodeURIComponent(d.f) + '" target="_blank" rel="noopener">열기</a></div>';

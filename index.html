@@ -312,6 +312,11 @@
 
     /* ===================== 언론 보도 — 좌→우 회전 마퀴 ===================== */
     .press-mq{overflow:hidden;width:100%;margin-top:44px;padding:6px 0 14px;touch-action:pan-y;cursor:grab;}
+    .press-walk-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin-top:56px;padding-bottom:10px;border-bottom:2px solid var(--ink);}
+    .press-walk-head h3{margin:0;font-size:20px;color:var(--ink);}
+    .press-walk-head h3 small{margin-left:8px;font-family:inherit;font-size:13px;font-weight:500;color:var(--muted);}
+    .press-walk-head a{font-size:14px;font-weight:700;color:var(--accent);}
+    .press-walk-mq{margin-top:22px;}
     .press-mq:active{cursor:grabbing;}
     .press-row{display:flex;width:max-content;will-change:transform;user-select:none;-webkit-user-select:none;}
     .press-row img{-webkit-user-drag:none;}
@@ -1210,6 +1215,14 @@
         <div class="mq-loading">기사를 불러오는 중…</div>
       </div>
     </div>
+    <!-- 3·1 만세길 걷기 보도는 따로 — 삼일만세운동본부가 총괄하는 행사 -->
+    <div class="wrap press-walk-head" id="pressWalkHead" hidden>
+      <h3>3·1 만세길 걷기 보도 <small>삼일만세운동본부 행사</small></h3>
+      <a href="manse/#press">삼일만세운동본부 언론 보도 →</a>
+    </div>
+    <div class="press-mq press-walk-mq" id="pressWalkMq" hidden>
+      <div class="press-row" id="pressWalkGrid"></div>
+    </div>
   </section>
 
   <!-- ===================== 가입 · 회비 ===================== -->
@@ -1968,7 +1981,7 @@ if ('serviceWorker' in navigator) {
     if(!r || r.error || !r.data){ grid.innerHTML=empty+'기사를 불러오지 못했습니다.</div>'; return; }
     pressRows=r.data;
     if(!pressRows.length){ grid.innerHTML=empty+'아직 등록된 기사가 없습니다.</div>'; return; }
-    grid.innerHTML=pressRows.map(function(a){
+    function card(a){
       var thumb=a.image_url
         ? '<img src="'+esc(a.image_url)+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=press-thumb-ph>언론 보도</div>\'" />'
         : '<div class="press-thumb-ph">'+esc(a.source||'언론 보도')+'</div>';
@@ -1988,17 +2001,24 @@ if ('serviceWorker' in navigator) {
           (a.summary?'<p class="press-sum">'+esc(a.summary)+'</p>':'')+
           '<a class="press-link" href="'+esc(a.url||'#')+'" target="_blank" rel="noopener">기사 원문 보기 →</a>'+
         '</div></article>';
-    }).join('');
-    window.samMarquee(grid, 26);
+    }
+    // 3·1 만세길 걷기 기사(삼일만세운동본부 행사)는 아래 줄에 따로
+    var isWalk=function(a){ return /만세길|걷기/.test((a.title||'')+' '+(a.summary||'')); };
+    var gen=pressRows.filter(function(a){ return !isWalk(a); }), walk=pressRows.filter(isWalk);
+    grid.innerHTML=gen.length ? gen.map(card).join('') : empty+'아직 등록된 기사가 없습니다.</div>';
+    if(gen.length) window.samMarquee(grid, 26);
+    var wg=document.getElementById('pressWalkGrid');
+    document.getElementById('pressWalkHead').hidden=!walk.length; document.getElementById('pressWalkMq').hidden=!walk.length;
+    if(walk.length){ wg.innerHTML=walk.map(card).join(''); window.samMarquee(wg, 22); }
   }
   // 수정/삭제 버튼 — 마퀴 복제본에서도 동작하도록 이벤트 위임
   var pressGridEl=document.getElementById('pressGrid');
-  if(pressGridEl) pressGridEl.addEventListener('click',function(e){
+  [pressGridEl, document.getElementById('pressWalkGrid')].forEach(function(el){ if(el) el.addEventListener('click',function(e){
     var d=e.target.closest?e.target.closest('[data-prdel]'):null;
     if(d){ delPress(d.getAttribute('data-prdel')); return; }
     var ed=e.target.closest?e.target.closest('[data-predit]'):null;
     if(ed){ editPress(ed.getAttribute('data-predit')); }
-  });
+  }); });
   function resetPressForm(){
     editingPressId=null;
     ['prUrl','prTitle','prSource','prDate','prImage','prSummary'].forEach(function(id){ pressField(id).value=''; });
