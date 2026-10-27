@@ -44,15 +44,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="auth.js?v=14"></script>
-  <script src="ledger.js?v=2"></script>
+  <script src="ledger.js?v=3"></script>
   <script>
   (async function(){
-    // 임원이면 보기 · 인쇄, 회계 · 회장 · 최고관리자는 기록까지 (ledger-setup.sql 의 is_treasurer 와 같은 기준)
+    // 임원이면 보기 · 인쇄, 기록 · 고치기 · 지우기는 회계만 (ledger-setup.sql 의 is_treasurer 와 같은 기준)
     var res = await window.requireOfficer(); if(!res) return;
     var me = res.user, p = res.profile || {};
-    var canWrite = window.isSuperAdmin(me) || ['회계','회장'].indexOf(p.officer_role) >= 0;
+    var canWrite = p.officer_role === '회계';
     document.getElementById('loading').style.display='none'; document.getElementById('content').style.display='block';
-    if(!canWrite) document.getElementById('sub').textContent += ' 기록은 회계 · 회장만 할 수 있고, 임원은 보고 인쇄할 수 있습니다.';
+    if(!canWrite) document.getElementById('sub').textContent += ' 기록 · 고치기는 회계만 할 수 있고, 다른 임원은 보기 · 인쇄만 할 수 있습니다.';
     window.Ledger.mount(document.getElementById('ledger'), {
       client: window.sb, org: '삼괴지역기독교연합회', canWrite: canWrite, setupFile: 'ledger-setup.sql', setupPage: 'setup-sql.html',
       signers: ['회계', '감사', '회장'],

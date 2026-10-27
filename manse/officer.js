@@ -58,10 +58,10 @@
     loadDocs(); loadRoster(); loadWalks(); if (perms.manager) loadMembers();
     // 걷기대회 총괄 — 관리 단추 · 회차별 결과 보고 (walk-report.js), 결과 보고 PDF는 공문 · 자료(행사 운영)로
     if (window.WalkReport) window.WalkReport.init({ me: me, profile: profile, perms: perms, putFile: putFile, insertDoc: insertDoc, reloadDocs: loadDocs });
-    // 회계 — 삼기연과 따로인 만세운동본부 장부 (manse/ledger-setup.sql). 기록은 회계 · 부회계 · 대표회장 · 최고관리자
+    // 회계 — 삼기연과 따로인 만세운동본부 장부 (manse/ledger-setup.sql). 기록 · 고치기는 회계만, 다른 임원은 보기 · 인쇄만
     if (window.Ledger) window.Ledger.mount($('ledgerBox'), {
       client: window.msb, org: '삼일만세운동본부', setupFile: 'manse/ledger-setup.sql (만세운동본부 프로젝트)', setupPage: '../setup-sql.html',
-      canWrite: !!(perms.admin || (perms.officer && ['회계', '부회계', '대표회장'].indexOf(perms.role) >= 0)),
+      canWrite: !!(perms.officer && perms.role === '회계'),
       signers: ['회계', '감사', '대표회장'],
       cats: {
         '수입': ['회비', '후원금', '보조금', '찬조금', '행사 참가비', '이자', '기타 수입'],

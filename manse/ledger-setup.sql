@@ -1,11 +1,11 @@
 -- ============================================================
---  삼일만세운동본부 — 회계 관리 (수입 · 지출 장부, 회계 보고 인쇄) — 임원방 → 회계 탭 (manse/officer.html)
---  ▶ Supabase 대시보드(삼일만세운동본부 전용 프로젝트 elaockhopuvadamvwjeg) → SQL Editor → 아래 전체 붙여넣고 Run
+--  삼일만세운동본부 — 회계 관리 (수입 · 지출 장부, 회계 보고 인쇄) — 관리자 메뉴 → 회계 탭 (manse/officer.html)
+--  ▶ Supabase 대시보드(삼일만세운동본부 전용 프로젝트 nuqzwuwuhgrzglkjangq) → SQL Editor → 아래 전체 붙여넣고 Run
 --    (여러 번 실행해도 안전 · 삼기연 프로젝트가 아니라 '만세운동본부' 프로젝트에서 실행하세요)
 --  ※ 삼기연 회계와는 완전히 따로입니다 (삼기연은 ledger-setup.sql) — 두 장부는 섞이지 않습니다.
 --  권한 (임원방 권한 my_perms() 를 그대로 씀 — 임원 명단의 직책 · 재직 기준)
 --   · 장부 · 회계 보고 보기 · 인쇄: 임원 (감사 포함) · 최고관리자
---   · 수입 · 지출 기록 · 고치기 · 지우기, 해마다 전기이월 넣기: 회계 · 부회계 · 대표회장 · 최고관리자
+--   · 수입 · 지출 기록 · 고치기 · 지우기, 해마다 전기이월 넣기: 회계만 (다른 임원은 보기 · 인쇄만)
 --   · 변경 기록(누가 언제 무엇을 넣고 · 고치고 · 지웠는지): 자동으로 남고 임원이 봄 — 고치거나 지울 수 없음
 -- ============================================================
 
@@ -70,8 +70,7 @@ returns boolean language sql security definer set search_path = public stable as
 $$;
 create or replace function public.ledger_can_write()
 returns boolean language sql security definer set search_path = public stable as $$
-  select coalesce((p ->> 'admin')::boolean, false)
-      or (coalesce((p ->> 'officer')::boolean, false) and coalesce(p ->> 'role', '') in ('회계', '부회계', '대표회장'))
+  select coalesce((p ->> 'officer')::boolean, false) and coalesce(p ->> 'role', '') = '회계'
   from (select public.ledger_perms() as p) x;
 $$;
 revoke all on function public.ledger_perms() from public, anon;

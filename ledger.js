@@ -61,7 +61,7 @@
             '<label class="w2">비고<input data-k="fMemo" maxlength="300" placeholder="선택 · 영수증 번호 등"></label>' +
           '</div>' +
           '<div class="lg-fa"><button type="submit" class="lg-btn pri big" data-k="fSave">기록하기</button><button type="button" class="lg-btn" data-k="fCancel" hidden>고치기 그만</button></div>' +
-        '</form>' : '<p class="lg-ro">보기 전용입니다. 수입 · 지출 기록은 회계가 합니다.</p>') +
+        '</form>' : '<p class="lg-ro">보기 전용입니다. 수입 · 지출 기록 · 고치기 · 지우기는 회계만 할 수 있습니다.</p>') +
       '<div class="lg-grid"><section><h3>계정과목별</h3><div data-k="cats"></div></section><section data-k="monthsWrap"><h3>월별</h3><div data-k="months"></div></section></div>' +
       '<h3 class="lg-h3">거래 내역 <small data-k="count"></small></h3>' +
       '<div class="lg-tools"><input type="search" data-k="q" placeholder="적요 · 계정과목 · 거래처 찾기"><select data-k="fkind"><option value="">수입 · 지출 모두</option><option>수입</option><option>지출</option></select></div>' +

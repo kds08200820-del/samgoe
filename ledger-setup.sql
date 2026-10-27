@@ -1,10 +1,10 @@
 -- ============================================================
---  삼기연 — 회계 관리 (수입 · 지출 장부, 회계 보고 인쇄) — 임원방 → 회계 관리 (accounting.html)
+--  삼기연 — 회계 관리 (수입 · 지출 장부, 회계 보고 인쇄) — 관리자 메뉴 → 회계 관리 (accounting.html)
 --  ▶ Supabase 대시보드(삼기연 samgoe-cc 프로젝트) → SQL Editor → 아래 전체 붙여넣고 Run (여러 번 실행해도 안전)
 --  ※ 삼일만세운동본부 회계는 따로입니다 (만세운동본부 프로젝트의 manse/ledger-setup.sql) — 두 장부는 섞이지 않습니다.
 --  권한
 --   · 장부 · 회계 보고 보기 · 인쇄: 임원 · 최고관리자
---   · 수입 · 지출 기록 · 고치기 · 지우기, 해마다 전기이월(작년에서 넘어온 돈) 넣기: 회계 · 회장 · 최고관리자
+--   · 수입 · 지출 기록 · 고치기 · 지우기, 해마다 전기이월(작년에서 넘어온 돈) 넣기: 회계만 (다른 임원은 보기 · 인쇄만)
 --   · 변경 기록(누가 언제 무엇을 넣고 · 고치고 · 지웠는지): 자동으로 남고 임원이 봄 — 고치거나 지울 수 없음
 -- ============================================================
 
@@ -61,8 +61,7 @@ create index if not exists ledger_log_at_idx on public.ledger_log(at desc);
 -- 2) 권한 ------------------------------------------------------
 create or replace function public.is_treasurer()
 returns boolean language sql security definer set search_path = public stable as $$
-  select coalesce((auth.jwt() ->> 'email') = 'kds08200820@gmail.com', false)
-    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.officer_role in ('회계', '회장'));
+  select exists (select 1 from public.profiles p where p.id = auth.uid() and p.officer_role = '회계');
 $$;
 revoke all on function public.is_treasurer() from public, anon;
 grant execute on function public.is_treasurer() to authenticated;
