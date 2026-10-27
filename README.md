@@ -71,6 +71,10 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - 걷기 결과 보고 공개: 관리자 메뉴 → 걷기대회 관리 → 회차별 결과 보고 → '홈페이지에 게시' — 숫자와 교회 이름만
   `walk_reports`(`manse/manse-report-setup.sql`)에 저장 (당첨자 명단 · 단체 · 시민 이름은 빠짐). 첫 화면에 가장 최근 회차
   '결과 보고' 띠가 나오고 `manse/report.html?w=회차`에서 봄. '게시 내리기'로 숨김. 화면 모양은 `manse/walk-report.js` · `walk-report.css` 공용.
+- 삼기연 만세길 자료 가져오기: 관리자 메뉴 → '삼기연 만세길 자료 가져오기' (`manse/import-samgoe.html` · 운영임원 + 같은 브라우저의 삼기연 임원 로그인).
+  삼기연 임원방 파일 · 기록물 HTML → 공문·자료(분류 자동, 화면에서 수정), 갤러리 사진 · 유튜브 → 활동 기록(회차 사진이 이미 있으면 건너뜀),
+  기사 → 언론 보도. 파일은 삼기연 저장소(workers.dev)에서 브라우저가 바로 받아 manse 저장소로 올림. 파일 이름에 `sg-<삼기연 id>`를 남겨 다시 눌러도 중복 없음.
+- 옛 자료 옮기기: 관리자 메뉴 → '옛 자료 옮기기' (`manse/move.html`) — 10월 27일 전 옛 manse 프로젝트(elaockhopuvadamvwjeg)의 임원 명단 · 공문/자료 · 활동 사진 · 걷기 · 회계를 새 프로젝트로 복사.
 - 최고관리자(kds08200820@gmail.com)로 만세 홈페이지에 가입 → 임원방 → 임원 명단에 임원들의 가입 이메일을 넣으면 각자 임원방이 열림.
 
 ## Notes

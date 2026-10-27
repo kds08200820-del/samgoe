@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>삼괴연합회 만세길 자료 가져오기 | 삼일만세운동본부</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=7" />
+  <style>
+    .im{max-width:980px;margin:0 auto;padding:36px 16px 72px;}
+    .im h1{margin:0 0 6px;font-size:26px;}
+    .im .lead{margin:0 0 20px;color:var(--muted);font-size:15px;line-height:1.75;}
+    .im .m-card{padding:24px 22px;margin:0 0 16px;}
+    .im .m-card.off{opacity:.5;pointer-events:none;}
+    .im .m-card h2{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:18px;}
+    .im .m-card h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--night);color:#fff;font-size:13px;}
+    .im .st{margin:0;font-size:14.5px;line-height:1.7;}
+    .im h3{display:flex;align-items:baseline;gap:10px;margin:22px 0 8px;font-size:16px;}
+    .im h3 small{font-weight:500;color:var(--muted);font-size:13px;}
+    .im h3 .pick{margin-left:auto;font-size:13px;font-weight:500;}
+    .im .pick button{border:0;background:none;padding:0;font:inherit;color:var(--navy);text-decoration:underline;cursor:pointer;}
+    .im table{width:100%;border-collapse:collapse;font-size:13.5px;}
+    .im th,.im td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;}
+    .im th{font-size:12px;color:var(--muted);background:#fafafa;white-space:nowrap;}
+    .im td.c{text-align:center;width:34px;} .im td.r,.im th.r{text-align:right;white-space:nowrap;}
+    .im td .t{color:var(--ink);} .im td .s{display:block;color:var(--muted);font-size:12px;margin-top:1px;}
+    .im tr.have td{color:var(--faint);} .im tr.have td .t{color:var(--faint);}
+    .im select{height:32px;padding:0 8px;border:1px solid var(--line-strong);border-radius:6px;background:#fff;font:inherit;font-size:13px;color:var(--ink);}
+    .im .chip{vertical-align:middle;}
+    .im .bar{height:10px;background:#eee;border-radius:99px;overflow:hidden;margin:14px 0 6px;}
+    .im .bar i{display:block;height:100%;width:0;background:var(--night);transition:width .2s;}
+    .im pre{max-height:260px;overflow:auto;margin:8px 0 0;padding:10px 12px;background:#fafafa;border:1px solid var(--line);border-radius:8px;font:12.5px/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;}
+    .im .note{margin:10px 0 0;font-size:13px;color:var(--muted);line-height:1.7;}
+    .im .o-table-wrap{margin:0;}
+    @media (max-width:640px){ .im th.hide,.im td.hide{display:none;} .im .m-card{padding:18px 14px;} }
+  </style>
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span id="mAuth"></span>
+  </div></header>
+  <main class="im">
+    <h1>삼괴연합회 만세길 자료 가져오기</h1>
+    <p class="lead">삼괴연합회(삼기연) 홈페이지 임원방에 있는 <b>3·1 만세길 걷기 관련 자료</b>를 분류해서 이 홈페이지로 복사합니다 — 공문·자료는 분류별로, 사진·영상은 활동 기록으로,
+      기사는 언론 보도로. 삼기연 쪽 자료는 그대로 두고, 이미 가져온 것은 건너뜁니다.</p>
+
+    <section class="m-card" id="c1">
+      <h2><span class="n">1</span>로그인 확인</h2>
+      <p class="st" id="newSt">삼일만세운동본부 로그인을 확인하는 중…</p>
+      <p class="st" id="sgSt" style="margin-top:6px">삼괴연합회 로그인을 확인하는 중…</p>
+    </section>
+
+    <section class="m-card off" id="c2">
+      <h2><span class="n">2</span>가져올 자료 고르기</h2>
+      <p class="st" id="scanSt">삼괴연합회 홈페이지의 자료를 읽는 중…</p>
+      <div id="plan"></div>
+    </section>
+
+    <section class="m-card off" id="c3">
+      <h2><span class="n">3</span>가져오기</h2>
+      <button class="m-btn block" type="button" id="goAll" disabled>가져오기</button>
+      <div class="bar" id="bar" hidden><i></i></div>
+      <p class="st" id="prog"></p>
+      <pre id="log" hidden></pre>
+      <p class="note">사진이 많으면 몇 분 걸립니다. 중간에 멈추면 다시 누르세요 — 못 가져온 것만 이어서 합니다.<br>
+        언론 보도의 대표 사진은 가져온 뒤 홈페이지 첫 화면(언론 보도)을 열면 자동으로 채워집니다.</p>
+    </section>
+    <a class="m-home" href="officer.html">← 관리자 메뉴</a>
+  </main>
+  <footer class="m-footer">© 2026 삼일만세운동본부</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=4"></script>
+  <script src="auth.js?v=6"></script>
+    <script src="archive/data.js?v=6"></script>
+  <script src="import-samgoe.js?v=1"></script>
+</body>
+</html>
