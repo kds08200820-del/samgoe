@@ -35,6 +35,8 @@ create table if not exists public.officer_posts (
   author_name  text,
   created_at   timestamptz default now()
 );
+-- 3·1 만세길 걷기(삼일만세운동본부) 회의면 회차 — 임원회의 탭에서 삼괴연합회 임원회의와 따로 묶음
+alter table public.officer_posts add column if not exists walk_no int check (walk_no is null or walk_no between 1 and 99);
 alter table public.officer_posts enable row level security;
 
 drop policy if exists "op_read" on public.officer_posts;

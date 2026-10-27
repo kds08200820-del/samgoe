@@ -389,6 +389,10 @@
     var ids = descendants(root.id);
     return FILES.filter(function(f){ return f.status!=='pending' && ids.indexOf(f.folder_id)>=0; });
   };
+  window.walkMeetingFiles = function(){   // 3·1 만세길 걷기 › 회의·계획
+    var f = folderByCode('walk_meeting'); if(!f) return [];
+    return FILES.filter(function(x){ return x.status!=='pending' && x.folder_id===f.id; });
+  };
   window.folderName = function(id){ return pathName(id); };
   window.openFileById = function(id){ openArc(id); };
   // 제목에 적힌 연도가 저장된 연도와 다르면 바로잡는다 (예: 업로드 연도 2026 → 문서 연도 2019)

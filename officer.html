@@ -176,6 +176,10 @@
     .tn .c{font-size:11px;color:var(--muted);} .tn.on .c{color:rgba(255,255,255,.8);}
     .tn.sep{margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline);font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);cursor:default;}
     .tn.sep:hover{background:none;}
+    .msec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
+    .msec:first-child{margin-top:0;}
+    .msec h3{margin:0;font-size:16px;color:var(--ink);}
+    .msec span{font-size:12.5px;color:var(--muted);}
     .subview .writeBox{margin-top:0;}
     .sideBtns{display:flex;gap:6px;padding:10px 12px 4px;border-top:1px solid var(--hairline);margin-top:8px;flex-wrap:wrap;}
     .docHead{font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
@@ -268,10 +272,11 @@
           <div class="fld"><label>제목</label><input id="mTitle" type="text" maxlength="100" placeholder="예: 3월 임원회의 안건" /></div>
           <div class="fld"><label>회의 날짜</label><input id="mDate" type="date" /></div>
         </div>
+        <div class="fld"><label>구분</label><select id="mWalk"></select></div>
         <div class="fld"><label>내용</label><textarea id="mBody" maxlength="4000" placeholder="안건·회의록·공지 내용을 적어 주세요."></textarea></div>
         <div style="display:flex;align-items:center;gap:12px;"><button class="btn" id="mSubmit">등록</button><span class="prog" id="mProg"></span></div>
       </div>
-      <div class="secHead" style="margin-top:6px;"><h3>연도별 임원회의 내역</h3><span class="prog" id="meetingMeta" style="margin:0"></span></div>
+      <div class="secHead" style="margin-top:6px;"><h3>연도별 회의 내역</h3><span class="prog" id="meetingMeta" style="margin:0"></span></div>
       <div class="list" id="meetingList"></div>
       <div class="empty" id="meetingEmpty" style="display:none;">아직 등록된 회의 글이 없습니다.</div>
     </div>
@@ -327,7 +332,7 @@
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=13"></script>
-  <script src="officer-docs.js?v=13"></script>
+  <script src="officer-docs.js?v=14"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
     var MPOSTS = [], MC = {};
@@ -339,6 +344,7 @@
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
     function fmtDate(d){ if(!d) return ''; try{ var x=new Date(d+'T00:00:00'); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2); }catch(_){ return d; } }
     function fmtDT(ts){ if(!ts) return ''; try{ var x=new Date(ts); return x.getFullYear()+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+('0'+x.getDate()).slice(-2)+' '+('0'+x.getHours()).slice(-2)+':'+('0'+x.getMinutes()).slice(-2); }catch(_){ return ''; } }
+    var mWalkTouched = false;
     function todayStr(){ var x=new Date(); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
     function fmtSize(n){ n=Number(n)||0; if(n<1024) return n+' B'; if(n<1048576) return (n/1024).toFixed(0)+' KB'; return (n/1048576).toFixed(1)+' MB'; }
     function fileIcon(name){ var e=(name||'').split('.').pop().toLowerCase();
@@ -446,34 +452,49 @@
       var list = document.getElementById('meetingList'), empty = document.getElementById('meetingEmpty');
       if(r[0].error){ list.innerHTML=''; empty.style.display='block'; empty.innerHTML='불러오기 오류 — 관리자: <b>officer-room-setup.sql</b> 실행이 필요할 수 있습니다.<br><span style="font-size:12px">('+esc(r[0].error.message)+')</span>'; return; }
       MPOSTS = r[0].data||[]; MC={}; (r[1].data||[]).forEach(function(c){ (MC[c.post_id]=MC[c.post_id]||[]).push(c); });
-      var mfiles = window.meetingFiles ? window.meetingFiles() : [];
-      if(!MPOSTS.length && !mfiles.length){ list.innerHTML=''; empty.style.display='block'; empty.textContent='아직 등록된 회의 글이 없습니다.'; return; }
+      var mfiles = window.meetingFiles ? window.meetingFiles() : [], wfiles = window.walkMeetingFiles ? window.walkMeetingFiles() : [];
+      if(!MPOSTS.length && !mfiles.length && !wfiles.length){ list.innerHTML=''; empty.style.display='block'; empty.textContent='아직 등록된 회의 글이 없습니다.'; return; }
       empty.style.display='none';
-      var items = [];
-      MPOSTS.forEach(function(p){ var y = (p.meeting_date||p.created_at||'').slice(0,4); items.push({ kind:'post', year:+y||0, sort:(p.meeting_date||p.created_at||''), p:p }); });
-      mfiles.forEach(function(f){ items.push({ kind:'file', year:f.year||0, sort:(f.year?String(f.year):'')+(f.created_at||''), f:f }); });
-      items.sort(function(a,b){ if(a.year!==b.year) return b.year-a.year; if(a.kind!==b.kind) return a.kind==='post'?-1:1; return a.sort<b.sort?1:-1; });
-      var html='', last=null;
-      items.forEach(function(it){
-        var y = it.year ? it.year+'년' : '연도 미상';
-        if(y!==last){ html += '<div class="ygrp">'+y+'</div>'; last=y; }
-        if(it.kind==='post'){
-          var p=it.p, n=(MC[p.id]||[]).length;
-          html += '<div class="row" data-id="'+p.id+'"><div class="ic">회의</div><div class="main">'+
-            '<div class="t">'+esc(p.title)+'</div>'+
-            '<div class="m">회의 글 · '+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · 댓글 '+n+'</div></div>'+
-            '<div class="side"><span class="m" style="color:var(--muted)">'+fmtDT(p.created_at)+'</span></div></div>';
-        } else {
-          var f=it.f, arc=/^arc(db)?:/.test(f.path||'');
-          html += '<div class="row" style="cursor:default" data-fid="'+f.id+'"><div class="ic">'+(arc?'기록':fileIcon(f.name))+'</div><div class="main">'+
-            '<div class="t">'+esc(f.title||f.name)+'</div>'+
-            '<div class="m">회의 자료 · '+esc(window.folderName?window.folderName(f.folder_id):'')+(arc?'':' · '+esc(f.name)+' · '+esc(f.author_name||''))+'</div></div>'+
-            '<div class="side">'+(arc?'<button class="btn ghost sm mopen">열기</button>':'<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>')+'</div></div>';
-        }
-      });
+      // 삼괴연합회 임원회의와 3·1 만세길 걷기 회의(삼일만세운동본부 사업)를 따로 — 각각 연도별
+      function section(posts, files){
+        var items = [];
+        posts.forEach(function(p){ var y = (p.meeting_date||p.created_at||'').slice(0,4); items.push({ kind:'post', year:+y||0, sort:(p.meeting_date||p.created_at||''), p:p }); });
+        files.forEach(function(f){ items.push({ kind:'file', year:f.year||0, sort:(f.year?String(f.year):'')+(f.created_at||''), f:f }); });
+        items.sort(function(a,b){ if(a.year!==b.year) return b.year-a.year; if(a.kind!==b.kind) return a.kind==='post'?-1:1; return a.sort<b.sort?1:-1; });
+        var html='', last=null;
+        items.forEach(function(it){
+          var y = it.year ? it.year+'년' : '연도 미상';
+          if(y!==last){ html += '<div class="ygrp">'+y+'</div>'; last=y; }
+          if(it.kind==='post'){
+            var p=it.p, n=(MC[p.id]||[]).length;
+            html += '<div class="row" data-id="'+p.id+'"><div class="ic">회의</div><div class="main">'+
+              '<div class="t">'+esc(p.title)+'</div>'+
+              '<div class="m">'+(p.walk_no?'제'+p.walk_no+'회 걷기 · ':'')+'회의 글 · '+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · 댓글 '+n+'</div></div>'+
+              '<div class="side"><span class="m" style="color:var(--muted)">'+fmtDT(p.created_at)+'</span></div></div>';
+          } else {
+            var f=it.f, arc=/^arc(db)?:/.test(f.path||'');
+            html += '<div class="row" style="cursor:default" data-fid="'+f.id+'"><div class="ic">'+(arc?'기록':fileIcon(f.name))+'</div><div class="main">'+
+              '<div class="t">'+esc(f.title||f.name)+'</div>'+
+              '<div class="m">회의 자료 · '+esc(window.folderName?window.folderName(f.folder_id):'')+(arc?'':' · '+esc(f.name)+' · '+esc(f.author_name||''))+'</div></div>'+
+              '<div class="side">'+(arc?'<button class="btn ghost sm mopen">열기</button>':'<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>')+'</div></div>';
+          }
+        });
+        return html;
+      }
+      var gp = MPOSTS.filter(function(p){ return !p.walk_no; }), wp = MPOSTS.filter(function(p){ return p.walk_no; });
+      var html = '<div class="msec"><h3>삼괴연합회 임원회의</h3><span>회의 글 '+gp.length+' · 회의 자료 '+mfiles.length+'</span></div>' +
+        (gp.length || mfiles.length ? section(gp, mfiles) : '<div class="empty">아직 등록된 회의 글이 없습니다.</div>');
+      if(wp.length || wfiles.length) html += '<div class="msec walk"><h3>3·1 만세길 걷기 회의 · 삼일만세운동본부</h3><span>회의 글 '+wp.length+' · 회의 자료 '+wfiles.length+'</span></div>' + section(wp, wfiles);
       list.innerHTML = html;
-      document.getElementById('meetingMeta').textContent = '회의 글 '+MPOSTS.length+'건 · 회의 자료 '+mfiles.length+'건';
+      document.getElementById('meetingMeta').textContent = '삼괴연합회 '+(gp.length+mfiles.length)+'건 · 3·1 만세길 걷기 '+(wp.length+wfiles.length)+'건';
     }
+    // 구분 고르기 — 삼괴연합회 임원회의 / 3·1 만세길 걷기 제N회 (제N회 = 2020 + N 년)
+    function walkSel(cur){
+      var top = new Date().getFullYear() - 2019, h = '<option value="">삼괴연합회 임원회의</option>';
+      for(var n=top; n>=1; n--) h += '<option value="'+n+'"'+(String(cur)===String(n)?' selected':'')+'>3·1 만세길 걷기 회의 — 제'+n+'회 ('+(2020+n)+')</option>';
+      return h;
+    }
+    function guessWalk(t){ if(!/걷기|만세길/.test(t||'')) return ''; var m=/제\s*(\d{1,2})\s*회/.exec(t); var d=document.getElementById('mDate').value; return m ? +m[1] : ((+(d||'').slice(0,4) || new Date().getFullYear()) - 2020); }
     // ---------- 회의 글 작성 ----------
     async function submitMeeting(){
       var prog=document.getElementById('mProg');
@@ -482,13 +503,14 @@
       var body=document.getElementById('mBody').value.trim();
       if(!title){ prog.textContent='제목을 입력해 주세요.'; return; }
       var btn=document.getElementById('mSubmit'); btn.disabled=true;
+      var wk=parseInt(document.getElementById('mWalk').value,10)||null;
       var ins=await window.sb.from('officer_posts').insert({
-        title:title, meeting_date:date, body:body||null,
+        title:title, meeting_date:date, body:body||null, walk_no:wk,
         author_id:me.id, author_name:(myProfile&&myProfile.name)||(me.email||'임원')
       });
       btn.disabled=false;
       if(ins.error){ prog.textContent='등록 실패: '+ins.error.message; return; }
-      document.getElementById('mTitle').value=''; document.getElementById('mBody').value=''; document.getElementById('mDate').value=todayStr();
+      document.getElementById('mTitle').value=''; document.getElementById('mBody').value=''; document.getElementById('mDate').value=todayStr(); document.getElementById('mWalk').value=''; mWalkTouched=false;
       prog.textContent='등록되었습니다.'; setTimeout(function(){ if(prog.textContent.indexOf('등록')>=0) prog.textContent=''; },3000);
       await loadMeetings();
     }
@@ -529,6 +551,7 @@
         '<div class="mbody">'+
           '<div class="frow"><div class="fld"><label>제목</label><input id="eT" type="text" maxlength="100" value="'+esc(p.title)+'" /></div>'+
           '<div class="fld"><label>회의 날짜</label><input id="eD" type="date" value="'+esc(p.meeting_date||'')+'" /></div></div>'+
+          '<div class="fld"><label>구분</label><select id="eW">'+walkSel(p.walk_no||'')+'</select></div>'+
           '<div class="fld"><label>내용</label><textarea id="eB" maxlength="4000">'+esc(p.body||'')+'</textarea></div>'+
           '<div class="prog" id="eP"></div>'+
           '<div class="mactions"><button class="btn ghost sm" id="eCancel">취소</button><button class="btn sm" id="eSave">저장</button></div>'+
@@ -538,7 +561,7 @@
       document.getElementById('eSave').onclick=async function(){
         var t=document.getElementById('eT').value.trim(); if(!t){ document.getElementById('eP').textContent='제목을 입력해 주세요.'; return; }
         this.disabled=true;
-        var up=await window.sb.from('officer_posts').update({ title:t, meeting_date:document.getElementById('eD').value||null, body:document.getElementById('eB').value.trim()||null }).eq('id',p.id);
+        var up=await window.sb.from('officer_posts').update({ title:t, meeting_date:document.getElementById('eD').value||null, body:document.getElementById('eB').value.trim()||null, walk_no:parseInt(document.getElementById('eW').value,10)||null }).eq('id',p.id);
         if(up.error){ document.getElementById('eP').textContent='저장 실패: '+up.error.message; this.disabled=false; return; }
         await loadMeetings(); curId=p.id; renderDetail();
       };
@@ -600,6 +623,9 @@
       await window.initDocs();
       await loadMeetings();
 
+      document.getElementById('mWalk').innerHTML = walkSel('');
+      document.getElementById('mWalk').addEventListener('change', function(){ mWalkTouched = true; });
+      document.getElementById('mTitle').addEventListener('input', function(){ if(!mWalkTouched) document.getElementById('mWalk').value = guessWalk(this.value); });   // 제목에 걷기 · 만세길이 있으면 걷기 회의로
       document.getElementById('mSubmit').addEventListener('click', submitMeeting);
       document.getElementById('meetingList').addEventListener('click', function(e){
         var op=e.target.closest&&e.target.closest('.mopen'); if(op){ var fr=op.closest('.row'); if(fr&&window.openFileById) window.openFileById(fr.getAttribute('data-fid')); return; }
