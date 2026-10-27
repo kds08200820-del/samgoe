@@ -73,7 +73,7 @@
     return window.isSuperAdmin(user) || window.isStaffAdmin(profile) || !!(profile && profile.officer_role === '회장');
   };
 
-  // 임원방에 들어갈 수 있는 사람 = 임원 직책이 있거나, 최고관리자 · 회장 · 일반관리자(운영관리)
+  // 관리자 메뉴에 들어갈 수 있는 사람 = 임원 직책이 있거나, 최고관리자 · 회장 · 일반관리자(운영관리)
   window.canEnterOfficerRoom = function (user, profile) {
     return !!(user && (window.isSuperAdmin(user) || (profile && profile.officer_role) || window.isConsoleAdmin(user, profile)));
   };
@@ -95,14 +95,17 @@
   function renderAuth(user, profile) {
     var el = document.getElementById('authArea');
     if (!el) return;
+    // 삼일만세운동본부(manse/auth.js)와 같은 짜임: 이름님 | 관리자 메뉴 | (문의 · 사모 게시판) | 내 정보 | 로그아웃
+    var sep = '<span style="color:rgba(255,255,255,0.3);margin:0 8px">|</span>';
+    var lk = function (href, text, extra) { return '<a href="' + href + '" style="color:rgba(255,255,255,0.9)' + (extra || '') + '">' + text + '</a>'; };
     if (user) {
-      var sep = '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>';
       var parts = [];
-      // 임원방 하나로 — 회원 · 임원 관리(관리자) · 운영관리 · 행운권 QR 등은 임원방 맨 위 메뉴에서 들어감
-      if (window.canEnterOfficerRoom(user, profile)) parts.push('<a href="officer.html" style="color:#ffd479;font-weight:700">임원방</a>');
-      parts.push('<a href="inquiry.html" style="color:rgba(255,255,255,0.9)">문의</a>');
-      if (window.isSamo(user, profile)) parts.push('<a href="samo.html" style="color:#f6b6d0;font-weight:700">사모 게시판</a>');
-      parts.push('<a href="mypage.html" style="color:rgba(255,255,255,0.9)">마이페이지</a>');
+      var nm = (profile && profile.name) || String(user.email || '').split('@')[0];
+      parts.push('<span style="color:#fff;font-weight:600">' + String(nm).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }) + '님</span>');
+      if (window.canEnterOfficerRoom(user, profile)) parts.push('<a href="officer.html" style="color:#e8c4a6;font-weight:700">관리자 메뉴</a>');
+      parts.push(lk('inquiry.html', '문의'));
+      if (window.isSamo(user, profile)) parts.push(lk('samo.html', '사모 게시판', ';font-weight:700'));
+      parts.push(lk('mypage.html', '내 정보'));
       parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
       el.innerHTML = parts.join(sep);
       var lo = document.getElementById('logoutBtn');
@@ -112,10 +115,8 @@
         location.href = 'index.html';
       });
     } else {
-      // 임원방 들어가는 곳은 로그인 옆 (맨 앞) — 누르면 로그인한 뒤 바로 임원방으로
-      el.innerHTML = '<a href="login.html?next=officer.html" style="color:#ffd479;font-weight:700">임원방</a>' +
-        '<span style="color:rgba(255,255,255,0.35);margin:0 8px">|</span>' +
-        '<a href="login.html" style="color:rgba(255,255,255,0.9)">로그인</a>';
+      // 관리자 메뉴 들어가는 곳은 로그인 옆 (맨 앞) — 누르면 로그인한 뒤 바로 관리자 메뉴로
+      el.innerHTML = '<a href="login.html?next=officer.html" style="color:#e8c4a6;font-weight:700">관리자 메뉴</a>' + sep + lk('login.html', '로그인') + sep + lk('signup.html', '회원가입');
     }
   }
   window.renderAuth = renderAuth;
@@ -210,7 +211,7 @@
     return { user: user, profile: profile || {} };
   };
 
-  // 임원방 가드 — 임원 + 관리자 · 운영관리 담당자까지. officer: 임원 자료(문서 · 회의)를 볼 수 있는지
+  // 관리자 메뉴 가드 — 임원 + 관리자 · 운영관리 담당자까지. officer: 임원 자료(문서 · 회의)를 볼 수 있는지
   window.requireOfficerRoom = async function () {
     var user = await window.requireAuth();
     if (!user) return false;

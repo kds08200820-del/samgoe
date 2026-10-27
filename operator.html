@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>운영관리 | 임원방 · 삼괴지역 기독교 연합회</title>
+  <title>운영관리 | 관리자 메뉴 · 삼괴지역 기독교 연합회</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
@@ -110,14 +110,14 @@
   </style>
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=4" />
+  <link rel="stylesheet" href="assets/theme.css?v=5" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
   <div id="loading">확인 중…</div>
 
   <div class="wrap" id="content">
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px"><a href="officer.html" style="color:var(--primary);font-weight:600">← 임원방</a> · 운영관리</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px"><a href="officer.html" style="color:var(--primary);font-weight:600">← 관리자 메뉴</a> · 운영관리</div>
     <div class="head">
       <h1 class="title">운영관리</h1>
       <span class="rolechip" id="roleChip"></span>
@@ -171,7 +171,7 @@
       </div>
     </section>
 
-    <a style="display:inline-block;margin-top:24px;font-size:13px;color:var(--muted);" href="officer.html">← 임원방으로 돌아가기</a>
+    <a style="display:inline-block;margin-top:24px;font-size:13px;color:var(--muted);" href="officer.html">← 관리자 메뉴로 돌아가기</a>
   </div>
 
   <!-- 전체보기 모달 -->
@@ -206,7 +206,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
-  <script src="auth.js?v=13"></script>
+  <script src="auth.js?v=14"></script>
   <script>
     var me=null, isSuper=false;
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }

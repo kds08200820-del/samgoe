@@ -85,3 +85,10 @@ a.card:hover{border-color:#ddd6c6!important;}
 
 /* ---------- 하위 페이지(3·1만세운동본부 등) 각진 파란 버튼 → 남색 알약 버튼 ---------- */
 a.press[style*="background:var(--blue)"],a.nav-cta[style*="background:var(--blue)"]{border-radius:999px!important;}
+
+/* ---------- 하위 페이지 상단 바 — 삼일만세운동본부(.m-bar)와 같은 크기 · 글꼴 · 배치 ---------- */
+.bar{height:auto!important;min-height:52px;background:var(--wp-night)!important;}
+.bar .in{max-width:1080px!important;min-height:52px;padding:6px 20px!important;flex-wrap:wrap;gap:4px 12px;}
+.bar .in > a{font-family:var(--serif);font-size:16px!important;font-weight:700!important;color:#fff!important;letter-spacing:.01em;white-space:nowrap;}
+.bar #authArea{font-size:13px!important;color:rgba(255,255,255,.88);display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:2px;}
+.bar #authArea a{color:rgba(255,255,255,.9);}

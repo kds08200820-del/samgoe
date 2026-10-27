@@ -110,7 +110,7 @@
     @media (max-width:420px){ .row2{grid-template-columns:1fr;} .tools input.num{width:90px;} }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
-  <link rel="stylesheet" href="../assets/theme.css?v=4" />
+  <link rel="stylesheet" href="../assets/theme.css?v=5" />
   <link rel="stylesheet" href="manse.css?v=9" />
 </head>
 <body>
@@ -258,7 +258,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=4"></script>
-  <script src="auth.js?v=7"></script>
+  <script src="auth.js?v=8"></script>
   <script src="../churches.js?v=2"></script>
   <script src="walk-events.js?v=2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
@@ -279,7 +279,7 @@
     function digits(){ var m=tickets.length?tickets[tickets.length-1].no:0; return Math.max(3,String(m).length); }
     function noText(n){ return LuckyPrint.padNo(n,digits()); }
     function msg(id,t,ok){ var m=$(id); m.className='msg'+(ok?' ok':''); m.textContent=t||''; }
-    function errText(e){ var m=String((e&&e.message)||e||''); return /schema cache|does not exist|could not find/i.test(m)?'설치 SQL을 먼저 실행해 주세요. (임원방 → 설치 SQL 복사 페이지)':(/row-level|permission|violates/i.test(m)?'임원만 할 수 있습니다.':window.krErr(m)); }
+    function errText(e){ var m=String((e&&e.message)||e||''); return /schema cache|does not exist|could not find/i.test(m)?'설치 SQL을 먼저 실행해 주세요. (관리자 메뉴 → 설치 SQL 복사 페이지)':(/row-level|permission|violates/i.test(m)?'임원만 할 수 있습니다.':window.krErr(m)); }
     function isReg(t){ return !!t.registered_at; }
     function intVal(id){ var v=parseInt($(id).value,10); return isFinite(v)?v:null; }
     function byNo(n){ for(var i=0;i<tickets.length;i++) if(tickets[i].no===n) return tickets[i]; return null; }

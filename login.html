@@ -40,7 +40,7 @@
   </style>
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=4" />
+  <link rel="stylesheet" href="assets/theme.css?v=5" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
@@ -71,7 +71,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=2"></script>
-  <script src="auth.js?v=13"></script>
+  <script src="auth.js?v=14"></script>
   <script>
     var f = document.getElementById('loginForm');
     var err = document.getElementById('err');
@@ -83,7 +83,7 @@
       return /^(?:manse\/)?[A-Za-z0-9_-]+\.html(?:[?#][A-Za-z0-9_=&%#.-]*)?$/.test(n) ? n : 'index.html';
     })();
     if (/^officer\.html/.test(NEXT)) {
-      f.insertAdjacentHTML('beforebegin', '<p style="margin:0 0 14px;padding:10px 12px;background:#f6efe7;border:1px solid #e6d3c2;color:#3a2a1e;font-size:14px;line-height:1.6;">임원방에 들어가려면 로그인해 주세요. 로그인하면 바로 임원방으로 갑니다.</p>');
+      f.insertAdjacentHTML('beforebegin', '<p style="margin:0 0 14px;padding:10px 12px;background:#f6efe7;border:1px solid #e6d3c2;color:#3a2a1e;font-size:14px;line-height:1.6;">관리자 메뉴에 들어가려면 로그인해 주세요. 로그인하면 바로 관리자 메뉴로 갑니다.</p>');
     }
 
     // 저장해 둔 이메일/설정 불러오기 (편의)

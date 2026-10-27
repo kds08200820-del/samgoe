@@ -1,6 +1,6 @@
 // ============================================================
 //  삼괴연합회(삼기연) 홈페이지의 3·1 만세길 걷기 자료 → 삼일만세운동본부 홈페이지 (import-samgoe.html)
-//  · 삼기연 임원방 자료(파일 · 기록물 HTML) → 공문·자료 (분류: 폴더와 이름으로 정함, 화면에서 바꿀 수 있음)
+//  · 삼기연 관리자 메뉴 자료실(파일 · 기록물 HTML) → 공문·자료 (분류: 폴더와 이름으로 정함, 화면에서 바꿀 수 있음)
 //  · 삼기연 갤러리 사진 · 유튜브 영상 → 활동 기록 (회차가 이미 홈페이지에 있으면 건너뜀)
 //  · 삼기연 언론 보도 → 언론 보도 (같은 기사 주소는 건너뜀)
 //  · 경품 당첨 인증 사진 → 같은 자리(prize-proofs/회차/묶음/…)로 — 인증 기록은 이미 이 홈페이지에 있고 사진만 복사
@@ -267,7 +267,7 @@
     $('scanSt').textContent = '삼괴연합회 홈페이지와 이 홈페이지의 자료를 읽는 중…'; $('plan').innerHTML = '';
     try {
       var r = await Promise.all([readSamgoe(), readManse()]); SRC = r[0]; HAVE = r[1]; PLAN = makePlan();
-      $('scanSt').innerHTML = '삼기연 임원방 자료 <b>' + n0(PLAN.docs.length) + '</b>건 · 갤러리 글 <b>' + n0(PLAN.acts.length) + '</b>개 (사진 ' + n0(SRC.photos.length) + '장) · 기사 <b>' + n0(PLAN.press.length) + '</b>건' +
+      $('scanSt').innerHTML = '삼기연 자료실 <b>' + n0(PLAN.docs.length) + '</b>건 · 갤러리 글 <b>' + n0(PLAN.acts.length) + '</b>개 (사진 ' + n0(SRC.photos.length) + '장) · 기사 <b>' + n0(PLAN.press.length) + '</b>건' +
         (PLAN.proofs.length ? ' · 경품 인증 사진 <b>' + n0(PLAN.proofs.reduce(function (t, x) { return t + x.total; }, 0)) + '</b>장' : '') +
         '을 찾았습니다. 공문 · 자료는 <b>구분</b>(3·1 만세길 걷기 회차 / 본부 일반)과 <b>분류</b>를 확인하고 가져올 것을 고르세요.';
       drawPlan(); $('c3').classList.remove('off');
@@ -324,7 +324,7 @@
         } else { blob = await fetchBlob(f.url); mime = f.mime || blob.type || 'application/octet-stream'; }
         await put(DOCS_BUCKET, path, blob, mime);
         await insertOne('docs', { year: d.year, category: d.cat, title: d.title, walk_no: d.walk || null, doc_date: d.date, date_text: null, doc_no: null,
-          note: '삼괴연합회 임원방에서 가져옴' + (f.folderPath ? ' (' + f.folderPath + ')' : ''), path: path, mime: mime, size: blob.size, orig_path: null, orig_name: null,
+          note: '삼괴연합회 자료실에서 가져옴' + (f.folderPath ? ' (' + f.folderPath + ')' : ''), path: path, mime: mime, size: blob.size, orig_path: null, orig_name: null,
           sensitive: d.cat === '명부·개인정보', uploaded_by: me.id, uploader_name: who(f.author_name), created_at: f.created_at || undefined });
         ok++;
       } catch (ex) { fail('자료 "' + d.title + '"', ex); }
@@ -396,7 +396,7 @@
     sgUser = await connectSg();
     var next = encodeURIComponent('manse/import-samgoe.html');
     if (!sgUser) { $('sgSt').innerHTML = '<span class="chip gray">삼괴연합회 로그인 필요</span> 이 브라우저에서 삼괴연합회 홈페이지에 <b>임원 계정</b>으로 로그인하면 자료를 읽을 수 있습니다. <a class="m-btn ghost sm" href="../login.html?next=' + next + '">삼괴연합회 로그인 →</a>'; return; }
-    if (!sgUser.officer) { $('sgSt').innerHTML = '<span class="chip bad">삼괴연합회 임원 아님</span> <b>' + esc(sgUser.user.email) + '</b>(으)로 로그인되어 있지만 삼괴연합회 임원 명단에 없어 임원방 자료를 읽을 수 없습니다.'; return; }
+    if (!sgUser.officer) { $('sgSt').innerHTML = '<span class="chip bad">삼괴연합회 임원 아님</span> <b>' + esc(sgUser.user.email) + '</b>(으)로 로그인되어 있지만 삼괴연합회 임원 명단에 없어 자료실을 읽을 수 없습니다.'; return; }
     $('sgSt').innerHTML = '<span class="chip ok">삼괴연합회</span> <b>' + esc(sgUser.user.email) + '</b>' + (sgUser.name ? ' · ' + esc(sgUser.name) : '') + ' (임원)';
     $('c2').classList.remove('off');
     $('goAll').addEventListener('click', function () {

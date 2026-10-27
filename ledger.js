@@ -1,5 +1,5 @@
 // ============================================================
-//  회계 관리 — 수입 · 지출 장부와 회계 보고 (삼기연 accounting.html · 삼일만세운동본부 임원방 '회계' 탭 공용)
+//  회계 관리 — 수입 · 지출 장부와 회계 보고 (삼기연 accounting.html · 삼일만세운동본부 관리자 메뉴 '회계' 탭 공용)
 //  화면 모양만 같고, 기록은 각 단체의 Supabase(ledger_entries · ledger_years · ledger_log)에 따로 쌓입니다.
 //  Ledger.mount(root, { client, org, canWrite, signers, cats, setupFile, setupPage, president })
 //   - client   : 그 단체의 Supabase client

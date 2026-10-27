@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>임원방 | 삼괴지역 기독교 연합회</title>
+  <title>관리자 메뉴 | 삼괴지역 기독교 연합회</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
@@ -23,25 +23,35 @@
     .title{margin:0;font-weight:700;font-size:32px;letter-spacing:0;color:var(--ink);}
     .who{margin:10px 0 26px;font-size:15px;color:var(--muted);}
     .who b{color:var(--ink);}
-    /* 임원방 메뉴 — 임원 업무 · 관리 화면을 한곳에서 (관리자 · 운영관리는 권한 있는 사람에게만 보임) */
-    .menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:0 0 30px;}
-    .mi{display:flex;flex-direction:column;gap:3px;padding:16px 18px;background:var(--canvas);border:1px solid var(--hairline);transition:border-color .15s,box-shadow .15s;}
-    .mi:hover{border-color:var(--primary);box-shadow:0 6px 18px rgba(46,32,22,.08);}
-    .mi b{font-size:16px;font-weight:700;color:var(--ink);}
-    .mi small{font-size:13px;color:var(--muted);line-height:1.5;}
-    .mi.hot{background:var(--primary);border-color:var(--primary);}
-    .mi.hot b{color:#fff;} .mi.hot small{color:rgba(255,255,255,.75);}
-    .mi.adm{background:var(--surface-card);}
-    .mi[hidden]{display:none;}
-    .menuHead{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--muted);}
-    @media (max-width:600px){   /* 휴대폰: 두 줄로 작게 — 설명은 빼고, 행운권 QR만 한 줄 다 씀 */
-      .menu{grid-template-columns:1fr 1fr;gap:8px;}
-      .mi{padding:13px 12px;} .mi b{font-size:14.5px;line-height:1.35;}
-      .mi small{display:none;} .mi.hot{grid-column:1/-1;} .mi.hot small{display:block;}
+    /* 관리자 메뉴 — 삼일만세운동본부 관리자 메뉴와 같은 짜임: 머리(제목 · 누구인지 · 바로가기) + 왼쪽 메뉴 + 내용 */
+    .wrap.o-page{max-width:1240px;}
+    .bar .in > a .bsub{margin-left:12px;font-weight:700;}
+    @media (max-width:600px){ .bar .in > a .bsub{display:none;} }
+    .o-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;margin:0 0 24px;}
+    .o-head .who{margin:8px 0 0;}
+    .o-hlinks{display:flex;gap:8px;flex-wrap:wrap;}
+    .o-hlinks a{display:inline-flex;align-items:center;height:34px;padding:0 14px;border:1px solid var(--hairline-strong);border-radius:999px;background:#fff;font-size:13px;font-weight:700;color:var(--ink);}
+    .o-hlinks a:hover{border-color:var(--primary);}
+    .o-tabs{display:flex;gap:6px;border-bottom:1px solid var(--hairline);margin-bottom:24px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;}
+    .o-tabs::-webkit-scrollbar{display:none;}
+    .o-tab{flex:0 0 auto;display:block;border:0;background:none;padding:12px 14px;font-size:15px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;}
+    .o-tab.on{color:var(--primary);border-bottom-color:#b5562f;}
+    .o-tab small{display:none;}
+    .o-tab[hidden]{display:none!important;}
+    .tcnt{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:#b5562f;color:#fff;font-size:11.5px;font-weight:800;}
+    .tcnt:empty{display:none;}
+    @media (min-width:900px){
+      .o-body{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;align-items:start;}
+      /* 왼쪽 메뉴 — 짙은 갈색 막대 (운평장로교회 목회 행정 화면처럼 · 삼일만세운동본부와 같게) */
+      .o-tabs{position:sticky;top:68px;flex-direction:column;gap:2px;margin:0;padding:18px 0 12px;border:0;border-radius:10px;background:#2e2016;overflow:visible;}
+      .o-tabs::before{content:"관리자 메뉴";display:block;margin:0 18px 12px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08);
+        font-size:12px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.45);}
+      .o-tab{width:100%;text-align:left;margin:0;padding:12px 18px;border:0;border-left:3px solid transparent;border-radius:0;font-size:15px;font-weight:600;color:rgba(255,255,255,.78);}
+      .o-tab:hover{background:rgba(255,255,255,.05);color:#fff;}
+      .o-tab.on{border-left-color:#b5562f;background:rgba(255,255,255,.08);color:#fff;font-weight:700;}
+      .o-tab small{display:block;margin-top:2px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.45);}
+      .o-main{min-width:0;}
     }
-    .tabs{display:flex;gap:0;border-bottom:2px solid var(--hairline);margin-bottom:28px;}
-    .tab{padding:13px 22px;font-size:16px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;}
-    .tab.on{color:var(--primary);border-bottom-color:var(--primary);}
     .pane{display:none;} .pane.on{display:block;}
     /* 글쓰기/업로드 */
     .writeBox{background:var(--canvas);border:1px solid var(--hairline);padding:22px 24px;margin-bottom:24px;}
@@ -145,8 +155,6 @@
     .docBar button:hover{background:rgba(255,255,255,0.28);}
     .docOv iframe{flex:1;width:100%;border:0;background:#fff;}
     /* 문서 바구니 · 자료실 */
-    .tcnt{display:inline-block;min-width:18px;padding:0 6px;margin-left:4px;border-radius:9px;background:var(--primary);color:#fff;font-size:11px;line-height:18px;text-align:center;}
-    .tcnt:empty{display:none;}
     .secHead{display:flex;align-items:center;justify-content:space-between;margin:28px 0 10px;}
     .secHead h3{margin:0;font-size:16px;font-weight:700;color:var(--ink);}
     .prow{padding:14px 20px;border-top:1px solid var(--hairline);}
@@ -166,7 +174,8 @@
     .docTop input{flex:1;min-width:0;height:44px;padding:0 14px;border:1px solid var(--hairline-strong);font-size:15px;font-family:inherit;font-weight:300;border-radius:0;color:var(--ink);background:#fff;}
     .docTop select{height:44px;border:1px solid var(--hairline-strong);background:#fff;font-family:inherit;font-size:14px;padding:0 10px;border-radius:0;color:var(--ink);}
     .docTop input:focus,.docTop select:focus{outline:none;border:2px solid var(--ink);}
-    .docGrid{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:start;}
+    .docGrid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start;}
+    .docMain{min-width:0;}
     .docSide{background:var(--canvas);border:1px solid var(--hairline);padding:8px 0;position:sticky;top:56px;}
     .tn{padding:8px 14px;font-size:14px;color:var(--bodytext);cursor:pointer;display:flex;justify-content:space-between;gap:8px;}
     .tn.root{font-weight:700;color:var(--ink);margin-top:4px;}
@@ -185,6 +194,7 @@
     .docHead{font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
     .ygrp{padding:8px 20px;background:var(--surface-soft);font-size:12px;font-weight:700;color:var(--muted);border-top:1px solid var(--hairline);}
     .row.drow{cursor:default;}
+    @media (max-width:1100px) and (min-width:900px){ .docGrid{grid-template-columns:1fr;} .docSide{position:static;} }
     @media (max-width:720px){ .docGrid{grid-template-columns:1fr;} .docSide{position:static;} .pctl{grid-template-columns:1fr 1fr;} .docTop{flex-wrap:wrap;} .docTop input{flex-basis:100%;} }
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
 
@@ -193,12 +203,6 @@
     body{font-weight:400;}
     .badge{border-radius:8px;letter-spacing:1px;}
     .title{letter-spacing:-0.5px;}
-    /* 탭: 알약형 세그먼트 */
-    .tabs{display:inline-flex;gap:4px;padding:4px;background:#ece9e2;border:0;border-radius:999px;margin-bottom:26px;}
-    .tab{padding:9px 20px;font-size:14px;border:0;margin:0;border-radius:999px;color:var(--muted);transition:background .15s,color .15s;}
-    .tab:hover{color:var(--ink);}
-    .tab.on{background:#fff;color:var(--primary);border:0;box-shadow:0 1px 3px rgba(46,32,22,.12);}
-    .tcnt{border-radius:999px;}
     /* 카드·목록 */
     .writeBox,.list,.docSide,.legacy,.notice,.arcList,.arcAdd,.modal{border-radius:var(--r-lg);}
     .writeBox,.list,.docSide{box-shadow:var(--shadow);border-color:#ebe8e1;}
@@ -235,34 +239,35 @@
     .modal{overflow:hidden;box-shadow:0 20px 60px rgba(46,32,22,.25);}
     .docOv iframe{border-radius:var(--r-lg) var(--r-lg) 0 0;}
     .home{border-radius:999px;}
-    @media (max-width:720px){ .tabs{display:flex;} .tab{flex:1;text-align:center;padding:9px 10px;} }
   </style>
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=4" />
+  <link rel="stylesheet" href="assets/theme.css?v=5" />
 </head>
 <body>
-  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
+  <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회<span class="bsub">관리자 메뉴</span></a><span id="authArea"></span></div></header>
   <div id="loading">확인 중…</div>
 
-  <div class="wrap" id="content">
-    <div class="head"><span class="badge">임원 전용</span><h1 class="title">임원방</h1></div>
-    <p class="who"><b id="ofcName"></b> <b id="ofcRole" style="color:var(--primary)"></b> · <span id="ofcChurch"></span></p>
-
-    <!-- 임원방 메뉴 — 관리자 · 운영관리 · 회계. 3·1 만세길 걷기(회차 · 신청 · 행운권 QR · 경품)는 삼일만세운동본부 관리자 메뉴에서 -->
-    <p class="menuHead">임원방 메뉴</p>
-    <nav class="menu" id="ofcMenu" aria-label="임원방 메뉴">
-      <a class="mi" href="manse/officer.html#walks"><b>3·1 만세길 걷기 → 삼일만세운동본부</b><small>회차 · 참가 신청 · 행운권 QR · 경품은 삼일만세운동본부 관리자 메뉴에서</small></a>
-      <a class="mi" href="accounting.html"><b>회계 관리</b><small>수입 · 지출 기록 · 연도 · 달별 회계 보고 인쇄</small></a>
-      <a class="mi adm" href="admin.html" id="miAdmin" hidden><b>회원 · 임원 관리</b><small>회원 추가 · 수정 · 임원 직책 지정 (회장 · 최고관리자)</small></a>
-      <a class="mi adm" href="operator.html" id="miOperator" hidden><b>운영관리</b><small>대시보드 · 회원 정지 · 문의 답변 · 감사 기록</small></a>
-    </nav>
-
-    <div class="tabs">
-      <div class="tab on" data-tab="basket">문서 바구니 <span class="tcnt" id="pendingCount"></span></div>
-      <div class="tab" data-tab="docs">자료실</div>
-      <div class="tab" data-tab="meeting">임원회의</div>
+  <div class="wrap o-page" id="content">
+    <!-- 머리 — 삼일만세운동본부 관리자 메뉴와 같은 모양: 제목 · 누구인지, 오른쪽에 바로가기 -->
+    <div class="o-head">
+      <div><h1 class="title">관리자 메뉴</h1>
+        <p class="who"><b id="ofcName"></b> <b id="ofcRole" style="color:var(--primary)"></b> · <span id="ofcChurch"></span></p></div>
+      <div class="o-hlinks"><a href="manse/officer.html">삼일만세운동본부 관리자 메뉴 →</a></div>
     </div>
+
+    <div class="o-body">
+    <!-- 왼쪽 메뉴 (넓은 화면은 짙은 갈색 세로 막대, 휴대폰은 위쪽 가로 메뉴) — 화면 안 메뉴는 탭, 다른 화면은 링크 -->
+    <nav class="o-tabs" id="ofcMenu" aria-label="관리자 메뉴">
+      <div class="tab o-tab on" data-tab="docs">자료실</div>
+      <div class="tab o-tab" data-tab="meeting">임원회의</div>
+      <a class="o-tab mi" href="accounting.html">회계 관리</a>
+      <a class="o-tab mi adm" href="admin.html" id="miAdmin" hidden>회원 · 임원 관리</a>
+      <a class="o-tab mi adm" href="operator.html" id="miOperator" hidden>운영관리</a>
+      <a class="o-tab mi" href="manse/officer.html#walks">3·1 만세길 걷기<small>삼일만세운동본부</small></a>
+      <div class="tab o-tab" data-tab="basket">문서 바구니 <span class="tcnt" id="pendingCount"></span></div>
+    </nav>
+    <div class="o-main">
 
     <!-- 임원회의 (연도별 회의 글 + 회의 자료) -->
     <div class="pane" id="paneMeeting">
@@ -282,7 +287,7 @@
     </div>
 
     <!-- 문서 바구니 (넣는 곳) -->
-    <div class="pane on" id="paneBasket">
+    <div class="pane" id="paneBasket">
       <div class="notice" id="fileNotice" style="display:none;"></div>
       <p class="who" style="margin:0 0 14px;">파일을 바구니에 담으면 <b>자동으로 분류</b>되어 아래 <b>분류 대기</b>에 올라옵니다. 분류를 확인하고 <b>승인</b>하면 자료실로 옮겨집니다.</p>
       <div class="writeBox">
@@ -298,7 +303,7 @@
     </div>
 
     <!-- 자료실 (보는 곳) -->
-    <div class="pane" id="paneDocs">
+    <div class="pane on" id="paneDocs">
       <div class="docTop">
         <input id="docSearch" type="search" placeholder="자료 검색 — 제목 · 파일명 · 메모 · 연도 · 자료실 이름" />
         <select id="docYear"></select>
@@ -316,6 +321,8 @@
       </div>
     </div>
 
+    </div><!-- /o-main -->
+    </div><!-- /o-body -->
     <a class="home" href="index.html">← 홈으로 돌아가기</a>
   </div>
 
@@ -331,7 +338,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
-  <script src="auth.js?v=13"></script>
+  <script src="auth.js?v=14"></script>
   <script src="officer-docs.js?v=14"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
@@ -602,7 +609,7 @@
       if(!res.officer){   // 임원 직책 없이 운영관리만 맡은 분 — 메뉴의 운영관리만 (임원 자료 · 행사 화면은 임원 전용)
         document.getElementById('ofcName').textContent = myProfile.name || '';
         document.getElementById('ofcRole').textContent = '운영관리';
-        document.querySelectorAll('.tabs, .pane, .mi:not(#miOperator)').forEach(function(el){ el.style.display='none'; });
+        document.querySelectorAll('.o-tabs .tab, .pane, .o-tabs a.o-tab:not(#miOperator)').forEach(function(el){ el.style.display='none'; });
         document.getElementById('loading').style.display='none';
         document.getElementById('content').style.display='block';
         return;

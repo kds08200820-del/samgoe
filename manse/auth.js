@@ -160,7 +160,8 @@
     // 제휴 단체(삼기연) 앱·홈페이지를 거쳐 들어온 경우에만 돌아가기 버튼 (직접 들어오면 표시 안 함)
     var back = window.mFromSamgoe() ? '<a class="m-back" href="' + new URL('../', BASE).href + '">← 삼기연으로</a>' : '';
     if (!user) {
-      el.innerHTML = back + '<a href="' + window.mUrl('login.html') + '">로그인</a>' + sep + '<a href="' + window.mUrl('signup.html') + '">회원가입</a>';
+      // 삼기연(auth.js)과 같은 짜임: 관리자 메뉴 | 로그인 | 회원가입
+      el.innerHTML = back + '<a class="m-officer" href="' + window.mUrl('login.html') + '?next=' + encodeURIComponent(new URL(window.mUrl('officer.html'), location.href).pathname) + '">관리자 메뉴</a>' + sep + '<a href="' + window.mUrl('login.html') + '">로그인</a>' + sep + '<a href="' + window.mUrl('signup.html') + '">회원가입</a>';
       return;
     }
     var parts = [];
