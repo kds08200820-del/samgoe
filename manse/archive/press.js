@@ -132,10 +132,14 @@
     return j;
   }
   // 사진 없는 기사들의 대표 사진(과 비어 있는 날짜)을 한꺼번에
+  var filling = false;
   async function fillPhotos(list, btn) {
-    btn.disabled = true; var ok = 0, miss = 0, m = $('prBarMsg');
+    if (filling) return; filling = true;
+    if (btn) btn.disabled = true; var ok = 0, miss = 0;
     for (var i = 0; i < list.length; i++) {
-      var p = list[i]; m.textContent = '사진 가져오는 중… ' + (i + 1) + ' / ' + list.length + ' — ' + (p.source || '');
+      var p = list[i], m = $('prBarMsg');
+      if (m) m.textContent = '기사 사진 가져오는 중… ' + (i + 1) + ' / ' + list.length + ' — ' + (p.source || '');
+      triedMark(p.id);
       try {
         var j = await readMeta(p.url), row = {};
         if (j.image_path || j.image_url) { row.image_path = j.image_path || null; row.image_url = j.image_path ? null : (j.image_url || null); }
@@ -144,8 +148,17 @@
         if (row.image_path || row.image_url) ok++; else miss++;
       } catch (_) { miss++; }
     }
+    filling = false;
     await load();
-    if ($('prBarMsg')) $('prBarMsg').textContent = '사진 ' + ok + '건을 넣었습니다.' + (miss ? ' ' + miss + '건은 못 가져왔습니다 — 그 카드 위에 사진을 끌어다 놓아 주세요.' : '');
+    if ($('prBarMsg')) $('prBarMsg').textContent = '기사 사진 ' + ok + '건을 넣었습니다.' + (miss ? ' ' + miss + '건은 못 가져왔습니다 — 그 카드 위에 사진을 끌어다 놓아 주세요.' : '');
+  }
+  // 임원이 이 화면을 열면 사진 없는 기사의 사진을 알아서 가져옴 — 한 번 해 본 기사는 하루 동안 다시 하지 않음
+  function triedAll() { try { return JSON.parse(localStorage.getItem('manse_press_tried') || '{}') || {}; } catch (_) { return {}; } }
+  function triedMark(id) { var t = triedAll(); t[id] = Date.now(); try { localStorage.setItem('manse_press_tried', JSON.stringify(t)); } catch (_) {} }
+  function autoFill() {
+    if (!perms.officer || !fromDb || filling) return;
+    var t = triedAll(), list = ITEMS.filter(function (p) { return p.id && p.url && !p.image_path && !p.image_url && !(Date.now() - (t[p.id] || 0) < 86400000); });
+    if (list.length) fillPhotos(list, $('prFill'));
   }
 
   // ---------- 임원: 기사 추가 · 고치기 창 ----------
@@ -244,6 +257,7 @@
     perms = me && window.mPerms ? await window.mPerms() : { officer: false, manager: false };
     if (perms.officer && window.mProfile) { var pf = await window.mProfile(); myName = (pf && pf.name) || ((me.email || '').split('@')[0]); }
     await load();
+    autoFill();
   }
   ITEMS = staticItems(); render();           // 먼저 파일의 목록으로 바로 보이고
   init();                                     // 표에서 다시 불러옴
