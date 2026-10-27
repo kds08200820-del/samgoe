@@ -62,19 +62,19 @@
       <h2>2. 삼일만세운동본부</h2>
       <p class="what">새 <b>manse</b> 프로젝트 전체 설치 — 회원 · 임원 명단 · 공문/자료 · 활동 기록/사진/영상 · 걷기 참가 교회 · 회계 (한 번에)</p>
       <ol>
-        <li>Supabase 조직 화면에서 <b>New project</b> → 이름 <b>manse</b>, 지역 <b>Seoul</b> 로 만들기 (처음 한 번)
-          <a class="btn line" href="https://supabase.com/dashboard/projects" target="_blank" rel="noopener">Supabase 프로젝트 목록 열기 ↗</a>
-        </li>
         <li>아래 단추로 복사
           <button class="btn" type="button" data-copy disabled>불러오는 중…</button>
           <div class="msg" data-msg></div>
           <textarea readonly data-text></textarea>
         </li>
-        <li>프로젝트 목록에서 <b>manse</b> 를 열고 왼쪽 <b>SQL Editor</b> → 맨 위 프로젝트 이름이 <b>manse</b> 인지 확인 (samgoe-cc 이면 안 됩니다) → 붙여넣기 → <b>Run</b><br>
+        <li><b>manse</b> 프로젝트의 SQL Editor 열기 → 맨 위 프로젝트 이름이 <b>manse</b> 인지 확인 (samgoe-cc 이면 안 됩니다) → 붙여넣기 → <b>Run</b>
+          <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/sql/new" target="_blank" rel="noopener">manse SQL Editor 열기 ↗</a>
           결과 창에 <b>장부 기록 (처음엔 0)</b> 한 줄이 나오면 성공</li>
         <li>manse 프로젝트 왼쪽 <b>Authentication</b> 에서 두 가지 (처음 한 번)<br>
-          ① <b>Sign In / Providers → Email</b> 의 <b>Confirm email</b> 끄기 → Save (가입하면 바로 로그인되게)<br>
-          ② <b>URL Configuration</b> 의 Site URL 에 <code>https://samgoe-cc.or.kr/manse/</code>, Redirect URLs 에 <code>https://samgoe-cc.or.kr/manse/**</code> 넣고 Save (비밀번호 찾기 메일용)</li>
+          ① <b>Sign In / Providers → Email</b> 의 <b>Confirm email</b> 끄기 → Save (가입하면 바로 로그인되게)
+          <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/auth/providers" target="_blank" rel="noopener">① 이메일 가입 설정 열기 ↗</a>
+          ② <b>URL Configuration</b> 의 Site URL 에 <code>https://samgoe-cc.or.kr/manse/</code>, Redirect URLs 에 <code>https://samgoe-cc.or.kr/manse/**</code> 넣고 Save (비밀번호 찾기 메일용)
+          <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/auth/url-configuration" target="_blank" rel="noopener">② 주소 설정 열기 ↗</a></li>
       </ol>
     </section>
 

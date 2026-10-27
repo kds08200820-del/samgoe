@@ -96,7 +96,7 @@ create table if not exists public.officers (
 create unique index if not exists officers_active_email_uniq on public.officers (lower(email)) where active and email is not null;
 
 create or replace function public.officers_touch()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql set search_path = public as $$
 begin new.email := nullif(lower(btrim(coalesce(new.email, ''))), ''); new.updated_at := now(); return new; end $$;
 drop trigger if exists trg_officers_touch on public.officers;
 create trigger trg_officers_touch before insert or update on public.officers
