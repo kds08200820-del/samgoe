@@ -463,16 +463,27 @@
     $('wkQ').addEventListener('input', renderWalks);
     $('wkPrint').addEventListener('click', function () { window.print(); });
   }
+  // 교회별 참가 인원 — 이 홈페이지의 참가 신청 기록(walk_applications)을 회차 · 교회로 묶음 (신청자 이름은 쓰지 않음)
   async function loadWalks() {
-    var a = await window.msb.from('walk_runs').select('*').order('walk_no', { ascending: false });
-    var b = a.error ? a : await window.msb.from('walk_churches').select('*');
+    var a = await window.msb.from('walk_events').select('event,no,title,event_date,place').order('no', { ascending: false });
+    var b = a.error ? a : await window.msb.from('walk_applications').select('event,church,adults,minors').range(0, 9999);
     if (a.error || b.error) {
       var m = String(((a.error || b.error) || {}).message || '');
-      $('wkSum').innerHTML = ''; $('wkTable').innerHTML = '<tr><td>' + esc(/walk_runs|walk_churches|does not exist|schema cache/i.test(m)
-        ? '걷기 참가 교회 기록을 쓰려면 먼저 Supabase SQL Editor에서 manse-walk-setup.sql을 실행해 주세요.' : window.mErr(a.error || b.error)) + '</td></tr>';
+      $('wkSum').innerHTML = ''; $('wkTable').innerHTML = '<tr><td>' + esc(/walk_events|walk_applications|does not exist|schema cache/i.test(m)
+        ? '걷기대회 기록을 쓰려면 먼저 설치 SQL(manse-walk-setup.sql)을 실행해 주세요.' : window.mErr(a.error || b.error)) + '</td></tr>';
       return;
     }
-    RUNS = a.data || []; WCH = b.data || [];
+    var CHN = {}; (window.CHURCHES || []).forEach(function (c) { CHN[c.name.replace(/\s/g, '')] = c; });
+    var byEv = {}; WCH = [];
+    (b.data || []).forEach(function (r) {
+      var k = String(r.church || '').replace(/\s/g, ''), c = CHN[k] || CHN[k + '교회'], name = c ? c.name : (String(r.church || '').trim() || '(교회 미입력)');
+      var ev = (a.data || []).filter(function (e) { return e.event === r.event; })[0]; if (!ev) return;
+      var key = ev.no + '|' + name, x = byEv[key];
+      if (!x) { x = byEv[key] = { walk_no: ev.no, church: name, region: c ? c.region || '' : '', apps: 0, adults: 0, minors: 0 }; WCH.push(x); }
+      x.apps++; x.adults += r.adults || 0; x.minors += r.minors || 0;
+    });
+    RUNS = (a.data || []).filter(function (e) { return WCH.some(function (c) { return c.walk_no === e.no; }); })
+      .map(function (e) { return { walk_no: e.no, event: e.event, title: e.title, event_date: e.event_date, place: e.place, churches: WCH.filter(function (c) { return c.walk_no === e.no; }).length }; });
     var sel = $('wkSel'), cur = sel.value;
     sel.innerHTML = RUNS.map(function (r) { return '<option value="' + r.walk_no + '">제' + r.walk_no + '회' + (r.event_date ? ' · ' + dot(r.event_date) : '') + ' — 교회 ' + r.churches + '곳</option>'; }).join('') +
       (RUNS.length > 1 ? '<option value="all">회차별 비교 (교회마다 몇 번 참가했는지)</option>' : '');
@@ -484,7 +495,7 @@
     var hit = function (c) { return !q || c.replace(/\s/g, '').indexOf(q) >= 0; };
     if (!RUNS.length) {
       $('wkCount').textContent = ''; $('wkSum').innerHTML = '';
-      $('wkTable').innerHTML = '<tr><td style="padding:28px;text-align:center;color:var(--muted)">아직 이관된 기록이 없습니다. 삼기연 임원방 → 행사 신청 기록 → <b>삼일만세운동본부로 이관</b>을 누르면 회차마다 여기에 쌓입니다.</td></tr>';
+      $('wkTable').innerHTML = '<tr><td style="padding:28px;text-align:center;color:var(--muted)">아직 참가 신청 기록이 없습니다. <a href="walk-admin.html">행사(회차) · 신청 기록</a>에서 회차를 만들고 신청을 받으면 여기에 교회별로 쌓입니다.</td></tr>';
       return;
     }
     if (v === 'all') {   // 교회 × 회차
@@ -509,7 +520,7 @@
     $('wkCount').textContent = '교회 ' + rows.length + '곳';
     $('wkSum').innerHTML = '<h2 class="wk-h">' + esc(run.title || ('제' + run.walk_no + '회 3·1 만세길 걷기')) + '</h2>' +
       '<p class="m-help" style="margin:0 0 12px">' + [run.event_date ? dot(run.event_date) : '', run.place || ''].filter(Boolean).map(esc).join(' · ') +
-      (run.sent_at ? ' · ' + when(run.sent_at) + ' ' + esc(run.sent_by_name || '') + ' 이관' : '') + '</p>' +
+      ' · <a href="walk-admin.html?e=' + encodeURIComponent(run.event) + '">신청 상세 기록 →</a></p>' +
       '<div class="wk-kpis"><div><b>' + rows.length + '</b><span>참가 교회</span></div><div><b>' + n0(t.a + t.m) + '</b><span>참가 인원</span></div>' +
       '<div><b>' + n0(t.a) + '</b><span>성인</span></div><div><b>' + n0(t.m) + '</b><span>미성년</span></div><div><b>' + n0(t.apps) + '</b><span>신청 건수</span></div></div>';
     $('wkTable').innerHTML = '<tr><th style="width:44px;text-align:center">순</th><th>교회</th><th>지역</th><th style="text-align:right">신청</th><th style="text-align:right">성인</th><th style="text-align:right">미성년</th><th style="text-align:right">합계</th></tr>' +

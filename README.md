@@ -36,18 +36,19 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - **Colors / type** live in the `:root` CSS variables at the top of
   `index.html` (`--blue` #0066cc is the brand accent).
 
-## 행운권 QR (3·1 만세길 걷기)
+## 3·1 만세길 걷기 — 삼일만세운동본부가 운영 (manse/)
 
-- 처음 한 번: Supabase SQL Editor에서 `lucky-setup.sql` 실행 (`walk-events-setup.sql` 다음).
-- `lucky-admin.html` (임원방) — 회차 고르기 → 번호 범위로 행운권 만들기 → 행사명 · 이미지를
-  넣고 인쇄용 PDF 만들기 → 등록 현황 보기 · 고치기 · 대신 등록 · CSV.
-- `lucky.html?c=확인코드` — 참가자가 QR을 찍으면 열리는 등록 화면 (이름 · 생년월일 · 소속 · 휴대폰(선택)).
-- `lucky-print.js` — PDF · 미리 보기 그리기 (jsPDF + qrcode-generator).
+- 회차 · 참가 신청 · 행운권 QR · 경품 당첨 · 인증 · 수령 · 결과 보고는 모두 만세운동본부 Supabase(`manse/manse-walk-setup.sql`)와 `manse/` 화면에서.
+  삼기연 쪽 예전 주소(`walk.html` · `lucky.html` · `lucky-admin.html` · `walk-admin.html` · `prize-winners.html`)는 같은 이름의 `manse/` 화면으로 넘어가는 안내 페이지만 남김.
+- `manse/walk.html` 참가 신청 · `manse/walk-admin.html` 회차 · 신청 기록 · `manse/lucky-admin.html` 행운권 QR(모든 인쇄 모양이 참가자용 + 추첨용 두 칸, 절취선)
+  · `manse/lucky.html?c=확인코드` 행운권 등록 · `manse/prize.html` 경품 당첨 확인 · 인증 · `manse/prize-winners.html` 당첨자 명단 · 수령 확인.
+- 관리자 메뉴 → 걷기대회 관리: 위 화면으로 가는 단추 · 회차별 결과 보고(`walk-report.js`) · 교회별 참가 인원(신청 기록을 교회별로 묶음).
+- 삼기연 첫 화면의 걷기 안내는 만세 Supabase의 `walk_events.hero`(공개 정보)를 읽어 `manse/walk.html`로 연결.
 
 ## 회계 관리 (삼기연 · 삼일만세운동본부 따로)
 
 - 처음 한 번: 삼기연 Supabase에서 `ledger-setup.sql`, 만세운동본부 Supabase에서 `manse/ledger-setup.sql` 실행.
-  휴대폰에서는 `setup-sql.html` — 단추 하나로 SQL 복사 (삼기연: 걷기 회차 + 행운권 + 회계 한 번에) → SQL Editor 열기.
+  휴대폰에서는 `setup-sql.html` — 단추 하나로 SQL 복사 → SQL Editor 열기.
 - `accounting.html` (임원방 → 회계 관리) — 삼기연 장부. 기록: 회계 · 회장 · 최고관리자, 보기 · 인쇄: 임원.
 - `manse/officer.html` → 회계 탭 — 만세운동본부 장부. 기록: 회계 · 부회계 · 대표회장 · 관리자, 보기 · 인쇄: 임원.
 - `ledger.js` · `ledger.css` — 두 곳이 같이 쓰는 장부 화면 (수입 · 지출 기록, 전기이월, 계정과목별 · 월별 표,

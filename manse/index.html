@@ -129,8 +129,8 @@
     <span class="tag">삼괴삼일만세운동본부 · 경기도 비영리민간단체</span>
     <h1><span class="mz-name">삼일만세운동본부</span>선조들이 걸었던<br>그 길 위에서</h1>
     <p>우정읍과 장안면은 1919년 3·1독립만세운동이 뜨겁게 일어났던 역사의 현장입니다. 삼일만세운동본부는 그 정신을 기억하고 계승하는 독립 단체로, 매년 우정읍 화수리에서 시작된 만세길을 화성시·지역 단체·시민과 함께 걷습니다.</p>
-    <!-- 3·1 만세길 걷기 — 삼기연 임원방 → 행사 신청 기록 → 행사 정보에서 '두 홈페이지 첫 화면에 게시'한 회차 -->
-    <a class="mz-walkban" id="walkBan" href="../walk.html" hidden>
+    <!-- 3·1 만세길 걷기 — 관리자 메뉴 → 걷기대회 관리 → 행사(회차) · 신청 기록에서 '첫 화면에 게시'한 회차 -->
+    <a class="mz-walkban" id="walkBan" href="walk.html" hidden>
       <span class="wb-tag" id="wbTag">참가 신청 중</span>
       <span class="wb-main"><b id="wbTitle"></b><span id="wbSub"></span></span>
       <span class="wb-go" id="wbGo">참가 신청하기 →</span>
@@ -453,13 +453,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=4"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js?v=7"></script>
   <script src="archive/data.js?v=6"></script>
   <script src="archive/archive.js?v=7"></script>
   <script src="archive/admin.js?v=6"></script>
   <script src="archive/press.js?v=2"></script>
   <script src="app.js?v=1"></script>
-  <script src="../walk-events.js?v=1"></script>
+  <script src="walk-events.js?v=2"></script>
   <script>
   // 첫 화면 가운데 단추 — 로그인했으면 '회원가입' 대신 관리자 메뉴(임원) · 내 정보(회원). 자동 로그인 확인이 끝난 뒤에 보임
   (function () {
@@ -477,15 +477,13 @@
     if (window.msb) window.msb.auth.onAuthStateChange(function (ev) { if (ev === 'SIGNED_OUT') show(null, null); });
   })();
 
-  // 첫 화면 — 게시한 3·1 만세길 걷기 회차 (삼기연 walk_events · 공개 정보만 읽음) + 게시한 결과 보고 (만세 walk_reports)
+  // 첫 화면 — 게시한 3·1 만세길 걷기 회차 (walk_events · 공개 정보만) + 게시한 결과 보고 (walk_reports)
   //  같은 회차의 행사가 끝났으면 행사 안내 띠 대신 결과 보고 띠만
   (async function () {
     var $ = function (id) { return document.getElementById(id); };
     var walkP = (async function () {
-      var URL_ = window.SAMGOE_SUPABASE_URL, KEY = window.SAMGOE_SUPABASE_KEY;
-      if (!window.supabase || !URL_ || !KEY || !window.WalkEv) return null;
-      var c = window.supabase.createClient(URL_, KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'samgoe-public' } });
-      var r = await c.from('walk_events').select(WalkEv.COLS).eq('hero', true).order('no', { ascending: false }).limit(1);
+      if (!window.msb || !window.WalkEv) return null;
+      var r = await window.msb.from('walk_events').select(WalkEv.COLS).eq('hero', true).order('no', { ascending: false }).limit(1);
       return !r.error && r.data && r.data[0] || null;
     })().catch(function () { return null; });
     var repP = (async function () {
@@ -514,7 +512,7 @@
       $('wbSub').textContent = [ev.event_date ? WalkEv.longDate(ev.event_date) + (ev.time_text ? ' ' + ev.time_text : '') : '', ev.place || '',
         st === 'open' && ev.apply_until ? WalkEv.shortDate(ev.apply_until) + '까지 신청' : ''].filter(Boolean).join(' · ');
       $('wbGo').textContent = st === 'open' ? '참가 신청하기 →' : '행사 안내 보기 →';
-      $('walkBan').href = '../walk.html?e=' + encodeURIComponent(ev.event) + (st === 'open' ? '#apply' : '');
+      $('walkBan').href = 'walk.html?e=' + encodeURIComponent(ev.event) + (st === 'open' ? '#apply' : '');
       $('walkBan').hidden = false;
     } catch (_) {}
   })();

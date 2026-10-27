@@ -48,7 +48,7 @@
   <footer class="m-footer">© 2026 삼일만세운동본부</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=4"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js?v=7"></script>
   <script src="walk-report.js?v=3"></script>
   <script>
   // 3·1 만세길 걷기 결과 보고 — 관리자 메뉴에서 '홈페이지에 게시'한 회차 (만세 walk_reports · 누구나 읽음)
@@ -71,7 +71,7 @@
       if (q.error || !q.data) return fail('이 회차 결과 보고를 불러오지 못했습니다.');
       body.innerHTML = window.WalkReport.publicHtml(q.data.data, q.data.published_at);
       document.title = w.title + ' 결과 보고 | 삼일만세운동본부';
-      $('wLinks').innerHTML = '<a class="m-btn ghost sm" href="../walk.html?e=' + encodeURIComponent(w.event_key) + '">이 회차 행사 안내</a><a class="m-btn ghost sm" href="./#activity">활동 기록 · 사진</a>';
+      $('wLinks').innerHTML = '<a class="m-btn ghost sm" href="walk.html?e=' + encodeURIComponent(w.event_key) + '">이 회차 행사 안내</a><a class="m-btn ghost sm" href="./#activity">활동 기록 · 사진</a>';
       $('wLinks').hidden = false;
       if (push) history.replaceState(null, '', '?w=' + w.walk_no);
     }

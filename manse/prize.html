@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>경품 당첨 확인 · 당첨 인증 | 3·1 만세길 걷기 · 삼일만세운동본부</title>
+  <meta name="description" content="3·1 만세길 걷기 경품 당첨 번호 확인과 당첨 인증." />
+  <link rel="canonical" href="https://samgoe-cc.or.kr/manse/prize.html" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=7" />
+  <style>
+    :root{--soft:#f5f5f5;--line-soft:#eeeeee;}
+    .pzw{max-width:640px;margin:0 auto;padding:30px 16px 72px;text-align:center;}
+    .pz-eyebrow{display:inline-block;margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--red);}
+    .pzw h1{margin:0 0 8px;font-size:clamp(24px,4.6vw,32px);line-height:1.3;}
+    .pzw .lead{margin:0 auto 20px;max-width:540px;font-size:15px;line-height:1.75;color:var(--muted);}
+    .pz-evsel{margin:0 auto 18px;max-width:280px;}
+    .pz-ofc-wrap{margin:18px 0 0;}
+    .pz-foot{margin:22px 0 0;font-size:13px;color:var(--muted);line-height:1.7;}
+    /* 경품 당첨 확인 · 당첨 인증 (제6회 3·1 만세길 걷기) */
+    .pz-logo{display:block;width:92px;height:92px;margin:24px auto 0;}
+    .pz-title{margin:14px 0 14px;font-size:clamp(28px,4.8vw,46px);line-height:1.22;font-weight:800;letter-spacing:-0.03em;color:#032257;word-break:keep-all;}
+    .pz-thanks{margin:0 auto 22px;max-width:580px;font-size:clamp(15.5px,2vw,17px);line-height:1.8;color:var(--body);word-break:keep-all;}
+    .pz-stats{display:flex;justify-content:center;gap:10px;margin:0 auto 22px;}
+    .pz-stats>div{min-width:132px;padding:12px 18px;border-radius:14px;background:rgba(255,255,255,.85);border:1px solid #e3dccb;backdrop-filter:blur(6px);}
+    .pz-stats>div[hidden]{display:none;}
+    .pz-stats b{display:block;font-size:26px;font-weight:800;color:#032257;font-variant-numeric:tabular-nums;line-height:1.2;}
+    .pz-stats span{font-size:13px;font-weight:600;color:var(--muted);}
+    .pz-box{max-width:540px;margin:0 auto;padding:24px 22px 18px;background:rgba(255,255,255,.94);border:1px solid rgba(184,155,94,.6);border-radius:18px;
+      box-shadow:0 14px 40px rgba(3,34,87,.10);backdrop-filter:blur(6px);text-align:center;scroll-margin-top:110px;}
+    .pz-label{display:block;font-size:21px;font-weight:800;color:#032257;}
+    .pz-help{margin:6px 0 16px;font-size:14px;line-height:1.6;color:var(--muted);word-break:keep-all;}
+    .pz-row{display:flex;gap:10px;}
+    .pz-row input{flex:1;min-width:0;height:58px;padding:0 16px;border:1.5px solid #cfc9bd;border-radius:14px;background:#fff;color:var(--ink);
+      font-family:inherit;font-size:22px;font-weight:700;text-align:center;}
+    .pz-row input::placeholder{font-size:16px;font-weight:500;color:#b3ada2;}
+    .pz-box input:focus{outline:none;border-color:#032257;box-shadow:0 0 0 3px rgba(3,34,87,.14);}
+    .pz-btn{flex:none;height:58px;padding:0 26px;border:0;border-radius:14px;background:#032257;color:#fff;font-family:inherit;font-size:18px;font-weight:800;
+      cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .15s ease,transform .12s ease;}
+    .pz-btn:hover{background:#021838;} .pz-btn:active{transform:scale(.97);} .pz-btn:disabled{opacity:.6;cursor:default;transform:none;}
+    .pz-result:empty{display:none;}
+    .pz-result{margin-top:16px;text-align:left;}
+    .pz-head{margin:0 0 10px;text-align:center;font-size:19px;font-weight:800;color:#032257;}
+    .pz-head.miss{color:var(--body);font-size:17px;}
+    .pz-sub{margin:-4px 0 12px;text-align:center;font-size:14px;color:var(--muted);line-height:1.6;}
+    .pz-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+    .pz-li{display:flex;align-items:center;gap:10px;padding:12px 8px 12px 14px;border-radius:12px;background:var(--soft);border:1px solid var(--line-soft);}
+    .pz-li.win{background:#fbf5e6;border-color:#d9c48f;}
+    .pz-li .n{flex:none;min-width:58px;font-size:18px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;}
+    .pz-li .p{flex:1;min-width:0;font-size:15.5px;line-height:1.45;color:var(--body);}
+    .pz-li.win .p{font-weight:800;color:#032257;font-size:16.5px;}
+    .pz-li .t{flex:none;font-size:12px;font-weight:800;padding:4px 9px;border-radius:20px;background:#e8e4da;color:#6b665c;white-space:nowrap;}
+    .pz-li.win .t{background:#b89b5e;color:#1a1a1a;}
+    .pz-li.win .t.ok{background:#0f7b3f;color:#fff;}
+    .pz-x{flex:none;width:40px;height:40px;border:0;background:none;border-radius:10px;font-size:20px;line-height:1;color:#9a958b;cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .pz-x:hover{background:rgba(0,0,0,.05);color:var(--ink);}
+    .pz-clear{display:block;margin:10px auto 0;padding:8px 12px;border:0;background:none;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--muted);text-decoration:underline;cursor:pointer;}
+    .pz-done{margin:14px 0 0;padding:14px;border-radius:12px;background:#eafaf0;color:#0f5c31;font-size:15px;font-weight:700;line-height:1.6;}
+    .pz-wait{margin:14px 0 0;font-size:14px;color:var(--muted);}
+    .pz-claim{margin-top:20px;padding-top:20px;border-top:1px dashed #d9d2c2;text-align:left;}
+    .pz-ct{margin:0;text-align:center;font-size:19px;font-weight:800;color:#032257;}
+    .pz-claim .pz-help{text-align:center;}
+    .pz-fs{margin:0 0 16px;padding:0;border:0;min-width:0;}
+    .pz-fl{display:block;margin:0 0 7px;font-size:14.5px;font-weight:700;color:var(--ink);}
+    .pz-fl em{font-style:normal;font-weight:500;font-size:12.5px;color:var(--muted);margin-left:4px;}
+    .pz-pick{display:flex;flex-wrap:wrap;gap:8px;}
+    .pz-pick label{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:6px 12px;border-radius:10px;background:#fff;border:1.5px solid #d9c48f;font-size:14.5px;cursor:pointer;}
+    .pz-pick input{width:18px;height:18px;accent-color:#032257;margin:0;}
+    .pz-fld{margin:0 0 16px;}
+    .pz-fld input[type=text]{width:100%;height:50px;padding:0 14px;border:1.5px solid #cfc9bd;border-radius:12px;background:#fff;font-family:inherit;font-size:16px;color:var(--ink);}
+    .pz-photo-btn{position:relative;display:flex;align-items:center;justify-content:center;min-height:52px;border:1.5px dashed #b89b5e;border-radius:12px;background:#fffdf7;
+      font-size:15.5px;font-weight:700;color:#032257;cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .pz-photo-btn:hover{background:#fbf5e6;}
+    .pz-photo-btn:focus-within{outline:3px solid rgba(3,34,87,.25);outline-offset:2px;}
+    .pz-photo-btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+    .pz-thumbs:empty{display:none;}
+    .pz-thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;margin-top:10px;}
+    .pz-thumbs figure{position:relative;margin:0;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#eee;}
+    .pz-thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
+    .pz-thumbs button{position:absolute;top:3px;right:3px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:16px;line-height:1;cursor:pointer;}
+    .pz-send{width:100%;}
+    .pz-msg:empty{display:none;}
+    .pz-msg{margin:10px 0 0;font-size:14px;line-height:1.6;color:#c0392b;text-align:center;}
+    .pz-msg.busy{color:var(--muted);}
+    .pz-priv{margin:10px 0 0;font-size:12.5px;color:var(--muted);text-align:center;}
+    .pz-all{margin-top:16px;text-align:left;}
+    .pz-all summary{display:block;padding:10px;text-align:center;font-size:14px;font-weight:700;color:#032257;cursor:pointer;list-style:none;}
+    .pz-all summary::-webkit-details-marker{display:none;}
+    .pz-all summary::after{content:' ▾';} .pz-all[open] summary::after{content:' ▴';}
+    .pz-grp{padding:12px 2px;border-top:1px solid var(--line-soft);}
+    .pz-grp b{display:block;margin-bottom:7px;font-size:14.5px;color:var(--ink);}
+    .pz-grp b small{margin-left:6px;font-size:12.5px;font-weight:600;color:var(--muted);}
+    .pz-grp p{margin:0;display:flex;flex-wrap:wrap;gap:4px;}
+    .pz-grp span{min-width:38px;padding:3px 5px;border-radius:6px;background:var(--soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;color:var(--body);}
+    .pz-grp span.hit{background:#032257;color:#fff;font-weight:800;}
+    /* 무효표 — 개수에는 넣고 '무효표'로 표시, 당첨 인증은 받지 않음 */
+    .pz-li.void{background:#f4f1f1;border-color:#e2d6d6;}
+    .pz-li.void .p{color:#8a4b4b;font-weight:700;}
+    .pz-li .t.void{background:#8a4b4b;color:#fff;}
+    .pz-grp.void b{color:#8a4b4b;}
+    .pz-grp.void span{background:#f4ecec;color:#8a4b4b;text-decoration:line-through;}
+    .pz-grp.void span.hit{background:#8a4b4b;color:#fff;text-decoration:none;}
+  </style>
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span id="mAuth"></span>
+  </div></header>
+  <main class="pzw">
+    <p class="pz-eyebrow" id="pzEyebrow">3·1 만세길 걷기 · 경품 추첨 결과</p>
+    <h1 id="pzTitle">경품 당첨 확인 · 당첨 인증</h1>
+    <p class="lead" id="pzLead">번호표 번호를 넣으면 당첨 여부를 바로 알려 드립니다. 당첨이면 인증샷과 이름을 올려 당첨 인증을 해 주세요.</p>
+    <select class="m-in pz-evsel" id="pzEv" aria-label="회차 고르기" hidden></select>
+    <div class="pz-stats"><div><b id="pzWinCnt">–</b><span id="pzWinLbl">경품 당첨</span></div></div>
+        <div class="pz-box" id="prize">
+          <form id="pzFind" autocomplete="off" novalidate>
+            <label for="pzNum" class="pz-label">경품 당첨 확인</label>
+            <p class="pz-help" id="pzHelp">번호표 번호를 넣고 확인을 누르세요. 여러 번호를 이어서 넣을 수 있습니다.</p>
+            <div class="pz-row">
+              <input id="pzNum" type="text" inputmode="numeric" maxlength="200" placeholder="예: 123  또는  12, 45" aria-describedby="pzHelp" />
+              <button type="submit" class="pz-btn">확인</button>
+            </div>
+          </form>
+          <div id="pzResult" class="pz-result" role="status" aria-live="polite"></div>
+          <p id="pzDone" class="pz-done" role="status" hidden></p>
+          <form id="pzClaim" class="pz-claim" novalidate hidden>
+            <h3 class="pz-ct">당첨 인증하기</h3>
+            <p class="pz-help">인증샷을 올리고 이름을 적으면 당첨 인증이 됩니다. 여러 번호를 사진 한 번에 인증할 수 있습니다.</p>
+            <fieldset class="pz-fs"><legend class="pz-fl">인증할 번호</legend><div id="pzPick" class="pz-pick"></div></fieldset>
+            <div class="pz-fld">
+              <span class="pz-fl">인증샷 <em>필수 · 여러 장 가능</em></span>
+              <label class="pz-photo-btn">사진 고르기 · 찍기<input id="pzPhotos" type="file" accept="image/*" multiple /></label>
+              <div id="pzThumbs" class="pz-thumbs"></div>
+            </div>
+            <div class="pz-fld"><label class="pz-fl" for="pzName">이름 <em>필수</em></label><input id="pzName" type="text" maxlength="40" autocomplete="name" /></div>
+            <div class="pz-fld"><label class="pz-fl" for="pzChurch">소속 교회 · 단체 <em>선택</em></label><input id="pzChurch" type="text" maxlength="60" list="pzChurchList" placeholder="교회 이름을 입력하거나 고르세요" /><datalist id="pzChurchList"></datalist></div>
+            <button type="submit" class="pz-btn pz-send" id="pzSend">당첨 인증하기</button>
+            <p class="pz-msg" id="pzMsg" role="alert"></p>
+            <p class="pz-priv">인증샷과 이름은 임원만 보며 경품 확인에만 씁니다.</p>
+          </form>
+          <p id="pzWait" class="pz-wait" hidden>당첨 인증은 준비 중입니다. 잠시 뒤 다시 들어와 주세요.</p>
+          <details class="pz-all"><summary>전체 당첨 번호 보기</summary><div id="pzAll"></div></details>
+        </div>
+        <div class="pz-ofc-wrap" id="pzOfc" hidden><a class="m-btn ghost sm" href="prize-winners.html">임원 · 경품 당첨자 명단 · 수령 확인 →</a></div>
+    <p class="pz-foot" id="pzFoot">주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회<br>행사 문의 김낭주 목사 010-4271-5090</p>
+  </main>
+  <footer class="m-footer">© 2026 삼일만세운동본부</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=4"></script>
+  <script src="auth.js?v=7"></script>
+  <script src="../churches.js?v=2"></script>
+  <script>
+// 경품 당첨 확인 · 당첨 인증 (manse-walk-setup.sql 의 prize_winners · prize_claim) — 아래 시작 부분이 회차를 정한 뒤 부름
+window.pzStart = function(){
+  var form=document.getElementById('pzFind');
+  if(!form) return;
+  var MAX_PHOTOS=10, EVENT=window.PZ_EVENT, PRIZES=window.PZ_PRIZES, VOID=window.PZ_VOID;   // 아래 시작 부분에서 회차 · 당첨 번호를 불러옴
+  var $=function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+  function krErr(m){ return window.mErr ? window.mErr(m) : String(m||'알 수 없는 오류'); }
+
+  // 번호 → 상품 (한 번호가 두 상품에 뽑힌 경우도 모두), 전체 목록은 상품 이름별로 묶음
+  var WIN={}, GROUPS=[], byName={};
+  PRIZES.forEach(function(p){
+    if(!byName[p[1]]){ byName[p[1]]={name:p[1],nums:[]}; GROUPS.push(byName[p[1]]); }
+    p[2].split(',').forEach(function(s){ var n=+s;
+      WIN[n]=WIN[n]||[]; if(WIN[n].indexOf(p[1])<0) WIN[n].push(p[1]);
+      if(byName[p[1]].nums.indexOf(n)<0) byName[p[1]].nums.push(n); });
+  });
+  GROUPS.forEach(function(g){ g.nums.sort(function(a,b){return a-b;}); });
+  if(VOID.length) GROUPS.push({name:'무효표', nums:VOID.slice().sort(function(a,b){return a-b;}), void:true});
+  // 개수: 당첨 번호 + 무효표 (예: 374 + 3 = 377)
+  $('pzWinCnt').textContent=(Object.keys(WIN).length+VOID.length).toLocaleString('ko-KR')+(VOID.length?'장':'명');
+  if(VOID.length) $('pzWinLbl').textContent='경품 추첨 번호표 · 무효표 '+VOID.length+'장 포함';
+  $('pzAll').innerHTML=GROUPS.map(function(g){
+    return '<div class="pz-grp'+(g.void?' void':'')+'"><b>'+esc(g.name)+'<small>'+g.nums.length+(g.void?'장 · 경품 없음':'명')+'</small></b><p>'+
+      g.nums.map(function(n){ return '<span data-n="'+n+'">'+n+'</span>'; }).join('')+'</p></div>';
+  }).join('');
+
+  // ----- 번호 확인 (여러 번호를 이어서) -----
+  var list=[], picked={}, claimReady=null;   // list: {n, prizes|null, claimed: null(확인 중)|true|false}
+  function find(n){ for(var i=0;i<list.length;i++) if(list[i].n===n) return list[i]; return null; }
+  function eligible(){ return list.filter(function(it){ return it.prizes && it.claimed===false; }); }
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var input=$('pzNum'), nums=(input.value.match(/\d+/g)||[]).map(Number).filter(function(n){ return n>0 && n<10000; });
+    if(!nums.length){ input.focus(); if(!list.length) showHead('번호를 숫자로 넣어 주세요.'); return; }
+    nums.forEach(function(n){ if(!find(n) && list.length<50){ list.push({n:n, prizes:WIN[n]||null, void:VOID.indexOf(n)>=0, claimed:null}); picked[n]=true; } });
+    input.value=''; $('pzDone').hidden=true;
+    render(); checkClaimed();
+    if(window.matchMedia('(pointer:coarse)').matches) input.blur(); else input.focus();
+  });
+  function showHead(t){ $('pzResult').innerHTML='<p class="pz-head miss">'+esc(t)+'</p>'; }
+
+  $('pzResult').addEventListener('click',function(e){
+    var x=e.target.closest('[data-x]'); if(x){ var n=+x.getAttribute('data-x'); list=list.filter(function(it){ return it.n!==n; }); delete picked[n]; render(); $('pzNum').focus(); return; }
+    if(e.target.closest('.pz-clear')){ list=[]; picked={}; $('pzDone').hidden=true; render(); $('pzNum').focus(); }
+  });
+
+  function render(){
+    var box=$('pzResult');
+    Array.prototype.forEach.call($('pzAll').querySelectorAll('span.hit'),function(s){ s.classList.remove('hit'); });
+    if(!list.length){ box.innerHTML=''; renderClaim(); return; }
+    var wins=list.filter(function(it){ return it.prizes; }), voids=list.filter(function(it){ return it.void; });
+    var h = wins.length
+      ? '<p class="pz-head">축하합니다! '+(list.length>1?wins.length+'개 번호가 ':'')+'당첨되었습니다</p>'
+      : (voids.length
+        ? '<p class="pz-head miss">무효표로 기록된 번호입니다</p><p class="pz-sub">추첨에서 무효 처리되어 경품이 없습니다. 궁금하신 점은 행사 문의로 연락해 주세요.</p>'
+        : '<p class="pz-head miss">아쉽게도 당첨 번호가 아닙니다</p><p class="pz-sub">비 오는 날 함께 걸어 주신 것만으로 감사합니다. 번호를 다시 한 번 확인해 주세요.</p>');
+    h+='<ul class="pz-list">'+list.map(function(it){
+      var tag = it.void ? '<span class="t void">무효표</span>' : (!it.prizes ? '<span class="t">당첨 아님</span>' : (it.claimed===true ? '<span class="t ok">인증 완료</span>' : '<span class="t">당첨</span>'));
+      return '<li class="pz-li'+(it.prizes?' win':(it.void?' void':''))+'"><span class="n">'+it.n+'번</span><span class="p">'+(it.prizes?esc(it.prizes.join(' · ')):(it.void?'무효표 · 경품 없음':'당첨 번호가 아닙니다'))+'</span>'+tag+
+        '<button type="button" class="pz-x" data-x="'+it.n+'" aria-label="'+it.n+'번 지우기">×</button></li>';
+    }).join('')+'</ul>';
+    if(list.length>1) h+='<button type="button" class="pz-clear">모두 지우기</button>';
+    box.innerHTML=h;
+    wins.concat(voids).forEach(function(it){ Array.prototype.forEach.call($('pzAll').querySelectorAll('span[data-n="'+it.n+'"]'),function(s){ s.classList.add('hit'); }); });
+    renderClaim();
+  }
+
+  // 이미 인증된 번호인지 서버에 물어봄 (인증 기능이 아직 준비 전이면 안내만)
+  async function checkClaimed(){
+    var ask=list.filter(function(it){ return it.prizes && it.claimed===null; }).map(function(it){ return it.n; });
+    if(!ask.length) return;
+    if(!window.msb){ claimReady=false; renderClaim(); return; }
+    try{
+      var r=await window.msb.rpc('prize_claimed',{p_tickets:ask,p_event:EVENT});
+      if(r.error) throw r.error;
+      var got=(r.data||[]).map(function(x){ return typeof x==='object'?+x.prize_claimed:+x; });
+      ask.forEach(function(n){ var it=find(n); if(it) it.claimed=got.indexOf(n)>=0; });
+      claimReady=true;
+    }catch(e){ claimReady=false; }
+    render();
+  }
+
+  // ----- 당첨 인증 (번호 여러 개 + 인증샷 여러 장 한꺼번에) -----
+  var photos=[], busy=false;
+  try{ $('pzChurchList').innerHTML=(window.CHURCHES||[]).map(function(c){ return '<option value="'+esc(c.name)+'">'; }).join(''); }catch(e){}
+
+  function renderClaim(){
+    var el=eligible(), claim=$('pzClaim');
+    $('pzWait').hidden = !(claimReady===false && list.some(function(it){ return it.prizes; }));
+    if(claimReady!==true || !el.length){ if(!busy) claim.hidden=true; return; }
+    claim.hidden=false;
+    $('pzPick').innerHTML=el.map(function(it){
+      return '<label><input type="checkbox" data-pick="'+it.n+'"'+(picked[it.n]?' checked':'')+'> <b>'+it.n+'번</b> · '+esc(it.prizes.join(' · '))+'</label>';
+    }).join('');
+    updateSend();
+  }
+  $('pzPick').addEventListener('change',function(e){ var n=e.target.getAttribute('data-pick'); if(n){ picked[+n]=e.target.checked; updateSend(); } });
+  function chosen(){ return eligible().filter(function(it){ return picked[it.n]; }).map(function(it){ return it.n; }); }
+  function updateSend(){ if(busy) return; var c=chosen().length; $('pzSend').textContent=c>1?'번호 '+c+'개 당첨 인증하기':'당첨 인증하기'; }
+
+  $('pzPhotos').addEventListener('change',function(){
+    var files=Array.prototype.slice.call(this.files||[]).filter(function(f){ return /^image\//.test(f.type) || /\.(jpe?g|png|webp|heic|heif)$/i.test(f.name); });
+    var room=MAX_PHOTOS-photos.length;
+    if(files.length>room) msg('인증샷은 '+MAX_PHOTOS+'장까지 올릴 수 있습니다.');
+    files.slice(0,Math.max(0,room)).forEach(function(f){ photos.push({file:f,url:URL.createObjectURL(f)}); });
+    this.value=''; drawThumbs();
+  });
+  function drawThumbs(){
+    $('pzThumbs').innerHTML=photos.map(function(p,i){ return '<figure><img src="'+p.url+'" alt="인증샷 '+(i+1)+'"><button type="button" data-rm="'+i+'" aria-label="인증샷 '+(i+1)+' 빼기">×</button></figure>'; }).join('');
+  }
+  $('pzThumbs').addEventListener('click',function(e){
+    var b=e.target.closest('[data-rm]'); if(!b||busy) return;
+    var i=+b.getAttribute('data-rm'); URL.revokeObjectURL(photos[i].url); photos.splice(i,1); drawThumbs();
+  });
+  function msg(t,isBusy){ var m=$('pzMsg'); m.textContent=t||''; m.className='pz-msg'+(isBusy?' busy':''); }
+
+  function uuid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    var b=crypto.getRandomValues(new Uint8Array(16)); b[6]=(b[6]&15)|64; b[8]=(b[8]&63)|128;
+    var h=Array.prototype.map.call(b,function(x){ return (x+256).toString(16).slice(1); }).join('');
+    return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+  }
+  function toBlob(cv,type,q){ return new Promise(function(res){ cv.toBlob(function(b){ res(b); },type,q); }); }
+  // 사진 줄이기 (긴 변 1600px) — 못 읽는 형식이면 원본(jpg · png · webp)을 그대로
+  async function shrink(file){
+    var bmp;
+    try{ bmp=await createImageBitmap(file); }
+    catch(e){
+      if(/^image\/(jpeg|png|webp)$/.test(file.type) && file.size<=8*1024*1024) return file;
+      throw new Error('사진을 읽지 못했습니다. 다른 사진으로 올려 주세요.');
+    }
+    try{
+      var s=Math.min(1,1600/Math.max(bmp.width,bmp.height)), w=Math.max(1,Math.round(bmp.width*s)), h=Math.max(1,Math.round(bmp.height*s));
+      var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(bmp,0,0,w,h);
+      var b=await toBlob(cv,'image/webp',0.82);
+      if(!b || b.type!=='image/webp') b=await toBlob(cv,'image/jpeg',0.85);
+      return b;
+    } finally { if(bmp.close) bmp.close(); }
+  }
+
+  $('pzClaim').addEventListener('submit',async function(e){
+    e.preventDefault();
+    if(busy) return;
+    var tickets=chosen(), name=$('pzName').value.trim(), church=$('pzChurch').value.trim();
+    if(!tickets.length){ msg('인증할 번호를 1개 이상 골라 주세요.'); return; }
+    if(!photos.length){ msg('인증샷을 1장 이상 올려 주세요.'); return; }
+    if(!name){ msg('이름을 적어 주세요.'); $('pzName').focus(); return; }
+    busy=true; var btn=$('pzSend'); btn.disabled=true; btn.textContent='올리는 중…';
+    try{
+      var batch=uuid(), paths=[];
+      for(var i=0;i<photos.length;i++){
+        msg('인증샷 올리는 중… ('+(i+1)+'/'+photos.length+')',true);
+        var blob=await shrink(photos[i].file);
+        var ext=blob.type==='image/webp'?'webp':(blob.type==='image/png'?'png':'jpg');
+        var path=EVENT+'/'+batch+'/'+(i+1)+'.'+ext;
+        var up=await window.msb.storage.from('prize-proofs').upload(path,blob,{contentType:blob.type||'image/jpeg',upsert:false});
+        if(up.error) throw up.error;
+        paths.push(path);
+      }
+      msg('인증하는 중…',true);
+      var r=await window.msb.rpc('prize_claim',{p_batch:batch,p_tickets:tickets,p_name:name,p_church:church,p_photos:paths,p_event:EVENT});
+      if(r.error) throw r.error;
+      var done=(r.data||[]).map(function(x){ return +x.ticket; }), skipped=tickets.filter(function(n){ return done.indexOf(n)<0; });
+      tickets.forEach(function(n){ var it=find(n); if(it) it.claimed=true; });
+      photos.forEach(function(p){ URL.revokeObjectURL(p.url); }); photos=[]; drawThumbs(); msg('');
+      var d=$('pzDone');
+      d.textContent=(done.length?'✓ '+done.join('번, ')+'번 당첨 인증이 끝났습니다. 함께해 주셔서 감사합니다!':'')+
+        (skipped.length?(done.length?' ':'')+skipped.join('번, ')+'번은 이미 인증된 번호라 빼고 처리했습니다. 본인이 인증하지 않았다면 행사 문의(010-4271-5090)로 알려 주세요.':'');
+      d.hidden=false;
+    }catch(err){
+      msg('인증하지 못했습니다: '+krErr((err&&err.message)||err));
+    }finally{
+      busy=false; btn.disabled=false; render();
+    }
+  });
+};
+
+  // 시작 — 회차(?e=, 없으면 당첨 번호가 있는 가장 최근 회차)와 그 회차의 당첨 번호를 불러옴
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); };
+    function fail(t) { $('prize').innerHTML = '<p class="pz-head miss">' + t + '</p>'; $('pzWinCnt').textContent = '–'; }
+    if (!window.msb) return fail('잠시 뒤 다시 열어 주세요.');
+    try {
+      var ev = await window.msb.from('walk_events').select('event,no,title,event_date,contact').order('no', { ascending: false });
+      var pw = await window.msb.from('prize_winners').select('event,ticket,prize,seq').order('seq').order('ticket').range(0, 9999);
+      if (ev.error || pw.error) throw (ev.error || pw.error);
+      var has = {}; (pw.data || []).forEach(function (w) { has[w.event] = 1; });
+      var evs = (ev.data || []).filter(function (e) { return has[e.event]; });
+      if (!evs.length) return fail('아직 경품 추첨 결과가 없습니다.');
+      var want = new URLSearchParams(location.search).get('e'), E = evs.filter(function (e) { return e.event === want; })[0] || evs[0];
+      if (evs.length > 1) {
+        $('pzEv').innerHTML = evs.map(function (e) { return '<option value="' + e.event + '"' + (e.event === E.event ? ' selected' : '') + '>' + e.title + '</option>'; }).join('');
+        $('pzEv').hidden = false; $('pzEv').addEventListener('change', function () { location.href = 'prize.html?e=' + encodeURIComponent(this.value); });
+      }
+      $('pzEyebrow').textContent = E.title + ' · 경품 추첨 결과'; document.title = '경품 당첨 확인 · ' + E.title + ' | 삼일만세운동본부';
+      if (E.contact) $('pzFoot').innerHTML = '주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회<br>행사 문의 ' + E.contact.replace(/[&<>]/g, '');
+      var by = {}, order = [], voids = [];
+      (pw.data || []).filter(function (w) { return w.event === E.event; }).forEach(function (w) {
+        if (w.prize === '무효표') { voids.push(w.ticket); return; }
+        var k = w.seq + '|' + w.prize; if (!by[k]) { by[k] = [w.seq, w.prize, []]; order.push(by[k]); } by[k][2].push(w.ticket);
+      });
+      window.PZ_EVENT = E.event; window.PZ_VOID = voids; window.PZ_PRIZES = order.map(function (x) { return [x[0], x[1], x[2].join(',')]; });
+      window.pzStart();
+      var u = window.mUser ? await window.mUser() : null, p = u && window.mPerms ? await window.mPerms() : null;
+      $('pzOfc').hidden = !(p && p.officer);
+    } catch (ex) { fail('당첨 번호를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); }
+  })();
+  </script>
+</body>
+</html>

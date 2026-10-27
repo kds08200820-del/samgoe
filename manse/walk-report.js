@@ -1,19 +1,16 @@
 // ============================================================
-//  삼일만세운동본부 임원방 — 3·1 만세길 걷기 총괄 (officer.html 의 '걷기대회 관리' 탭)
-//  - 걷기대회 관리 단추: 행운권 QR · 행사 · 신청 기록 · 경품 당첨자 명단 (삼괴연합회 홈페이지 화면을 엶)
+//  삼일만세운동본부 관리자 메뉴 — 3·1 만세길 걷기 총괄 (officer.html 의 '걷기대회 관리' 탭)
+//  - 걷기대회 관리 단추: 행운권 QR · 행사 · 신청 기록 · 경품 당첨자 명단 (이 홈페이지의 화면)
 //  - 회차별 결과 보고: 참여 교회 · 단체 · 시민, 경품 당첨 · 인증 · 수령, 당첨자 명단 — 이름은 모두 가림 (홍*동)
 //  - 'PDF로 자료실에 올리기': 같은 보고서를 PDF로 만들어 공문 · 자료(행사 운영)에 올림 → 만세운동본부 임원 누구나 열람
-//  - '홈페이지에 게시': 숫자와 교회 이름만 만세 walk_reports(manse-report-setup.sql)에 저장 → 첫 화면 '결과 보고' 띠 · report.html
+//  - '홈페이지에 게시': 숫자와 교회 이름만 walk_reports(manse-report-setup.sql)에 저장 → 첫 화면 '결과 보고' 띠 · report.html
 //    (당첨자 명단은 빼고, 단체 · 시민은 소속 칸에 개인 이름이 적히기도 해서 이름 없이 곳 수만)
-//  기록은 삼괴연합회 홈페이지(별도 Supabase)에 있으므로, 이 브라우저에 삼괴연합회 '임원' 로그인이 있어야 읽힙니다.
-//  (같은 주소 samgoe-cc.or.kr 이라 그 로그인을 그대로 씀 — samgoe-link.js 와 같은 방식)
+//  기록은 모두 만세운동본부 Supabase(manse-walk-setup.sql)에 있음 — 관리자 메뉴에 들어온 임원이면 읽힘
 // ============================================================
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var esc = window.mEsc || function (s) { return String(s == null ? '' : s); };
-  var SG_URL = window.SAMGOE_SUPABASE_URL, SG_KEY = window.SAMGOE_SUPABASE_KEY;
-  var SUPER = 'kds08200820@gmail.com';   // 삼괴연합회 최고관리자 (auth.js 의 ADMIN_EMAILS 와 같음)
-  var ctx = null, sg = null, sgUser = null, sgOfficer = false, EVENTS = [], DATA = null, busy = false;
+  var ctx = null, sg = null, EVENTS = [], DATA = null, busy = false;   // sg: 기록을 읽는 클라이언트 (만세운동본부 msb)
 
   function n0(v) { return Number(v || 0).toLocaleString('ko-KR'); }
   function dot(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? m[1] + '.' + m[2] + '.' + m[3] : ''; }
@@ -22,46 +19,6 @@
   function mask(n) { n = Array.from(String(n || '').trim()); if (!n.length) return ''; return n.length <= 1 ? '*' : n.length === 2 ? n[0] + '*' : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1]; }
   function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
   function kdate(ts) { var d = ts ? new Date(ts) : null; return d && !isNaN(d) ? dot(new Date(d.getTime() + 9 * 3600000).toISOString()) : ''; }
-
-  // ---------- 삼괴연합회 로그인 (같은 브라우저) ----------
-  function sgStorage() {
-    function on() { try { return localStorage.getItem('sam_remember') !== '0'; } catch (_) { return true; } }
-    return {
-      getItem: function (k) { try { return (on() ? localStorage : sessionStorage).getItem(k); } catch (_) { return null; } },
-      setItem: function (k, v) { try { (on() ? localStorage : sessionStorage).setItem(k, v); } catch (_) {} },
-      removeItem: function (k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (_) {} }
-    };
-  }
-  async function connect() {
-    sg = null; sgUser = null; sgOfficer = false;
-    if (!window.supabase || !SG_URL || !SG_KEY) return;
-    sg = window.supabase.createClient(SG_URL, SG_KEY, { auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, storage: sgStorage() } });
-    try {
-      var s = await sg.auth.getSession();   // 시간이 지난 로그인은 여기서 새로 고침됨
-      sgUser = s.data && s.data.session ? s.data.session.user : null;
-      if (!sgUser) return;
-      if (String(sgUser.email || '').toLowerCase() === SUPER) { sgOfficer = true; return; }
-      var p = await sg.from('profiles').select('name,officer_role').eq('id', sgUser.id).maybeSingle();
-      sgOfficer = !!(p.data && p.data.officer_role);
-      sgUser.profileName = p.data && p.data.name;
-      sgUser.role = p.data && p.data.officer_role;
-    } catch (_) { sgUser = null; }
-  }
-  function loginHref() { return '../login.html?next=' + encodeURIComponent('manse/officer.html#walks'); }
-  function drawLink() {
-    var el = $('wkLink'); el.hidden = false;   // 문제가 있을 때만 안내 (잘 연결되면 줄을 숨김)
-    if (!sg) { el.innerHTML = '<span class="chip bad">연결 설정 없음</span> 삼괴연합회 홈페이지 연결 설정(config.js)을 찾지 못했습니다.'; return; }
-    if (!sgUser) {
-      el.innerHTML = '<span class="chip gray">삼괴연합회 로그인 필요</span> 이 브라우저에서 삼괴연합회 홈페이지에 <b>임원 계정</b>으로 로그인하면 아래 단추와 결과 보고가 열립니다. ' +
-        '<a class="m-btn ghost sm" href="' + loginHref() + '">삼괴연합회 로그인 →</a>';
-      return;
-    }
-    if (!sgOfficer) {
-      el.innerHTML = '<span class="chip bad">임원 아님</span> 삼괴연합회 홈페이지에 <b>' + esc(sgUser.email) + '</b>(으)로 로그인되어 있지만 그쪽 임원 명단에 없어 기록을 볼 수 없습니다. 삼괴연합회 회장 · 최고관리자에게 임원 직책 지정을 부탁해 주세요.';
-      return;
-    }
-    el.innerHTML = ''; el.hidden = true;
-  }
 
   // ---------- 기록 불러오기 ----------
   async function loadEvents() {
@@ -224,14 +181,14 @@
     return '<div class="rp">' + topHtml(D) +
       '<details class="rp-more"><summary>소속별 전체 표 (' + D.orgs.length + '곳)</summary><div class="o-table-wrap"><table class="rp-t">' + orgHead(D) + orgRows(D.orgs, D) + '</table></div></details>' +
       (D.list.length ? '<details class="rp-more"><summary>당첨자 명단 (' + D.list.length + '장 · 이름 가림)</summary><div class="o-table-wrap"><table class="rp-t">' + winHead() + winRows(D.list) + '</table></div></details>' : '') +
-      '<p class="rp-note">이름은 가운데 글자를 가렸습니다 (홍*동). 기록: 삼괴연합회 홈페이지 · 불러온 시각 ' + new Date().toLocaleString('ko-KR') + '</p></div>';
+      '<p class="rp-note">이름은 가운데 글자를 가렸습니다 (홍*동). 불러온 시각 ' + new Date().toLocaleString('ko-KR') + '</p></div>';
   }
 
   // 홈페이지 공개 화면 (report.html) — 게시한 요약 (publicData) 그대로
   function publicHtml(D, at) {
     return '<div class="rp">' + topHtml(D) +
       (D.orgs.length ? '<details class="rp-more"><summary>교회별 전체 표 (' + D.orgs.length + '곳)</summary><div class="o-table-wrap"><table class="rp-t">' + orgHead(D) + orgRows(D.orgs, D) + '</table></div></details>' : '') +
-      '<p class="rp-note">사람 이름은 싣지 않았고, 단체 · 시민은 곳 수만 보입니다. 기록: 삼괴지역기독교연합회 홈페이지' + (at ? ' · ' + kdate(at) + ' 게시' : '') + '</p></div>';
+      '<p class="rp-note">사람 이름은 싣지 않았고, 단체 · 시민은 곳 수만 보입니다. 기록: 삼일만세운동본부 걷기대회 관리' + (at ? ' · ' + kdate(at) + ' 게시' : '') + '</p></div>';
   }
 
   // PDF용 — A4 한 쪽씩 (휴대폰에서도 그림 크기 제한에 걸리지 않게 한 쪽씩 그림)
@@ -278,7 +235,7 @@
       var file = new File([blob], '제' + D.ev.no + '회_3·1만세길걷기_결과보고_' + today().replace(/-/g, '') + '.pdf', { type: 'application/pdf' });
       var path = await ctx.putFile(file, year, '행사 운영', false);
       await ctx.insertDoc({ year: year, category: '행사 운영', title: t, doc_date: today(), date_text: today(), doc_no: null,
-        note: '삼괴연합회 홈페이지 기록으로 만든 요약 — 이름은 가렸습니다', path: path, mime: 'application/pdf', size: file.size,
+        note: '걷기대회 기록으로 만든 요약 — 이름은 가렸습니다', path: path, mime: 'application/pdf', size: file.size,
         orig_path: null, orig_name: null, sensitive: false, uploaded_by: ctx.me.id, uploader_name: (ctx.profile && ctx.profile.name) || ctx.me.email });
       if (ctx.reloadDocs) ctx.reloadDocs();
       msg.className = 'm-msg ok'; msg.textContent = '올렸습니다 — 공문 · 자료 탭의 \'행사 운영\'에서 볼 수 있습니다. (' + (file.size / 1048576).toFixed(1) + 'MB)';
@@ -353,10 +310,9 @@
         document.body.classList.add('rp-printing'); window.print();
         setTimeout(function () { document.body.classList.remove('rp-printing'); closed.forEach(function (d) { d.open = false; }); }, 500);
       });
-      await connect(); drawLink();
-      var ok = !!(sg && sgUser && sgOfficer);
-      document.querySelectorAll('#wkMenu a').forEach(function (a) { a.classList.toggle('off', !ok); });
-      if (!ok) { $('rpSel').disabled = true; $('rpPdf').disabled = true; $('rpPub').disabled = true; $('rpBody').innerHTML = '<div class="o-empty">삼괴연합회 홈페이지에 임원으로 로그인하면 회차별 결과 보고가 여기에 나옵니다.</div>'; return; }
+      sg = window.msb;
+      var el = $('wkLink'); if (el) { el.innerHTML = ''; el.hidden = true; }
+      if (!sg) { $('rpSel').disabled = true; $('rpPdf').disabled = true; $('rpPub').disabled = true; $('rpBody').innerHTML = '<div class="o-empty">기록을 불러오지 못했습니다. 새로 고쳐 주세요.</div>'; return; }
       await loadEvents(); await loadReport();
     },
     publicHtml: publicHtml,

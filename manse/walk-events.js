@@ -1,6 +1,6 @@
 // ============================================================
 //  3·1 만세길 걷기 — 회차(행사) 정보 공용 도우미 (walk-events-setup.sql 의 walk_events 표)
-//  walk.html · walk-admin.html · index.html(첫 화면) · manse/index.html(만세운동본부 첫 화면)에서 함께 씀
+//  manse/walk.html · walk-admin.html · lucky-admin.html · 두 홈페이지 첫 화면에서 함께 씀 (표는 만세운동본부 Supabase)
 //  - WalkEv.list(client)  : 모든 회차 (최근 회차부터). 표가 아직 없으면 제6회 기본값 하나
 //  - WalkEv.pick(list, e) : 보여 줄 회차 — e(회차 코드)가 있으면 그 회차, 없으면 신청 받는 회차 → 첫 화면 게시 회차 → 날짜가 정해진 최근 회차
 //  - WalkEv.state(ev)     : 'open'(신청 받는 중) · 'soon'(신청 전) · 'closed'(마감) · 'draft'(준비 중 — 날짜 미정)
@@ -10,7 +10,7 @@
     place: '쌍봉산 근린공원', fee: 5000, bank: '농협', account: '355-0074-8148-33', holder: '삼괴연합회', apply_until: '2026-10-18',
     host: '주최 삼일만세운동본부 · 주관 삼괴지역기독교연합회', sponsor: 'CTS 기독교TV · 광복회 화성시지회',
     contact: '김낭주 목사 010-4271-5090', intro: null, hero: false, open: false, fallback: true };
-  var COLS = 'event,no,title,event_date,time_text,place,fee,bank,account,holder,apply_until,host,sponsor,contact,intro,hero,open,manse_sent_at,manse_sent_by,updated_at,updated_by';
+  var COLS = 'event,no,title,event_date,time_text,place,fee,bank,account,holder,apply_until,host,sponsor,contact,intro,hero,open,updated_at,updated_by';
   var DAY = ['주일', '월', '화', '수', '목', '금', '토'];
 
   function parts(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? [+m[1], +m[2], +m[3]] : null; }

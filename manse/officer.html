@@ -97,14 +97,14 @@
         <div id="docList"><div class="o-empty">불러오는 중…</div></div>
       </section>
 
-      <!-- 3·1 만세길 걷기 — 삼일만세운동본부 총괄 (walk-report.js) · 아래 교회별 참가 인원은 삼기연에서 이관 (manse-walk-setup.sql) -->
+      <!-- 3·1 만세길 걷기 — 삼일만세운동본부 총괄 (walk-report.js · manse-walk-setup.sql) — 회차 · 신청 · 행운권 · 경품 모두 이 홈페이지에서 -->
       <section class="o-panel" id="p-walks">
         <div class="o-note">3·1 만세길 걷기는 <b>삼일만세운동본부가 총괄</b>합니다.</div>
-        <p class="wk-link" id="wkLink">삼괴연합회 로그인을 확인하는 중…</p>
+        <p class="wk-link" id="wkLink" hidden></p>
         <nav class="wk-menu" id="wkMenu" aria-label="걷기대회 관리">
-          <a class="hot" href="../lucky-admin.html"><b>행운권 QR 만들기 · 인쇄</b><small>번호 범위로 QR 만들기 · 이미지 넣어 PDF · 등록 현황</small></a>
-          <a href="../walk-admin.html"><b>행사(회차) · 신청 기록</b><small>회차 만들기 · 첫 화면 게시 · 신청 · 입금 확인</small></a>
-          <a href="../prize-winners.html"><b>경품 당첨자 명단</b><small>당첨 인증 · 수령 확인 · 교회별 인쇄</small></a>
+          <a class="hot" href="lucky-admin.html"><b>행운권 QR 만들기 · 인쇄</b><small>번호 범위로 QR 만들기 · 이미지 넣어 PDF · 등록 현황</small></a>
+          <a href="walk-admin.html"><b>행사(회차) · 신청 기록</b><small>회차 만들기 · 첫 화면 게시 · 신청 · 입금 확인</small></a>
+          <a href="prize-winners.html"><b>경품 당첨자 명단</b><small>당첨 인증 · 수령 확인 · 교회별 인쇄</small></a>
         </nav>
 
         <div class="wk-report">
@@ -121,8 +121,7 @@
         </div>
 
         <div class="wk-church">
-        <h2 class="wk-sec">교회별 참가 인원 <small>삼기연 임원방에서 이관한 기록</small></h2>
-        <p class="m-help" style="margin:-4px 0 12px">행사가 끝나면 삼기연 임원방(행사 신청 기록)의 <b>'삼일만세운동본부로 이관'</b> 단추로 교회별 참가 인원이 회차마다 여기에 쌓입니다. 신청자 개인 이름은 오지 않습니다.</p>
+        <h2 class="wk-sec">교회별 참가 인원 <small>참가 신청 기록을 교회별로 묶음 · 신청자 이름은 빼고</small></h2>
         <div class="o-tools">
           <select class="m-in" id="wkSel" aria-label="회차 고르기"></select>
           <input class="m-in grow" id="wkQ" type="search" placeholder="교회 이름 찾기" />
@@ -233,11 +232,11 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=4"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js?v=7"></script>
   <script src="../churches.js?v=2"></script>
-  <script src="../walk-events.js?v=1"></script>
-  <script src="walk-report.js?v=3"></script>
+  <script src="walk-events.js?v=2"></script>
+  <script src="walk-report.js?v=4"></script>
   <script src="../ledger.js?v=2"></script>
-  <script src="officer.js?v=10"></script>
+  <script src="officer.js?v=11"></script>
 </body>
 </html>

@@ -196,10 +196,7 @@
     var un = all.filter(function(f){ return !f.folder_id; }).length;
     if(un) html += '<div class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></div>';
     html += '<div class="tn sep">기록</div>'+
-      '<a class="tn" href="walk-admin.html">행사 신청 기록 →</a>'+
-      '<a class="tn" href="walk-admin.html#prize">경품 당첨 인증 현황 →</a>'+
-      '<a class="tn" href="lucky-admin.html">행운권 QR · 인쇄 · 등록 현황 →</a>'+
-      '<a class="tn" href="prize-winners.html">경품 당첨자 명단 · 교회별 인쇄 →</a>';
+      '<a class="tn" href="manse/officer.html#walks">3·1 만세길 걷기 (삼일만세운동본부) →</a>';
     tree.innerHTML = html;
   }
   function renderFilters(){

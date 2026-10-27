@@ -211,4 +211,12 @@
     if (!perms.officer) return { user: u, perms: perms, denied: true };
     return { user: u, perms: perms };
   };
+  // 걷기대회 관리 화면(walk-admin · lucky-admin · prize-winners)용 — 임원이 아니면 관리자 메뉴 안내로 보냄
+  window.mRequireOfficerPage = async function () {
+    var r = await window.mRequireOfficer(); if (!r) return false;
+    if (r.denied) { alert('삼일만세운동본부 임원만 이용할 수 있습니다. (임원 명단에 가입 이메일이 있어야 합니다)'); location.href = window.mUrl('officer.html'); return false; }
+    var p = null; try { p = await window.mProfile(); } catch (_) {}
+    return { user: r.user, profile: p || {}, perms: r.perms, manager: !!r.perms.manager };
+  };
+  window.krErr = window.mErr;
 })();

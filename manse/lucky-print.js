@@ -1,8 +1,8 @@
 // ============================================================
 //  3·1 만세길 걷기 행운권 — 인쇄용 PDF · 미리 보기 (lucky-admin.html 에서 씀)
 //  필요한 것: qrcode-generator(qrcode) · jsPDF(window.jspdf) — 미리 보기는 qrcode 만
-//  - LuckyPrint.LAYOUTS                 : 종이(A4) 한 장에 몇 장 · 한 장 크기
-//  - LuckyPrint.url(code)               : QR 안에 들어가는 등록 주소 (https://samgoe-cc.or.kr/lucky.html?c=확인코드)
+//  - LuckyPrint.LAYOUTS                 : 종이(A4) 한 장에 몇 장 · 한 장 크기 (모든 모양: 참가자용(QR · 번호) + 절취선 + 추첨용(번호) 두 칸)
+//  - LuckyPrint.url(code)               : QR 안에 들어가는 등록 주소 (https://samgoe-cc.or.kr/manse/lucky.html?c=확인코드)
 //  - LuckyPrint.prepare(opt)            : 행사명 · 이미지처럼 모든 장에 같은 그림을 한 번만 만듦 (Promise)
 //  - LuckyPrint.preview(canvas, prep, tickets) : 첫 쪽 미리 보기
 //  - LuckyPrint.pdf(prep, tickets, onProgress) : PDF 파일(Blob) (Promise)
@@ -23,10 +23,10 @@
     card8:     { label: 'A4 한 장에 8장 · 95×68mm (기본)', cols: 2, rows: 4, w: 95, h: 68, stub: 22 },
     card10:    { label: 'A4 한 장에 10장 · 90×54mm (명함 크기)', cols: 2, rows: 5, w: 90, h: 54, stub: 20 },
     wide4:     { label: 'A4 한 장에 4장 · 190×68mm (큰 행운권)', cols: 1, rows: 4, w: 190, h: 68, stub: 36 },
-    sticker24: { label: 'QR만 작게 · A4 한 장에 24개 · 64×34mm (스티커 · 라벨지)', cols: 3, rows: 8, w: 64, h: 34, gap: 2.5, sticker: true }
+    small24:   { label: 'A4 한 장에 24장 · 64×34mm (작은 행운권)', cols: 3, rows: 8, w: 64, h: 34, gap: 2.5, stub: 19 }
   };
 
-  function url(code) { return SITE + '/lucky.html?c=' + encodeURIComponent(code); }
+  function url(code) { return SITE + '/manse/lucky.html?c=' + encodeURIComponent(code); }
   function fmtCode(c) { c = String(c || ''); return c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c; }
   function padNo(n, d) { var s = String(n); while (s.length < d) s = '0' + s; return s; }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -180,29 +180,17 @@
     var INSTR = 'QR을 찍어 이름 · 생년월일 · 소속을 등록하세요', INSTR_S = 'QR을 찍어 등록하세요';
     try {
       if (document.fonts && document.fonts.load) {
-        var all = title + sub + '행운권개인용투표잘라서함에넣기' + INSTR;
+        var all = title + sub + '행운권참가자용투표잘라서함에넣기' + INSTR;
         await Promise.all([document.fonts.load('700 20px "Noto Serif KR"', title), document.fonts.load('500 20px "Pretendard Variable"', all),
           document.fonts.load('700 20px "Pretendard Variable"', all)]);
       }
     } catch (_) {}
     var g = { L: L, cut: opt.cut !== false, digits: digits, im: {} }, pad, numSample = 'No. ' + padNo(Math.pow(10, digits) - 1, digits);
 
-    if (L.sticker) {
-      pad = 2;
-      var qs = H - 2 * pad, rx = pad + qs + 1.5, rw = W - rx - pad;
-      g.qr = { x: pad, y: pad, s: qs };
-      g.im.label = lineImg('label', '행운권', 2.8, 700, SANS, GOLD, rw);
-      g.num = { x: rx, y: pad + g.im.label.h + 3.2, size: fitLatin(numSample, rw, 6.2, true) };
-      g.im.title = titleImg('title', title, '', rw, H - pad - (g.num.y + 3.6) - 3.4, 3.6, 'left');
-      g.titleBox = { x: rx, y: g.num.y + 3.6 };
-      g.code = { x: rx, y: H - pad - 1.2, size: 2.1 };
-      g.labelAt = { x: rx, y: pad };
-      return g;
-    }
 
     var small = H < 60, inset = 1.5;
     pad = small ? 2.5 : 3;
-    var fr = { x: inset, y: inset, w: W - 2 * inset, h: H - 2 * inset }, stubW = opt.stub ? L.stub : 0;
+    var fr = { x: inset, y: inset, w: W - 2 * inset, h: H - 2 * inset }, stubW = L.stub;   // 참가자용 + 추첨용 — 항상 두 칸
     var main = { x: fr.x, y: fr.y, w: fr.w - stubW, h: fr.h };
     var labelH = small ? 3 : 3.4, numH = small ? 5 : 6, codeH = 2.6, instrH = small ? 2.6 : 3;
     var qr = Math.min(main.h - 2 * pad - labelH - numH - codeH - instrH - 2.5, 34, main.w * 0.42);
@@ -212,7 +200,7 @@
 
     // 오른쪽: 행운권 · 번호 · QR · 확인 코드 · 안내
     var total = labelH + numH + 1 + qr + codeH + instrH, y = info.y + (info.h - total) / 2, cx = info.x + info.w / 2;
-    g.im.label = lineImg('label', stubW ? '행운권 · 개인용' : '행운권', labelH / 1.3, 700, SANS, GOLD, info.w - 2);
+    g.im.label = lineImg('label', '행운권 · 참가자용', labelH / 1.3, 700, SANS, GOLD, info.w - 2);
     g.labelAt = { x: cx - g.im.label.w / 2, y: y };
     g.num = { x: cx, y: y + labelH + numH / 2, size: fitLatin(numSample, info.w - 2 * pad + 2, numH * 0.95, true), align: 'center' };
     g.qr = { x: cx - qr / 2, y: y + labelH + numH + 1, s: qr };
@@ -241,12 +229,12 @@
     }
     g.titleBox = tb;
 
-    // 절취선 오른쪽 투표용 칸 — 번호만 (잘라서 투표함에 넣음, 왼쪽 개인용은 QR로 등록하고 보관)
+    // 절취선 오른쪽 추첨용 칸 — 번호만 (잘라서 추첨함에 넣음, 왼쪽 참가자용은 QR로 등록하고 보관)
     if (stubW) {
       var sx = main.x + main.w, scx = sx + stubW / 2;
       g.stub = { x: sx, cx: scx, top: fr.y, bot: fr.y + fr.h };
-      g.im.stub = lineImg('stub', '투표용', small ? 2.9 : 3.3, 700, SANS, GOLD, stubW - 2);
-      g.im.stubNote = linesImg('stubnote', ['잘라서', '투표함에'], small ? 2.1 : 2.3, 500, SANS, MUTED, stubW - 2);
+      g.im.stub = lineImg('stub', '추첨용', small ? 2.9 : 3.3, 700, SANS, GOLD, stubW - 2);
+      g.im.stubNote = linesImg('stubnote', ['잘라서', '추첨함에'], small ? 2.1 : 2.3, 500, SANS, MUTED, stubW - 2);
       var ns = fitLatin(padNo(Math.pow(10, digits) - 1, digits), stubW - 3, small ? 6.5 : 7.5, true);
       var tot = g.im.stub.h + 1.5 + 3 + ns * 1.1 + 2 + g.im.stubNote.h, sy = fr.y + (fr.h - tot) / 2;
       g.stubLabelAt = { x: scx - g.im.stub.w / 2, y: sy }; sy += g.im.stub.h + 1.5;
@@ -260,14 +248,6 @@
   // 한 장 그리기 — (ox, oy): 그 장의 왼쪽 위 (mm)
   function drawTicket(P, g, t, ox, oy) {
     var no = padNo(t.no, g.digits), im = g.im;
-    if (g.L.sticker) {
-      drawQr(P, url(t.code), ox + g.qr.x, oy + g.qr.y, g.qr.s);
-      P.image(im.label, ox + g.labelAt.x, oy + g.labelAt.y, im.label.w, im.label.h);
-      P.text('No. ' + no, ox + g.num.x, oy + g.num.y, g.num.size, true, NAVY);
-      P.image(im.title, ox + g.titleBox.x, oy + g.titleBox.y, im.title.w, im.title.h);
-      P.text(fmtCode(t.code), ox + g.code.x, oy + g.code.y, g.code.size, false, MUTED);
-      return;
-    }
     if (im.art) P.image(im.art, ox + g.art.x, oy + g.art.y, g.art.w, g.art.h);
     P.dash(ox + g.info.x, oy + g.info.y + 2, ox + g.info.x, oy + g.info.y + g.info.h - 2, LINE, 0.25, []);
     P.image(im.title, ox + g.titleBox.x, oy + g.titleBox.y, im.title.w, im.title.h);
@@ -326,7 +306,7 @@
       drawPage(P, g, tickets.slice(p * G.per, (p + 1) * G.per), p + 1, pages);
       if (onProgress && (p % 4 === 3 || p === pages - 1)) { onProgress(p + 1, pages); await new Promise(function (r) { setTimeout(r, 0); }); }
     }
-    doc.setProperties({ title: 'Lucky tickets No. ' + tickets[0].no + ' - ' + tickets[tickets.length - 1].no, creator: 'samgoe-cc.or.kr' });
+    doc.setProperties({ title: 'Lucky tickets No. ' + tickets[0].no + ' - ' + tickets[tickets.length - 1].no, creator: 'samgoe-cc.or.kr/manse' });
     return doc.output('blob');
   }
 
