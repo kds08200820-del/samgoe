@@ -80,12 +80,7 @@
     var key = /회칙|등록|표창|제\d회|조직|개통/.test(t[1]);
     return '<li class="' + (key ? 'key' : '') + '"><div class="d">' + esc(t[0]) + '</div><div class="t">' + esc(t[1]) + '</div></li>';
   }).join('') + '</ul>';
-  $('pressList').innerHTML = D.press.slice().sort(function (a, b) { return b.year - a.year; }).map(function (g) {
-    return '<div class="mz-list"><h3>' + g.year + '년 만세길 걷기 보도</h3>' + g.items.map(function (it) {
-      return '<div class="mz-item"><div><div class="t">' + esc(it[1]) + '</div><div class="s">' + esc(it[0]) + '</div></div>' +
-        (it[2] ? '<a class="go" href="' + esc(it[2]) + '" target="_blank" rel="noopener">기사 보기</a>' : '') + '</div>';
-    }).join('') + '</div>';
-  }).join('');
+  // 언론 보도는 press.js (갤러리 · 임원 추가)
   $('docList').innerHTML = ['단체', '행사·언론'].map(function (g) {
     var items = D.docs.filter(function (d) { return d.g === g; });
     if (!items.length) return '';

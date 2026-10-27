@@ -99,7 +99,7 @@
   </style>
   <link rel="stylesheet" href="../assets/audiobook/player.css" />
   <link rel="stylesheet" href="../assets/audiobook/section.css" />
-  <link rel="stylesheet" href="archive/archive.css?v=9" />
+  <link rel="stylesheet" href="archive/archive.css?v=10" />
 </head>
 <body class="mz">
   <header class="gbar"><div class="in">
@@ -268,7 +268,9 @@
   <!-- 언론 보도 -->
   <section class="mz-sec white" id="press"><div class="mz-in">
     <div class="mz-head"><span class="mz-eyebrow">PRESS</span><h2 class="mz-h2">언론 보도</h2></div>
-    <div class="mz-two" id="pressList"></div>
+    <div class="mz-adminbar" id="pressAdmin" hidden></div>
+    <div class="mz-filters" id="pressYears"></div>
+    <div class="mz-press" id="pressList"></div>
   </div></section>
 
   <!-- 자료실 -->
@@ -402,6 +404,30 @@
     </form>
   </div>
 
+  <!-- 언론 보도 추가 · 고치기 (임원) — manse/archive/press.js -->
+  <div class="mz-modal" id="prModal" role="dialog" aria-modal="true" aria-labelledby="prHead">
+    <form class="box" id="prForm" novalidate>
+      <h3 id="prHead">언론 보도 추가</h3>
+      <label for="pUrl">기사 주소 <small>(붙여 넣으면 제목 · 언론사 · 날짜 · 사진을 자동으로 채웁니다)</small></label>
+      <div class="mz-urlrow"><input type="url" id="pUrl" placeholder="https://www.○○신문.com/news/12345" inputmode="url" autocomplete="off"><button type="button" class="mz-btn ghost sm-btn" id="pFetch">불러오기</button></div>
+      <label>제목<input id="pTitle" required maxlength="200"></label>
+      <div class="row2">
+        <label>언론사<input id="pSource" maxlength="80" placeholder="예: 화성신문"></label>
+        <label>보도 날짜 <small>(모르면 연도만)</small><input type="date" id="pDate"></label>
+      </div>
+      <div class="row2">
+        <label>연도<input type="number" id="pYear" min="1919" max="2100"></label>
+        <span></span>
+      </div>
+      <label>요약 <small>(선택)</small><textarea id="pSum" rows="2" maxlength="600"></textarea></label>
+      <label>대표 사진</label>
+      <div class="mz-drop" id="prDrop" tabindex="0" role="button" aria-label="대표 사진 넣기"></div>
+      <input type="file" id="pFile" accept="image/*" hidden>
+      <p class="mz-admin-msg" id="prMsg"></p>
+      <div class="acts"><button type="button" class="mz-btn ghost sm-btn" data-close>취소</button><button type="submit" class="mz-btn navy sm-btn">저장</button></div>
+    </form>
+  </div>
+
   <!-- 앱 설치 안내(아이폰) -->
   <div class="m-modal" id="iosTip" style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:400">
     <div style="background:#fff;border-radius:12px;max-width:420px;padding:24px 22px;font-size:15px;line-height:1.7">
@@ -415,8 +441,9 @@
   <script src="config.js?v=4"></script>
   <script src="auth.js?v=5"></script>
   <script src="archive/data.js?v=5"></script>
-  <script src="archive/archive.js?v=6"></script>
+  <script src="archive/archive.js?v=7"></script>
   <script src="archive/admin.js?v=6"></script>
+  <script src="archive/press.js?v=1"></script>
   <script src="app.js?v=1"></script>
   <script src="../walk-events.js?v=1"></script>
   <script>
