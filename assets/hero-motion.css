@@ -1,6 +1,7 @@
 /* =====================================================================
-   삼기연 첫 화면 — 영상처럼 움직이는 히어로 (17초 반복 · 4장면)
-   ① 연합회 이름  ② 숫자로 보는 삼기연  ③ 해마다 넓어지는 발걸음(그래프)  ④ 걸어온 길 · 말씀
+   삼기연 첫 화면 — 영상처럼 움직이는 히어로 (19초 반복 · 4장면)
+   ① 연합회 이름  ② 기록으로 보는 삼기연  ③ 절기마다 한자리에(2011년 행사 보고)  ④ 걸어온 길 · 말씀
+   숫자와 연도는 모두 자료실 기록(총회자료 · 회의록 · 행사 보고)에서 옮겼습니다
    index.html 의 .hero-default.mv · assets/hero-motion.js
    ===================================================================== */
 .hero:not(.walk-focus){background:radial-gradient(ellipse 80% 70% at 50% 35%,#4a3527 0%,#2e2016 62%,#22170f 100%)!important;}
@@ -50,40 +51,48 @@
 .mv-kpi b{display:block;font-family:"Cormorant Garamond","Noto Serif KR",serif;font-size:clamp(46px,6vw,72px);font-weight:600;line-height:1;color:var(--cream);font-variant-numeric:lining-nums tabular-nums;}
 .mv-kpi b i{font-style:normal;font-size:.42em;margin-left:4px;color:var(--rust-2);font-family:"Noto Serif KR",serif;}
 .mv-kpi span{display:block;margin-top:12px;font-size:15px;font-weight:700;color:var(--cream);}
+.mv-kpi span,.mv-kpi small{word-break:keep-all;}
 .mv-kpi small{display:block;margin-top:5px;font-size:12.5px;color:var(--cream-3);}
 
-/* ③ 그래프 — 막대가 차례로 자라고, 누적선이 그려짐 */
-.mv-chart{display:block;width:100%;max-width:700px;height:240px;overflow:visible;}
-.mv-chart .ax{stroke:var(--line);stroke-width:1;}
-.mv-chart .bar{fill:url(#mvBar);transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);transition:transform .9s cubic-bezier(.2,.8,.2,1);}
-.mv-chart .bar.last{fill:url(#mvBarHot);}
-.mv-scene.on .mv-chart .bar{transform:scaleY(1);}
-.mv-chart .val{fill:var(--cream);font-size:15px;font-weight:700;text-anchor:middle;opacity:0;transition:opacity .4s ease;}
-.mv-chart .yr{fill:var(--cream-3);font-size:13px;text-anchor:middle;}
-.mv-scene.on .mv-chart .val{opacity:1;}
-.mv-chart .cum{fill:none;stroke:var(--rust-2);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke-dashoffset 1.6s ease 1.1s;}
-.mv-chart .dot{fill:#2e2016;stroke:var(--rust-2);stroke-width:2.5;opacity:0;transition:opacity .3s ease;}
-.mv-chart .cumv{fill:var(--rust-2);font-size:12.5px;font-weight:700;text-anchor:middle;opacity:0;transition:opacity .4s ease;}
-.mv-scene.on .mv-chart .dot,.mv-scene.on .mv-chart .cumv{opacity:1;}
-.mv-legend{display:flex;gap:20px;justify-content:center;margin-top:14px;font-size:13px;color:var(--cream-2);}
-.mv-legend span{display:inline-flex;align-items:center;gap:7px;}
-.mv-legend i{display:inline-block;width:14px;height:10px;border-radius:2px;background:linear-gradient(#c87452,#8c3e1f);}
-.mv-legend i.ln{height:0;border-top:2.5px solid var(--rust-2);border-radius:0;background:none;}
+/* ③ 절기마다 한자리에 — 행사 보고의 모인 수를 가로 막대로 (막대가 차례로 자람) */
+.mv-rows{display:grid;gap:9px;width:100%;max-width:720px;margin-top:22px;text-align:left;}
+.mv-row{display:grid;grid-template-columns:44px 190px 1fr 70px;align-items:center;gap:14px;}
+.mv-row .m{font-family:"Cormorant Garamond","Noto Serif KR",serif;font-size:17px;font-weight:600;color:var(--cream-3);}
+.mv-row .n{font-size:14.5px;font-weight:600;color:var(--cream-2);white-space:nowrap;}
+.mv-row .tr{position:relative;height:10px;border-radius:2px;background:rgba(245,239,229,.07);overflow:hidden;}
+.mv-row .tr i{position:absolute;left:0;top:0;bottom:0;width:var(--w);border-radius:2px;background:rgba(232,196,166,.5);
+  transform:scaleX(0);transform-origin:0 50%;transition:transform 1s cubic-bezier(.2,.8,.2,1);}
+.mv-row .v{text-align:right;font-family:"Cormorant Garamond","Noto Serif KR",serif;font-size:22px;font-weight:600;line-height:1;color:var(--cream);
+  font-variant-numeric:lining-nums tabular-nums;opacity:0;transition:opacity .5s ease;}
+.mv-row .v small{margin-left:2px;font-family:"Noto Serif KR",serif;font-size:12px;color:var(--cream-3);}
+.mv-row.hi .n{color:var(--cream);}
+.mv-row.hi .tr i{background:var(--rust);}
+.mv-row.hi .v{color:var(--rust-2);}
+.mv-scene.on .mv-row .tr i{transform:scaleX(1);}
+.mv-scene.on .mv-row .v{opacity:1;}
+.mv-scene.on .mv-row:nth-child(1) .tr i{transition-delay:.3s;}  .mv-scene.on .mv-row:nth-child(1) .v{transition-delay:.8s;}
+.mv-scene.on .mv-row:nth-child(2) .tr i{transition-delay:.45s;} .mv-scene.on .mv-row:nth-child(2) .v{transition-delay:.95s;}
+.mv-scene.on .mv-row:nth-child(3) .tr i{transition-delay:.6s;}  .mv-scene.on .mv-row:nth-child(3) .v{transition-delay:1.1s;}
+.mv-scene.on .mv-row:nth-child(4) .tr i{transition-delay:.75s;} .mv-scene.on .mv-row:nth-child(4) .v{transition-delay:1.25s;}
+.mv-scene.on .mv-row:nth-child(5) .tr i{transition-delay:.9s;}  .mv-scene.on .mv-row:nth-child(5) .v{transition-delay:1.4s;}
+.mv-scene.on .mv-row:nth-child(6) .tr i{transition-delay:1.05s;} .mv-scene.on .mv-row:nth-child(6) .v{transition-delay:1.55s;}
+.mv-foot{margin:20px 0 0;font-size:13.5px;color:var(--cream-3);}
+.mv-foot b{color:var(--cream);font-weight:700;}
 
 /* ④ 걸어온 길 — 선이 그어지며 점이 차례로 켜짐 */
-.mv-line{position:relative;display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:900px;margin:8px 0 34px;}
-.mv-line::before{content:"";position:absolute;left:10%;right:10%;top:9px;height:2px;background:var(--line);}
-.mv-line::after{content:"";position:absolute;left:10%;top:9px;height:2px;width:0;background:var(--rust);transition:width 2.2s cubic-bezier(.4,0,.2,1) .2s;}
-.mv-scene.on .mv-line::after{width:80%;}
+.mv-line{position:relative;display:grid;grid-template-columns:repeat(6,1fr);width:100%;max-width:960px;margin:8px 0 34px;}
+.mv-line::before{content:"";position:absolute;left:8.33%;right:8.33%;top:9px;height:2px;background:var(--line);}
+.mv-line::after{content:"";position:absolute;left:8.33%;top:9px;height:2px;width:0;background:var(--rust);transition:width 2.2s cubic-bezier(.4,0,.2,1) .2s;}
+.mv-scene.on .mv-line::after{width:83.33%;}
 .mv-pt{position:relative;padding-top:32px;}
 .mv-pt::before{content:"";position:absolute;left:50%;top:2px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#2e2016;border:2px solid var(--cream-3);
   transition:background .3s ease,border-color .3s ease;}
 .mv-scene.on .mv-pt::before{background:var(--rust);border-color:var(--rust-2);}
 .mv-scene.on .mv-pt:nth-child(1)::before{transition-delay:.2s;} .mv-scene.on .mv-pt:nth-child(2)::before{transition-delay:.7s;}
 .mv-scene.on .mv-pt:nth-child(3)::before{transition-delay:1.2s;} .mv-scene.on .mv-pt:nth-child(4)::before{transition-delay:1.7s;}
-.mv-scene.on .mv-pt:nth-child(5)::before{transition-delay:2.2s;}
+.mv-scene.on .mv-pt:nth-child(5)::before{transition-delay:2.2s;} .mv-scene.on .mv-pt:nth-child(6)::before{transition-delay:2.6s;}
 .mv-pt b{display:block;font-family:"Cormorant Garamond","Noto Serif KR",serif;font-size:30px;font-weight:600;line-height:1;color:var(--cream);}
-.mv-pt span{display:block;margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--cream-2);word-break:keep-all;padding:0 6px;}
+.mv-pt span{display:block;margin-top:8px;font-size:13px;line-height:1.5;color:var(--cream-2);word-break:keep-all;padding:0 6px;}
 .mv-verse{margin:0;font-family:"Noto Serif KR",serif;font-size:clamp(17px,2.2vw,22px);line-height:1.7;color:var(--cream);}
 .mv-verse small{display:block;margin-top:6px;font-size:14px;color:var(--rust-2);}
 
@@ -109,12 +118,18 @@
 
 @media (max-width:760px){
   .mv-stage{height:520px;}
-  .mv-chart{height:200px;}
+  .mv-rows{gap:12px;margin-top:16px;}
+  .mv-row{grid-template-columns:36px 1fr auto;grid-template-areas:"m n v" "m t t";gap:5px 10px;}
+  .mv-row .m{grid-area:m;font-size:15px;align-self:start;}
+  .mv-row .n{grid-area:n;font-size:13.5px;white-space:normal;}
+  .mv-row .tr{grid-area:t;height:7px;}
+  .mv-row .v{grid-area:v;font-size:18px;}
+  .mv-foot{font-size:12.5px;margin-top:14px;}
   .mv-kpis{grid-template-columns:repeat(2,1fr);}
   .mv-kpi{padding:20px 8px 18px;}
   .mv-kpi:nth-child(3){border-left:0;}
   .mv-kpi:nth-child(n+3){border-top:1px solid var(--line);}
-  .mv-line{grid-template-columns:1fr;gap:14px;max-width:340px;margin:0 0 24px;text-align:left;}
+  .mv-line{grid-template-columns:1fr;gap:12px;max-width:340px;margin:0 0 22px;text-align:left;}
   .mv-line::before,.mv-line::after{left:9px;right:auto;top:6px;width:2px;height:calc(100% - 12px);}
   .mv-line::after{height:0;transition:height 2.2s cubic-bezier(.4,0,.2,1) .2s;}
   .mv-scene.on .mv-line::after{width:2px;height:calc(100% - 12px);}
