@@ -166,7 +166,7 @@
     var parts = [];
     var nm = (profile && profile.name) || (user.email || '').split('@')[0];
     parts.push('<span class="m-me">' + esc(nm) + '님</span>');
-    if (perms && perms.officer) parts.push('<a class="m-officer" href="' + window.mUrl('officer.html') + '">임원방</a>');
+    if (perms && perms.officer) parts.push('<a class="m-officer" href="' + window.mUrl('officer.html') + '">관리자 메뉴</a>');
     parts.push('<a href="' + window.mUrl('mypage.html') + '">내 정보</a>');
     parts.push('<a href="#" data-m-logout>로그아웃</a>');
     el.innerHTML = back + parts.join(sep);

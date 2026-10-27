@@ -205,7 +205,7 @@
     <!-- 행사가 끝난 뒤: 교회별 참가 인원을 삼일만세운동본부 임원방으로 (manse-walk-setup.sql) -->
     <div class="card" id="mnCard" style="margin-top:18px">
       <h2>삼일만세운동본부로 이관</h2>
-      <p class="cap">행사가 끝난 뒤 이 회차의 <b>교회별 참가 인원</b>(교회 이름 · 신청 건수 · 성인 · 미성년)을 삼일만세운동본부 임원방 <b>'걷기대회 관리'</b> 탭(교회별 참가 인원)으로 보냅니다. 신청자 개인 이름 · 연락처는 보내지 않습니다. 해마다 이관하면 회차별 기록이 쌓이고, 같은 회차를 다시 이관하면 새 내용으로 바뀝니다. <b>서기 · 대표회장</b>이 누르며, 삼일만세운동본부 홈페이지에도 임원으로 로그인되어 있어야 합니다.</p>
+      <p class="cap">행사가 끝난 뒤 이 회차의 <b>교회별 참가 인원</b>(교회 이름 · 신청 건수 · 성인 · 미성년)을 삼일만세운동본부 관리자 메뉴 <b>'걷기대회 관리'</b> 탭(교회별 참가 인원)으로 보냅니다. 신청자 개인 이름 · 연락처는 보내지 않습니다. 해마다 이관하면 회차별 기록이 쌓이고, 같은 회차를 다시 이관하면 새 내용으로 바뀝니다. <b>서기 · 대표회장</b>이 누르며, 삼일만세운동본부 홈페이지에도 임원으로 로그인되어 있어야 합니다.</p>
       <div class="arc-status" id="mnStatus">확인 중…</div>
       <button class="sbtn pri big" id="mnBtn" type="button" disabled>삼일만세운동본부로 이관</button>
       <div class="arc-msg" id="mnMsg"></div>
@@ -613,7 +613,7 @@
     function drawManse(){
       var past=isPast(), btn=$('mnBtn');
       $('mnStatus').innerHTML = EV.manse_sent_at
-        ? '✓ '+stamp(EV.manse_sent_at)+' · '+esc(EV.manse_sent_by||'임원')+' 님이 이관했습니다. 다시 누르면 지금 내용으로 바뀝니다. <a href="manse/officer.html#walks">삼일만세운동본부 임원방에서 보기 →</a>'
+        ? '✓ '+stamp(EV.manse_sent_at)+' · '+esc(EV.manse_sent_by||'임원')+' 님이 이관했습니다. 다시 누르면 지금 내용으로 바뀝니다. <a href="manse/officer.html#walks">삼일만세운동본부 관리자 메뉴에서 보기 →</a>'
         : (past ? '아직 이관하지 않았습니다.' : '행사가 끝나고 신청이 마감된 뒤 누를 수 있습니다.');
       btn.textContent = mnBusy ? '이관하는 중…' : (EV.manse_sent_at ? '지금 내용으로 다시 이관' : '삼일만세운동본부로 이관');
       btn.disabled = mnBusy || !past || !canArchive || !!EV.fallback;
@@ -632,7 +632,7 @@
         $('mnMsg').textContent='최신 신청 기록을 불러오는 중…'; await load();
         var list=churchRows(); if(!list.length){ $('mnMsg').textContent='이관할 신청 기록이 없습니다.'; return; }
         var t=list.reduce(function(a,x){ a.a+=x.adults; a.m+=x.minors; return a; },{a:0,m:0});
-        if(!confirm(EV.title+' 참가 교회 '+list.length+'곳 (성인 '+t.a+'명 · 미성년 '+t.m+'명)을 삼일만세운동본부 임원방으로 이관합니다.\n신청자 개인 이름은 보내지 않습니다.'+
+        if(!confirm(EV.title+' 참가 교회 '+list.length+'곳 (성인 '+t.a+'명 · 미성년 '+t.m+'명)을 삼일만세운동본부 관리자 메뉴로 이관합니다.\n신청자 개인 이름은 보내지 않습니다.'+
           (EV.manse_sent_at?'\n이미 이관한 이 회차 기록은 지금 내용으로 바뀝니다.':'')+'\n\n계속할까요?')){ $('mnMsg').textContent=''; return; }
         $('mnMsg').textContent='이관하는 중…';
         var r=await mc.rpc('walk_import',{ p_walk_no:EV.no, p_event_key:EVENT, p_title:EV.title, p_date:EV.event_date||null, p_place:EV.place||null, p_rows:list, p_by_name:whoName });
@@ -640,7 +640,7 @@
         var at=new Date().toISOString();
         await window.sb.from('walk_events').update({ manse_sent_at:at, manse_sent_by:whoName }).eq('event',EVENT);
         EV.manse_sent_at=at; EV.manse_sent_by=whoName;
-        $('mnMsg').innerHTML='이관했습니다 — 참가 교회 '+esc(r.data)+'곳. <a href="manse/officer.html#walks">삼일만세운동본부 임원방에서 보기 →</a>';
+        $('mnMsg').innerHTML='이관했습니다 — 참가 교회 '+esc(r.data)+'곳. <a href="manse/officer.html#walks">삼일만세운동본부 관리자 메뉴에서 보기 →</a>';
       }catch(ex){
         var m=String((ex&&ex.message)||ex);
         $('mnMsg').textContent='이관하지 못했습니다: '+(/walk_import|could not find|does not exist|schema cache/i.test(m)?'삼일만세운동본부 Supabase에서 manse-walk-setup.sql을 먼저 실행해 주세요.':window.krErr(m));

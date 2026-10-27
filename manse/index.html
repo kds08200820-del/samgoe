@@ -278,7 +278,7 @@
     <div class="mz-head"><span class="mz-eyebrow">DOCUMENTS</span><h2 class="mz-h2">자료실</h2>
       <p class="mz-lead">누구나 볼 수 있는 공개 자료입니다.</p></div>
     <div class="mz-two" id="docList"></div>
-    <p class="mz-note">공문·회의록·회칙 등 내부 자료는 <a href="officer.html">임원방</a>에서 임원만 열람할 수 있습니다.</p>
+    <p class="mz-note">공문·회의록·회칙 등 내부 자료는 <a href="officer.html">관리자 메뉴</a>에서 임원만 열람할 수 있습니다.</p>
   </div></section>
 
   <!-- 동화 오디오북 (삼일만세운동본부 발간) -->
@@ -348,7 +348,7 @@
       <div class="nm"><span class="disc"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</div>
       <div class="lk">
         <a href="terms.html#terms">이용약관</a><a href="terms.html#privacy">개인정보처리방침</a>
-        <a href="officer.html">임원방</a><button type="button" data-install hidden>앱 설치</button><a href="#top">맨 위로</a>
+        <a href="officer.html">관리자 메뉴</a><button type="button" data-install hidden>앱 설치</button><a href="#top">맨 위로</a>
       </div>
     </div>
     <div class="cp">© 2026 삼일만세운동본부(삼괴삼일만세운동본부) · 경기도 비영리민간단체 제2024-1-경기도(도청)-5호 · 경기도 화성시 장안면 풍무길90번길 23 · 전화 031-351-1179</div>
@@ -439,7 +439,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=4"></script>
-  <script src="auth.js?v=5"></script>
+  <script src="auth.js?v=6"></script>
   <script src="archive/data.js?v=6"></script>
   <script src="archive/archive.js?v=7"></script>
   <script src="archive/admin.js?v=6"></script>
@@ -447,11 +447,11 @@
   <script src="app.js?v=1"></script>
   <script src="../walk-events.js?v=1"></script>
   <script>
-  // 첫 화면 가운데 단추 — 로그인했으면 '회원가입' 대신 임원방(임원) · 내 정보(회원). 자동 로그인 확인이 끝난 뒤에 보임
+  // 첫 화면 가운데 단추 — 로그인했으면 '회원가입' 대신 관리자 메뉴(임원) · 내 정보(회원). 자동 로그인 확인이 끝난 뒤에 보임
   (function () {
     var b = document.getElementById('heroJoin'); if (!b) return;
     function show(u, perms) {
-      if (u) { b.textContent = perms && perms.officer ? '임원방' : '내 정보'; b.href = perms && perms.officer ? 'officer.html' : 'mypage.html'; }
+      if (u) { b.textContent = perms && perms.officer ? '관리자 메뉴' : '내 정보'; b.href = perms && perms.officer ? 'officer.html' : 'mypage.html'; }
       else { b.textContent = '회원가입'; b.href = 'signup.html'; }
       b.style.visibility = '';
     }
