@@ -17,7 +17,7 @@
                xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', txt: 'text/plain', zip: 'application/zip' };
 
   var me = null, perms = null, profile = null;
-  var DOCS = [], OFFICERS = [], MEMBERS = [];
+  var DOCS = [], ALLDOCS = [], OFFICERS = [], MEMBERS = [];   // DOCS: 공문 · 자료(filed), ALLDOCS: 바구니 분류 대기까지
   var state = { biz: '', cat: '', year: '', q: '' };   // biz: '' 전체 · 'gen' 본부 일반 · 'walk' 걷기 전체 · 'w6' 제6회
   var WALK_BASE = 2020;   // 제N회 3·1 만세길 걷기 = (2020 + N)년 — 제6회 2026
   function walkLabel(n) { return '제' + n + '회 3·1 만세길 걷기'; }
@@ -101,7 +101,8 @@
   async function loadDocs() {
     var r = await window.msb.from('docs').select('*').order('year', { ascending: false }).order('doc_date', { ascending: false, nullsFirst: false }).order('date_text', { ascending: false });
     if (r.error) { $('docList').innerHTML = '<div class="o-empty">' + esc(window.mErr(r.error)) + '</div>'; return; }
-    DOCS = r.data || [];
+    ALLDOCS = r.data || []; DOCS = ALLDOCS.filter(function (d) { return d.status !== 'pending'; });
+    renderBasket();
     var years = Array.from(new Set(DOCS.map(function (d) { return d.year; }))).sort(function (a, b) { return b - a; });
     $('fYear').innerHTML = '<option value="">전체 연도</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '년</option>'; }).join('');
     if (state.year) $('fYear').value = state.year;
@@ -159,7 +160,7 @@
       ? '<b>' + list.length + '건</b> · ' + on.map(esc).join(' · ') + ' <span class="o-of">(전체 ' + DOCS.length + '건)</span>'
       : '전체 <b>' + DOCS.length + '건</b> · 3·1 만세길 걷기 ' + DOCS.filter(function (d) { return d.walk_no; }).length + '건 · 본부 일반 ' + DOCS.filter(function (d) { return !d.walk_no; }).length + '건';
     $('fClear').hidden = !on.length;
-    if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>자료 올리기</b> 탭에서 공문·자료를 올려 주세요.' +
+    if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>문서 바구니</b>에 파일을 담아 공문·자료를 올려 주세요.' +
       (perms.manager ? '<br>10월 27일 전에 올린 자료는 <a href="move.html"><b>옛 자료 옮기기</b></a>, 삼괴연합회 자료실의 만세길 자료는 <a href="import-samgoe.html"><b>삼기연 만세길 자료 가져오기</b></a>로 가져올 수 있습니다.' : '') + '</div>'; return; }
     if (!list.length) { $('docList').innerHTML = '<div class="o-empty">조건에 맞는 자료가 없습니다.</div>'; return; }
     // 3·1 만세길 걷기 자료는 회차별로, 본부 일반 자료는 연도별로 — 두 묶음을 따로
@@ -350,21 +351,128 @@
   }
 
   // ---------------- 자료 올리기 ----------------
+  // ---------------- 문서 바구니 (삼기연 관리자 메뉴와 같은 방식) ----------------
+  //  파일을 바구니에 담으면 이름으로 종류 · 연도 · 날짜 · 걷기 회차를 자동으로 정해 '분류 대기'(status=pending)로 올리고,
+  //  분류를 확인해 승인하면 공문 · 자료(filed)로 옮겨짐. 같은 이름의 PDF와 HWP는 한 건(열람용 + 원본)으로 묶음.
   function setupUpload() {
-    $('uCat').innerHTML = CATS.filter(function (c) { return perms.manager || c !== '명부·개인정보'; }).map(function (c) { return '<option>' + c + '</option>'; }).join('');
-    $('uYear').value = new Date().getFullYear();
-    $('uWalk').innerHTML = walkOptions('');
-    $('uWalk').addEventListener('change', function () { var n = parseInt(this.value, 10); if (n) $('uYear').value = WALK_BASE + n; });
-    $('upForm').addEventListener('submit', uploadOne);
+    $('bkInput').addEventListener('change', function () { basketAdd(Array.from(this.files || []).map(function (f) { return { file: f, path: '/' + f.name }; })); this.value = ''; });
+    $('bkList').addEventListener('click', onBasketAction);
+    $('bkAll').addEventListener('click', approveAll);
     $('dirPick').addEventListener('change', pickFolder);
     $('bulkGo').addEventListener('click', runBulk);
     if ($('migGo')) $('migGo').addEventListener('click', runMigration);
     var dz = $('dropZone');
-    if (dz) {
-      ['dragenter', 'dragover'].forEach(function (t) { dz.addEventListener(t, function (e) { e.preventDefault(); dz.classList.add('over'); }); });
-      dz.addEventListener('dragleave', function () { dz.classList.remove('over'); });
-      dz.addEventListener('drop', onDrop);
+    dz.addEventListener('click', function () { $('bkInput').click(); });
+    ['dragenter', 'dragover'].forEach(function (t) { dz.addEventListener(t, function (e) { e.preventDefault(); dz.classList.add('over'); }); });
+    dz.addEventListener('dragleave', function () { dz.classList.remove('over'); });
+    dz.addEventListener('drop', onDrop);
+  }
+  // 파일 이름으로 종류 정하기 (앞에서부터 처음 맞는 것)
+  var CAT_RULES = [
+    ['홍보·언론', /보도\s*자료|언론|기사|신문|방송|취재/], ['단체 기본', /회칙|정관|규정|단체\s*소개|조직도|고유번호|등록증|표창/],
+    ['회의록', /회의록|회의\s*자료|회의\s*결과|임원\s*회의|총회|안건/], ['명부·개인정보', /명부|회원\s*명단|개인\s*정보|연락처\s*명단/],
+    ['공고·고시', /공고|고시|선정\s*결과/], ['공모·협약·보조금', /보조금|교부|공모|지원\s*신청|협약|정산/],
+    ['회계·예산', /예산|결산|회계|영수증|통장|지출|수입/], ['공문(수신)', /수신|(^|[^집])회신|통보/], ['공문(발신)', /공문|요청|신고|협조|발신/],
+    ['행정·대관', /대관|사용\s*신청|사용\s*허가|점용|허가/], ['행사 운영', /순서지|명찰|명패|포스터|시안|현수막|봉투|초대|식순|큐시트|진행표/],
+    ['계획·보고', /계획|보고|제안서|간담회|전략|평가|결과/], ['교회 연합 활동', /연합\s*예배|연합\s*기도|교회/]
+  ];
+  function guessCat(t) { for (var i = 0; i < CAT_RULES.length; i++) { if (CAT_RULES[i][1].test(t)) return CAT_RULES[i][0]; } return '기타'; }
+  function guessDate(t) { var m = /(20\d{2})[.\-_]?(0[1-9]|1[0-2])[.\-_]?(0[1-9]|[12]\d|3[01])(?!\d)/.exec(t || ''); return m ? m[1] + '-' + m[2] + '-' + m[3] : ''; }
+  function cleanName(n) { return baseName(n).replace(/^(19|20)\d{2}_/, '').replace(/_/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function guessDoc(name) {
+    var t = baseName(name), y = /(19|20)\d{2}/.exec(t), year = y ? +y[0] : new Date().getFullYear(), cat = guessCat(t);
+    if (cat === '명부·개인정보' && !perms.manager) cat = '기타';
+    return { title: cleanName(name) || baseName(name), year: year, cat: cat, date: guessDate(t), walk: walkGuess(t, year) };
+  }
+  async function basketAdd(list) {
+    var msg = $('bkMsg'); msg.className = 'm-msg';
+    list = list.filter(function (x) { return !/(^|\/)(\.|~\$|Thumbs\.db|desktop\.ini|manifest\.json$)/i.test(x.path); });
+    var groups = {}; list.forEach(function (x) { var k = baseName(x.file.name); (groups[k] = groups[k] || []).push(x.file); });
+    var items = Object.keys(groups).map(function (k) {
+      var fs = groups[k], view = fs.find(function (f) { return /\.pdf$/i.test(f.name); }) || fs[0];
+      return { view: view, orig: fs.find(function (f) { return f !== view; }) || null };
+    });
+    var big = items.filter(function (m) { return m.view.size > 50 * 1048576 || (m.orig && m.orig.size > 50 * 1048576); });
+    items = items.filter(function (m) { return big.indexOf(m) < 0; });
+    if (!items.length) return note(msg, 'err', big.length ? '50MB가 넘는 파일은 올릴 수 없습니다.' : '올릴 파일이 없습니다.');
+    var ok = 0, fail = [];
+    for (var i = 0; i < items.length; i++) {
+      var m = items[i], g = guessDoc(m.view.name), sens = g.cat === '명부·개인정보';
+      msg.textContent = '바구니에 담는 중… (' + (i + 1) + ' / ' + items.length + ') ' + m.view.name;
+      $('bkBar').style.width = Math.round(i / items.length * 100) + '%';
+      try {
+        var path = await putFile(m.view, g.year, g.cat, sens), orig = m.orig ? await putFile(m.orig, g.year, g.cat, sens) : null;
+        await insertDoc({ year: g.year, category: g.cat, title: g.title, walk_no: g.walk, doc_date: toDate(g.date), date_text: g.date || null, doc_no: null, note: null,
+          path: path, mime: m.view.type || MIME[extOf(m.view.name)] || null, size: m.view.size + (m.orig ? m.orig.size : 0),
+          orig_path: orig, orig_name: m.orig ? m.orig.name : null, sensitive: sens, status: 'pending', uploaded_by: me.id, uploader_name: profile.name || me.email });
+        ok++;
+      } catch (ex) { fail.push(m.view.name + ': ' + window.mErr(ex)); }
     }
+    $('bkBar').style.width = '100%';
+    note(msg, fail.length ? 'err' : 'ok', ok + '건을 바구니에 담았습니다. 아래 분류 대기에서 확인하고 승인해 주세요.' +
+      (fail.length ? ' · ' + fail.length + '건 실패 (' + fail[0] + ')' : '') + (big.length ? ' · 50MB 넘는 ' + big.length + '건 제외' : ''));
+    await loadDocs();
+    setTimeout(function () { $('bkBar').style.width = '0'; }, 800);
+  }
+  function renderBasket() {
+    var pend = ALLDOCS.filter(function (d) { return d.status === 'pending'; });
+    $('bkTab').textContent = pend.length ? pend.length : '';
+    $('bkCount').textContent = pend.length ? pend.length + '건' : '';
+    $('bkAll').hidden = !pend.length;
+    if (!pend.length) { $('bkList').innerHTML = '<div class="o-empty">분류를 기다리는 자료가 없습니다.</div>'; return; }
+    var cats = CATS.filter(function (c) { return perms.manager || c !== '명부·개인정보'; });
+    $('bkList').innerHTML = pend.map(function (d) {
+      var mine = d.uploaded_by === me.id, can = perms.manager || mine;
+      return '<div class="bk-row" data-id="' + d.id + '">' +
+        '<div class="bk-top"><span class="bk-ic">' + esc((extOf(d.path) === 'pdf' ? 'PDF' : extOf(d.path).toUpperCase()).slice(0, 4)) + '</span>' +
+          '<input class="m-in bk-t" maxlength="300" value="' + esc(d.title) + '" aria-label="제목"' + (can ? '' : ' disabled') + ' />' +
+          '<span class="bk-m">' + [d.orig_name ? '원본 ' + d.orig_name : '', fmtSize(d.size), d.uploader_name || ''].filter(Boolean).map(esc).join(' · ') + '</span></div>' +
+        '<div class="bk-ctl">' +
+          '<label>사업 구분<select class="m-in bk-w"' + (can ? '' : ' disabled') + '>' + walkOptions(d.walk_no || '') + '</select></label>' +
+          '<label>종류 <span class="bk-sug">자동 추천</span><select class="m-in bk-c"' + (can ? '' : ' disabled') + '>' + cats.concat(cats.indexOf(d.category) < 0 ? [d.category] : []).map(function (c) { return '<option' + (c === d.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
+          '<label>연도<input class="m-in bk-y" type="number" min="1990" max="2100" value="' + (d.year || '') + '"' + (can ? '' : ' disabled') + ' /></label>' +
+          '<label>날짜<input class="m-in bk-d" placeholder="YYYY-MM-DD" value="' + esc(d.date_text || d.doc_date || '') + '"' + (can ? '' : ' disabled') + ' /></label>' +
+          '<div class="bk-btns">' + (can ? '<button class="m-btn sm" type="button" data-bk="ok">승인 · 이동</button><button class="m-btn danger sm" type="button" data-bk="del">삭제</button>'
+            : '<span class="bk-wait">올린 분이나 대표회장 · 서기가 승인합니다</span>') + '</div>' +
+        '</div></div>';
+    }).join('');
+  }
+  function bkValues(row) {
+    var ds = row.querySelector('.bk-d').value.trim(), cat = row.querySelector('.bk-c').value;
+    return { title: row.querySelector('.bk-t').value.trim(), category: cat, walk_no: parseInt(row.querySelector('.bk-w').value, 10) || null,
+      year: parseInt(row.querySelector('.bk-y').value, 10), doc_date: toDate(ds), date_text: ds || null, sensitive: cat === '명부·개인정보', status: 'filed' };
+  }
+  async function approveRow(row) {
+    var v = bkValues(row);
+    if (!v.title || !v.year) throw new Error('제목과 연도를 입력해 주세요.');
+    var r = await window.msb.from('docs').update(v).eq('id', row.dataset.id).select('id');
+    if (r.error) throw r.error;
+    if (!r.data || !r.data.length) throw new Error('승인하지 못했습니다 — 다른 분이 올린 자료는 대표회장 · 서기가 승인합니다.');
+  }
+  async function onBasketAction(e) {
+    var b = e.target.closest('button[data-bk]'); if (!b) return;
+    var row = b.closest('.bk-row'), d = ALLDOCS.find(function (x) { return x.id === row.dataset.id; }); if (!d) return;
+    b.disabled = true;
+    try {
+      if (b.dataset.bk === 'ok') { await approveRow(row); }
+      else {
+        if (!confirm('"' + d.title + '" 자료를 바구니에서 지울까요? 올린 파일도 함께 지워집니다.')) { b.disabled = false; return; }
+        var s = await window.msb.storage.from(BUCKET).remove([d.path, d.orig_path].filter(Boolean));
+        if (s.error) throw s.error;
+        var r = await window.msb.from('docs').delete().eq('id', d.id).select('id');
+        if (r.error) throw r.error;
+        if (!r.data || !r.data.length) throw new Error('지우지 못했습니다 — 대표회장 · 서기에게 부탁해 주세요.');
+      }
+      await loadDocs();
+    } catch (ex) { b.disabled = false; alert(window.mErr(ex)); }
+  }
+  async function approveAll() {
+    var rows = Array.prototype.slice.call($('bkList').querySelectorAll('.bk-row')).filter(function (r) { return r.querySelector('[data-bk="ok"]'); });
+    if (!rows.length || !confirm(rows.length + '건을 모두 승인해 공문 · 자료로 옮길까요?')) return;
+    var fail = [];
+    for (var i = 0; i < rows.length; i++) { try { await approveRow(rows[i]); } catch (ex) { fail.push(window.mErr(ex)); } }
+    await loadDocs();
+    if (fail.length) alert(fail.length + '건은 승인하지 못했습니다: ' + fail[0]);
   }
 
   // 처음 넣은 활동 사진(홈페이지 파일) → 사진 저장소(manse-photos)로 옮기기. 이미 옮긴 것은 건너뜀.
@@ -418,32 +526,14 @@
     if (r.error) throw r.error;
     return r.data;
   }
-  async function uploadOne(e) {
-    e.preventDefault(); var msg = $('upMsg'); msg.className = 'm-msg';
-    var year = parseInt($('uYear').value, 10), cat = $('uCat').value, title = $('uTitle').value.trim(), f = $('uFile').files[0], o = $('uOrig').files[0];
-    var sens = perms.manager && ($('uSens').checked || cat === '명부·개인정보');
-    if (!year || !title || !f) return note(msg, 'err', '연도·제목·열람용 파일을 입력해 주세요.');
-    if (f.size > 50 * 1048576 || (o && o.size > 50 * 1048576)) return note(msg, 'err', '파일은 50MB 이하만 올릴 수 있습니다.');
-    var btn = $('upForm').querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = '올리는 중…';
-    try {
-      var path = await putFile(f, year, cat, sens), orig = o ? await putFile(o, year, cat, sens) : null;
-      var ds = $('uDate').value.trim();
-      var row = await insertDoc({ year: year, category: cat, title: title, walk_no: parseInt($('uWalk').value, 10) || null, doc_date: toDate(ds), date_text: ds || null, doc_no: $('uNo').value.trim() || null,
-        note: $('uNote').value.trim() || null, path: path, mime: f.type || MIME[extOf(f.name)] || null, size: f.size + (o ? o.size : 0),
-        orig_path: orig, orig_name: o ? o.name : null, sensitive: !!sens, uploaded_by: me.id, uploader_name: profile.name || me.email });
-      DOCS.unshift(row); loadDocs();
-      note(msg, 'ok', '"' + title + '" 자료를 올렸습니다.');
-      $('uTitle').value = ''; $('uNo').value = ''; $('uNote').value = ''; $('uFile').value = ''; $('uOrig').value = ''; $('uDate').value = '';
-    } catch (ex) { note(msg, 'err', window.mErr(ex)); }
-    btn.disabled = false; btn.textContent = '올리기';
-  }
-
-  // 폴더 일괄: manifest.json { "연도/종류/파일.pdf": {year, category, title, date, no, sensitive, orig, orig2} }
-  //  - '임원방_업로드자료' 폴더: manifest 기준으로 연도·종류·제목 자동
-  //  - 그냥 파일 여러 개: 왼쪽 '한 건 올리기'의 연도·종류로, 제목은 파일 이름으로 (같은 이름의 PDF+HWP는 한 건으로 묶음)
+  // 정리된 폴더 일괄 (운영임원): manifest.json { "연도/종류/파일.pdf": {year, category, title, date, no, sensitive, orig, orig2} }
+  //  - '임원방_업로드자료' 폴더: manifest 기준으로 연도·종류·제목이 자동으로 정해져 바로 공문 · 자료로
+  //  - manifest가 없으면 문서 바구니로 (자동 분류 → 분류 대기)
   var bulk = null;
   function pickFolder() {
-    analyze(Array.from(this.files || []).map(function (f) { return { file: f, path: '/' + (f.webkitRelativePath || f.name) }; }));
+    var list = Array.from(this.files || []).map(function (f) { return { file: f, path: '/' + (f.webkitRelativePath || f.name) }; });
+    if (list.some(function (x) { return /(^|\/)manifest\.json$/.test(x.path); })) analyze(list); else basketAdd(list);
+    this.value = '';
   }
   // 끌어다 놓기: 폴더 안까지 모두 읽음
   function readEntry(entry, out) {
@@ -455,12 +545,12 @@
   }
   async function onDrop(e) {
     e.preventDefault(); $('dropZone').classList.remove('over');
-    if (!perms.manager) return alert('한꺼번에 올리기는 대표회장·서기만 할 수 있습니다. 한 건 올리기를 이용해 주세요.');
     var out = [], items = Array.from(e.dataTransfer.items || []);
     var entries = items.map(function (it) { return it.webkitGetAsEntry ? it.webkitGetAsEntry() : null; }).filter(Boolean);
     if (entries.length) await Promise.all(entries.map(function (en) { return readEntry(en, out); }));
     else Array.from(e.dataTransfer.files || []).forEach(function (f) { out.push({ file: f, path: '/' + f.name }); });
-    await analyze(out, true);
+    if (perms.manager && out.some(function (x) { return /(^|\/)manifest\.json$/.test(x.path); })) await analyze(out, true);   // 정리된 폴더
+    else await basketAdd(out);
   }
   function baseName(n) { return n.replace(/\.[^.]+$/, ''); }
   // manifest에 회차가 없을 때: 제목에 '걷기'가 있으면 그 해 회차 (제목의 '제N회'가 먼저)
@@ -478,23 +568,14 @@
       var mf = JSON.parse(await man.file.text());
       items = Object.keys(mf).map(function (rel) { var m = mf[rel]; m.rel = rel; m.file = byRel[rel]; m.origFile = m.orig ? byRel[m.orig] : null; m.walk = parseInt(m.walk, 10) || walkGuess(m.title, m.year); return m; })
         .filter(function (m) { return m.file; });
-    } else {
-      var year = parseInt($('uYear').value, 10) || new Date().getFullYear(), cat = $('uCat').value, groups = {};
-      list.forEach(function (x) { var k = baseName(x.file.name); (groups[k] = groups[k] || []).push(x.file); });
-      items = Object.keys(groups).map(function (k) {
-        var fs = groups[k], view = fs.find(function (f) { return /\.pdf$/i.test(f.name); }) || fs[0];
-        var orig = fs.find(function (f) { return f !== view; }) || null;
-        return { year: year, category: cat, walk: parseInt($('uWalk').value, 10) || null, title: k, date: '', no: '', sensitive: cat === '명부·개인정보', file: view, origFile: orig };
-      });
-    }
+    } else return basketAdd(list);
     var tooBig = items.filter(function (m) { return m.file.size > 50 * 1048576 || (m.origFile && m.origFile.size > 50 * 1048576); });
     items = items.filter(function (m) { return tooBig.indexOf(m) < 0; });
     var have = {}; DOCS.forEach(function (d) { have[d.year + '|' + d.category + '|' + d.title] = 1; });
     var todo = items.filter(function (m) { return !have[m.year + '|' + m.category + '|' + m.title]; });
     bulk = { items: todo };
     var sens = todo.filter(function (m) { return m.sensitive; }).length;
-    var wk = parseInt($('uWalk').value, 10);
-    $('bulkInfo').innerHTML = (man ? '정리된 폴더(manifest) 기준 · ' : '파일 ' + list.length + '개 → <b>' + esc($('uYear').value) + '년 · ' + esc($('uCat').value) + (wk ? ' · ' + walkLabel(wk) : '') + '</b>로 · ') +
+    $('bulkInfo').innerHTML = '정리된 폴더(manifest) 기준 · ' +
       '자료 ' + items.length + '건 중 <b>' + todo.length + '건</b>을 올립니다' + (items.length - todo.length ? ' (이미 있는 ' + (items.length - todo.length) + '건 건너뜀)' : '') +
       (sens ? '. 개인정보 포함 ' + sens + '건' : '') + (tooBig.length ? '. 50MB 넘는 ' + tooBig.length + '건 제외' : '') + '.';
     $('bulkGo').disabled = !todo.length;

@@ -30,6 +30,27 @@
     /* 걷기대회 총괄 — 관리 단추 (삼괴연합회 홈페이지 화면을 엶) */
     .wk-link{margin:0 0 12px;font-size:14px;line-height:1.8;color:var(--body);}
     .wk-link .m-btn{margin-left:4px;vertical-align:middle;}
+    /* 문서 바구니 */
+    .bk-lead{margin:0 0 14px;font-size:14.5px;line-height:1.7;}
+    .bk-card{padding:22px 22px 18px;margin-bottom:22px;} .bk-card h2{margin:0 0 12px;font-size:17px;}
+    .bk-card .o-drop{cursor:pointer;}
+    .bk-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;}
+    .bk-head h2{margin:0;font-size:17px;} .bk-head small{font-size:13px;color:var(--muted);font-weight:500;margin-left:6px;}
+    .bk-row{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+    .bk-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .bk-ic{flex:none;min-width:40px;height:24px;padding:0 6px;border-radius:4px;background:#f2ece5;color:var(--navy);font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;}
+    .bk-t{flex:1 1 280px;min-width:0;height:38px!important;font-weight:600;}
+    .bk-m{flex:1 1 100%;font-size:12.5px;color:var(--muted);}
+    .bk-ctl{display:grid;grid-template-columns:1.4fr 1.2fr 90px 130px auto;gap:10px;align-items:end;margin-top:10px;}
+    .bk-ctl label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted);}
+    .bk-ctl .m-in{height:36px;font-size:13.5px;padding:0 8px;}
+    .bk-sug{font-weight:600;color:var(--rust);}
+    .bk-btns{display:flex;gap:6px;justify-content:flex-end;}
+    .bk-wait{font-size:12.5px;color:var(--muted);}
+    .bk-bulk{margin-top:26px;padding:16px 20px;} .bk-bulk summary{cursor:pointer;font-weight:700;color:var(--ink);} .bk-bulk summary small{color:var(--muted);font-weight:500;margin-left:6px;}
+    .tcnt{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--rust);color:#fff;font-size:11.5px;font-weight:800;vertical-align:1px;}
+    .tcnt:empty{display:none;}
+    @media (max-width:760px){ .bk-ctl{grid-template-columns:1fr 1fr;} .bk-btns{grid-column:1/-1;justify-content:stretch;} .bk-btns .m-btn{flex:1;} }
     .wk-menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 30px;}
     .wk-menu a{display:flex;flex-direction:column;gap:3px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);transition:border-color .15s,box-shadow .15s;}
     .wk-menu a:hover{border-color:var(--navy);box-shadow:var(--shadow);}
@@ -79,7 +100,7 @@
         <button class="o-tab" role="tab" data-tab="ledger" aria-selected="false">회계</button>
         <button class="o-tab" role="tab" data-tab="roster" aria-selected="false">임원 명단</button>
         <button class="o-tab" role="tab" data-tab="members" aria-selected="false" data-mgr hidden>회원 관리</button>
-        <button class="o-tab" role="tab" data-tab="upload" aria-selected="false">자료 올리기</button>
+        <button class="o-tab" role="tab" data-tab="upload" aria-selected="false">문서 바구니<span class="tcnt" id="bkTab"></span></button>
       </nav>
       <div class="o-main">
 
@@ -159,43 +180,32 @@
       </section>
 
       <!-- 자료 올리기 -->
+      <!-- 문서 바구니 — 삼기연 관리자 메뉴와 같은 방식: 담기 → 자동 분류 → 분류 대기에서 확인 · 승인 → 공문·자료 -->
       <section class="o-panel" id="p-upload">
-        <div class="o-grid2">
-          <div class="m-card">
-            <h2>한 건 올리기</h2>
-            <form id="upForm">
-              <div class="o-grid2" style="gap:10px">
-                <div><label class="m-l" for="uYear">연도</label><input class="m-in" id="uYear" type="number" min="1990" max="2100" required /></div>
-                <div><label class="m-l" for="uDate">날짜 <span class="opt">(예: 2026-09-30)</span></label><input class="m-in" id="uDate" placeholder="YYYY-MM-DD" /></div>
-              </div>
-              <label class="m-l" for="uWalk">사업 구분</label><select class="m-in" id="uWalk"></select>
-              <label class="m-l" for="uCat">종류</label><select class="m-in" id="uCat"></select>
-              <label class="m-l" for="uTitle">제목</label><input class="m-in" id="uTitle" required />
-              <label class="m-l" for="uNo">문서번호 <span class="opt">(선택)</span></label><input class="m-in" id="uNo" placeholder="예: 제26-01호" />
-              <label class="m-l" for="uFile">열람용 파일 <span class="opt">(PDF 권장 · 50MB 이하)</span></label><input class="m-in" id="uFile" type="file" style="padding-top:10px" required />
-              <label class="m-l" for="uOrig">원본 파일 <span class="opt">(선택 · HWP 등)</span></label><input class="m-in" id="uOrig" type="file" style="padding-top:10px" />
-              <label class="m-l" for="uNote">메모 <span class="opt">(선택)</span></label><input class="m-in" id="uNote" />
-              <label class="m-check" data-mgr hidden><input type="checkbox" id="uSens" /> <span>개인정보 포함 — 대표회장·서기·관리자만 열람</span></label>
-              <div class="m-msg" id="upMsg"></div>
-              <button class="m-btn block" type="submit">올리기</button>
-            </form>
+        <p class="m-help bk-lead">파일을 바구니에 담으면 <b>자동으로 분류</b>되어 아래 <b>분류 대기</b>에 올라옵니다. 분류를 확인하고 <b>승인</b>하면 공문·자료로 옮겨집니다.</p>
+        <div class="m-card bk-card">
+          <h2>① 바구니에 담기</h2>
+          <div class="o-drop" id="dropZone" role="button" tabindex="0">
+            <b>파일을 여기로 끌어다 놓으세요</b>
+            <span>또는 <u>눌러서 선택</u> · 여러 개 · 폴더째도 · 개당 50MB까지 · 같은 이름의 PDF와 HWP는 한 건(열람용 + 원본)으로</span>
           </div>
-          <div class="m-card" data-mgr hidden>
-            <h2>폴더 한꺼번에 올리기</h2>
-            <p class="m-help" style="font-size:14px;line-height:1.7">정리해 둔 <b>'임원방_업로드자료'</b> 폴더를 선택하면 안의 <b>manifest.json</b>을 읽어 연도·종류·제목·날짜·문서번호가 자동으로 들어갑니다. 이미 올라간 자료(같은 연도·종류·제목)는 건너뜁니다.</p>
-            <div class="o-drop" id="dropZone">
-              <b>여기에 끌어다 놓으세요</b>
-              <span>'임원방_업로드자료' 폴더를 통째로, 또는 파일 여러 개를 한 번에</span>
-            </div>
-            <p class="m-help" style="margin:8px 0 4px">또는 폴더 직접 선택:</p>
-            <input class="m-in" id="dirPick" type="file" webkitdirectory directory multiple style="padding-top:10px" />
-            <label class="m-check"><input type="checkbox" id="bulkSens" checked /> <span>개인정보 포함 자료도 올리기 <span style="color:var(--muted)">(운영임원만 열람)</span></span></label>
-            <div id="bulkInfo" class="m-help" style="margin-top:10px"></div>
-            <button class="m-btn block" id="bulkGo" type="button" disabled>일괄 올리기 시작</button>
-            <div class="o-prog"><i id="bulkBar"></i></div>
-            <div class="o-log" id="bulkLog" hidden></div>
-          </div>
+          <input type="file" id="bkInput" multiple hidden />
+          <div class="o-prog"><i id="bkBar"></i></div>
+          <div class="m-msg" id="bkMsg" role="status"></div>
         </div>
+        <div class="bk-head"><h2>② 분류 대기 <small id="bkCount"></small></h2><button class="m-btn sm" type="button" id="bkAll" hidden>모두 승인</button></div>
+        <div id="bkList"><div class="o-empty">불러오는 중…</div></div>
+
+        <details class="m-card bk-bulk" data-mgr hidden>
+          <summary>정리된 폴더(manifest.json) 한꺼번에 올리기 <small>운영임원</small></summary>
+          <p class="m-help" style="font-size:14px;line-height:1.7">정리해 둔 <b>'임원방_업로드자료'</b> 폴더를 고르면 안의 <b>manifest.json</b>대로 연도·종류·제목·날짜·문서번호가 정해져 바로 공문·자료로 들어갑니다. 이미 올라간 자료(같은 연도·종류·제목)는 건너뜁니다. manifest.json이 없으면 문서 바구니로 담깁니다.</p>
+          <input class="m-in" id="dirPick" type="file" webkitdirectory directory multiple style="padding-top:10px" />
+          <label class="m-check"><input type="checkbox" id="bulkSens" checked /> <span>개인정보 포함 자료도 올리기 <span style="color:var(--muted)">(운영임원만 열람)</span></span></label>
+          <div id="bulkInfo" class="m-help" style="margin-top:10px"></div>
+          <button class="m-btn block" id="bulkGo" type="button" disabled>일괄 올리기 시작</button>
+          <div class="o-prog"><i id="bulkBar"></i></div>
+          <div class="o-log" id="bulkLog" hidden></div>
+        </details>
       </section>
       </div><!-- /o-main -->
       </div><!-- /o-body -->
@@ -260,6 +270,6 @@
   <script src="walk-events.js?v=2"></script>
   <script src="walk-report.js?v=5"></script>
   <script src="../ledger.js?v=2"></script>
-  <script src="officer.js?v=12"></script>
+  <script src="officer.js?v=13"></script>
 </body>
 </html>

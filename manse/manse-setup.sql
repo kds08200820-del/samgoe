@@ -262,6 +262,27 @@ drop policy if exists "mdocs_delete" on storage.objects;
 create policy "mdocs_delete" on storage.objects for delete to authenticated
   using ( bucket_id = 'manse-docs' and public.is_manager() );
 
+-- 문서 바구니 (삼기연 관리자 메뉴와 같은 방식): 파일을 담으면 분류 대기(pending), 확인 · 승인하면 공문 · 자료(filed)
+--  올린 임원은 자기 분류 대기 자료를 고쳐 승인하거나 지울 수 있음 (운영임원은 모두)
+alter table public.docs add column if not exists status text not null default 'filed';
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'docs_status_chk') then
+    alter table public.docs add constraint docs_status_chk check (status in ('pending', 'filed'));
+  end if;
+end $$;
+create index if not exists docs_pending_idx on public.docs (created_at desc) where status = 'pending';
+drop policy if exists "dc_update_own_pending" on public.docs;
+create policy "dc_update_own_pending" on public.docs for update to authenticated
+  using ( public.is_officer() and uploaded_by = auth.uid() and status = 'pending' )
+  with check ( public.is_officer() and uploaded_by = auth.uid() and ((not sensitive and category <> '명부·개인정보') or public.is_manager()) );
+drop policy if exists "dc_delete_own_pending" on public.docs;
+create policy "dc_delete_own_pending" on public.docs for delete to authenticated
+  using ( public.is_officer() and uploaded_by = auth.uid() and status = 'pending' );
+drop policy if exists "mdocs_delete_own_pending" on storage.objects;
+create policy "mdocs_delete_own_pending" on storage.objects for delete to authenticated
+  using ( bucket_id = 'manse-docs' and public.is_officer()
+          and exists (select 1 from public.docs d where d.status = 'pending' and d.uploaded_by = auth.uid() and (d.path = name or d.orig_path = name)) );
+
 -- 탈퇴한 회원이 올린 자료의 '올린 이'를 익명으로
 create or replace function public.anonymize_doc_uploads()
 returns trigger language plpgsql security definer set search_path = public as $$
