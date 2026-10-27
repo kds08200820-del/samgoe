@@ -73,18 +73,13 @@
 
   // ---------------- 공문·자료 ----------------
   function setupDocs() {
-    var cats = $('fCats');
-    cats.innerHTML = ['<button class="o-cat" data-cat="" aria-pressed="true">전체</button>'].concat(CATS.map(function (c) {
-      return '<button class="o-cat" data-cat="' + esc(c) + '" aria-pressed="false">' + esc(c) + '</button>';
-    })).join('');
-    cats.addEventListener('click', function (e) {
-      var b = e.target.closest('.o-cat'); if (!b) return;
-      state.cat = b.dataset.cat;
-      cats.querySelectorAll('.o-cat').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      renderDocs();
-    });
+    $('fCat').innerHTML = '<option value="">전체 분류</option>' + CATS.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+    $('fCat').addEventListener('change', function () { state.cat = this.value; renderDocs(); });
     $('fYear').addEventListener('change', function () { state.year = this.value; renderDocs(); });
     $('fText').addEventListener('input', function () { state.q = this.value.trim().toLowerCase(); renderDocs(); });
+    $('fClear').addEventListener('click', function () {
+      state.cat = state.year = state.q = ''; $('fCat').value = $('fYear').value = $('fText').value = ''; renderDocs();
+    });
     $('docList').addEventListener('click', onDocAction);
   }
   async function loadDocs() {
@@ -97,13 +92,23 @@
     renderDocs();
   }
   function renderDocs() {
-    var list = DOCS.filter(function (d) {
-      if (state.cat && d.category !== state.cat) return false;
+    // 연도 · 찾는 말로 먼저 거르고, 분류 목록에 분류별 건수를 붙인 뒤 분류로 거름
+    var base = DOCS.filter(function (d) {
       if (state.year && String(d.year) !== state.year) return false;
       if (state.q && ((d.title || '') + ' ' + (d.doc_no || '') + ' ' + (d.note || '')).toLowerCase().indexOf(state.q) < 0) return false;
       return true;
     });
-    $('docCount').textContent = list.length + ' / ' + DOCS.length + '건';
+    var per = {}; base.forEach(function (d) { per[d.category] = (per[d.category] || 0) + 1; });
+    Array.prototype.forEach.call($('fCat').options, function (o) {
+      var n = o.value ? per[o.value] || 0 : base.length;
+      o.textContent = (o.value || '전체 분류') + (n ? ' (' + n + ')' : '');
+    });
+    var list = state.cat ? base.filter(function (d) { return d.category === state.cat; }) : base;
+    var on = [state.year ? state.year + '년' : '', state.cat, state.q ? '"' + state.q + '"' : ''].filter(Boolean);
+    $('docCount').innerHTML = on.length
+      ? '<b>' + list.length + '건</b> · ' + on.map(esc).join(' · ') + ' <span class="o-of">(전체 ' + DOCS.length + '건)</span>'
+      : '전체 <b>' + DOCS.length + '건</b>';
+    $('fClear').hidden = !on.length;
     if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>자료 올리기</b> 탭에서 공문·자료를 올려 주세요.' +
       (perms.manager ? '<br>10월 27일 전에 올린 자료는 <a href="move.html"><b>옛 자료 옮기기</b></a>로 가져올 수 있습니다.' : '') + '</div>'; return; }
     if (!list.length) { $('docList').innerHTML = '<div class="o-empty">조건에 맞는 자료가 없습니다.</div>'; return; }
