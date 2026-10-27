@@ -91,7 +91,8 @@ from (values
   (2023, '위클리오늘', '2023 화성3.1운동만세길 걷기 행사 성황리 개최', '', 2),
   (2023, 'IPN뉴스 외 13곳', '2023 화성3.1운동만세길 걷기 행사 성료', '', 1)
 ) as v(year, source, title, url, sort)
-where not exists (select 1 from public.press p where p.title = v.title and p.source is not distinct from v.source);
+where not exists (select 1 from public.press p   -- 같은 기사 주소 · 또는 같은 제목+언론사가 있으면 (제목을 고친 뒤 다시 실행해도) 건너뜀
+                  where (v.url <> '' and p.url = v.url) or (p.title = v.title and p.source is not distinct from v.source));
 
 -- 3) 실행 확인
 notify pgrst, 'reload schema';

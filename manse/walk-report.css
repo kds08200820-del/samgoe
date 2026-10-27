@@ -1,0 +1,35 @@
+/* 3·1 만세길 걷기 회차별 결과 보고 (walk-report.js) — 관리자 메뉴 화면 · PDF · 홈페이지 공개 화면(report.html) 같은 모양 */
+.rp{color:var(--body);}
+.rp-head h2{margin:0 0 4px;font-size:24px;} .rp-eyebrow{margin:0 0 6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--red);}
+.rp-meta{margin:0 0 16px;font-size:13.5px;color:var(--muted);}
+.rp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px;}
+.rp-kpis div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+.rp-kpis span{display:block;font-size:12.5px;color:var(--muted);} .rp-kpis b{display:block;margin-top:2px;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;}
+.rp-kpis b small{font-size:12.5px;font-weight:500;color:var(--muted);}
+.rp h3{margin:18px 0 8px;font-size:15.5px;color:var(--ink);}
+.rp-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.rp-t{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;background:#fff;}
+.rp-t th,.rp-t td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;}
+.rp-t th{font-size:12px;color:var(--muted);font-weight:700;background:#fafafa;}
+.rp-t .r{text-align:right;} .rp-t .c{text-align:center;} .rp-t tr.tot td{font-weight:700;border-top:2px solid var(--ink);}
+.rp-dim{color:var(--faint);}
+.rp-note{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.6;}
+.rp-bars{display:flex;flex-direction:column;gap:5px;}
+.rp-bar{display:grid;grid-template-columns:150px 1fr 64px;gap:8px;align-items:center;font-size:13px;}
+.rp-bar .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
+.rp-bar .b{height:14px;background:#f0f0f0;border-radius:3px;overflow:hidden;display:flex;}
+.rp-bar .b i{display:block;height:100%;background:var(--night);}
+.rp-bar .b.st i.s1,.rp-legend i.s1{background:var(--night);} .rp-bar .b.st i.s2,.rp-legend i.s2{background:#9a9a9a;} .rp-bar .b.st i.s3,.rp-legend i.s3{background:#dcdcdc;}
+.rp-bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--body);}
+.rp-legend{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;margin:0 0 8px;font-size:12px;color:var(--muted);}
+.rp-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:-6px;}
+.rp-more{margin:14px 0 0;} .rp-more summary{cursor:pointer;font-weight:700;color:var(--navy);padding:6px 0;}
+@media (max-width:760px){ .rp-kpis{grid-template-columns:1fr 1fr;} .rp-2{grid-template-columns:1fr;gap:0;} .rp-bar{grid-template-columns:110px 1fr 56px;} }
+/* PDF로 만들 때 쓰는 A4 한 쪽 (화면 밖에서 그림) */
+.rp-print{position:absolute;left:-10000px;top:0;}
+.rp.pg{width:794px;height:1123px;padding:46px 52px 64px;background:#fff;position:relative;overflow:hidden;font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
+.rp.pg .rp-t{font-size:12.5px;} .rp.pg .rp-t th,.rp.pg .rp-t td{padding:5px 8px;}
+.pg-foot{position:absolute;left:52px;right:52px;bottom:26px;padding-top:8px;border-top:1px solid #ddd;font-size:10.5px;color:#888;text-align:center;}
+.rp-pub{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 12px;font-size:13.5px;color:var(--muted);}
+.rp-pub a,.rp-pub button.lk{color:var(--navy);font-weight:700;}
+.rp-pub button.lk{border:0;background:none;padding:0;font:inherit;cursor:pointer;text-decoration:underline;}

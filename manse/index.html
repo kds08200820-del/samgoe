@@ -95,6 +95,8 @@
     .mz-walkban .wb-main b{font-size:17px;line-height:1.4;}
     .mz-walkban .wb-main span{font-size:13.5px;line-height:1.5;color:#555;}
     .mz-walkban .wb-go{flex:none;background:#111;color:#fff;font-size:14px;font-weight:800;padding:10px 16px;border-radius:999px;white-space:nowrap;}
+    .mz-walkban + .mz-walkban{margin-top:12px;}
+    .mz-walkban.rep .wb-tag{background:#c8322b;}   /* 결과 보고 (관리자 메뉴에서 '홈페이지에 게시'한 회차) */
     @media (max-width:640px){ .mz-walkban{flex-direction:column;align-items:flex-start;gap:10px;} .mz-walkban .wb-go{align-self:stretch;text-align:center;} }
   </style>
   <link rel="stylesheet" href="../assets/audiobook/player.css" />
@@ -126,6 +128,12 @@
       <span class="wb-tag" id="wbTag">참가 신청 중</span>
       <span class="wb-main"><b id="wbTitle"></b><span id="wbSub"></span></span>
       <span class="wb-go" id="wbGo">참가 신청하기 →</span>
+    </a>
+    <!-- 3·1 만세길 걷기 결과 보고 — 관리자 메뉴 → 걷기대회 관리 → 회차별 결과 보고에서 '홈페이지에 게시'한 가장 최근 회차 (report.html) -->
+    <a class="mz-walkban rep" id="repBan" href="report.html" hidden>
+      <span class="wb-tag">결과 보고</span>
+      <span class="wb-main"><b id="rbTitle"></b><span id="rbSub"></span></span>
+      <span class="wb-go">결과 보기 →</span>
     </a>
     <div class="mz-stats">
       <div class="mz-stat"><b>5회</b><span>3·1만세길 걷기 (2021~2025)</span></div>
@@ -463,15 +471,38 @@
     if (window.msb) window.msb.auth.onAuthStateChange(function (ev) { if (ev === 'SIGNED_OUT') show(null, null); });
   })();
 
-  // 첫 화면 — 게시한 3·1 만세길 걷기 회차 (삼기연 walk_events · 공개 정보만 읽음)
+  // 첫 화면 — 게시한 3·1 만세길 걷기 회차 (삼기연 walk_events · 공개 정보만 읽음) + 게시한 결과 보고 (만세 walk_reports)
+  //  같은 회차의 행사가 끝났으면 행사 안내 띠 대신 결과 보고 띠만
   (async function () {
-    var URL_ = window.SAMGOE_SUPABASE_URL, KEY = window.SAMGOE_SUPABASE_KEY;
-    if (!window.supabase || !URL_ || !KEY || !window.WalkEv) return;
-    try {
+    var $ = function (id) { return document.getElementById(id); };
+    var walkP = (async function () {
+      var URL_ = window.SAMGOE_SUPABASE_URL, KEY = window.SAMGOE_SUPABASE_KEY;
+      if (!window.supabase || !URL_ || !KEY || !window.WalkEv) return null;
       var c = window.supabase.createClient(URL_, KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'samgoe-public' } });
       var r = await c.from('walk_events').select(WalkEv.COLS).eq('hero', true).order('no', { ascending: false }).limit(1);
-      var ev = !r.error && r.data && r.data[0]; if (!ev) return;
-      var st = WalkEv.state(ev), dd = WalkEv.dday(ev.event_date), $ = function (id) { return document.getElementById(id); };
+      return !r.error && r.data && r.data[0] || null;
+    })().catch(function () { return null; });
+    var repP = (async function () {
+      if (!window.msb) return null;
+      var r = await window.msb.from('walk_reports').select('walk_no,event_key,title,event_date,place,data').eq('published', true).order('walk_no', { ascending: false }).limit(1);
+      return !r.error && r.data && r.data[0] || null;
+    })().catch(function () { return null; });
+    var got = await Promise.all([walkP, repP]), ev = got[0], rep = got[1];
+    try {
+      if (rep) {
+        var k = (rep.data && rep.data.k) || {}, n0 = function (v) { return Number(v || 0).toLocaleString('ko-KR'); };
+        $('rbTitle').textContent = rep.title + ' 결과';
+        $('rbSub').textContent = [rep.event_date && window.WalkEv ? WalkEv.longDate(rep.event_date) : '', k.orgs ? '참여 교회 · 단체 ' + n0(k.orgs) + '곳' : '',
+          k.luckyReg ? '행운권 등록 ' + n0(k.luckyReg) + '명' : (k.adults || k.minors) ? '참가 신청 ' + n0((k.adults || 0) + (k.minors || 0)) + '명' : '',
+          k.winners ? '경품 ' + n0(k.winners) + '장' : ''].filter(Boolean).join(' · ');
+        $('repBan').href = 'report.html?w=' + rep.walk_no;
+        $('repBan').hidden = false;
+      }
+    } catch (_) {}
+    try {
+      if (!ev) return;
+      var st = WalkEv.state(ev), dd = WalkEv.dday(ev.event_date);
+      if (rep && rep.event_key === ev.event && st !== 'open' && st !== 'soon') return;   // 끝난 행사 — 결과 보고 띠만
       $('wbTag').textContent = ({ open: '참가 신청 중', soon: '참가 신청 안내', closed: '행사 안내', draft: '행사 안내' })[st] + (dd ? ' ' + dd : '');
       $('wbTitle').textContent = ev.title;
       $('wbSub').textContent = [ev.event_date ? WalkEv.longDate(ev.event_date) + (ev.time_text ? ' ' + ev.time_text : '') : '', ev.place || '',

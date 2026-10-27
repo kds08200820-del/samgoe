@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
   <link rel="stylesheet" href="manse.css?v=5" />
+  <link rel="stylesheet" href="walk-report.css?v=1" />
   <link rel="stylesheet" href="../ledger.css?v=2" />
   <style>
     /* 회계 (../ledger.js · manse/ledger-setup.sql) — 만세운동본부 색 */
@@ -39,40 +40,8 @@
     .wk-sec{margin:34px 0 12px;font-size:20px;padding-top:24px;border-top:1px solid var(--line);}
     .wk-sec small{margin-left:6px;font-family:'Pretendard Variable',Pretendard,sans-serif;font-size:13px;font-weight:500;color:var(--muted);}
     @media (max-width:760px){ .wk-menu{grid-template-columns:1fr 1fr;} .wk-menu a.hot{grid-column:1/-1;} .wk-menu a small{display:none;} .wk-menu a.hot small{display:block;} }
-    /* 회차별 결과 보고 (walk-report.js) — 화면 · PDF 같은 모양 */
-    .rp{color:var(--body);}
-    .rp-head h2{margin:0 0 4px;font-size:24px;} .rp-eyebrow{margin:0 0 6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--red);}
-    .rp-meta{margin:0 0 16px;font-size:13.5px;color:var(--muted);}
-    .rp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 18px;}
-    .rp-kpis div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
-    .rp-kpis span{display:block;font-size:12.5px;color:var(--muted);} .rp-kpis b{display:block;margin-top:2px;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;}
-    .rp-kpis b small{font-size:12.5px;font-weight:500;color:var(--muted);}
-    .rp h3{margin:18px 0 8px;font-size:15.5px;color:var(--ink);}
-    .rp-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-    .rp-t{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;background:#fff;}
-    .rp-t th,.rp-t td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;}
-    .rp-t th{font-size:12px;color:var(--muted);font-weight:700;background:#fafafa;}
-    .rp-t .r{text-align:right;} .rp-t .c{text-align:center;} .rp-t tr.tot td{font-weight:700;border-top:2px solid var(--ink);}
-    .rp-dim{color:var(--faint);}
-    .rp-note{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.6;}
-    .rp-bars{display:flex;flex-direction:column;gap:5px;}
-    .rp-bar{display:grid;grid-template-columns:150px 1fr 64px;gap:8px;align-items:center;font-size:13px;}
-    .rp-bar .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
-    .rp-bar .b{height:14px;background:#f0f0f0;border-radius:3px;overflow:hidden;display:flex;}
-    .rp-bar .b i{display:block;height:100%;background:var(--night);}
-    .rp-bar .b.st i.s1,.rp-legend i.s1{background:var(--night);} .rp-bar .b.st i.s2,.rp-legend i.s2{background:#9a9a9a;} .rp-bar .b.st i.s3,.rp-legend i.s3{background:#dcdcdc;}
-    .rp-bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--body);}
-    .rp-legend{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;margin:0 0 8px;font-size:12px;color:var(--muted);}
-    .rp-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:-6px;}
-    .rp-more{margin:14px 0 0;} .rp-more summary{cursor:pointer;font-weight:700;color:var(--navy);padding:6px 0;}
-    @media (max-width:760px){ .rp-kpis{grid-template-columns:1fr 1fr;} .rp-2{grid-template-columns:1fr;gap:0;} .rp-bar{grid-template-columns:110px 1fr 56px;} }
-    /* PDF로 만들 때 쓰는 A4 한 쪽 (화면 밖에서 그림) */
-    .rp-print{position:absolute;left:-10000px;top:0;}
-    .rp.pg{width:794px;height:1123px;padding:46px 52px 64px;background:#fff;position:relative;overflow:hidden;font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
-    .rp.pg .rp-t{font-size:12.5px;} .rp.pg .rp-t th,.rp.pg .rp-t td{padding:5px 8px;}
-    .pg-foot{position:absolute;left:52px;right:52px;bottom:26px;padding-top:8px;border-top:1px solid #ddd;font-size:10.5px;color:#888;text-align:center;}
     @media print{
-      .m-bar,.o-head,.o-tabs,.o-tools,.o-note,.m-footer,.wk-link,.wk-menu,#rpMsg{display:none!important;}
+      .m-bar,.o-head,.o-tabs,.o-tools,.o-note,.m-footer,.wk-link,.wk-menu,#rpMsg,#rpPubSt{display:none!important;}
       .o-body{display:block!important;}
       .o-panel{display:none!important;} #p-walks.o-panel.on{display:block!important;}
       .o-table-wrap{overflow:visible;border:0;} #p-walks table.o-table{min-width:0;font-size:12.5px;}
@@ -135,9 +104,11 @@
           <h2 class="wk-sec">회차별 결과 보고 <small>참여 교회 · 시민 · 경품 — 이름은 가립니다</small></h2>
           <div class="o-tools">
             <select class="m-in" id="rpSel" aria-label="결과 보고 회차 고르기"></select>
-            <button class="m-btn sm" type="button" id="rpPdf" disabled>PDF로 자료실에 올리기</button>
+            <button class="m-btn sm" type="button" id="rpPub" disabled>홈페이지에 게시</button>
+            <button class="m-btn ghost sm" type="button" id="rpPdf" disabled>PDF로 자료실에 올리기</button>
             <button class="m-btn ghost sm" type="button" id="rpPrint">인쇄</button>
           </div>
+          <p class="rp-pub" id="rpPubSt" hidden></p>
           <div class="m-msg" id="rpMsg" role="status"></div>
           <div id="rpBody"><div class="o-empty">불러오는 중…</div></div>
         </div>
@@ -258,7 +229,7 @@
   <script src="auth.js?v=6"></script>
   <script src="../churches.js?v=2"></script>
   <script src="../walk-events.js?v=1"></script>
-  <script src="walk-report.js?v=2"></script>
+  <script src="walk-report.js?v=3"></script>
   <script src="../ledger.js?v=2"></script>
   <script src="officer.js?v=7"></script>
 </body>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3·1 만세길 걷기 결과 보고 | 삼일만세운동본부</title>
+  <meta name="description" content="삼일만세운동본부 3·1 만세길 걷기 회차별 결과 보고 — 참여 교회 · 단체 · 시민, 행운권 등록, 경품 당첨 · 수령." />
+  <link rel="canonical" href="https://samgoe-cc.or.kr/manse/report.html" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=5" />
+  <link rel="stylesheet" href="walk-report.css?v=1" />
+  <style>
+    .rpw{max-width:980px;margin:0 auto;padding:28px 16px 72px;}
+    .rpw-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;}
+    .rpw-top .sp{flex:1;}
+    .rpw-top select{width:auto;min-width:170px;}
+    .rpw-card{padding:26px 24px;}
+    .rpw-links{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;}
+    .rpw-links[hidden]{display:none;}
+    @media (max-width:640px){ .rpw-card{padding:20px 14px;} }
+    @media print{
+      .m-bar,.rpw-top,.rpw-links,.m-footer{display:none!important;}
+      .rpw{max-width:none;padding:0;} .rpw-card{border:0;box-shadow:none;padding:0;}
+      .o-table-wrap{overflow:visible;border:0;}
+    }
+  </style>
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span id="mAuth"></span>
+  </div></header>
+  <main class="rpw">
+    <div class="rpw-top">
+      <a class="m-btn ghost sm" href="./">← 홈페이지</a>
+      <span class="sp"></span>
+      <select class="m-in" id="wSel" aria-label="회차 고르기" hidden></select>
+      <button class="m-btn ghost sm" type="button" id="wPrint">인쇄</button>
+    </div>
+    <article class="m-card rpw-card" id="wBody"><div class="o-empty">불러오는 중…</div></article>
+    <p class="rpw-links" id="wLinks" hidden></p>
+  </main>
+  <footer class="m-footer">© 2026 삼일만세운동본부</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=4"></script>
+  <script src="auth.js?v=6"></script>
+  <script src="walk-report.js?v=3"></script>
+  <script>
+  // 3·1 만세길 걷기 결과 보고 — 관리자 메뉴에서 '홈페이지에 게시'한 회차 (만세 walk_reports · 누구나 읽음)
+  (async function () {
+    var $ = function (id) { return document.getElementById(id); }, sel = $('wSel'), body = $('wBody');
+    function dot(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? m[1] + '.' + m[2] + '.' + m[3] : ''; }
+    function fail(t) { body.innerHTML = '<div class="o-empty">' + t + '</div>'; }
+    if (!window.msb || !window.WalkReport) return fail('결과 보고를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.');
+    var r = await window.msb.from('walk_reports').select('walk_no,event_key,title,event_date').eq('published', true).order('walk_no', { ascending: false });
+    if (r.error) return fail('결과 보고를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.');
+    var list = r.data || [];
+    if (!list.length) return fail('아직 게시한 결과 보고가 없습니다.');
+    sel.innerHTML = list.map(function (w) { return '<option value="' + w.walk_no + '">제' + w.walk_no + '회' + (w.event_date ? ' · ' + dot(w.event_date) : '') + '</option>'; }).join('');
+    sel.hidden = list.length < 2;
+    async function show(no, push) {
+      var w = list.filter(function (x) { return x.walk_no === no; })[0] || list[0];
+      sel.value = String(w.walk_no);
+      body.innerHTML = '<div class="o-empty">불러오는 중…</div>';
+      var q = await window.msb.from('walk_reports').select('walk_no,data,published_at').eq('walk_no', w.walk_no).eq('published', true).maybeSingle();
+      if (q.error || !q.data) return fail('이 회차 결과 보고를 불러오지 못했습니다.');
+      body.innerHTML = window.WalkReport.publicHtml(q.data.data, q.data.published_at);
+      document.title = w.title + ' 결과 보고 | 삼일만세운동본부';
+      $('wLinks').innerHTML = '<a class="m-btn ghost sm" href="../walk.html?e=' + encodeURIComponent(w.event_key) + '">이 회차 행사 안내</a><a class="m-btn ghost sm" href="./#activity">활동 기록 · 사진</a>';
+      $('wLinks').hidden = false;
+      if (push) history.replaceState(null, '', '?w=' + w.walk_no);
+    }
+    sel.addEventListener('change', function () { show(parseInt(sel.value, 10), true); });
+    $('wPrint').addEventListener('click', function () {
+      var closed = Array.prototype.filter.call(body.querySelectorAll('details'), function (d) { return !d.open; });
+      closed.forEach(function (d) { d.open = true; }); window.print();
+      setTimeout(function () { closed.forEach(function (d) { d.open = false; }); }, 500);
+    });
+    await show(parseInt(new URLSearchParams(location.search).get('w'), 10), false);
+  })().catch(function () { document.getElementById('wBody').innerHTML = '<div class="o-empty">결과 보고를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.</div>'; });
+  </script>
+</body>
+</html>

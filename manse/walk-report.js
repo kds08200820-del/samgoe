@@ -3,6 +3,8 @@
 //  - 걷기대회 관리 단추: 행운권 QR · 행사 · 신청 기록 · 경품 당첨자 명단 (삼괴연합회 홈페이지 화면을 엶)
 //  - 회차별 결과 보고: 참여 교회 · 단체 · 시민, 경품 당첨 · 인증 · 수령, 당첨자 명단 — 이름은 모두 가림 (홍*동)
 //  - 'PDF로 자료실에 올리기': 같은 보고서를 PDF로 만들어 공문 · 자료(행사 운영)에 올림 → 만세운동본부 임원 누구나 열람
+//  - '홈페이지에 게시': 숫자와 교회 이름만 만세 walk_reports(manse-report-setup.sql)에 저장 → 첫 화면 '결과 보고' 띠 · report.html
+//    (당첨자 명단은 빼고, 단체 · 시민은 소속 칸에 개인 이름이 적히기도 해서 이름 없이 곳 수만)
 //  기록은 삼괴연합회 홈페이지(별도 Supabase)에 있으므로, 이 브라우저에 삼괴연합회 '임원' 로그인이 있어야 읽힙니다.
 //  (같은 주소 samgoe-cc.or.kr 이라 그 로그인을 그대로 씀 — samgoe-link.js 와 같은 방식)
 // ============================================================
@@ -19,6 +21,7 @@
   // 이름 가리기 — 홍길동 → 홍*동, 홍길 → 홍*, 남궁민수 → 남**수
   function mask(n) { n = Array.from(String(n || '').trim()); if (!n.length) return ''; return n.length <= 1 ? '*' : n.length === 2 ? n[0] + '*' : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1]; }
   function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
+  function kdate(ts) { var d = ts ? new Date(ts) : null; return d && !isNaN(d) ? dot(new Date(d.getTime() + 9 * 3600000).toISOString()) : ''; }
 
   // ---------- 삼괴연합회 로그인 (같은 브라우저) ----------
   function sgStorage() {
@@ -88,8 +91,9 @@
       DATA = summarize(ev, { apps: r[0], winners: r[1], claims: r[2], pickups: r[3], lucky: r[4] });
       $('rpBody').innerHTML = screenHtml(DATA);
       $('rpPdf').disabled = false;
+      await loadPub();
     } catch (ex) {
-      DATA = null; $('rpPdf').disabled = true;
+      DATA = null; $('rpPdf').disabled = true; $('rpPub').disabled = true; $('rpPubSt').hidden = true;
       $('rpBody').innerHTML = '<div class="o-empty">기록을 불러오지 못했습니다: ' + esc(window.mErr ? window.mErr(ex) : (ex && ex.message)) + '</div>';
     }
   }
@@ -209,14 +213,25 @@
       '<td class="c">' + (x.claimed ? '✓' : '') + '</td><td class="c">' + (x.picked ? '✓' : '') + '</td></tr>'; }).join('');
   }
 
-  // 화면용 (한 쪽으로 이어서)
+  // 화면용 (한 쪽으로 이어서) — 숫자 · 구분 · 경품 · 소속별 막대는 관리자 메뉴와 홈페이지 공개 화면이 같이 씀
+  function isEmpty(D) { return !D.list.length && !D.k.apps && !D.k.luckyReg; }
+  function topHtml(D) {
+    return headHtml(D) + kpiHtml(D) + '<div class="rp-2">' + '<div>' + kindHtml(D) + (D.prizes.length ? '<h3>경품별 표</h3>' + prizeTableHtml(D) : '') + '</div><div>' + prizeChartHtml(D) + '</div></div>' +
+      orgCharts(D, 15).map(function (c) { return c.html; }).join('');
+  }
   function screenHtml(D) {
-    if (!D.list.length && !D.k.apps && !D.k.luckyReg) return headHtml(D) + '<div class="o-empty">이 회차에는 아직 신청 · 경품 · 행운권 기록이 없습니다.</div>';
-    return '<div class="rp">' + headHtml(D) + kpiHtml(D) + '<div class="rp-2">' + '<div>' + kindHtml(D) + (D.prizes.length ? '<h3>경품별 표</h3>' + prizeTableHtml(D) : '') + '</div><div>' + prizeChartHtml(D) + '</div></div>' +
-      orgCharts(D, 15).map(function (c) { return c.html; }).join('') +
+    if (isEmpty(D)) return headHtml(D) + '<div class="o-empty">이 회차에는 아직 신청 · 경품 · 행운권 기록이 없습니다.</div>';
+    return '<div class="rp">' + topHtml(D) +
       '<details class="rp-more"><summary>소속별 전체 표 (' + D.orgs.length + '곳)</summary><div class="o-table-wrap"><table class="rp-t">' + orgHead(D) + orgRows(D.orgs, D) + '</table></div></details>' +
       (D.list.length ? '<details class="rp-more"><summary>당첨자 명단 (' + D.list.length + '장 · 이름 가림)</summary><div class="o-table-wrap"><table class="rp-t">' + winHead() + winRows(D.list) + '</table></div></details>' : '') +
       '<p class="rp-note">이름은 가운데 글자를 가렸습니다 (홍*동). 기록: 삼괴연합회 홈페이지 · 불러온 시각 ' + new Date().toLocaleString('ko-KR') + '</p></div>';
+  }
+
+  // 홈페이지 공개 화면 (report.html) — 게시한 요약 (publicData) 그대로
+  function publicHtml(D, at) {
+    return '<div class="rp">' + topHtml(D) +
+      (D.orgs.length ? '<details class="rp-more"><summary>교회별 전체 표 (' + D.orgs.length + '곳)</summary><div class="o-table-wrap"><table class="rp-t">' + orgHead(D) + orgRows(D.orgs, D) + '</table></div></details>' : '') +
+      '<p class="rp-note">사람 이름은 싣지 않았고, 단체 · 시민은 곳 수만 보입니다. 기록: 삼괴지역기독교연합회 홈페이지' + (at ? ' · ' + kdate(at) + ' 게시' : '') + '</p></div>';
   }
 
   // PDF용 — A4 한 쪽씩 (휴대폰에서도 그림 크기 제한에 걸리지 않게 한 쪽씩 그림)
@@ -271,12 +286,66 @@
     busy = false; $('rpPdf').disabled = !DATA;
   }
 
+  // ---------- 홈페이지에 게시 (만세 walk_reports → 첫 화면 '결과 보고' 띠 · report.html) ----------
+  var PUB_KINDS = { '회원교회': 1, '그 밖의 교회': 1 }, PUB = null;
+  function publicData(D) {   // 사람 이름 없는 요약 — 당첨자 명단 빼고, 소속은 교회만 (단체 · 시민은 구분 표의 곳 수로만)
+    return { v: 1, ev: { event: D.ev.event, no: D.ev.no, title: title(D), event_date: D.ev.event_date || null, place: D.ev.place || null },
+      k: D.k, kinds: D.kinds, prizes: D.prizes, list: [],
+      orgs: D.orgs.filter(function (o) { return PUB_KINDS[o.kind]; }) };
+  }
+  async function loadPub() {
+    var st = $('rpPubSt'), b = $('rpPub'); PUB = null; b.disabled = true; st.hidden = true;
+    if (!window.msb || !DATA) return;
+    var r = await window.msb.from('walk_reports').select('walk_no,published,published_at').eq('walk_no', DATA.ev.no).maybeSingle();
+    st.hidden = false;
+    if (r.error) {
+      st.innerHTML = '<span class="chip bad">게시 준비 안 됨</span> 만세운동본부 Supabase에 결과 보고 표가 아직 없습니다. 최고관리자가 <a href="../setup-sql.html" target="_blank" rel="noopener">설치 SQL</a>(삼일만세운동본부)을 한 번 더 실행하면 게시할 수 있습니다.';
+      return;
+    }
+    PUB = r.data; b.disabled = isEmpty(DATA); drawPub();
+  }
+  function drawPub() {
+    var st = $('rpPubSt'), on = !!(PUB && PUB.published);
+    $('rpPub').textContent = on ? '최신 기록으로 다시 게시' : '홈페이지에 게시';
+    st.innerHTML = on
+      ? '<span class="chip ok">홈페이지에 게시됨</span> ' + kdate(PUB.published_at) + ' 게시 · <a href="report.html?w=' + PUB.walk_no + '" target="_blank" rel="noopener">공개 화면 보기</a> · <button class="lk" type="button" id="rpUnpub">게시 내리기</button>'
+      : '<span class="chip gray">게시 안 함</span> ' + (isEmpty(DATA) ? '기록이 생기면 게시할 수 있습니다.' : '게시하면 홈페이지 첫 화면에 이 회차 결과 보고가 나옵니다 — 교회 이름과 숫자만, 사람 이름 없이.');
+  }
+  async function publish() {
+    if (busy || !DATA || isEmpty(DATA)) return;
+    var D = DATA, t = title(D), again = !!(PUB && PUB.published);
+    if (!confirm('"' + t + '" 결과 보고를 홈페이지에 ' + (again ? '지금 기록으로 다시 ' : '') + '게시합니다.\n\n' +
+      '· 누구나 봅니다 — 첫 화면의 \'결과 보고\' 띠\n· 숫자와 교회 이름만 올라갑니다. 당첨자 명단은 빼고, 단체 · 시민은 이름 없이 곳 수만\n· 나중에 기록이 바뀌면 \'다시 게시\'로 고칩니다\n\n계속할까요?')) return;
+    busy = true; $('rpPub').disabled = true; var msg = $('rpMsg'); msg.className = 'm-msg'; msg.textContent = '게시하는 중…';
+    try {
+      var r = await window.msb.from('walk_reports').upsert({ walk_no: D.ev.no, event_key: D.ev.event, title: t, event_date: D.ev.event_date || null, place: D.ev.place || null,
+        data: publicData(D), published: true }, { onConflict: 'walk_no' }).select('walk_no,published,published_at').single();
+      if (r.error) throw r.error;
+      PUB = r.data; drawPub();
+      msg.className = 'm-msg ok'; msg.textContent = '게시했습니다 — 홈페이지 첫 화면에 결과 보고가 나옵니다.';
+    } catch (ex) { msg.className = 'm-msg err'; msg.textContent = '게시하지 못했습니다: ' + (window.mErr ? window.mErr(ex) : (ex && ex.message)); }
+    busy = false; $('rpPub').disabled = !DATA || isEmpty(DATA);
+  }
+  async function unpublish() {
+    if (busy || !PUB) return;
+    if (!confirm('제' + PUB.walk_no + '회 결과 보고를 홈페이지에서 내립니다. (임원은 계속 볼 수 있고, 다시 게시할 수 있습니다)')) return;
+    busy = true; var msg = $('rpMsg'); msg.className = 'm-msg';
+    try {
+      var r = await window.msb.from('walk_reports').update({ published: false }).eq('walk_no', PUB.walk_no).select('walk_no,published,published_at').single();
+      if (r.error) throw r.error;
+      PUB = r.data; drawPub(); msg.className = 'm-msg ok'; msg.textContent = '홈페이지에서 내렸습니다.';
+    } catch (ex) { msg.className = 'm-msg err'; msg.textContent = '내리지 못했습니다: ' + (window.mErr ? window.mErr(ex) : (ex && ex.message)); }
+    busy = false;
+  }
+
   // ---------- 시작 (officer.js 가 임원 확인 뒤 부름) ----------
   window.WalkReport = {
     init: async function (c) {
       ctx = c;
       $('rpSel').addEventListener('change', loadReport);
       $('rpPdf').addEventListener('click', uploadPdf);
+      $('rpPub').addEventListener('click', publish);
+      $('rpPubSt').addEventListener('click', function (e) { if (e.target.id === 'rpUnpub') unpublish(); });
       // 인쇄: 결과 보고만, 접어 둔 표도 펼쳐서
       $('rpPrint').addEventListener('click', function () {
         var closed = Array.prototype.filter.call(document.querySelectorAll('#rpBody details'), function (d) { return !d.open; });
@@ -287,9 +356,10 @@
       await connect(); drawLink();
       var ok = !!(sg && sgUser && sgOfficer);
       document.querySelectorAll('#wkMenu a').forEach(function (a) { a.classList.toggle('off', !ok); });
-      if (!ok) { $('rpSel').disabled = true; $('rpPdf').disabled = true; $('rpBody').innerHTML = '<div class="o-empty">삼괴연합회 홈페이지에 임원으로 로그인하면 회차별 결과 보고가 여기에 나옵니다.</div>'; return; }
+      if (!ok) { $('rpSel').disabled = true; $('rpPdf').disabled = true; $('rpPub').disabled = true; $('rpBody').innerHTML = '<div class="o-empty">삼괴연합회 홈페이지에 임원으로 로그인하면 회차별 결과 보고가 여기에 나옵니다.</div>'; return; }
       await loadEvents(); await loadReport();
     },
-    _summarize: summarize, _mask: mask
+    publicHtml: publicHtml,
+    _summarize: summarize, _mask: mask, _publicData: publicData
   };
 })();

@@ -55,9 +55,10 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 
 ## 삼일만세운동본부 Supabase (manse 프로젝트)
 
-- 처음 한 번: Supabase에 새 프로젝트 `manse`를 만들고 SQL Editor에서 아래 다섯 파일을 차례로 실행
+- 처음 한 번: Supabase에 새 프로젝트 `manse`를 만들고 SQL Editor에서 아래 파일을 차례로 실행
   (`setup-sql.html`의 '삼일만세운동본부' 복사 단추가 한 번에 복사): `manse/manse-setup.sql` → `manse/manse-photos-setup.sql`
-  → `manse/activity-media-setup.sql` → `manse/manse-walk-setup.sql` → `manse/ledger-setup.sql`.
+  → `manse/activity-media-setup.sql` → `manse/manse-walk-setup.sql` → `manse/manse-press-setup.sql`
+  → `manse/manse-report-setup.sql` → `manse/ledger-setup.sql`.
 - Authentication: Email의 Confirm email 끄기, URL Configuration의 Site URL `https://samgoe-cc.or.kr/manse/`,
   Redirect URLs `https://samgoe-cc.or.kr/manse/**`.
 - `manse/config.js`에 그 프로젝트의 주소와 공개(anon/publishable) 키.
@@ -67,6 +68,9 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - 언론 보도 갤러리: `manse/archive/press.js` + `manse/manse-press-setup.sql`(press 표) + Edge Function `press-meta`
   (`supabase/functions/press-meta/index.ts`, verify_jwt 끔 · 임원만) — 기사 주소만 넣으면 제목 · 언론사 · 날짜 · 대표 사진,
   사진은 manse-photos/press/ 에 보관. 못 가져오면 창의 사진 칸이나 카드 위에 사진을 끌어다 놓기.
+- 걷기 결과 보고 공개: 관리자 메뉴 → 걷기대회 관리 → 회차별 결과 보고 → '홈페이지에 게시' — 숫자와 교회 이름만
+  `walk_reports`(`manse/manse-report-setup.sql`)에 저장 (당첨자 명단 · 단체 · 시민 이름은 빠짐). 첫 화면에 가장 최근 회차
+  '결과 보고' 띠가 나오고 `manse/report.html?w=회차`에서 봄. '게시 내리기'로 숨김. 화면 모양은 `manse/walk-report.js` · `walk-report.css` 공용.
 - 최고관리자(kds08200820@gmail.com)로 만세 홈페이지에 가입 → 임원방 → 임원 명단에 임원들의 가입 이메일을 넣으면 각자 임원방이 열림.
 
 ## Notes
