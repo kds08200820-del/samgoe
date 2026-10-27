@@ -140,7 +140,7 @@
     </div>
     <div class="cta">
       <a class="mz-btn gold" href="#activity">활동 기록 보기</a>
-      <a class="mz-btn line" href="signup.html">회원가입</a>
+      <a class="mz-btn line" href="signup.html" id="heroJoin" style="visibility:hidden">회원가입</a>
       <button class="mz-btn line" type="button" data-install hidden>📱 앱 설치</button>
     </div>
   </section>
@@ -447,6 +447,22 @@
   <script src="app.js?v=1"></script>
   <script src="../walk-events.js?v=1"></script>
   <script>
+  // 첫 화면 가운데 단추 — 로그인했으면 '회원가입' 대신 임원방(임원) · 내 정보(회원). 자동 로그인 확인이 끝난 뒤에 보임
+  (function () {
+    var b = document.getElementById('heroJoin'); if (!b) return;
+    function show(u, perms) {
+      if (u) { b.textContent = perms && perms.officer ? '임원방' : '내 정보'; b.href = perms && perms.officer ? 'officer.html' : 'mypage.html'; }
+      else { b.textContent = '회원가입'; b.href = 'signup.html'; }
+      b.style.visibility = '';
+    }
+    (window.mSsoReady || Promise.resolve()).then(function () { return window.mUser ? window.mUser() : null; })
+      .then(function (u) { return u && window.mPerms ? window.mPerms().then(function (p) { show(u, p); }) : show(u, null); })
+      .catch(function () { show(null, null); });
+    document.addEventListener('manse:auth', function (e) { var d = e.detail || {}; show(d.user, d.perms); });
+    // 로그아웃하면 manse:auth 가 오지 않으므로 상단 메뉴가 바뀔 때도 다시 확인
+    if (window.msb) window.msb.auth.onAuthStateChange(function (ev) { if (ev === 'SIGNED_OUT') show(null, null); });
+  })();
+
   // 첫 화면 — 게시한 3·1 만세길 걷기 회차 (삼기연 walk_events · 공개 정보만 읽음)
   (async function () {
     var URL_ = window.SAMGOE_SUPABASE_URL, KEY = window.SAMGOE_SUPABASE_KEY;
