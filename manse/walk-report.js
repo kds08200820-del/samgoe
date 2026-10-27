@@ -234,11 +234,11 @@
       var year = parseInt(String(D.ev.event_date || D.ev.event).slice(0, 4), 10) || new Date().getFullYear();
       var file = new File([blob], '제' + D.ev.no + '회_3·1만세길걷기_결과보고_' + today().replace(/-/g, '') + '.pdf', { type: 'application/pdf' });
       var path = await ctx.putFile(file, year, '행사 운영', false);
-      await ctx.insertDoc({ year: year, category: '행사 운영', title: t, doc_date: today(), date_text: today(), doc_no: null,
+      await ctx.insertDoc({ year: year, category: '행사 운영', title: t, walk_no: D.ev.no || null, doc_date: today(), date_text: today(), doc_no: null,
         note: '걷기대회 기록으로 만든 요약 — 이름은 가렸습니다', path: path, mime: 'application/pdf', size: file.size,
         orig_path: null, orig_name: null, sensitive: false, uploaded_by: ctx.me.id, uploader_name: (ctx.profile && ctx.profile.name) || ctx.me.email });
       if (ctx.reloadDocs) ctx.reloadDocs();
-      msg.className = 'm-msg ok'; msg.textContent = '올렸습니다 — 공문 · 자료 탭의 \'행사 운영\'에서 볼 수 있습니다. (' + (file.size / 1048576).toFixed(1) + 'MB)';
+      msg.className = 'm-msg ok'; msg.textContent = '올렸습니다 — 공문 · 자료 탭의 \'3·1 만세길 걷기 › 제' + D.ev.no + '회 › 행사 운영\'에서 볼 수 있습니다. (' + (file.size / 1048576).toFixed(1) + 'MB)';
     } catch (ex) { msg.className = 'm-msg err'; msg.textContent = '올리지 못했습니다: ' + (window.mErr ? window.mErr(ex) : (ex && ex.message)); }
     busy = false; $('rpPdf').disabled = !DATA;
   }

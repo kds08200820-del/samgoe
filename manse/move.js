@@ -147,12 +147,18 @@
       catch (ex) { fail('임원 ' + f.name + ' 빈 칸 채우기', ex); }
       tick('임원 명단');
     }
-    // 2) 공문 · 자료 — 파일 먼저, 그다음 목록
+    // 2) 공문 · 자료 — 파일 먼저, 그다음 목록 (이름에 '걷기'가 있으면 3·1 만세길 걷기 자료로: 제N회가 있으면 그 회차, 없으면 그 해 회차)
+    function walkGuess(t, year) {
+      if (!/걷기/.test(t || '')) return null;
+      var m = /제\s*(\d{1,2})\s*회/.exec(t), n = m ? +m[1] : (year || 0) - 2020;
+      return n >= 1 && n <= 99 ? n : null;
+    }
     await pool(P.docs, 3, async function (d) {
       try {
         if (d.path) await copyFile('manse-docs', d.path);
         if (d.orig_path) await copyFile('manse-docs', d.orig_path);
-        await insertOne('docs', Object.assign(pick(d, ['year', 'category', 'title', 'doc_date', 'date_text', 'doc_no', 'note', 'path', 'mime', 'size', 'orig_path', 'orig_name', 'sensitive', 'uploader_name', 'created_at']), { uploaded_by: me.id }));
+        await insertOne('docs', Object.assign(pick(d, ['year', 'category', 'title', 'doc_date', 'date_text', 'doc_no', 'note', 'path', 'mime', 'size', 'orig_path', 'orig_name', 'sensitive', 'uploader_name', 'created_at']),
+          { walk_no: d.walk_no || walkGuess(d.title + ' ' + (d.note || ''), d.year), uploaded_by: me.id }));
         ok++;
       } catch (ex) { fail('자료 "' + d.title + '"', ex); }
       tick('공문 · 자료');

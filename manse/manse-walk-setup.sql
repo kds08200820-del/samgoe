@@ -517,7 +517,83 @@ select '2026-6', t.n, p.prize, p.seq from (values
 ) as p(seq, prize, nums) cross join lateral unnest(p.nums) as t(n)
 on conflict do nothing;
 
--- (예전 '이관' 표 walk_runs · walk_churches 는 더 쓰지 않음 — 지우지 않고 그대로 둠)
+-- ============================================================
+-- 6) 지난 회차 교회별 인원 — 신청 기록 없이 교회별 인원만 남은 회차 (옛 자료 옮기기 move.html 로 들어옴)
+--    관리자 메뉴 걷기대회 관리의 '교회별 참가 인원'에 신청 기록이 없는 회차로 함께 보임
+-- ============================================================
+create table if not exists public.walk_runs (
+  walk_no      int primary key check (walk_no between 1 and 999),   -- 제 몇 회
+  event_key    text,                                                -- 삼기연 회차 코드 (예: 2026-6)
+  title        text,
+  event_date   date,
+  place        text,
+  churches     int not null default 0,
+  apps         int not null default 0,                              -- 신청 건수
+  adults       int not null default 0,
+  minors       int not null default 0,
+  sent_at      timestamptz not null default now(),                  -- 이관한 시각
+  sent_by      uuid references auth.users(id) on delete set null,
+  sent_by_name text
+);
+create table if not exists public.walk_churches (
+  walk_no int  not null references public.walk_runs(walk_no) on delete cascade,
+  church  text not null check (char_length(church) between 1 and 80),
+  region  text,
+  apps    int  not null default 0,
+  adults  int  not null default 0,
+  minors  int  not null default 0,
+  primary key (walk_no, church)
+);
+alter table public.walk_runs enable row level security;
+alter table public.walk_churches enable row level security;
+revoke all on public.walk_runs, public.walk_churches from anon, authenticated;
+grant select on public.walk_runs, public.walk_churches to authenticated;
+select pg_temp.pol('wr_read', 'public.walk_runs', 'select', 'authenticated', 'public.is_officer()', null);
+select pg_temp.pol('wc_read', 'public.walk_churches', 'select', 'authenticated', 'public.is_officer()', null);
+
+-- 넣기 — p_rows: [{church, region, apps, adults, minors}, …] → 넣은 교회 수 (같은 회차를 다시 넣으면 새 내용으로)
+create or replace function public.walk_import(p_walk_no int, p_event_key text, p_title text, p_date date,
+                                              p_place text, p_rows jsonb, p_by_name text)
+returns int language plpgsql security definer set search_path = public as $$
+declare v_n int;
+begin
+  if not public.is_officer() then
+    raise exception '삼일만세운동본부 임원만 이관할 수 있습니다. (임원 명단에 가입 이메일이 있어야 합니다)';
+  end if;
+  if p_walk_no is null or p_walk_no not between 1 and 999 then raise exception '회차 번호를 확인해 주세요.'; end if;
+  if p_rows is null or jsonb_typeof(p_rows) <> 'array' then raise exception '이관할 교회 목록이 없습니다.'; end if;
+
+  insert into public.walk_runs (walk_no, event_key, title, event_date, place, sent_at, sent_by, sent_by_name)
+  values (p_walk_no, left(p_event_key, 40), left(p_title, 120), p_date, left(p_place, 120), now(), auth.uid(), left(p_by_name, 60))
+  on conflict (walk_no) do update
+    set event_key = excluded.event_key, title = excluded.title, event_date = excluded.event_date, place = excluded.place,
+        sent_at = excluded.sent_at, sent_by = excluded.sent_by, sent_by_name = excluded.sent_by_name;
+
+  delete from public.walk_churches where walk_no = p_walk_no;   -- 다시 이관하면 새 내용으로
+  insert into public.walk_churches (walk_no, church, region, apps, adults, minors)
+  select p_walk_no, c, max(r), sum(a), sum(ad), sum(mi)
+  from (
+    select left(btrim(x ->> 'church'), 80) as c,
+           nullif(left(btrim(coalesce(x ->> 'region', '')), 40), '') as r,
+           case when x ->> 'apps'   ~ '^[0-9]{1,6}$' then (x ->> 'apps')::int   else 0 end as a,
+           case when x ->> 'adults' ~ '^[0-9]{1,6}$' then (x ->> 'adults')::int else 0 end as ad,
+           case when x ->> 'minors' ~ '^[0-9]{1,6}$' then (x ->> 'minors')::int else 0 end as mi
+    from jsonb_array_elements(p_rows) x
+    where jsonb_typeof(x) = 'object' and coalesce(btrim(x ->> 'church'), '') <> ''
+  ) s
+  group by c;
+
+  update public.walk_runs w
+     set churches = t.n, apps = t.a, adults = t.ad, minors = t.mi
+    from (select count(*)::int n, coalesce(sum(apps), 0)::int a, coalesce(sum(adults), 0)::int ad, coalesce(sum(minors), 0)::int mi
+            from public.walk_churches where walk_no = p_walk_no) t
+   where w.walk_no = p_walk_no
+  returning t.n into v_n;
+  return v_n;
+end $$;
+revoke all on function public.walk_import(int, text, text, date, text, jsonb, text) from public, anon;
+grant execute on function public.walk_import(int, text, text, date, text, jsonb, text) to authenticated;
+
 notify pgrst, 'reload schema';
 select e.no as "회차", e.title as "행사", e.event_date as "날짜",
        (select count(*) from public.walk_applications w where w.event = e.event) as "신청",

@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
-  <link rel="stylesheet" href="manse.css?v=7" />
+  <link rel="stylesheet" href="manse.css?v=8" />
   <link rel="stylesheet" href="walk-report.css?v=1" />
   <link rel="stylesheet" href="../ledger.css?v=2" />
   <style>
@@ -30,7 +30,7 @@
     /* 걷기대회 총괄 — 관리 단추 (삼괴연합회 홈페이지 화면을 엶) */
     .wk-link{margin:0 0 12px;font-size:14px;line-height:1.8;color:var(--body);}
     .wk-link .m-btn{margin-left:4px;vertical-align:middle;}
-    .wk-menu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 30px;}
+    .wk-menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 30px;}
     .wk-menu a{display:flex;flex-direction:column;gap:3px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);transition:border-color .15s,box-shadow .15s;}
     .wk-menu a:hover{border-color:var(--navy);box-shadow:var(--shadow);}
     .wk-menu a span{font-size:22px;line-height:1;margin-bottom:6px;}
@@ -90,6 +90,7 @@
             <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6L17 17"/></svg>
             <input id="fText" type="search" placeholder="제목 · 문서번호 · 메모로 찾기" aria-label="자료 찾기" />
           </label>
+          <select id="fBiz" aria-label="사업"><option value="" data-l="전체 자료">전체 자료</option></select>
           <select id="fYear" aria-label="연도"><option value="">전체 연도</option></select>
           <select id="fCat" aria-label="분류"><option value="">전체 분류</option></select>
         </div>
@@ -105,6 +106,7 @@
           <a class="hot" href="lucky-admin.html"><b>행운권 QR 만들기 · 인쇄</b><small>번호 범위로 QR 만들기 · 이미지 넣어 PDF · 등록 현황</small></a>
           <a href="walk-admin.html"><b>행사(회차) · 신청 기록</b><small>회차 만들기 · 첫 화면 게시 · 신청 · 입금 확인</small></a>
           <a href="prize-winners.html"><b>경품 당첨자 명단</b><small>당첨 인증 · 수령 확인 · 교회별 인쇄</small></a>
+          <a href="#docs" id="wkDocs"><b>걷기 공문 · 회의 자료</b><small>회차별로 모은 공문 · 회의록 · 계획 · 보고</small></a>
         </nav>
 
         <div class="wk-report">
@@ -166,6 +168,7 @@
                 <div><label class="m-l" for="uYear">연도</label><input class="m-in" id="uYear" type="number" min="1990" max="2100" required /></div>
                 <div><label class="m-l" for="uDate">날짜 <span class="opt">(예: 2026-09-30)</span></label><input class="m-in" id="uDate" placeholder="YYYY-MM-DD" /></div>
               </div>
+              <label class="m-l" for="uWalk">사업 구분</label><select class="m-in" id="uWalk"></select>
               <label class="m-l" for="uCat">종류</label><select class="m-in" id="uCat"></select>
               <label class="m-l" for="uTitle">제목</label><input class="m-in" id="uTitle" required />
               <label class="m-l" for="uNo">문서번호 <span class="opt">(선택)</span></label><input class="m-in" id="uNo" placeholder="예: 제26-01호" />
@@ -228,6 +231,26 @@
     </div>
   </div>
 
+  <!-- 자료 분류 바꾸기 모달 (운영임원) -->
+  <div class="m-modal" id="docModal" role="dialog" aria-modal="true" aria-labelledby="docMTitle">
+    <div class="box">
+      <h3 id="docMTitle">자료 분류</h3>
+      <form id="docForm">
+        <label class="m-l" for="dWalk">사업 구분</label><select class="m-in" id="dWalk"></select>
+        <div class="o-grid2" style="gap:10px">
+          <div><label class="m-l" for="dCat">종류</label><select class="m-in" id="dCat"></select></div>
+          <div><label class="m-l" for="dYear">연도</label><input class="m-in" id="dYear" type="number" min="1990" max="2100" required /></div>
+        </div>
+        <label class="m-l" for="dTitle">제목</label><input class="m-in" id="dTitle" required />
+        <div class="m-msg" id="docMsg"></div>
+        <div class="acts">
+          <button type="button" class="m-btn ghost sm" data-close>취소</button>
+          <button type="submit" class="m-btn sm">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <footer class="m-footer">© 2026 삼일만세운동본부 관리자 메뉴 · 열람한 공문·자료는 본부 업무 외에 배포하지 마세요.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -235,8 +258,8 @@
   <script src="auth.js?v=7"></script>
   <script src="../churches.js?v=2"></script>
   <script src="walk-events.js?v=2"></script>
-  <script src="walk-report.js?v=4"></script>
+  <script src="walk-report.js?v=5"></script>
   <script src="../ledger.js?v=2"></script>
-  <script src="officer.js?v=11"></script>
+  <script src="officer.js?v=12"></script>
 </body>
 </html>

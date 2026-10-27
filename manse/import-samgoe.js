@@ -3,6 +3,8 @@
 //  · 삼기연 임원방 자료(파일 · 기록물 HTML) → 공문·자료 (분류: 폴더와 이름으로 정함, 화면에서 바꿀 수 있음)
 //  · 삼기연 갤러리 사진 · 유튜브 영상 → 활동 기록 (회차가 이미 홈페이지에 있으면 건너뜀)
 //  · 삼기연 언론 보도 → 언론 보도 (같은 기사 주소는 건너뜀)
+//  · 경품 당첨 인증 사진 → 같은 자리(prize-proofs/회차/묶음/…)로 — 인증 기록은 이미 이 홈페이지에 있고 사진만 복사
+//  · 공문 · 자료마다 '구분'(3·1 만세길 걷기 제N회 / 본부 일반 자료)을 정해서 넣음 — 관리자 메뉴에서 걷기 자료를 회차별로 따로 묶음
 //  필요한 로그인: 이 홈페이지 대표회장 · 서기 · 최고관리자 + 같은 브라우저의 삼기연 임원 로그인 (파일은 삼기연 저장소에서 바로 받아 옴)
 //  삼기연 자료는 그대로 두고 복사만, 다시 눌러도 이미 가져온 것은 건너뜀 (파일 이름에 삼기연 쪽 번호를 남겨 둠: sg-…)
 // ============================================================
@@ -10,7 +12,7 @@
   var $ = function (id) { return document.getElementById(id); }, esc = window.mEsc;
   var SG_URL = window.SAMGOE_SUPABASE_URL, SG_KEY = window.SAMGOE_SUPABASE_KEY, SUPER = 'kds08200820@gmail.com';
   var neo = window.msb, sg = null, me = null, sgUser = null, busy = false;
-  var DOCS_BUCKET = 'manse-docs', PHOTO_BUCKET = 'manse-photos';
+  var DOCS_BUCKET = 'manse-docs', PHOTO_BUCKET = 'manse-photos', PROOF_BUCKET = 'prize-proofs', WALK_BASE = 2020;   // 제N회 = (2020 + N)년
   var CATS = ['공문(발신)', '공문(수신)', '공고·고시', '공모·협약·보조금', '회의록', '계획·보고', '행사 운영',
               '홍보·언론', '교회 연합 활동', '행정·대관', '회계·예산', '단체 기본', '명부·개인정보', '기타'];
   var CAT_CODE = { '공문(발신)': 'out', '공문(수신)': 'in', '공고·고시': 'notice', '공모·협약·보조금': 'grant', '회의록': 'minutes',
@@ -78,6 +80,12 @@
     var m = /(19|20)\d{2}/.exec((f.title || '') + ' ' + f.name);
     return f.year || (m ? +m[0] : null) || +String(f.created_at || '').slice(0, 4) || new Date().getFullYear();
   }
+  // 3·1 만세길 걷기 자료인지 — 이름이나 폴더에 '걷기'가 있으면 제N회 (없으면 그 해 회차), 역사 · 기념 자료는 본부 일반
+  function walkFor(text, folder, year) {
+    if (!/걷기/.test(text || '') && folder !== '만세길 걷기') return null;
+    var n = walkNoOf(text) || (year - WALK_BASE);
+    return n >= 1 && n <= 99 ? n : null;
+  }
   function dateOf(name) {
     var m = /(20\d{2})[.\-]?(0[1-9]|1[0-2])[.\-]?(0[1-9]|[12]\d|3[01])(?!\d)/.exec(name || '');
     return m ? m[1] + '-' + m[2] + '-' + m[3] : null;
@@ -109,7 +117,8 @@
   async function readManse() {
     var r = await Promise.all([
       all(neo, 'docs', 'id,path,orig_path'), all(neo, 'activities', 'id,title,date'), all(neo, 'activity_photos', 'id,path,event_key'),
-      all(neo, 'activity_videos', 'event_key,yt_id'), all(neo, 'press', 'url')
+      all(neo, 'activity_videos', 'event_key,yt_id'), all(neo, 'press', 'url'),
+      all(neo, 'prize_claims', 'event,batch_id,photo_paths').catch(function () { return []; })   // 걷기 설치 SQL 전이면 없음
     ]);
     var sgId = function (p) { var m = /sg-([0-9a-f-]{36})/.exec(p || ''); return m ? m[1] : null; }, H = { doc: {}, act: {}, photo: {}, vid: {}, press: {} };
     r[0].forEach(function (d) { var a = sgId(d.path), b = sgId(d.orig_path); if (a) H.doc[a] = 1; if (b) H.doc[b] = 1; });
@@ -117,6 +126,21 @@
     r[2].forEach(function (p) { var a = sgId(p.path); if (a) H.photo[a] = 1; });
     r[3].forEach(function (v) { H.vid[v.event_key + '|' + v.yt_id] = 1; });
     r[4].forEach(function (p) { if (p.url) H.press[p.url] = 1; });
+    // 인증 사진 — 인증 기록이 가리키는 사진 중 이 홈페이지 저장소에 아직 없는 것 (서명 주소를 못 만들면 없는 것)
+    var ev = {};
+    r[5].forEach(function (c) { var e = ev[c.event] || (ev[c.event] = { event: c.event, batches: {}, paths: {} }); e.batches[c.batch_id] = 1; (c.photo_paths || []).forEach(function (p) { e.paths[p] = 1; }); });
+    H.proofs = [];
+    for (var k in ev) {
+      var paths = Object.keys(ev[k].paths), miss = [];
+      for (var i = 0; i < paths.length; i += 100) {
+        var part = paths.slice(i, i + 100), sg_ = await neo.storage.from(PROOF_BUCKET).createSignedUrls(part, 60);
+        if (sg_.error) { miss = miss.concat(part); continue; }
+        var ok = {}; (sg_.data || []).forEach(function (x) { if (x && !x.error && (x.signedUrl || x.signedURL)) ok[x.path] = 1; });
+        part.forEach(function (p) { if (!ok[p]) miss.push(p); });
+      }
+      H.proofs.push({ event: k, batches: Object.keys(ev[k].batches).length, total: paths.length, todo: miss });
+    }
+    H.proofs.sort(function (a, b) { return b.event.localeCompare(a.event); });
     return H;
   }
 
@@ -125,12 +149,13 @@
   function walkNoOf(t) { var m = /\((\d{1,2})회\)|제\s*(\d{1,2})\s*회/.exec(t || ''); return m ? +(m[1] || m[2]) : null; }
   function staticEvents() { return (window.MANSE_DATA && window.MANSE_DATA.events) || []; }
   function makePlan() {
-    var S = SRC, H = HAVE, P = { docs: [], acts: [], press: [] };
+    var S = SRC, H = HAVE, P = { docs: [], acts: [], press: [], proofs: [] };
     // 1) 공문·자료
     S.files.forEach(function (f) {
       var isHtml = /^arcdb:/.test(f.path), title = cleanTitle(f.title || f.name);
-      P.docs.push({ id: f.id, f: f, title: title, cat: catFor(title + ' ' + f.name, f.folder), year: yearOf(f), date: dateOf(f.name) || dateOf(f.title || ''),
-        html: isHtml, ext: isHtml ? 'html' : extOf(f.name), have: !!H.doc[f.id], on: !H.doc[f.id] });
+      var year = yearOf(f);
+      P.docs.push({ id: f.id, f: f, title: title, cat: catFor(title + ' ' + f.name, f.folder), year: year, date: dateOf(f.name) || dateOf(f.title || ''),
+        walk: walkFor(title + ' ' + f.name, f.folder, year), html: isHtml, ext: isHtml ? 'html' : extOf(f.name), have: !!H.doc[f.id], on: !H.doc[f.id] });
     });
     P.docs.sort(function (a, b) { return b.year - a.year || a.title.localeCompare(b.title, 'ko'); });
     // 2) 활동 기록 — 회차 사진이 홈페이지에 이미 있으면 건너뜀, 회차 사진이 없는 처음 기록(제1회 라이딩)엔 사진만 붙임
@@ -169,6 +194,8 @@
       var d = /(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})/.exec(p.published || ''), pub = d ? d[1] + '-' + ('0' + d[2]).slice(-2) + '-' + ('0' + d[3]).slice(-2) : null;
       P.press.push({ id: p.id, p: p, pub: pub, year: pub ? +pub.slice(0, 4) : (+String(p.published || '').slice(0, 4) || new Date().getFullYear()), have: !!H.press[p.url], on: !H.press[p.url] });
     });
+    // 4) 경품 당첨 인증 사진
+    (H.proofs || []).forEach(function (x) { P.proofs.push({ event: x.event, batches: x.batches, total: x.total, todo: x.todo, have: !x.todo.length, on: x.todo.length > 0 }); });
     return P;
   }
   function cleanWalkTitle(p) { var n = walkNoOf(p.title); return n ? '제' + n + '회 3·1 만세길 걷기' : p.title.replace(/^\[\d{4}\]\s*/, ''); }
@@ -179,9 +206,13 @@
     var head = function (t, list, key) { return '<h3>' + t + ' <small>' + n0(list.filter(function (x) { return !x.skip && !x.have; }).length) + '건 가져올 수 있음 · 삼기연에 ' + n0(list.length) + '건</small>' +
       '<span class="pick"><button type="button" data-all="' + key + '">모두</button> · <button type="button" data-none="' + key + '">없음</button></span></h3>'; };
     var chk = function (key, i, x) { return '<td class="c"><input type="checkbox" data-k="' + key + '" data-i="' + i + '"' + (x.on ? ' checked' : '') + (x.have || x.skip ? ' disabled' : '') + '></td>'; };
-    h += head('공문 · 자료', P.docs, 'docs') + '<div class="o-table-wrap"><table><tr><th></th><th>제목</th><th>분류</th><th class="r">연도</th><th class="hide">삼기연 폴더</th><th class="r hide">크기</th></tr>';
+    var top = new Date().getFullYear() - WALK_BASE + 1, NOS = []; for (var n = top; n >= 1; n--) NOS.push(n);
+    var walkName = function (n) { return n ? '걷기 제' + n + '회' : '본부 일반'; };
+    h += head('공문 · 자료', P.docs, 'docs') + '<div class="o-table-wrap"><table><tr><th></th><th>제목</th><th>구분</th><th>분류</th><th class="r">연도</th><th class="hide">삼기연 폴더</th><th class="r hide">크기</th></tr>';
     P.docs.forEach(function (d, i) {
       h += '<tr' + (d.have ? ' class="have"' : '') + '>' + chk('docs', i, d) + '<td><span class="t">' + esc(d.title) + '</span><span class="s">' + esc(d.f.name) + (d.html ? ' · 기록물(HTML)' : '') + (d.have ? ' · 이미 가져옴' : '') + '</span></td>' +
+        '<td>' + (d.have ? '' : '<select data-walk="' + i + '" aria-label="구분"><option value="">본부 일반</option>' +
+          NOS.concat(d.walk && NOS.indexOf(d.walk) < 0 ? [d.walk] : []).map(function (n) { return '<option value="' + n + '"' + (n === d.walk ? ' selected' : '') + '>' + walkName(n) + '</option>'; }).join('') + '</select>') + '</td>' +
         '<td>' + (d.have ? esc(d.cat) : '<select data-cat="' + i + '">' + CATS.map(function (c) { return '<option' + (c === d.cat ? ' selected' : '') + '>' + c + '</option>'; }).join('') + '</select>') + '</td>' +
         '<td class="r">' + d.year + '</td><td class="hide">' + esc(d.f.folderPath) + '</td><td class="r hide">' + kb(d.f.size) + '</td></tr>';
     });
@@ -198,6 +229,15 @@
       h += '<tr' + (x.have ? ' class="have"' : '') + '>' + chk('press', i, x) + '<td><span class="t">' + esc(x.p.title) + '</span>' + (x.have ? '<span class="s">이미 있음</span>' : '') + '</td><td>' + esc(x.p.source || '') + '</td><td class="r">' + esc(x.p.published || '') + '</td></tr>';
     });
     h += '</table></div>';
+    if (P.proofs.length) {
+      h += head('경품 당첨 인증 사진', P.proofs, 'proofs') + '<div class="o-table-wrap"><table><tr><th></th><th>회차</th><th class="r">인증 묶음</th><th class="r">사진</th><th>가져올 것</th></tr>';
+      P.proofs.forEach(function (x, i) {
+        var ev = (SRC.events || []).filter(function (e) { return e.event === x.event; })[0];
+        h += '<tr' + (x.have ? ' class="have"' : '') + '>' + chk('proofs', i, x) + '<td><span class="t">' + esc(ev ? ev.title || ('제' + ev.no + '회 3·1 만세길 걷기') : x.event) + '</span><span class="s">' + esc(x.event) + '</span></td>' +
+          '<td class="r">' + n0(x.batches) + '</td><td class="r">' + n0(x.total) + '장</td><td>' + (x.todo.length ? '사진 ' + n0(x.todo.length) + '장' : '<span class="chip ok">이미 가져옴</span>') + '</td></tr>';
+      });
+      h += '</table></div>';
+    }
     $('plan').innerHTML = h;
     $('plan').querySelectorAll('[data-all],[data-none]').forEach(function (b) {
       b.addEventListener('click', function () { var k = b.dataset.all || b.dataset.none, on = !!b.dataset.all; $('plan').querySelectorAll('input[data-k="' + k + '"]:not(:disabled)').forEach(function (c) { c.checked = on; }); syncGo(); });
@@ -206,20 +246,25 @@
     syncGo();
   }
   function picked() {
-    var out = { docs: [], acts: [], press: [] };
+    var out = { docs: [], acts: [], press: [], proofs: [] };
     $('plan').querySelectorAll('input[data-k]:checked:not(:disabled)').forEach(function (c) { out[c.dataset.k].push(PLAN[c.dataset.k][+c.dataset.i]); });
-    out.docs.forEach(function (d) { var s = $('plan').querySelector('select[data-cat="' + PLAN.docs.indexOf(d) + '"]'); if (s) d.cat = s.value; });
+    out.docs.forEach(function (d) {
+      var i = PLAN.docs.indexOf(d), s = $('plan').querySelector('select[data-cat="' + i + '"]'), w = $('plan').querySelector('select[data-walk="' + i + '"]');
+      if (s) d.cat = s.value; if (w) d.walk = parseInt(w.value, 10) || null;
+    });
     return out;
   }
   function syncGo() {
-    var p = picked(), n = p.docs.length + p.acts.reduce(function (s, a) { return s + a.todoPhotos.length + (a.todoVid ? 1 : 0) + (a.newAct && !a.haveAct ? 1 : 0); }, 0) + p.press.length;
+    var p = picked(), n = p.docs.length + p.acts.reduce(function (s, a) { return s + a.todoPhotos.length + (a.todoVid ? 1 : 0) + (a.newAct && !a.haveAct ? 1 : 0); }, 0) + p.press.length + p.proofs.reduce(function (s, x) { return s + x.todo.length; }, 0);
     $('goAll').disabled = busy || !n; $('goAll').textContent = n ? '가져오기 (' + n0(n) + '건)' : '가져올 것이 없습니다';
   }
   async function scan() {
     $('scanSt').textContent = '삼괴연합회 홈페이지와 이 홈페이지의 자료를 읽는 중…'; $('plan').innerHTML = '';
     try {
       var r = await Promise.all([readSamgoe(), readManse()]); SRC = r[0]; HAVE = r[1]; PLAN = makePlan();
-      $('scanSt').innerHTML = '삼기연 임원방 자료 <b>' + n0(PLAN.docs.length) + '</b>건 · 갤러리 글 <b>' + n0(PLAN.acts.length) + '</b>개 (사진 ' + n0(SRC.photos.length) + '장) · 기사 <b>' + n0(PLAN.press.length) + '</b>건을 찾았습니다. 분류를 확인하고 가져올 것을 고르세요.';
+      $('scanSt').innerHTML = '삼기연 임원방 자료 <b>' + n0(PLAN.docs.length) + '</b>건 · 갤러리 글 <b>' + n0(PLAN.acts.length) + '</b>개 (사진 ' + n0(SRC.photos.length) + '장) · 기사 <b>' + n0(PLAN.press.length) + '</b>건' +
+        (PLAN.proofs.length ? ' · 경품 인증 사진 <b>' + n0(PLAN.proofs.reduce(function (t, x) { return t + x.total; }, 0)) + '</b>장' : '') +
+        '을 찾았습니다. 공문 · 자료는 <b>구분</b>(3·1 만세길 걷기 회차 / 본부 일반)과 <b>분류</b>를 확인하고 가져올 것을 고르세요.';
       drawPlan(); $('c3').classList.remove('off');
     } catch (ex) { $('scanSt').innerHTML = '<span class="chip bad">읽지 못함</span> ' + esc(err(ex)); }
   }
@@ -262,7 +307,7 @@
   async function importAll() {
     if (busy) return; var p = picked();
     busy = true; $('goAll').disabled = true; done = 0; fails = 0; var ok = 0;
-    total = p.docs.length + p.acts.reduce(function (s, a) { return s + a.todoPhotos.length + (a.todoVid ? 1 : 0) + (a.newAct && !a.haveAct ? 1 : 0); }, 0) + p.press.length;
+    total = p.docs.length + p.acts.reduce(function (s, a) { return s + a.todoPhotos.length + (a.todoVid ? 1 : 0) + (a.newAct && !a.haveAct ? 1 : 0); }, 0) + p.press.length + p.proofs.reduce(function (s, x) { return s + x.todo.length; }, 0);
     $('bar').hidden = false; $('log').textContent = ''; $('log').hidden = true;
     // 1) 공문·자료 — 파일을 삼기연 저장소에서 받아 이 홈페이지 저장소로, 기록물 HTML은 글을 파일로
     await pool(p.docs, 3, async function (d) {
@@ -273,7 +318,7 @@
           blob = new Blob([wrapHtml(r.data.html || '', d.title)], { type: 'text/html; charset=utf-8' }); mime = 'text/html';
         } else { blob = await fetchBlob(f.url); mime = f.mime || blob.type || 'application/octet-stream'; }
         await put(DOCS_BUCKET, path, blob, mime);
-        await insertOne('docs', { year: d.year, category: d.cat, title: d.title, doc_date: d.date, date_text: null, doc_no: null,
+        await insertOne('docs', { year: d.year, category: d.cat, title: d.title, walk_no: d.walk || null, doc_date: d.date, date_text: null, doc_no: null,
           note: '삼괴연합회 임원방에서 가져옴' + (f.folderPath ? ' (' + f.folderPath + ')' : ''), path: path, mime: mime, size: blob.size, orig_path: null, orig_name: null,
           sensitive: d.cat === '명부·개인정보', uploaded_by: me.id, uploader_name: who(f.author_name), created_at: f.created_at || undefined });
         ok++;
@@ -317,6 +362,17 @@
         ok++;
       } catch (ex) { fail('기사 "' + x.p.title + '"', ex); }
       tick('언론 보도');
+    }
+    // 4) 경품 당첨 인증 사진 — 삼기연 저장소에서 받아 같은 이름으로
+    for (var k = 0; k < p.proofs.length; k++) {
+      await pool(p.proofs[k].todo, 3, async function (path) {
+        try {
+          var dl = await sg.storage.from(PROOF_BUCKET).download(path); if (dl.error) throw dl.error;
+          var type = dl.data.type && /^image\//.test(dl.data.type) ? dl.data.type : (/\.png$/i.test(path) ? 'image/png' : /\.jpe?g$/i.test(path) ? 'image/jpeg' : 'image/webp');
+          await put(PROOF_BUCKET, path, dl.data, type); ok++;
+        } catch (ex) { fail('인증 사진 ' + path, ex); }
+        tick('경품 인증 사진');
+      });
     }
     busy = false;
     $('prog').innerHTML = fails

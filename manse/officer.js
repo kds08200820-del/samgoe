@@ -18,7 +18,19 @@
 
   var me = null, perms = null, profile = null;
   var DOCS = [], OFFICERS = [], MEMBERS = [];
-  var state = { cat: '', year: '', q: '' };
+  var state = { biz: '', cat: '', year: '', q: '' };   // biz: '' 전체 · 'gen' 본부 일반 · 'walk' 걷기 전체 · 'w6' 제6회
+  var WALK_BASE = 2020;   // 제N회 3·1 만세길 걷기 = (2020 + N)년 — 제6회 2026
+  function walkLabel(n) { return '제' + n + '회 3·1 만세길 걷기'; }
+  function walkNos() {     // 고를 수 있는 회차: 올해 다음 회차까지 + 이미 자료에 있는 회차
+    var top = new Date().getFullYear() - WALK_BASE + 1, set = {};
+    for (var i = 1; i <= top; i++) set[i] = 1;
+    DOCS.forEach(function (d) { if (d.walk_no) set[d.walk_no] = 1; });
+    return Object.keys(set).map(Number).sort(function (a, b) { return b - a; });
+  }
+  function walkOptions(sel) {
+    return '<option value="">본부 일반 자료 (걷기 외)</option>' + walkNos().map(function (n) {
+      return '<option value="' + n + '"' + (String(sel) === String(n) ? ' selected' : '') + '>' + walkLabel(n) + ' (' + (WALK_BASE + n) + ')</option>'; }).join('');
+  }
 
   function note(el, cls, t) { el.className = 'm-msg ' + cls; el.textContent = t; }
   function extOf(name) { var m = /\.([A-Za-z0-9]{1,6})$/.exec(name || ''); return m ? m[1].toLowerCase() : 'bin'; }
@@ -74,13 +86,17 @@
   // ---------------- 공문·자료 ----------------
   function setupDocs() {
     $('fCat').innerHTML = '<option value="">전체 분류</option>' + CATS.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+    $('fBiz').addEventListener('change', function () { state.biz = this.value; renderDocs(); });
     $('fCat').addEventListener('change', function () { state.cat = this.value; renderDocs(); });
     $('fYear').addEventListener('change', function () { state.year = this.value; renderDocs(); });
     $('fText').addEventListener('input', function () { state.q = this.value.trim().toLowerCase(); renderDocs(); });
     $('fClear').addEventListener('click', function () {
-      state.cat = state.year = state.q = ''; $('fCat').value = $('fYear').value = $('fText').value = ''; renderDocs();
+      state.biz = state.cat = state.year = state.q = ''; $('fBiz').value = $('fCat').value = $('fYear').value = $('fText').value = ''; renderDocs();
     });
     $('docList').addEventListener('click', onDocAction);
+    $('docModal').addEventListener('click', function (e) { if (e.target === this || e.target.hasAttribute('data-close')) this.classList.remove('on'); });
+    $('docForm').addEventListener('submit', saveDocMeta);
+    $('dCat').innerHTML = CATS.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
   }
   async function loadDocs() {
     var r = await window.msb.from('docs').select('*').order('year', { ascending: false }).order('doc_date', { ascending: false, nullsFirst: false }).order('date_text', { ascending: false });
@@ -89,52 +105,96 @@
     var years = Array.from(new Set(DOCS.map(function (d) { return d.year; }))).sort(function (a, b) { return b - a; });
     $('fYear').innerHTML = '<option value="">전체 연도</option>' + years.map(function (y) { return '<option value="' + y + '">' + y + '년</option>'; }).join('');
     if (state.year) $('fYear').value = state.year;
+    var wn = Array.from(new Set(DOCS.filter(function (d) { return d.walk_no; }).map(function (d) { return d.walk_no; }))).sort(function (a, b) { return b - a; });
+    var opt = function (v, l) { return '<option value="' + v + '" data-l="' + esc(l) + '">' + esc(l) + '</option>'; };
+    $('fBiz').innerHTML = opt('', '전체 자료') + opt('gen', '본부 일반 자료') + opt('walk', '3·1 만세길 걷기 — 모든 회차') +
+      wn.map(function (n) { return opt('w' + n, '　제' + n + '회 · ' + (WALK_BASE + n) + '년'); }).join('');
+    if (state.biz && !$('fBiz').querySelector('option[value="' + state.biz + '"]')) state.biz = '';
+    $('fBiz').value = state.biz;
     renderDocs();
   }
+  function bizOf(d, b) { return !b || (b === 'gen' ? !d.walk_no : b === 'walk' ? !!d.walk_no : 'w' + d.walk_no === b); }
+  // 공문 · 자료 표시 — 같은 분류끼리 한 상자
+  function catGroups(items) {
+    var html = '';
+    CATS.concat(items.map(function (d) { return d.category; }).filter(function (c) { return CATS.indexOf(c) < 0; }))
+      .filter(function (c, i, a) { return a.indexOf(c) === i; }).forEach(function (c) {
+      var g = items.filter(function (d) { return d.category === c; });
+      if (!g.length) return;
+      html += '<div class="o-group"><h3><span>' + esc(c) + '</span><span style="color:var(--muted);font-weight:400">' + g.length + '</span></h3>';
+      g.forEach(function (d) {
+        var date = d.doc_date || d.date_text || '';
+        html += '<div class="o-row"><div class="d">' + esc(date) + '</div><div class="t">' + esc(d.title) +
+          (d.sensitive ? ' <span class="chip bad">개인정보</span>' : '') +
+          '<small>' + [d.doc_no, d.note, d.uploader_name ? '올린 이: ' + d.uploader_name : '', fmtSize(d.size)].filter(Boolean).map(esc).join(' · ') + '</small></div>' +
+          '<div class="a">' + (d.path ? '<button class="m-btn sm" data-act="view" data-id="' + d.id + '">열람</button>' : '') +
+          (d.orig_path ? '<button class="m-btn ghost sm" data-act="orig" data-id="' + d.id + '">원본 받기</button>' : '') +
+          (perms.manager ? '<button class="m-btn ghost sm" data-act="edit" data-id="' + d.id + '">분류</button><button class="m-btn danger sm" data-act="del" data-id="' + d.id + '">삭제</button>' : '') + '</div></div>';
+      });
+      html += '</div>';
+    });
+    return html;
+  }
   function renderDocs() {
-    // 연도 · 찾는 말로 먼저 거르고, 분류 목록에 분류별 건수를 붙인 뒤 분류로 거름
+    // 연도 · 찾는 말로 먼저 거르고, 사업 · 분류 목록에 건수를 붙인 뒤 사업 → 분류 순으로 거름
     var base = DOCS.filter(function (d) {
       if (state.year && String(d.year) !== state.year) return false;
       if (state.q && ((d.title || '') + ' ' + (d.doc_no || '') + ' ' + (d.note || '')).toLowerCase().indexOf(state.q) < 0) return false;
       return true;
     });
-    var per = {}; base.forEach(function (d) { per[d.category] = (per[d.category] || 0) + 1; });
+    Array.prototype.forEach.call($('fBiz').options, function (o) {
+      var n = base.filter(function (d) { return bizOf(d, o.value); }).length;
+      o.textContent = o.dataset.l + (n ? ' (' + n + ')' : '');
+    });
+    var biz = base.filter(function (d) { return bizOf(d, state.biz); });
+    var per = {}; biz.forEach(function (d) { per[d.category] = (per[d.category] || 0) + 1; });
     Array.prototype.forEach.call($('fCat').options, function (o) {
-      var n = o.value ? per[o.value] || 0 : base.length;
+      var n = o.value ? per[o.value] || 0 : biz.length;
       o.textContent = (o.value || '전체 분류') + (n ? ' (' + n + ')' : '');
     });
-    var list = state.cat ? base.filter(function (d) { return d.category === state.cat; }) : base;
-    var on = [state.year ? state.year + '년' : '', state.cat, state.q ? '"' + state.q + '"' : ''].filter(Boolean);
+    var list = state.cat ? biz.filter(function (d) { return d.category === state.cat; }) : biz;
+    var bizName = state.biz ? $('fBiz').options[$('fBiz').selectedIndex].dataset.l.trim() : '';
+    var on = [bizName, state.year ? state.year + '년' : '', state.cat, state.q ? '"' + state.q + '"' : ''].filter(Boolean);
     $('docCount').innerHTML = on.length
       ? '<b>' + list.length + '건</b> · ' + on.map(esc).join(' · ') + ' <span class="o-of">(전체 ' + DOCS.length + '건)</span>'
-      : '전체 <b>' + DOCS.length + '건</b>';
+      : '전체 <b>' + DOCS.length + '건</b> · 3·1 만세길 걷기 ' + DOCS.filter(function (d) { return d.walk_no; }).length + '건 · 본부 일반 ' + DOCS.filter(function (d) { return !d.walk_no; }).length + '건';
     $('fClear').hidden = !on.length;
     if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>자료 올리기</b> 탭에서 공문·자료를 올려 주세요.' +
       (perms.manager ? '<br>10월 27일 전에 올린 자료는 <a href="move.html"><b>옛 자료 옮기기</b></a>, 삼괴연합회 임원방의 만세길 자료는 <a href="import-samgoe.html"><b>삼기연 만세길 자료 가져오기</b></a>로 가져올 수 있습니다.' : '') + '</div>'; return; }
     if (!list.length) { $('docList').innerHTML = '<div class="o-empty">조건에 맞는 자료가 없습니다.</div>'; return; }
-    var byYear = {};
-    list.forEach(function (d) { (byYear[d.year] = byYear[d.year] || []).push(d); });
-    var html = '';
-    Object.keys(byYear).sort(function (a, b) { return b - a; }).forEach(function (y) {
-      var items = byYear[y];
-      html += '<h2 class="o-year">' + y + '년 <small>' + items.length + '건</small></h2>';
-      CATS.forEach(function (c) {
-        var g = items.filter(function (d) { return d.category === c; });
-        if (!g.length) return;
-        html += '<div class="o-group"><h3><span>' + esc(c) + '</span><span style="color:var(--muted);font-weight:400">' + g.length + '</span></h3>';
-        g.forEach(function (d) {
-          var date = d.doc_date || d.date_text || '';
-          html += '<div class="o-row"><div class="d">' + esc(date) + '</div><div class="t">' + esc(d.title) +
-            (d.sensitive ? ' <span class="chip bad">개인정보</span>' : '') +
-            '<small>' + [d.doc_no, d.note, d.uploader_name ? '올린 이: ' + d.uploader_name : '', fmtSize(d.size)].filter(Boolean).map(esc).join(' · ') + '</small></div>' +
-            '<div class="a">' + (d.path ? '<button class="m-btn sm" data-act="view" data-id="' + d.id + '">열람</button>' : '') +
-            (d.orig_path ? '<button class="m-btn ghost sm" data-act="orig" data-id="' + d.id + '">원본 받기</button>' : '') +
-            (perms.manager ? '<button class="m-btn danger sm" data-act="del" data-id="' + d.id + '">삭제</button>' : '') + '</div></div>';
-        });
-        html += '</div>';
+    // 3·1 만세길 걷기 자료는 회차별로, 본부 일반 자료는 연도별로 — 두 묶음을 따로
+    var walk = list.filter(function (d) { return d.walk_no; }), gen = list.filter(function (d) { return !d.walk_no; }), html = '';
+    if (walk.length) {
+      html += '<div class="o-sec"><h2>3·1 만세길 걷기</h2><span>회차별 · ' + walk.length + '건</span></div>';
+      var byNo = {}; walk.forEach(function (d) { (byNo[d.walk_no] = byNo[d.walk_no] || []).push(d); });
+      Object.keys(byNo).sort(function (a, b) { return b - a; }).forEach(function (n) {
+        html += '<h2 class="o-year">제' + n + '회 <small>' + (WALK_BASE + +n) + '년 · ' + byNo[n].length + '건</small></h2>' + catGroups(byNo[n]);
       });
-    });
+    }
+    if (gen.length) {
+      html += '<div class="o-sec"><h2>본부 일반 자료</h2><span>연도별 · ' + gen.length + '건</span></div>';
+      var byYear = {}; gen.forEach(function (d) { (byYear[d.year] = byYear[d.year] || []).push(d); });
+      Object.keys(byYear).sort(function (a, b) { return b - a; }).forEach(function (y) {
+        html += '<h2 class="o-year">' + y + '년 <small>' + byYear[y].length + '건</small></h2>' + catGroups(byYear[y]);
+      });
+    }
     $('docList').innerHTML = html;
+  }
+  // 분류 바꾸기 (운영임원) — 걷기 회차 · 종류 · 연도 · 제목
+  var docEditing = null;
+  function openDocMeta(d) {
+    docEditing = d;
+    $('dTitle').value = d.title || ''; $('dYear').value = d.year || ''; $('dCat').value = d.category;
+    $('dWalk').innerHTML = walkOptions(d.walk_no || ''); $('docMsg').className = 'm-msg';
+    $('docModal').classList.add('on'); $('dWalk').focus();
+  }
+  async function saveDocMeta(e) {
+    e.preventDefault(); var d = docEditing; if (!d) return;
+    var row = { walk_no: parseInt($('dWalk').value, 10) || null, category: $('dCat').value, year: parseInt($('dYear').value, 10), title: $('dTitle').value.trim() };
+    if (!row.year || !row.title) return note($('docMsg'), 'err', '연도와 제목을 입력해 주세요.');
+    var r = await window.msb.from('docs').update(row).eq('id', d.id).select().single();
+    if (r.error) return note($('docMsg'), 'err', window.mErr(r.error));
+    Object.assign(d, r.data); $('docModal').classList.remove('on'); loadDocs();
   }
   // 현행 회칙: 아카이브에서 '회칙' 자료 중 가장 최근 것을 연다
   async function openBylaws() {
@@ -158,6 +218,8 @@
         var url = b.dataset.act === 'view' ? await signed(d.path) : await signed(d.orig_path, d.orig_name || (d.title + '.' + extOf(d.orig_path)));
         if (w) w.location = url; else location.href = url;
       } catch (ex) { if (w) w.close(); alert(window.mErr(ex)); }
+    } else if (b.dataset.act === 'edit') {
+      openDocMeta(d);
     } else if (b.dataset.act === 'del') {
       if (!confirm('"' + d.title + '" 자료를 삭제할까요? 파일도 함께 지워집니다.')) return;
       var paths = [d.path, d.orig_path].filter(Boolean);
@@ -291,6 +353,8 @@
   function setupUpload() {
     $('uCat').innerHTML = CATS.filter(function (c) { return perms.manager || c !== '명부·개인정보'; }).map(function (c) { return '<option>' + c + '</option>'; }).join('');
     $('uYear').value = new Date().getFullYear();
+    $('uWalk').innerHTML = walkOptions('');
+    $('uWalk').addEventListener('change', function () { var n = parseInt(this.value, 10); if (n) $('uYear').value = WALK_BASE + n; });
     $('upForm').addEventListener('submit', uploadOne);
     $('dirPick').addEventListener('change', pickFolder);
     $('bulkGo').addEventListener('click', runBulk);
@@ -364,7 +428,7 @@
     try {
       var path = await putFile(f, year, cat, sens), orig = o ? await putFile(o, year, cat, sens) : null;
       var ds = $('uDate').value.trim();
-      var row = await insertDoc({ year: year, category: cat, title: title, doc_date: toDate(ds), date_text: ds || null, doc_no: $('uNo').value.trim() || null,
+      var row = await insertDoc({ year: year, category: cat, title: title, walk_no: parseInt($('uWalk').value, 10) || null, doc_date: toDate(ds), date_text: ds || null, doc_no: $('uNo').value.trim() || null,
         note: $('uNote').value.trim() || null, path: path, mime: f.type || MIME[extOf(f.name)] || null, size: f.size + (o ? o.size : 0),
         orig_path: orig, orig_name: o ? o.name : null, sensitive: !!sens, uploaded_by: me.id, uploader_name: profile.name || me.email });
       DOCS.unshift(row); loadDocs();
@@ -399,6 +463,12 @@
     await analyze(out, true);
   }
   function baseName(n) { return n.replace(/\.[^.]+$/, ''); }
+  // manifest에 회차가 없을 때: 제목에 '걷기'가 있으면 그 해 회차 (제목의 '제N회'가 먼저)
+  function walkGuess(title, year) {
+    if (!/걷기/.test(title || '')) return null;
+    var m = /제\s*(\d{1,2})\s*회/.exec(title), n = m ? +m[1] : (year || 0) - WALK_BASE;
+    return n >= 1 && n <= 99 ? n : null;
+  }
   async function analyze(list, autoStart) {
     list = list.filter(function (x) { return !/(^|\/)(\.|~\$|Thumbs\.db|desktop\.ini)/i.test(x.path); });
     var man = list.find(function (x) { return /(^|\/)manifest\.json$/.test(x.path); }), items;
@@ -406,7 +476,7 @@
       var base = man.path.replace(/manifest\.json$/, ''), byRel = {};
       list.forEach(function (x) { if (x.path.indexOf(base) === 0) byRel[x.path.slice(base.length)] = x.file; });
       var mf = JSON.parse(await man.file.text());
-      items = Object.keys(mf).map(function (rel) { var m = mf[rel]; m.rel = rel; m.file = byRel[rel]; m.origFile = m.orig ? byRel[m.orig] : null; return m; })
+      items = Object.keys(mf).map(function (rel) { var m = mf[rel]; m.rel = rel; m.file = byRel[rel]; m.origFile = m.orig ? byRel[m.orig] : null; m.walk = parseInt(m.walk, 10) || walkGuess(m.title, m.year); return m; })
         .filter(function (m) { return m.file; });
     } else {
       var year = parseInt($('uYear').value, 10) || new Date().getFullYear(), cat = $('uCat').value, groups = {};
@@ -414,7 +484,7 @@
       items = Object.keys(groups).map(function (k) {
         var fs = groups[k], view = fs.find(function (f) { return /\.pdf$/i.test(f.name); }) || fs[0];
         var orig = fs.find(function (f) { return f !== view; }) || null;
-        return { year: year, category: cat, title: k, date: '', no: '', sensitive: cat === '명부·개인정보', file: view, origFile: orig };
+        return { year: year, category: cat, walk: parseInt($('uWalk').value, 10) || null, title: k, date: '', no: '', sensitive: cat === '명부·개인정보', file: view, origFile: orig };
       });
     }
     var tooBig = items.filter(function (m) { return m.file.size > 50 * 1048576 || (m.origFile && m.origFile.size > 50 * 1048576); });
@@ -423,7 +493,8 @@
     var todo = items.filter(function (m) { return !have[m.year + '|' + m.category + '|' + m.title]; });
     bulk = { items: todo };
     var sens = todo.filter(function (m) { return m.sensitive; }).length;
-    $('bulkInfo').innerHTML = (man ? '정리된 폴더(manifest) 기준 · ' : '파일 ' + list.length + '개 → <b>' + esc($('uYear').value) + '년 · ' + esc($('uCat').value) + '</b>로 · ') +
+    var wk = parseInt($('uWalk').value, 10);
+    $('bulkInfo').innerHTML = (man ? '정리된 폴더(manifest) 기준 · ' : '파일 ' + list.length + '개 → <b>' + esc($('uYear').value) + '년 · ' + esc($('uCat').value) + (wk ? ' · ' + walkLabel(wk) : '') + '</b>로 · ') +
       '자료 ' + items.length + '건 중 <b>' + todo.length + '건</b>을 올립니다' + (items.length - todo.length ? ' (이미 있는 ' + (items.length - todo.length) + '건 건너뜀)' : '') +
       (sens ? '. 개인정보 포함 ' + sens + '건' : '') + (tooBig.length ? '. 50MB 넘는 ' + tooBig.length + '건 제외' : '') + '.';
     $('bulkGo').disabled = !todo.length;
@@ -439,7 +510,7 @@
       try {
         var path = await putFile(m.file, m.year, m.category, m.sensitive);
         var orig = m.origFile ? await putFile(m.origFile, m.year, m.category, m.sensitive) : null;
-        await insertDoc({ year: m.year, category: m.category, title: m.title, doc_date: toDate(m.date), date_text: m.date || null, doc_no: m.no || null,
+        await insertDoc({ year: m.year, category: m.category, title: m.title, walk_no: m.walk || null, doc_date: toDate(m.date), date_text: m.date || null, doc_no: m.no || null,
           note: m.orig_note || null, path: path, mime: m.file.type || MIME[extOf(m.file.name)] || null, size: m.file.size + (m.origFile ? m.origFile.size : 0),
           orig_path: orig, orig_name: m.origFile ? m.title + '.' + extOf(m.origFile.name) : null, sensitive: !!m.sensitive,
           uploaded_by: me.id, uploader_name: profile.name || me.email });
@@ -453,12 +524,18 @@
   }
 
   // ---------------- 3·1 만세길 걷기 참가 교회 (manse-walk-setup.sql) ----------------
-  //  참가 신청은 삼기연 홈페이지에서 받고, 행사가 끝나면 삼기연 임원방의 '삼일만세운동본부로 이관'으로 교회별 인원이 들어옴
+  //  참가 신청은 이 홈페이지(walk.html)에서 받고, 교회별 인원은 신청 기록을 묶어서 보여 줌
+  //  신청 기록이 없는 지난 회차는 교회별 인원만 남은 기록(walk_runs · walk_churches — 옛 자료 옮기기로 들어옴)으로 보여 줌
   var RUNS = [], WCH = [];
   function n0(v) { return Number(v || 0).toLocaleString('ko-KR'); }
   function dot(d) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || ''); return m ? m[1] + '.' + m[2] + '.' + m[3] : ''; }
   function when(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate() + ' ' + d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }); }
   function setupWalks() {
+    $('wkDocs').addEventListener('click', function (e) {   // 걷기 공문 · 자료만 모아 보기
+      e.preventDefault(); state.biz = 'walk'; state.cat = state.year = state.q = '';
+      $('fBiz').value = 'walk'; $('fCat').value = $('fYear').value = $('fText').value = ''; renderDocs();
+      document.querySelector('.o-tab[data-tab="docs"]').click(); window.scrollTo(0, 0);
+    });
     $('wkSel').addEventListener('change', renderWalks);
     $('wkQ').addEventListener('input', renderWalks);
     $('wkPrint').addEventListener('click', function () { window.print(); });
@@ -484,6 +561,16 @@
     });
     RUNS = (a.data || []).filter(function (e) { return WCH.some(function (c) { return c.walk_no === e.no; }); })
       .map(function (e) { return { walk_no: e.no, event: e.event, title: e.title, event_date: e.event_date, place: e.place, churches: WCH.filter(function (c) { return c.walk_no === e.no; }).length }; });
+    var oldR = await window.msb.from('walk_runs').select('walk_no,event_key,title,event_date,place').order('walk_no', { ascending: false });
+    var oldC = oldR.error ? oldR : await window.msb.from('walk_churches').select('walk_no,church,region,apps,adults,minors').range(0, 9999);
+    if (!oldR.error && !oldC.error) (oldR.data || []).forEach(function (r) {
+      if (RUNS.some(function (x) { return x.walk_no === r.walk_no; })) return;   // 신청 기록이 있으면 그쪽
+      var cs = (oldC.data || []).filter(function (c) { return c.walk_no === r.walk_no; }); if (!cs.length) return;
+      cs.forEach(function (c) { WCH.push({ walk_no: r.walk_no, church: c.church, region: c.region || '', apps: c.apps || 0, adults: c.adults || 0, minors: c.minors || 0 }); });
+      var ev = (a.data || []).filter(function (e) { return e.no === r.walk_no; })[0] || {};
+      RUNS.push({ walk_no: r.walk_no, event: ev.event || r.event_key || '', title: ev.title || r.title, event_date: ev.event_date || r.event_date, place: ev.place || r.place, churches: cs.length, past: true });
+    });
+    RUNS.sort(function (x, y) { return y.walk_no - x.walk_no; });
     var sel = $('wkSel'), cur = sel.value;
     sel.innerHTML = RUNS.map(function (r) { return '<option value="' + r.walk_no + '">제' + r.walk_no + '회' + (r.event_date ? ' · ' + dot(r.event_date) : '') + ' — 교회 ' + r.churches + '곳</option>'; }).join('') +
       (RUNS.length > 1 ? '<option value="all">회차별 비교 (교회마다 몇 번 참가했는지)</option>' : '');
@@ -520,7 +607,7 @@
     $('wkCount').textContent = '교회 ' + rows.length + '곳';
     $('wkSum').innerHTML = '<h2 class="wk-h">' + esc(run.title || ('제' + run.walk_no + '회 3·1 만세길 걷기')) + '</h2>' +
       '<p class="m-help" style="margin:0 0 12px">' + [run.event_date ? dot(run.event_date) : '', run.place || ''].filter(Boolean).map(esc).join(' · ') +
-      ' · <a href="walk-admin.html?e=' + encodeURIComponent(run.event) + '">신청 상세 기록 →</a></p>' +
+      (run.past ? ' · 교회별 인원만 남은 지난 기록' : ' · <a href="walk-admin.html?e=' + encodeURIComponent(run.event) + '">신청 상세 기록 →</a>') + '</p>' +
       '<div class="wk-kpis"><div><b>' + rows.length + '</b><span>참가 교회</span></div><div><b>' + n0(t.a + t.m) + '</b><span>참가 인원</span></div>' +
       '<div><b>' + n0(t.a) + '</b><span>성인</span></div><div><b>' + n0(t.m) + '</b><span>미성년</span></div><div><b>' + n0(t.apps) + '</b><span>신청 건수</span></div></div>';
     $('wkTable').innerHTML = '<tr><th style="width:44px;text-align:center">순</th><th>교회</th><th>지역</th><th style="text-align:right">신청</th><th style="text-align:right">성인</th><th style="text-align:right">미성년</th><th style="text-align:right">합계</th></tr>' +

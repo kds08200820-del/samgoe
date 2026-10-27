@@ -229,6 +229,9 @@ create table if not exists public.docs (
   created_at    timestamptz not null default now()
 );
 create index if not exists docs_year_idx on public.docs (year desc, category, doc_date desc);
+-- 3·1 만세길 걷기 자료면 회차(제N회), 본부 일반 자료는 비움 — 관리자 메뉴에서 걷기 자료를 회차별로 따로 묶음
+alter table public.docs add column if not exists walk_no int check (walk_no is null or walk_no between 1 and 99);
+create index if not exists docs_walk_idx on public.docs (walk_no) where walk_no is not null;
 alter table public.docs enable row level security;
 revoke all on public.docs from anon, authenticated;
 grant select, insert, update, delete on public.docs to authenticated;
