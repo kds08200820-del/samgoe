@@ -1004,14 +1004,14 @@
       <!-- 업로드 패널 — '＋ 사진 올리기'를 눌러야 나타남 (정회원 전용) -->
       <div id="igPanel" class="ig-panel" style="display:none;">
         <div class="ig-tabs">
-          <button class="ig-tab on" data-igtab="photo" type="button">📷 사진</button>
-          <button class="ig-tab" data-igtab="youtube" type="button">▶ 유튜브</button>
-          <button class="ig-tab" data-igtab="insta" type="button">📸 인스타그램</button>
+          <button class="ig-tab on" data-igtab="photo" type="button">사진</button>
+          <button class="ig-tab" data-igtab="youtube" type="button">유튜브</button>
+          <button class="ig-tab" data-igtab="insta" type="button">인스타그램</button>
         </div>
         <div id="igTabPhoto">
           <div class="ig-srcbtns">
-            <button class="ig-srcbtn" id="igCamBtn" type="button"><span>📷</span>사진 촬영</button>
-            <button class="ig-srcbtn" id="igAlbBtn" type="button"><span>🖼️</span>사진첩에서 선택</button>
+            <button class="ig-srcbtn" id="igCamBtn" type="button">사진 촬영</button>
+            <button class="ig-srcbtn" id="igAlbBtn" type="button">사진첩에서 선택</button>
           </div>
           <div class="ig-thumbs" id="igThumbs"></div>
         </div>
@@ -1929,15 +1929,15 @@ window.samMarquee = function(row, speed){
       if(p.embed_kind==='youtube'){
         var id=ytId(p.embed_url); if(!id) return '';
         return '<a class="mq-item" href="gallery.html"><img src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg" alt="'+esc(p.title)+'" loading="lazy" />'+
-          '<span class="mq-badge">▶ 유튜브</span>'+cap+'</a>';
+          '<span class="mq-badge">유튜브</span>'+cap+'</a>';
       }
       if(p.embed_kind==='instagram'){
         if(!instaEmbed(p.embed_url)) return '';
-        return '<a class="mq-item" href="gallery.html"><div class="mq-ph"><span>📸</span>인스타그램 게시물</div>'+cap+'</a>';
+        return '<a class="mq-item" href="gallery.html"><div class="mq-ph">인스타그램 게시물</div>'+cap+'</a>';
       }
       var photos=phMap[p.id]||[]; if(!photos.length) return '';
       return '<a class="mq-item" href="gallery.html">'+
-        (photos.length>1?'<span class="mq-badge">📷 '+photos.length+'장</span>':'')+
+        (photos.length>1?'<span class="mq-badge">사진 '+photos.length+'장</span>':'')+
         '<img src="'+esc(photos[0].url)+'" alt="'+esc(p.title)+'" loading="lazy" />'+cap+'</a>';
     }).filter(Boolean);
     if(!html.length){ mqMsg('아직 올라온 게시물이 없습니다.'); return; }
@@ -2258,8 +2258,8 @@ if ('serviceWorker' in navigator) {
     if(!pressRows.length){ grid.innerHTML=empty+'아직 등록된 기사가 없습니다.</div>'; return; }
     grid.innerHTML=pressRows.map(function(a){
       var thumb=a.image_url
-        ? '<img src="'+esc(a.image_url)+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=press-thumb-ph><span>📰</span></div>\'" />'
-        : '<div class="press-thumb-ph"><span>📰</span>'+esc(a.source||'언론 보도')+'</div>';
+        ? '<img src="'+esc(a.image_url)+'" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=press-thumb-ph>언론 보도</div>\'" />'
+        : '<div class="press-thumb-ph">'+esc(a.source||'언론 보도')+'</div>';
       // 수정·삭제: 등록한 사람 또는 관리자
       var canManage = isAdminUser || (me && a.created_by===me.id);
       return '<article class="press-card">'+

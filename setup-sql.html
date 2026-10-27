@@ -102,7 +102,7 @@
     }
     document.querySelectorAll('[data-set]').forEach(function(card){
       var btn = card.querySelector('[data-copy]'), msg = card.querySelector('[data-msg]'), ta = card.querySelector('[data-text]');
-      var label = '📋 SQL 복사하기';
+      var label = 'SQL 복사하기';
       load(SETS[card.getAttribute('data-set')]).then(function(text){
         ta.value = text; btn.disabled = false; btn.textContent = label;
       }).catch(function(e){

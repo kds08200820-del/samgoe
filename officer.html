@@ -27,7 +27,6 @@
     .menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:0 0 30px;}
     .mi{display:flex;flex-direction:column;gap:3px;padding:16px 18px;background:var(--canvas);border:1px solid var(--hairline);transition:border-color .15s,box-shadow .15s;}
     .mi:hover{border-color:var(--primary);box-shadow:0 6px 18px rgba(13,29,58,.08);}
-    .mi .ic{font-size:22px;line-height:1;margin-bottom:6px;}
     .mi b{font-size:16px;font-weight:700;color:var(--ink);}
     .mi small{font-size:13px;color:var(--muted);line-height:1.5;}
     .mi.hot{background:var(--primary);border-color:var(--primary);}
@@ -37,7 +36,7 @@
     .menuHead{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--muted);}
     @media (max-width:600px){   /* 휴대폰: 두 줄로 작게 — 설명은 빼고, 행운권 QR만 한 줄 다 씀 */
       .menu{grid-template-columns:1fr 1fr;gap:8px;}
-      .mi{padding:13px 12px;} .mi .ic{font-size:20px;margin-bottom:4px;} .mi b{font-size:14.5px;line-height:1.35;}
+      .mi{padding:13px 12px;} .mi b{font-size:14.5px;line-height:1.35;}
       .mi small{display:none;} .mi.hot{grid-column:1/-1;} .mi.hot small{display:block;}
     }
     .tabs{display:flex;gap:0;border-bottom:2px solid var(--hairline);margin-bottom:28px;}
@@ -78,7 +77,7 @@
     .row{display:flex;align-items:center;gap:14px;padding:16px 20px;border-top:1px solid var(--hairline);cursor:pointer;}
     .row:first-child{border-top:0;}
     .row:hover{background:var(--surface-soft);}
-    .row .ic{font-size:22px;flex:0 0 auto;}
+    .row .ic,.arcItem .ic,.ptop .ic{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 6px;border-radius:4px;background:#eef1f6;color:var(--primary);font-size:11.5px;font-weight:700;letter-spacing:-.02em;}
     .row .main{flex:1;min-width:0;}
     .row .t{font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .row .m{font-size:13px;color:var(--muted);margin-top:3px;}
@@ -153,7 +152,6 @@
     .prow{padding:14px 20px;border-top:1px solid var(--hairline);}
     .prow:first-child{border-top:0;}
     .ptop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-    .ptop .ic{font-size:20px;}
     .ptop .pt{flex:1;min-width:200px;padding:8px 10px;border:1px solid var(--hairline-strong);font-size:15px;font-weight:700;font-family:inherit;color:var(--ink);border-radius:0;}
     .ptop .pt:focus{outline:none;border:2px solid var(--ink);}
     .ptop .pm{flex-basis:100%;font-size:12px;color:var(--muted);}
@@ -250,12 +248,12 @@
     <!-- 임원방 메뉴 — 관리자 · 운영관리 · 행사 기록 · 행운권 QR을 모두 여기서 -->
     <p class="menuHead">임원방 메뉴</p>
     <nav class="menu" id="ofcMenu" aria-label="임원방 메뉴">
-      <a class="mi hot" href="lucky-admin.html"><span class="ic" aria-hidden="true">🎟️</span><b>행운권 QR 만들기 · 인쇄</b><small>번호 범위로 QR 만들기 · 이미지 넣어 PDF · 등록 현황</small></a>
-      <a class="mi" href="walk-admin.html"><span class="ic" aria-hidden="true">🚶</span><b>만세길 걷기 행사 · 신청 기록</b><small>회차 만들기 · 첫 화면 게시 · 신청 · 입금 확인</small></a>
-      <a class="mi" href="prize-winners.html"><span class="ic" aria-hidden="true">🎁</span><b>경품 당첨자 명단</b><small>당첨 인증 · 수령 확인 · 교회별 인쇄</small></a>
-      <a class="mi" href="accounting.html"><span class="ic" aria-hidden="true">💰</span><b>회계 관리</b><small>수입 · 지출 기록 · 연도 · 달별 회계 보고 인쇄</small></a>
-      <a class="mi adm" href="admin.html" id="miAdmin" hidden><span class="ic" aria-hidden="true">👥</span><b>회원 · 임원 관리</b><small>회원 추가 · 수정 · 임원 직책 지정 (회장 · 최고관리자)</small></a>
-      <a class="mi adm" href="operator.html" id="miOperator" hidden><span class="ic" aria-hidden="true">🛠️</span><b>운영관리</b><small>대시보드 · 회원 정지 · 문의 답변 · 감사 기록</small></a>
+      <a class="mi hot" href="lucky-admin.html"><b>행운권 QR 만들기 · 인쇄</b><small>번호 범위로 QR 만들기 · 이미지 넣어 PDF · 등록 현황</small></a>
+      <a class="mi" href="walk-admin.html"><b>만세길 걷기 행사 · 신청 기록</b><small>회차 만들기 · 첫 화면 게시 · 신청 · 입금 확인</small></a>
+      <a class="mi" href="prize-winners.html"><b>경품 당첨자 명단</b><small>당첨 인증 · 수령 확인 · 교회별 인쇄</small></a>
+      <a class="mi" href="accounting.html"><b>회계 관리</b><small>수입 · 지출 기록 · 연도 · 달별 회계 보고 인쇄</small></a>
+      <a class="mi adm" href="admin.html" id="miAdmin" hidden><b>회원 · 임원 관리</b><small>회원 추가 · 수정 · 임원 직책 지정 (회장 · 최고관리자)</small></a>
+      <a class="mi adm" href="operator.html" id="miOperator" hidden><b>운영관리</b><small>대시보드 · 회원 정지 · 문의 답변 · 감사 기록</small></a>
     </nav>
 
     <div class="tabs">
@@ -346,9 +344,9 @@
     function todayStr(){ var x=new Date(); return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2); }
     function fmtSize(n){ n=Number(n)||0; if(n<1024) return n+' B'; if(n<1048576) return (n/1024).toFixed(0)+' KB'; return (n/1048576).toFixed(1)+' MB'; }
     function fileIcon(name){ var e=(name||'').split('.').pop().toLowerCase();
-      if(['pdf'].indexOf(e)>=0) return '📕'; if(['doc','docx','hwp','hwpx','txt'].indexOf(e)>=0) return '📄';
-      if(['xls','xlsx','csv'].indexOf(e)>=0) return '📊'; if(['ppt','pptx'].indexOf(e)>=0) return '📑';
-      if(['jpg','jpeg','png','gif','webp','heic'].indexOf(e)>=0) return '🖼'; if(['zip','rar','7z'].indexOf(e)>=0) return '🗜'; return '📎'; }
+      if(['pdf'].indexOf(e)>=0) return 'PDF'; if(['hwp','hwpx'].indexOf(e)>=0) return '한글'; if(['doc','docx','txt'].indexOf(e)>=0) return '문서';
+      if(['xls','xlsx','csv'].indexOf(e)>=0) return '엑셀'; if(['ppt','pptx'].indexOf(e)>=0) return 'PPT';
+      if(['jpg','jpeg','png','gif','webp','heic'].indexOf(e)>=0) return '사진'; if(['zip','rar','7z'].indexOf(e)>=0) return '압축'; return '파일'; }
 
     // ---------- 탭 ----------
     document.querySelectorAll('.tab[data-tab]').forEach(function(t){
@@ -367,7 +365,7 @@
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------
     var TYPE_ORDER = ['총회자료','회의록','월례·임원회의','공문','보고서','순서지','기타'];
-    var TYPE_ICON = {'총회자료':'📋','회의록':'📝','월례·임원회의':'🗓️','공문':'📨','보고서':'📊','순서지':'📄','기타':'📎'};
+    var TYPE_ICON = {'총회자료':'총회','회의록':'회의','월례·임원회의':'월례','공문':'공문','보고서':'보고','순서지':'순서','기타':'기타'};
 
     // ----- 업로드 변환본 정리: 업로드 날짜가 제목에 붙고 연도가 틀린 항목을 바로잡는다 (관리자, 자동 1회) -----
     function detectArcType(name, cur){
@@ -463,13 +461,13 @@
         if(y!==last){ html += '<div class="ygrp">'+y+'</div>'; last=y; }
         if(it.kind==='post'){
           var p=it.p, n=(MC[p.id]||[]).length;
-          html += '<div class="row" data-id="'+p.id+'"><div class="ic">📝</div><div class="main">'+
+          html += '<div class="row" data-id="'+p.id+'"><div class="ic">회의</div><div class="main">'+
             '<div class="t">'+esc(p.title)+'</div>'+
             '<div class="m">회의 글 · '+esc(p.author_name||'임원')+(p.meeting_date?' · '+fmtDate(p.meeting_date):'')+' · 댓글 '+n+'</div></div>'+
             '<div class="side"><span class="m" style="color:var(--muted)">'+fmtDT(p.created_at)+'</span></div></div>';
         } else {
           var f=it.f, arc=/^arc(db)?:/.test(f.path||'');
-          html += '<div class="row" style="cursor:default" data-fid="'+f.id+'"><div class="ic">'+(arc?'📜':fileIcon(f.name))+'</div><div class="main">'+
+          html += '<div class="row" style="cursor:default" data-fid="'+f.id+'"><div class="ic">'+(arc?'기록':fileIcon(f.name))+'</div><div class="main">'+
             '<div class="t">'+esc(f.title||f.name)+'</div>'+
             '<div class="m">회의 자료 · '+esc(window.folderName?window.folderName(f.folder_id):'')+(arc?'':' · '+esc(f.name)+' · '+esc(f.author_name||''))+'</div></div>'+
             '<div class="side">'+(arc?'<button class="btn ghost sm mopen">열기</button>':'<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>')+'</div></div>';
@@ -596,7 +594,7 @@
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       document.getElementById('mDate').value = todayStr();
-      if(!(window.R2_WORKER_URL||'')){ var fn=document.getElementById('fileNotice'); fn.style.display='block'; fn.innerHTML='⚠️ 파일 저장소(Cloudflare) 주소가 설정되지 않아 업로드가 비활성화됩니다. (관리자 설정 필요)'; }
+      if(!(window.R2_WORKER_URL||'')){ var fn=document.getElementById('fileNotice'); fn.style.display='block'; fn.innerHTML='파일 저장소(Cloudflare) 주소가 설정되지 않아 업로드가 비활성화됩니다. (관리자 설정 필요)'; }
 
       await loadMeetings();
       await loadDBDocs();

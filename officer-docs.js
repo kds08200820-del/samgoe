@@ -238,7 +238,7 @@
       var meta = arc ? esc(pathName(f.folder_id))+' · 기록물'+(f.memo?' · '+esc(f.memo):'')
                      : esc(pathName(f.folder_id))+' · '+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'')+' · '+fmtDT(f.created_at)+(f.memo?' · '+esc(f.memo):'');
       var open = arc ? '<button class="btn ghost sm dopen">열기</button>' : '<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>';
-      html += '<div class="row drow" data-id="'+f.id+'"><div class="ic">'+(arc?'📜':fileIcon(f.name))+'</div><div class="main">'+
+      html += '<div class="row drow" data-id="'+f.id+'"><div class="ic">'+(arc?'기록':fileIcon(f.name))+'</div><div class="main">'+
         '<div class="t">'+esc(f.title||f.name)+'</div>'+
         '<div class="m">'+meta+'</div></div>'+
         '<div class="side">'+open+'<button class="btn ghost sm dedit">정보 수정</button>'+(canRm?'<button class="btn danger sm ddel">삭제</button>':'')+'</div></div>';
@@ -324,7 +324,7 @@
     await loadAll();
     if(errs.length){
       var n = document.getElementById('fileNotice'); n.style.display='';
-      n.innerHTML = '⚠️ 미분류 자료 자동 정리에 실패했습니다: '+esc(errs[0])+'<br><span style="font-size:12px">관리자: <b>doc-basket-setup.sql</b>을 다시 실행해 주세요.</span>';
+      n.innerHTML = '미분류 자료 자동 정리에 실패했습니다: '+esc(errs[0])+'<br><span style="font-size:12px">관리자: <b>doc-basket-setup.sql</b>을 다시 실행해 주세요.</span>';
     }
   }
   window.refileUnfiled = async function(){ await autoFileLegacy(); renderPending(); renderDocs(); };

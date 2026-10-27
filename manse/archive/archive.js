@@ -31,7 +31,7 @@
     return s.length ? '<span class="cnt">' + s.join(' · ') + '</span>' : '';
   }
   // 임원으로 로그인하면(admin.js가 body에 mz-officer 표시) 카드마다 '사진 추가' 칩
-  function addChip(e) { return document.body.classList.contains('mz-officer') ? '<span class="mz-addph" data-addph="' + esc(e.id) + '">📷 사진 추가</span>' : ''; }
+  function addChip(e) { return document.body.classList.contains('mz-officer') ? '<span class="mz-addph" data-addph="' + esc(e.id) + '">+ 사진 추가</span>' : ''; }
 
   // ---------- 3·1만세길 걷기대회 ----------
   function renderWalks() {
@@ -141,8 +141,8 @@
     $('dlgPlace').textContent = e.place || ''; $('dlgPlace').hidden = !e.place;
     $('dlgSum').textContent = e.summary || '';
     $('dlgFacts').innerHTML = (e.facts || []).map(function (f) { return '<span>' + esc(f) + '</span>'; }).join('');
-    var links = (e.docs || []).map(function (f) { return '<a class="mz-btn ghost" style="height:38px;font-size:14px" href="' + ROOT + 'docs/' + encodeURIComponent(f) + '" target="_blank" rel="noopener">📄 ' + esc(docTitle(f)) + '</a>'; })
-      .concat((e.links || []).map(function (l) { return '<a class="mz-btn ghost" style="height:38px;font-size:14px" href="' + esc(l[1]) + '" target="_blank" rel="noopener">▶ ' + esc(l[0]) + '</a>'; }));
+    var links = (e.docs || []).map(function (f) { return '<a class="mz-btn ghost" style="height:38px;font-size:14px" href="' + ROOT + 'docs/' + encodeURIComponent(f) + '" target="_blank" rel="noopener">' + esc(docTitle(f)) + '</a>'; })
+      .concat((e.links || []).map(function (l) { return '<a class="mz-btn ghost" style="height:38px;font-size:14px" href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + '</a>'; }));
     $('dlgLinks').innerHTML = links.join('');
     renderVids(e);
     renderThumbs(e);

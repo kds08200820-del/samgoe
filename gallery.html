@@ -60,7 +60,7 @@
     .post img.cover{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s ease;}
     .post:hover img.cover{transform:scale(1.04);}
     .post .nocover{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-      background:var(--surface-card);color:var(--hairline-strong);font-size:44px;}
+      background:var(--surface-card);color:var(--muted);font-size:14px;font-weight:600;}
     .post .tag{position:absolute;top:8px;right:8px;color:#fff;font-size:13px;font-weight:700;
       text-shadow:0 1px 3px rgba(0,0,0,0.65);}
     .post .hov{position:absolute;inset:0;background:rgba(0,0,0,0.35);display:flex;gap:22px;
@@ -102,7 +102,8 @@
     .idots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.45);}
     .idots i.on{background:#fff;}
     .iacts{display:flex;align-items:center;gap:14px;padding:12px 16px 0;}
-    .iacts button{border:0;background:none;cursor:pointer;font-size:25px;line-height:1;padding:0;}
+    .iacts button{border:0;background:none;cursor:pointer;font-size:25px;line-height:1;padding:0;color:var(--ink);display:inline-flex;}
+    .post .hov span{display:inline-flex;align-items:center;gap:6px;}
     .ilikes{padding:8px 16px 0;font-weight:700;font-size:14px;color:var(--ink);}
     .icap{padding:6px 16px 0;font-size:14.5px;line-height:1.65;color:var(--bodytext);white-space:pre-wrap;word-break:break-word;}
     .icap b{color:var(--ink);}
@@ -253,7 +254,7 @@
     var me = null, myProfile = null, isAdminUser = false, isFull = false;
     var POSTS = [], PH = {}, CM = {}, RX = {};  // maps keyed by post_id
     var pendingFiles = [];
-    var EMOJIS = ['👍','❤️','🙏','🎉','😊'];
+    var HEART = '\u2764\uFE0F';   // '좋아요' 저장 값 (화면에는 선 아이콘)
     var ADMIN_EMAIL = 'kds08200820@gmail.com';
 
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
@@ -340,21 +341,21 @@
       board.innerHTML = POSTS.map(function(p){
         var photos = PH[p.id]||[];
         var nComment = (CM[p.id]||[]).length;
-        var nHeart = (RX[p.id]||[]).filter(function(r){ return r.emoji==='❤️'; }).length;
+        var nHeart = (RX[p.id]||[]).filter(function(r){ return r.emoji===HEART; }).length;
         var media, tag='';
         if(p.embed_kind==='youtube' && ytId(p.embed_url)){
-          media = '<img class="cover" src="https://i.ytimg.com/vi/'+ytId(p.embed_url)+'/hqdefault.jpg" loading="lazy" alt="'+esc(p.title)+'" />'; tag='▶';
+          media = '<img class="cover" src="https://i.ytimg.com/vi/'+ytId(p.embed_url)+'/hqdefault.jpg" loading="lazy" alt="'+esc(p.title)+'" />'; tag='영상';
         } else if(p.embed_kind==='instagram'){
-          media = '<div class="nocover">📸</div>';
+          media = '<div class="nocover">인스타그램</div>';
         } else if(photos.length){
           media = '<img class="cover" src="'+esc(photos[0].url)+'" loading="lazy" alt="'+esc(p.title)+'" />';
-          if(photos.length>1) tag='📷'+photos.length;
+          if(photos.length>1) tag='사진 '+photos.length;
         } else {
-          media = '<div class="nocover">🖼</div>';
+          media = '<div class="nocover">사진 없음</div>';
         }
         return '<div class="post" data-id="'+p.id+'">'+media+
           (tag?'<span class="tag">'+tag+'</span>':'')+
-          '<div class="hov"><span>❤️ '+nHeart+'</span><span>💬 '+nComment+'</span></div></div>';
+          '<div class="hov"><span><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.9 6.8 4.6c2-.2 3.9.9 5.2 2.7 1.3-1.8 3.2-2.9 5.2-2.7 3.4.3 5.3 3.6 4.1 6.7-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg> '+nHeart+'</span><span><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg> '+nComment+'</span></div></div>';
       }).join('');
     }
 
@@ -442,7 +443,7 @@
       var canDeletePost = me && (isOwner || isAdminUser);
 
       // 인스타그램형 게시물 보기
-      var hearts = reacts.filter(function(r){ return r.emoji==='❤️'; });
+      var hearts = reacts.filter(function(r){ return r.emoji===HEART; });
       var myHeart = me && hearts.some(function(r){ return r.user_id===me.id; });
       var initial = esc(String(p.author_name||'회원').charAt(0));
 
@@ -480,8 +481,8 @@
         '</div>'+
         mediaHtml+
         '<div class="iacts">'+
-          '<button id="iHeart" type="button" title="좋아요">'+(myHeart?'❤️':'🤍')+'</button>'+
-          '<button id="iCmtBtn" type="button" title="댓글">💬</button>'+
+          '<button id="iHeart" type="button" title="좋아요" aria-label="좋아요" aria-pressed="'+(myHeart?'true':'false')+'">'+(myHeart?'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="#e0245e" stroke="#e0245e" stroke-width="2" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.9 6.8 4.6c2-.2 3.9.9 5.2 2.7 1.3-1.8 3.2-2.9 5.2-2.7 3.4.3 5.3 3.6 4.1 6.7-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>':'<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.9 6.8 4.6c2-.2 3.9.9 5.2 2.7 1.3-1.8 3.2-2.9 5.2-2.7 3.4.3 5.3 3.6 4.1 6.7-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>')+'</button>'+
+          '<button id="iCmtBtn" type="button" title="댓글" aria-label="댓글"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/></svg></button>'+
         '</div>'+
         '<div class="ilikes">좋아요 '+hearts.length+'개</div>'+
         '<div class="icap"><b>'+esc(p.title)+'</b>'+(p.body?'\n'+esc(p.body):'')+'</div>'+
@@ -549,7 +550,7 @@
       }
       // 좋아요·댓글
       var heart = document.getElementById('iHeart');
-      if(heart) heart.addEventListener('click', function(){ toggleReaction(p.id,'❤️'); });
+      if(heart) heart.addEventListener('click', function(){ toggleReaction(p.id,HEART); });
       var cmtBtn = document.getElementById('iCmtBtn');
       if(cmtBtn) cmtBtn.addEventListener('click', function(){ var b=document.getElementById('cmtBox'); if(b) b.focus(); else location.href='login.html'; });
       modal.querySelectorAll('.cmt .rm').forEach(function(b){ b.addEventListener('click', function(){ deleteComment(b.getAttribute('data-cmt')); }); });

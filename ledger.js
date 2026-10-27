@@ -42,7 +42,7 @@
           '<option value="range">직접 고르기</option></select></label>' +
         '<span class="lg-range" data-k="range" hidden><input type="date" data-k="from" aria-label="시작일"> ~ <input type="date" data-k="to" aria-label="끝날"></span>' +
         '<span class="lg-sp"></span>' +
-        '<button type="button" class="lg-btn pri" data-k="print">🖨 회계 보고 인쇄</button>' +
+        '<button type="button" class="lg-btn pri" data-k="print">회계 보고 인쇄</button>' +
         '<button type="button" class="lg-btn" data-k="csv">엑셀(CSV)</button>' +
       '</div>' +
       '<div class="lg-kpis" data-k="kpis"></div>' +

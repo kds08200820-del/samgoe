@@ -1,6 +1,6 @@
 // 삼일만세운동본부 — 홈페이지에서 활동 기록·사진·유튜브 영상 추가 (임원 전용)
 //  - 누구에게나: 임원들이 추가한 기록·사진·영상을 불러와 공개 페이지에 함께 표시
-//  - 임원(임원 명단 재직자)에게: [+ 활동 기록 추가], 행사 상세의 [+ 사진 추가]·[▶ 유튜브 영상 추가], 삭제·수정 버튼
+//  - 임원(임원 명단 재직자)에게: [+ 활동 기록 추가], 행사 상세의 [+ 사진 추가]·[유튜브 영상 추가], 삭제·수정 버튼
 //  권한은 서버(RLS)가 최종 판단합니다. 사진은 올리기 전에 브라우저에서 줄입니다(긴 변 1600px / 썸네일 480px).
 //  영상 파일은 올리지 않고 유튜브 영상 ID만 저장합니다(activity_videos · activity-media-setup.sql).
 (function () {
@@ -211,7 +211,7 @@
     var act = ACTS[id];
     bar.hidden = false;
     bar.innerHTML = '<label class="mz-btn navy sm-btn"><input type="file" id="addPh" accept="image/*" multiple hidden>+ 사진 추가</label>' +
-      '<button type="button" class="mz-btn navy sm-btn" id="addYt">▶ 유튜브 영상 추가</button>' +
+      '<button type="button" class="mz-btn navy sm-btn" id="addYt">유튜브 영상 추가</button>' +
       (act && canEdit(act.created_by) ? '<button type="button" class="mz-btn ghost sm-btn" id="editAct">기록 수정</button><button type="button" class="mz-btn ghost sm-btn danger" id="delAct">기록 삭제</button>' : '') +
       '<span class="mz-admin-msg" id="dlgMsg">사진 여러 장을 이 화면에 끌어다 놓아도 한 번에 올라갑니다.</span>';
     $('addYt').addEventListener('click', function () { openYt(id); });
@@ -262,7 +262,7 @@
     $('rPlace').value = act ? (act.place || '') : ''; $('rPeople').value = act ? (act.people || '') : '';
     $('rWalk').value = act && act.walk ? act.walk : (preset.walk || ''); $('rSum').value = act ? (act.summary || '') : '';
     $('rFiles').value = ''; $('rFilesRow').hidden = !!act; $('recMsg').textContent = '';
-    $('rYt').value = ''; $('rYtRow').hidden = !!act;     // 수정할 때 영상은 행사 상세의 [▶ 유튜브 영상 추가]로
+    $('rYt').value = ''; $('rYtRow').hidden = !!act;     // 수정할 때 영상은 행사 상세의 [유튜브 영상 추가]로
     recDirty = false;
     showModal($('recModal'), $('rTitle'));
   }
@@ -363,14 +363,14 @@
     MZ.rerender();
     if (perms.officer && wbar) {
       wbar.hidden = false;
-      wbar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addWalk"></button><span class="mz-admin-msg">회차를 만들면 아래에 그 회차 카드가 생깁니다. 각 카드의 <b>📷 사진 추가</b>를 누르거나, 사진 여러 장을 카드 위에 <b>끌어다 놓으면</b> 그 회차에 한 번에 올라갑니다.</span>';
+      wbar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addWalk"></button><span class="mz-admin-msg">회차를 만들면 아래에 그 회차 카드가 생깁니다. 각 카드의 <b>사진 추가</b>를 누르거나, 사진 여러 장을 카드 위에 <b>끌어다 놓으면</b> 그 회차에 한 번에 올라갑니다.</span>';
       walkLabel();
       $('addWalk').addEventListener('click', function () { var n = MZ.maxWalk() + 1; openRec(null, { cat: '만세길 걷기', walk: n, title: '제' + n + '회 화성3·1운동만세길 걷기' }); });
     } else if (wbar) wbar.hidden = true;
     if (perms.officer) {
       var p = await window.mProfile(); myName = (p && p.name) || (me.email || '').split('@')[0];
       bar.hidden = false;
-      bar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addAct">+ 활동 기록 추가</button><span class="mz-admin-msg">기존 기록에는 카드의 <b>📷 사진 추가</b>를 누르거나 사진을 카드 위에 <b>끌어다 놓으세요</b>. 유튜브 영상은 카드를 열고 <b>▶ 유튜브 영상 추가</b>를 누르세요.</span>';
+      bar.innerHTML = '<button type="button" class="mz-btn navy sm-btn" id="addAct">+ 활동 기록 추가</button><span class="mz-admin-msg">기존 기록에는 카드의 <b>사진 추가</b>를 누르거나 사진을 카드 위에 <b>끌어다 놓으세요</b>. 유튜브 영상은 카드를 열고 <b>유튜브 영상 추가</b>를 누르세요.</span>';
       $('addAct').addEventListener('click', function () { openRec(null); });
     } else if (bar) bar.hidden = true;
     await load();

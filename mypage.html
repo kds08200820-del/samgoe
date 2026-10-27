@@ -67,7 +67,7 @@
     <!-- 내 정보 -->
     <div class="card">
       <h1 class="title">마이페이지</h1>
-      <p class="sub">삼기연 홈페이지에 로그인하셨습니다. 환영합니다. 🙏</p>
+      <p class="sub">삼기연 홈페이지에 로그인하셨습니다. 환영합니다.</p>
       <div id="viewMode">
         <div class="row"><span class="k">이름</span><span class="v" id="pName">—</span></div>
         <div class="row"><span class="k">교회</span><span class="v" id="pChurch">—</span></div>
@@ -302,7 +302,7 @@
           var r=await window.sb.rpc('soft_delete_account');
           if(r.error){ setMsg(delMsg,'err','탈퇴 처리 중 오류: '+r.error.message); btn.disabled=false; btn.textContent='탈퇴 진행'; return; }
           try{ await window.sb.auth.signOut(); }catch(_){}
-          alert('회원 탈퇴가 완료되었습니다. 그동안 함께해 주셔서 감사합니다. 🙏');
+          alert('회원 탈퇴가 완료되었습니다. 그동안 함께해 주셔서 감사합니다.');
           location.href='index.html';
         }catch(ex){ setMsg(delMsg,'err','탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'); btn.disabled=false; btn.textContent='탈퇴 진행'; }
       });

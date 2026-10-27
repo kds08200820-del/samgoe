@@ -190,7 +190,7 @@
       catch (e) {
         var setup = document.getElementById('setup');
         setup.style.display = 'block';
-        setup.innerHTML = '⚠️ 회원 목록을 불러오지 못했습니다. Supabase <b>SQL Editor</b>에서 <b>admin-console-setup.sql</b>을 실행했는지 확인해 주세요. (' + esc((e && e.message) || e) + ')';
+        setup.innerHTML = '회원 목록을 불러오지 못했습니다. Supabase <b>SQL Editor</b>에서 <b>admin-console-setup.sql</b>을 실행했는지 확인해 주세요. (' + esc((e && e.message) || e) + ')';
         document.getElementById('memberRows').innerHTML = '<tr><td colspan="8" style="color:var(--muted)">데이터 없음</td></tr>';
         return;
       }

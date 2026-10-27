@@ -46,7 +46,7 @@
   }
   function loginHref() { return '../login.html?next=' + encodeURIComponent('manse/officer.html#walks'); }
   function drawLink() {
-    var el = $('wkLink');
+    var el = $('wkLink'); el.hidden = false;   // 문제가 있을 때만 안내 (잘 연결되면 줄을 숨김)
     if (!sg) { el.innerHTML = '<span class="chip bad">연결 설정 없음</span> 삼괴연합회 홈페이지 연결 설정(config.js)을 찾지 못했습니다.'; return; }
     if (!sgUser) {
       el.innerHTML = '<span class="chip gray">삼괴연합회 로그인 필요</span> 이 브라우저에서 삼괴연합회 홈페이지에 <b>임원 계정</b>으로 로그인하면 아래 단추와 결과 보고가 열립니다. ' +
@@ -57,7 +57,7 @@
       el.innerHTML = '<span class="chip bad">임원 아님</span> 삼괴연합회 홈페이지에 <b>' + esc(sgUser.email) + '</b>(으)로 로그인되어 있지만 그쪽 임원 명단에 없어 기록을 볼 수 없습니다. 삼괴연합회 회장 · 최고관리자에게 임원 직책 지정을 부탁해 주세요.';
       return;
     }
-    el.innerHTML = '<span class="chip ok">연결됨</span> 삼괴연합회 홈페이지 기록을 읽습니다 — ' + esc(sgUser.profileName || sgUser.email) + (sgUser.role ? ' · ' + esc(sgUser.role) : '');
+    el.innerHTML = ''; el.hidden = true;
   }
 
   // ---------- 기록 불러오기 ----------

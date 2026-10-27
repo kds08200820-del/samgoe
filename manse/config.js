@@ -1,6 +1,6 @@
 // ============================================================
 //  삼일만세운동본부 — Supabase 연결 설정 (만세운동본부 전용 프로젝트)
-//  ⚠️ 만세운동본부 전용 Supabase 프로젝트를 만든 뒤 아래 두 줄을 채우면 로그인·임원방이 켜집니다.
+//  ※ 만세운동본부 전용 Supabase 프로젝트를 만든 뒤 아래 두 줄을 채우면 로그인·임원방이 켜집니다.
 //     위치: Supabase 대시보드 → (만세운동본부 프로젝트) → Project Settings → API
 //       - Project URL          → MANSE_SUPABASE_URL
 //       - Publishable(anon) key → MANSE_SUPABASE_KEY  (브라우저에 공개되어도 안전한 키 · RLS로 보호)
