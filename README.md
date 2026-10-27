@@ -53,6 +53,16 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - `ledger.js` · `ledger.css` — 두 곳이 같이 쓰는 장부 화면 (수입 · 지출 기록, 전기이월, 계정과목별 · 월별 표,
   변경 기록, 회계 보고 A4 인쇄, CSV). 장부는 각 프로젝트 DB에 따로 저장되어 섞이지 않습니다.
 
+## 삼일만세운동본부 Supabase (manse 프로젝트)
+
+- 처음 한 번: Supabase에 새 프로젝트 `manse`를 만들고 SQL Editor에서 아래 다섯 파일을 차례로 실행
+  (`setup-sql.html`의 '삼일만세운동본부' 복사 단추가 한 번에 복사): `manse/manse-setup.sql` → `manse/manse-photos-setup.sql`
+  → `manse/activity-media-setup.sql` → `manse/manse-walk-setup.sql` → `manse/ledger-setup.sql`.
+- Authentication: Email의 Confirm email 끄기, URL Configuration의 Site URL `https://samgoe-cc.or.kr/manse/`,
+  Redirect URLs `https://samgoe-cc.or.kr/manse/**`.
+- `manse/config.js`에 그 프로젝트의 주소와 공개(anon/publishable) 키.
+- 최고관리자(kds08200820@gmail.com)로 만세 홈페이지에 가입 → 임원방 → 임원 명단에 임원들의 가입 이메일을 넣으면 각자 임원방이 열림.
+
 ## Notes
 
 - The two logo PNGs are large (~2778×466). If page weight matters, downscaling

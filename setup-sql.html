@@ -31,6 +31,7 @@
     .msg.ok{color:var(--ok);} .msg.bad{color:var(--bad);}
     textarea{display:none;width:100%;height:140px;margin:8px 0 0;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:8px;}
     textarea.show{display:block;}
+    code{font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px;word-break:break-all;}
     .tip{margin:0;padding:12px 14px;border-radius:10px;background:#fdf3e7;color:#7a4f16;font-size:14px;line-height:1.7;}
   </style>
 </head>
@@ -59,18 +60,21 @@
 
     <section class="card" data-set="manse">
       <h2>2. 삼일만세운동본부</h2>
-      <p class="what">회계 관리 (만세운동본부 장부)</p>
+      <p class="what">새 <b>manse</b> 프로젝트 전체 설치 — 회원 · 임원 명단 · 공문/자료 · 활동 기록/사진/영상 · 걷기 참가 교회 · 회계 (한 번에)</p>
       <ol>
+        <li>Supabase 조직 화면에서 <b>New project</b> → 이름 <b>manse</b>, 지역 <b>Seoul</b> 로 만들기 (처음 한 번)
+          <a class="btn line" href="https://supabase.com/dashboard/projects" target="_blank" rel="noopener">Supabase 프로젝트 목록 열기 ↗</a>
+        </li>
         <li>아래 단추로 복사
           <button class="btn" type="button" data-copy disabled>불러오는 중…</button>
           <div class="msg" data-msg></div>
           <textarea readonly data-text></textarea>
         </li>
-        <li>Supabase에서 <b>만세운동본부 프로젝트</b>의 SQL Editor 열기
-          <a class="btn line" href="https://supabase.com/dashboard/project/elaockhopuvadamvwjeg/sql/new" target="_blank" rel="noopener">SQL Editor 열기 ↗</a>
-        </li>
-        <li>맨 위 프로젝트 이름이 <b>samgoe-cc 가 아닌 만세운동본부 프로젝트</b>인지 꼭 확인 (samgoe-cc 이면 이름 옆 ⌄ 를 눌러 바꾸기) → 붙여넣기 → <b>Run</b><br>
+        <li>프로젝트 목록에서 <b>manse</b> 를 열고 왼쪽 <b>SQL Editor</b> → 맨 위 프로젝트 이름이 <b>manse</b> 인지 확인 (samgoe-cc 이면 안 됩니다) → 붙여넣기 → <b>Run</b><br>
           결과 창에 <b>장부 기록 (처음엔 0)</b> 한 줄이 나오면 성공</li>
+        <li>manse 프로젝트 왼쪽 <b>Authentication</b> 에서 두 가지 (처음 한 번)<br>
+          ① <b>Sign In / Providers → Email</b> 의 <b>Confirm email</b> 끄기 → Save (가입하면 바로 로그인되게)<br>
+          ② <b>URL Configuration</b> 의 Site URL 에 <code>https://samgoe-cc.or.kr/manse/</code>, Redirect URLs 에 <code>https://samgoe-cc.or.kr/manse/**</code> 넣고 Save (비밀번호 찾기 메일용)</li>
       </ol>
     </section>
 
@@ -82,7 +86,7 @@
   (function(){
     var SETS = {
       samgoe: { files: ['walk-events-setup.sql', 'lucky-setup.sql', 'ledger-setup.sql'] },
-      manse:  { files: ['manse/ledger-setup.sql'] }
+      manse:  { files: ['manse/manse-setup.sql', 'manse/manse-photos-setup.sql', 'manse/activity-media-setup.sql', 'manse/manse-walk-setup.sql', 'manse/ledger-setup.sql'] }
     };
     // 휴대폰(특히 아이폰)은 단추를 누른 그 순간에만 복사를 허락하므로, 글은 미리 불러 둠
     function load(set){
