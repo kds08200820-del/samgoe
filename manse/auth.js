@@ -4,7 +4,9 @@
 //  - window.msb : 만세운동본부 Supabase client (설정 전이면 null → 게스트 모드)
 //  - #mAuth 요소에 로그인 상태 메뉴 표시
 //  - mErr / mUser / mProfile / mPerms / mRequireLogin / mRequireOfficer 제공
-//  ※ 다른 사이트의 로그인과 세션·계정이 완전히 분리됩니다.
+//  - 삼기연(삼괴연합회) 공유 로그인: 같은 브라우저에 삼기연 로그인이 있고 만세운동본부 로그인이 없으면
+//    삼기연 계정으로 자동 로그인 (Edge Function samgoe-login · 처음이면 만세운동본부 회원이 자동으로 만들어짐)
+//    만세운동본부에서 로그아웃하면 그 브라우저에서는 자동 로그인을 멈춤 (로그인 화면의 단추로 다시)
 // ============================================================
 (function () {
   var host = location.hostname;
@@ -42,6 +44,15 @@
 
   var URL_ = window.MANSE_SUPABASE_URL, KEY = window.MANSE_SUPABASE_KEY;
   var ready = !!(window.supabase && window.supabase.createClient && URL_ && KEY);
+  // 다른(예전) Supabase 프로젝트에서 받은 로그인 기록이면 지움 — 그대로 두면 'No suitable key or wrong key type' 오류
+  if (URL_) [window.localStorage, window.sessionStorage].forEach(function (st) {
+    try {
+      var raw = st.getItem('manse-auth'); if (!raw) return;
+      var tok = String((JSON.parse(raw) || {}).access_token || '').split('.')[1] || '';
+      var iss = JSON.parse(atob(tok.replace(/-/g, '+').replace(/_/g, '/'))).iss;
+      if (iss && String(iss).indexOf(String(URL_).replace(/\/+$/, '')) !== 0) st.removeItem('manse-auth');
+    } catch (_) {}
+  });
   window.msb = ready
     ? window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storage: storage, storageKey: 'manse-auth' } })
     : null;
@@ -50,6 +61,7 @@
   // Supabase 오류 → 한국어 안내
   window.mErr = function (e) {
     var m = String((e && e.message) || e || '');
+    if (/No suitable key|wrong key type|invalid JWT|bad_jwt/i.test(m)) return '로그인 정보가 오래되었습니다. 로그아웃한 뒤 다시 로그인해 주세요.';
     if (/banned|user is banned/i.test(m)) return '이용약관 위반으로 계정이 정지되었습니다. 문의: ' + (window.MANSE_CONTACT || '운영자');
     if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 올바르지 않습니다.';
     if (/Email not confirmed/i.test(m)) return '가입 처리가 아직 끝나지 않았습니다. 잠시 후 다시 시도하시거나 운영 담당자에게 문의해 주세요.';
@@ -64,6 +76,57 @@
     if (/network|fetch/i.test(m)) return '네트워크 오류입니다. 연결 상태를 확인해 주세요.';
     return m || '알 수 없는 오류가 발생했습니다. 다시 시도해 주세요.';
   };
+
+  // ---------- 삼기연 공유 로그인 ----------
+  var SG_URL = window.SAMGOE_SUPABASE_URL, SG_KEY = window.SAMGOE_SUPABASE_KEY, sgClient = null;
+  function sgStorage() {     // 삼기연 사이트와 같은 저장 방식 (로그인 유지 여부에 따라 local/session)
+    function on() { try { return localStorage.getItem('sam_remember') !== '0'; } catch (_) { return true; } }
+    return {
+      getItem: function (k) { try { return (on() ? localStorage : sessionStorage).getItem(k); } catch (_) { return null; } },
+      setItem: function (k, v) { try { (on() ? localStorage : sessionStorage).setItem(k, v); } catch (_) {} },
+      removeItem: function (k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (_) {} }
+    };
+  }
+  // 이 브라우저의 삼기연 로그인 (없으면 null) — 시간이 지난 로그인 표는 supabase 가 새로 받아 둠
+  window.mSamgoeSession = async function () {
+    if (!ready || !SG_URL || !SG_KEY) return null;
+    try {
+      if (!sgClient) sgClient = window.supabase.createClient(SG_URL, SG_KEY, { auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, storage: sgStorage() } });
+      var s = await sgClient.auth.getSession();
+      return (s.data && s.data.session) || null;
+    } catch (_) { return null; }
+  };
+  function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (_) { return ''; } }
+  function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (_) {} }
+  // 삼기연 로그인 표로 만세운동본부에 로그인
+  window.mLoginWithSamgoe = async function (token) {
+    if (!ready) throw new Error('로그인 기능 준비 중입니다.');
+    var r = await fetch(URL_ + '/functions/v1/samgoe-login', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify({ token: token }) });
+    var j = {}; try { j = await r.json(); } catch (_) {}
+    if (!r.ok || !j.token_hash) throw new Error(j.error || '삼괴연합회 계정으로 로그인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    var v = await window.msb.auth.verifyOtp({ token_hash: j.token_hash, type: 'email' });
+    if (v.error && !/banned/i.test(v.error.message || '')) v = await window.msb.auth.verifyOtp({ token_hash: j.token_hash, type: 'magiclink' });
+    if (v.error) throw v.error;
+    lsSet('manse_sso_off', ''); lsSet('manse_sso_fail', '');
+    return j;
+  };
+  // 자동: 만세운동본부 로그인 없음 + 삼기연 로그인 있음 + 이 삼기연 계정으로 만세에서 로그아웃한 적 없음
+  async function autoSso() {
+    try {
+      var s0 = await window.msb.auth.getSession(); if (s0.data && s0.data.session) return false;
+      var s = await window.mSamgoeSession(); if (!s || !s.user) return false;
+      if (lsGet('manse_sso_off') === s.user.id) return false;
+      var f = lsGet('manse_sso_fail').split('|');          // 실패하면 그 계정은 10분 동안 다시 시도하지 않음
+      if (f[0] === s.user.id && Date.now() - (+f[1] || 0) < 600000) return false;
+      await window.mLoginWithSamgoe(s.access_token);
+      return true;
+    } catch (ex) {
+      window.MANSE_SSO_ERROR = ex;
+      try { var s2 = await window.mSamgoeSession(); if (s2 && s2.user) lsSet('manse_sso_fail', s2.user.id + '|' + Date.now()); } catch (_) {}
+      return false;
+    }
+  }
+  window.mSsoReady = ready ? autoSso() : Promise.resolve(false);
 
   window.mUser = async function () {
     if (!window.msb) return null;
@@ -110,6 +173,8 @@
     var lo = el.querySelector('[data-m-logout]');
     if (lo) lo.addEventListener('click', async function (e) {
       e.preventDefault();
+      // 삼기연 로그인이 남아 있어도 이 브라우저에서는 자동으로 다시 들어가지 않게
+      try { var sg = await window.mSamgoeSession(); if (sg && sg.user) lsSet('manse_sso_off', sg.user.id); } catch (_) {}
       try { await window.msb.auth.signOut(); } catch (_) {}
       location.href = window.MANSE_HOME;
     });
@@ -122,7 +187,10 @@
     render(u, p, perms);
     document.dispatchEvent(new CustomEvent('manse:auth', { detail: { user: u, profile: p, perms: perms } }));
   }
-  if (ready) { refresh(); window.msb.auth.onAuthStateChange(function (ev) { if (ev !== 'TOKEN_REFRESHED') refresh(); }); }
+  if (ready) {
+    window.mSsoReady.then(function (did) { if (!did) refresh(); });   // 자동 로그인이 되면 아래 SIGNED_IN 에서 그림
+    window.msb.auth.onAuthStateChange(function (ev) { if (ev === 'SIGNED_IN') lsSet('manse_sso_off', ''); if (ev !== 'TOKEN_REFRESHED' && ev !== 'INITIAL_SESSION') refresh(); });
+  }
 
   // 만세운동본부 앱(설치형 웹앱) — /manse/ 전용 서비스워커
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || host === 'localhost' || host === '127.0.0.1')) {
@@ -132,6 +200,7 @@
   // 보호 페이지 가드
   window.mRequireLogin = async function () {
     if (!window.msb) { alert('로그인 기능이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요.'); location.href = window.MANSE_HOME; return null; }
+    await window.mSsoReady;      // 삼기연 공유 로그인을 먼저 시도
     var u = await window.mUser();
     if (!u) { location.href = window.mUrl('login.html') + '?next=' + encodeURIComponent(location.pathname + location.search); return null; }
     return u;

@@ -587,6 +587,10 @@
     function manseClient(){
       if(mClient) return mClient;
       if(!window.supabase || !window.MANSE_SUPABASE_URL || !window.MANSE_SUPABASE_KEY) return null;
+      // 예전 만세운동본부 프로젝트의 로그인 기록이면 지움 (manse/auth.js 와 같은 규칙)
+      [localStorage, sessionStorage].forEach(function(st){ try{ var raw=st.getItem('manse-auth'); if(!raw) return;
+        var t=String((JSON.parse(raw)||{}).access_token||'').split('.')[1]||'', iss=JSON.parse(atob(t.replace(/-/g,'+').replace(/_/g,'/'))).iss;
+        if(iss && String(iss).indexOf(window.MANSE_SUPABASE_URL.replace(/\/+$/,''))!==0) st.removeItem('manse-auth'); }catch(_){} });
       function on(){ try{ return localStorage.getItem('manse_remember')!=='0'; }catch(_){ return true; } }
       var st={ getItem:function(k){ try{ return (on()?localStorage:sessionStorage).getItem(k); }catch(_){ return null; } },
                setItem:function(k,v){ try{ (on()?localStorage:sessionStorage).setItem(k,v); }catch(_){} },

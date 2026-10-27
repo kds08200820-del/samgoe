@@ -75,6 +75,8 @@ textarea.m-in{height:auto;min-height:90px;padding:10px 13px;}
 .m-home:hover{color:var(--navy);}
 
 /* 삼기연 연동 카드 */
+.m-or{display:flex;align-items:center;gap:10px;margin:18px 0 14px;font-size:12.5px;color:var(--muted);}
+.m-or::before,.m-or::after{content:'';flex:1;height:1px;background:#e2e2e2;}
 .link-card{border:1px solid #dddddd;background:linear-gradient(180deg,#fafafa,#f3f3f3);border-radius:var(--radius);padding:18px 18px 16px;margin-bottom:22px;}
 .link-card .lk-h{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);font-size:15px;}
 .link-card .lk-p{margin:6px 0 12px;font-size:13.5px;color:#444444;line-height:1.6;}

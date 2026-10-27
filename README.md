@@ -61,6 +61,9 @@ Any static host works (GitHub Pages, Netlify, Vercel, S3, …) — upload the
 - Authentication: Email의 Confirm email 끄기, URL Configuration의 Site URL `https://samgoe-cc.or.kr/manse/`,
   Redirect URLs `https://samgoe-cc.or.kr/manse/**`.
 - `manse/config.js`에 그 프로젝트의 주소와 공개(anon/publishable) 키.
+- 공유 로그인: 같은 브라우저에 삼기연 로그인이 있으면 만세 페이지를 열 때 그 계정으로 자동 로그인
+  (`manse/auth.js` → Edge Function `samgoe-login` — `supabase/functions/samgoe-login/index.ts`, verify_jwt 끔).
+  처음이면 삼기연 정보로 만세 회원이 자동으로 만들어짐. 만세에서 로그아웃하면 그 브라우저에선 자동 로그인을 멈춤.
 - 최고관리자(kds08200820@gmail.com)로 만세 홈페이지에 가입 → 임원방 → 임원 명단에 임원들의 가입 이메일을 넣으면 각자 임원방이 열림.
 
 ## Notes
