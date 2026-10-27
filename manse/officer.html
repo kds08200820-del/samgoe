@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
-  <link rel="stylesheet" href="manse.css?v=4" />
+  <link rel="stylesheet" href="manse.css?v=5" />
   <link rel="stylesheet" href="../ledger.css?v=2" />
   <style>
     /* 회계 (../ledger.js · manse/ledger-setup.sql) — 만세운동본부 색 */
@@ -73,6 +73,7 @@
     .pg-foot{position:absolute;left:52px;right:52px;bottom:26px;padding-top:8px;border-top:1px solid #ddd;font-size:10.5px;color:#888;text-align:center;}
     @media print{
       .m-bar,.o-head,.o-tabs,.o-tools,.o-note,.m-footer,.wk-link,.wk-menu,#rpMsg{display:none!important;}
+      .o-body{display:block!important;}
       .o-panel{display:none!important;} #p-walks.o-panel.on{display:block!important;}
       .o-table-wrap{overflow:visible;border:0;} #p-walks table.o-table{min-width:0;font-size:12.5px;}
       .wk-kpis div{border-color:#999;}
@@ -86,7 +87,7 @@
     <span id="mAuth"></span>
   </div></header>
 
-  <main class="m-wrap wide">
+  <main class="m-wrap wide o-page">
     <div id="gate" class="m-card" style="max-width:520px;margin:40px auto;text-align:center">
       <img class="m-logo" src="img/logo-192.png" alt="" />
       <h1 class="m-title" style="font-size:22px">임원방</h1>
@@ -98,14 +99,16 @@
         <div><h1>임원방</h1><p id="meLine"></p></div>
         <button class="m-btn ghost sm" type="button" id="bylawsBtn">📜 현행 회칙 보기</button>
       </div>
-      <nav class="o-tabs" role="tablist">
+      <div class="o-body">
+      <nav class="o-tabs" role="tablist" aria-label="임원방 메뉴">
         <button class="o-tab" role="tab" data-tab="docs" aria-selected="true">공문·자료</button>
-        <button class="o-tab" role="tab" data-tab="walks" aria-selected="false">걷기대회</button>
+        <button class="o-tab" role="tab" data-tab="walks" aria-selected="false">걷기대회 관리</button>
         <button class="o-tab" role="tab" data-tab="ledger" aria-selected="false">회계</button>
         <button class="o-tab" role="tab" data-tab="roster" aria-selected="false">임원 명단</button>
         <button class="o-tab" role="tab" data-tab="members" aria-selected="false" data-mgr hidden>회원 관리</button>
         <button class="o-tab" role="tab" data-tab="upload" aria-selected="false">자료 올리기</button>
       </nav>
+      <div class="o-main">
 
       <!-- 공문·자료 -->
       <section class="o-panel on" id="p-docs">
@@ -214,6 +217,8 @@
           </div>
         </div>
       </section>
+      </div><!-- /o-main -->
+      </div><!-- /o-body -->
     </div>
   </main>
 
