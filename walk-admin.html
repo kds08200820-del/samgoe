@@ -507,8 +507,8 @@
       $('evChips').innerHTML=(EV.hero?'<span class="chip gold">첫 화면 게시 중</span>':'')+(WalkEv.accepting(EV)?'<span class="chip on">신청 받는 중</span>':'');
       if(s==='draft'||s==='soon') $('evCard').open=true;
       if(EV.fallback){   // walk_events 표가 아직 없음
-        $('evCap').innerHTML='행사 관리를 쓰려면 먼저 <b>Supabase SQL Editor에서 walk-events-setup.sql</b>을 실행해 주세요. (그 전까지는 제6회 기록만 보입니다)';
-        Array.prototype.forEach.call($('evForm').elements,function(el){ el.disabled=true; }); $('evNew').hidden=true;
+        $('evCap').innerHTML='행사 관리 · 새 회차 만들기를 쓰려면 먼저 Supabase에서 <b>설치 SQL을 한 번</b> 실행해 주세요. (그 전까지는 제6회 기록만 보입니다) <a href="setup-sql.html" style="font-weight:700;text-decoration:underline">설치 SQL 복사 페이지 열기 →</a>';
+        Array.prototype.forEach.call($('evForm').elements,function(el){ el.disabled=true; });
       }
     }
     var evBusy=false, evDirty=false;
@@ -532,6 +532,7 @@
       evDirty=false; location.href='walk-admin.html?e='+encodeURIComponent(this.value);
     });
     $('evNew').addEventListener('click',function(){
+      if(EV.fallback){ $('evCard').open=true; $('evCard').scrollIntoView({behavior:'smooth',block:'start'}); return; }   // 설치 SQL 안내부터
       if(evDirty && !confirm('저장하지 않은 행사 정보가 있습니다. 새 회차를 만들까요?')) return;
       var last=EVENTS[0]||EV, n=EVENTS.reduce(function(m,x){ return Math.max(m,x.no||0); },0)+1;
       fillForm({ no:n, title:'제'+n+'회 3·1 만세길 걷기', fee:last.fee, bank:last.bank, account:last.account, holder:last.holder, host:last.host, contact:last.contact },true);

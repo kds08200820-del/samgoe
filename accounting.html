@@ -7,7 +7,7 @@
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="ledger.css?v=1" />
+  <link rel="stylesheet" href="ledger.css?v=2" />
   <style>
     :root{--primary:#032257;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;--hairline:#e6e3dd;--surface-soft:#f7f5f0;--dark:#0d1d3a;}
     *{box-sizing:border-box;}
@@ -44,7 +44,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="auth.js?v=13"></script>
-  <script src="ledger.js?v=1"></script>
+  <script src="ledger.js?v=2"></script>
   <script>
   (async function(){
     // 임원이면 보기 · 인쇄, 회계 · 회장 · 최고관리자는 기록까지 (ledger-setup.sql 의 is_treasurer 와 같은 기준)
@@ -54,7 +54,7 @@
     document.getElementById('loading').style.display='none'; document.getElementById('content').style.display='block';
     if(!canWrite) document.getElementById('sub').textContent += ' 기록은 회계 · 회장만 할 수 있고, 임원은 보고 인쇄할 수 있습니다.';
     window.Ledger.mount(document.getElementById('ledger'), {
-      client: window.sb, org: '삼괴지역기독교연합회', canWrite: canWrite, setupFile: 'ledger-setup.sql',
+      client: window.sb, org: '삼괴지역기독교연합회', canWrite: canWrite, setupFile: 'ledger-setup.sql', setupPage: 'setup-sql.html',
       signers: ['회계', '감사', '회장'],
       cats: {
         '수입': ['회비', '헌금', '후원금', '찬조금', '행사 참가비', '이자', '기타 수입'],

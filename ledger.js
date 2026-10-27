@@ -1,7 +1,7 @@
 // ============================================================
 //  회계 관리 — 수입 · 지출 장부와 회계 보고 (삼기연 accounting.html · 삼일만세운동본부 임원방 '회계' 탭 공용)
 //  화면 모양만 같고, 기록은 각 단체의 Supabase(ledger_entries · ledger_years · ledger_log)에 따로 쌓입니다.
-//  Ledger.mount(root, { client, org, canWrite, signers, cats, setupFile, president })
+//  Ledger.mount(root, { client, org, canWrite, signers, cats, setupFile, setupPage, president })
 //   - client   : 그 단체의 Supabase client
 //   - canWrite : 기록 · 고치기 · 지우기 · 전기이월 넣기 단추를 보일지 (실제 권한은 서버 RLS가 판단)
 //   - signers  : 보고서 서명란 (예: ['회계', '감사', '회장'])
@@ -77,7 +77,11 @@
       var list = CATS[kind].concat(Object.keys(used).filter(function (c) { return CATS[kind].indexOf(c) < 0; }));
       root.querySelector('#lgCats').innerHTML = list.map(function (c) { return '<option value="' + esc(c) + '">'; }).join('');
     }
-    function warn(t) { var w = $('warn'); w.hidden = !t; w.textContent = t || ''; }
+    // 설치가 안 된 경우에는 설치 SQL 복사 페이지(o.setupPage)로 가는 링크를 붙임
+    function warn(t) {
+      var w = $('warn'); w.hidden = !t; w.textContent = t || '';
+      if (t && o.setupPage && /SQL Editor/.test(t)) w.insertAdjacentHTML('beforeend', ' <a href="' + esc(o.setupPage) + '" style="font-weight:700;text-decoration:underline">설치 SQL 복사 페이지 열기 →</a>');
+    }
     function fmsg(t, ok) { var m = $('fMsg'); if (!m) return; m.className = 'lg-msg' + (ok ? ' ok' : ''); m.textContent = t || ''; }
 
     // ---------- 기간 ----------

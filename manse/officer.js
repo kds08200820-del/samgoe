@@ -48,7 +48,7 @@
     if (window.WalkReport) window.WalkReport.init({ me: me, profile: profile, perms: perms, putFile: putFile, insertDoc: insertDoc, reloadDocs: loadDocs });
     // 회계 — 삼기연과 따로인 만세운동본부 장부 (manse/ledger-setup.sql). 기록은 회계 · 부회계 · 대표회장 · 최고관리자
     if (window.Ledger) window.Ledger.mount($('ledgerBox'), {
-      client: window.msb, org: '삼일만세운동본부', setupFile: 'manse/ledger-setup.sql (만세운동본부 프로젝트)',
+      client: window.msb, org: '삼일만세운동본부', setupFile: 'manse/ledger-setup.sql (만세운동본부 프로젝트)', setupPage: '../setup-sql.html',
       canWrite: !!(perms.admin || (perms.officer && ['회계', '부회계', '대표회장'].indexOf(perms.role) >= 0)),
       signers: ['회계', '감사', '대표회장'],
       cats: {

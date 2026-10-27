@@ -57,6 +57,12 @@
     details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--primary);}
     details.more .tools{margin-top:12px;}
     .warn{padding:14px 16px;margin:0 0 18px;border-radius:10px;background:#fdf3e7;color:#8a5a1f;font-size:14px;line-height:1.7;}
+    .warn a{color:inherit;font-weight:700;text-decoration:underline;}
+    /* 새 회차 만들기 */
+    .nev{border-color:var(--primary);}
+    .nev .cap a{color:var(--primary);font-weight:700;text-decoration:underline;}
+    .nev-g{display:grid;grid-template-columns:120px minmax(0,1fr);gap:0 10px;}
+    @media (max-width:480px){ .nev-g{grid-template-columns:96px minmax(0,1fr);} }
     /* 꾸미기 · 인쇄 */
     .pgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start;}
     .fl{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;font-size:13px;font-weight:600;color:var(--ink);}
@@ -115,10 +121,22 @@
     <div class="evbar">
       <label for="evSel">회차</label>
       <select id="evSel"><option>불러오는 중…</option></select>
+      <button class="sbtn" id="evNew" type="button">+ 새 회차</button>
     </div>
+    <!-- 새 회차 만들기 (walk_events) — 자세한 행사 정보는 행사 신청 기록(walk-admin.html)에서 -->
+    <form class="card nev" id="nevForm" hidden autocomplete="off">
+      <h2>새 회차 만들기</h2>
+      <p class="cap">행운권을 만들 회차를 새로 만듭니다. 장소 · 참가 신청 받기 · 첫 화면 게시 같은 자세한 행사 정보는 나중에 <a href="walk-admin.html" id="nevMore">행사 신청 기록</a>에서 채울 수 있습니다.</p>
+      <div class="nev-g">
+        <label class="fl">회차<input id="nNo" type="number" min="1" max="999" inputmode="numeric" required></label>
+        <label class="fl">행사 날짜 <small>모르면 비워 두세요</small><input id="nDate" type="date"></label>
+      </div>
+      <label class="fl">행사 이름<input id="nTitle" maxlength="80" required></label>
+      <div class="tools"><button class="sbtn pri" id="nSave" type="submit">회차 만들기</button><button class="sbtn" id="nCancel" type="button">닫기</button><span class="msg" id="nMsg"></span></div>
+    </form>
     <h1 class="title"><span id="evTitle">3·1 만세길 걷기</span> · 행운권 QR <span class="state" id="state"></span></h1>
     <p class="sub">행운권 한 장마다 QR이 하나씩 있습니다. 참가자가 휴대폰 카메라로 QR을 찍어 <b>이름 · 생년월일 · 소속</b>을 적고 보내면 아래 <b>③ 등록 현황</b>에 바로 모입니다. 임원이면 누구나 만들고 고칠 수 있습니다.</p>
-    <div class="warn" id="setupWarn" hidden>행운권 기능을 쓰려면 먼저 <b>Supabase SQL Editor에서 lucky-setup.sql</b>을 실행해 주세요. (walk-events-setup.sql을 실행한 뒤에)</div>
+    <div class="warn" id="setupWarn" hidden>행운권 · 회차 기능을 쓰려면 먼저 Supabase에서 <b>설치 SQL을 한 번</b> 실행해야 합니다. 그 전에는 제6회만 보이고 새 회차도 만들 수 없습니다. <a href="setup-sql.html">설치 SQL 복사 페이지 열기 →</a></div>
 
     <div class="kpis">
       <div class="kpi"><div class="k">만든 행운권</div><div class="n" id="kMade">–</div></div>
@@ -261,7 +279,7 @@
     function digits(){ var m=tickets.length?tickets[tickets.length-1].no:0; return Math.max(3,String(m).length); }
     function noText(n){ return LuckyPrint.padNo(n,digits()); }
     function msg(id,t,ok){ var m=$(id); m.className='msg'+(ok?' ok':''); m.textContent=t||''; }
-    function errText(e){ var m=String((e&&e.message)||e||''); return /schema cache|does not exist|could not find/i.test(m)?'lucky-setup.sql을 먼저 실행해 주세요.':(/row-level|permission|violates/i.test(m)?'임원만 할 수 있습니다.':window.krErr(m)); }
+    function errText(e){ var m=String((e&&e.message)||e||''); return /schema cache|does not exist|could not find/i.test(m)?'설치 SQL을 먼저 실행해 주세요. (임원방 → 설치 SQL 복사 페이지)':(/row-level|permission|violates/i.test(m)?'임원만 할 수 있습니다.':window.krErr(m)); }
     function isReg(t){ return !!t.registered_at; }
     function intVal(id){ var v=parseInt($(id).value,10); return isFinite(v)?v:null; }
     function byNo(n){ for(var i=0;i<tickets.length;i++) if(tickets[i].no===n) return tickets[i]; return null; }
@@ -679,6 +697,42 @@
       if(r.error){ msg('wipeMsg','지우지 못했습니다: '+errText(r.error)); drawWipe(); return; }
       msg('wipeMsg','등록 정보 '+r.data+'장을 지웠습니다. QR 등록 받기도 껐습니다.',true);
       await Promise.all([loadLE(), loadTickets()]); drawOpen(); drawAll(); drawWipe();
+    });
+
+    // ---------- 새 회차 만들기 ----------
+    var nTitleAuto=true;
+    function nextNo(){ return EVENTS.reduce(function(m,x){ return Math.max(m,x.no||0); },0)+1; }
+    function autoTitle(n){ return '제'+n+'회 3·1 만세길 걷기'; }
+    $('evNew').addEventListener('click',function(){
+      if(EV.fallback){   // 회차 표(walk_events)가 아직 없음 — 설치 SQL부터
+        $('setupWarn').hidden=false; $('setupWarn').scrollIntoView({behavior:'smooth',block:'center'}); return;
+      }
+      var f=$('nevForm');
+      if(!f.hidden){ f.hidden=true; return; }
+      var n=nextNo(); $('nNo').value=n; $('nDate').value=''; $('nTitle').value=autoTitle(n); nTitleAuto=true; msg('nMsg','');
+      f.hidden=false; f.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    $('nCancel').addEventListener('click',function(){ $('nevForm').hidden=true; });
+    $('nTitle').addEventListener('input',function(){ nTitleAuto=false; });
+    $('nNo').addEventListener('input',function(){ var n=parseInt(this.value,10); if(nTitleAuto && n>=1) $('nTitle').value=autoTitle(n); });
+    $('nevForm').addEventListener('submit',async function(e){
+      e.preventDefault(); if(busy.nev) return;
+      var no=parseInt($('nNo').value,10), title=$('nTitle').value.trim(), date=$('nDate').value||null;
+      if(!(no>=1 && no<=999)) return msg('nMsg','회차 번호를 적어 주세요. (1 ~ 999)');
+      if(!title) return msg('nMsg','행사 이름을 적어 주세요.');
+      if(EVENTS.some(function(x){ return x.no===no; })) return msg('nMsg','제'+no+'회는 이미 있습니다. 위의 회차 고르기에서 고르세요.');
+      // 회차 코드 = 행사 연도-회차 (행사 신청 기록의 새 회차 만들기와 같은 규칙) — 날짜가 없으면 내년
+      var last=EVENTS[0]||{}, code=((date||'').slice(0,4)||String(new Date().getFullYear()+1))+'-'+no;
+      var row={ event:code, no:no, title:title, event_date:date, fee:last.fee!=null?last.fee:5000, bank:last.bank||null, account:last.account||null,
+        holder:last.holder||null, host:last.host||null, contact:last.contact||null, hero:false, open:false, updated_by:whoName };
+      busy.nev=true; $('nSave').disabled=true; msg('nMsg','만드는 중…',true);
+      var r; try{ r=await window.sb.from('walk_events').insert(row).select('event').single(); }catch(ex){ r={error:ex}; }
+      busy.nev=false; $('nSave').disabled=false;
+      if(r.error||!r.data){
+        var m=String((r.error&&r.error.message)||'');
+        return msg('nMsg','만들지 못했습니다: '+(/duplicate|unique/i.test(m)?'같은 회차가 이미 있습니다. 새로 고침해 보세요.':errText(r.error||m)));
+      }
+      sDirty=false; location.href='lucky-admin.html?e='+encodeURIComponent(r.data.event);
     });
 
     // ---------- 시작 ----------
