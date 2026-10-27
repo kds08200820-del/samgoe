@@ -8,7 +8,7 @@
   <link rel="canonical" href="https://samgoe-cc.or.kr/install.html" />
   <!-- 스마트폰 홈 화면 앱 설치 (PWA) -->
   <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#0d1d3a" />
+  <meta name="theme-color" content="#2e2016" />
   <link rel="icon" type="image/png" href="assets/app-icon.png?v=4" />
   <link rel="apple-touch-icon" href="assets/app-icon.png?v=4" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -19,9 +19,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
-      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--hot:#e5392f;}
+    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
+      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--dark:#2e2016;
+      --gold:#b5562f;--gold-ink:#a43e1b;--ok:#0f7b3f;--hot:#e5392f;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:400;word-break:keep-all;font-size:17px;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -46,7 +46,7 @@
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 24px;border:0;border-radius:10px;
       background:var(--primary);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;user-select:none;}
     .btn:hover{background:var(--primary-active);} .btn:disabled{background:var(--hairline-strong);cursor:default;}
-    .btn.gold{background:var(--gold);color:#1a1a1a;} .btn.gold:hover{background:#d4bf8c;}
+    .btn.gold{background:var(--gold);color:#13110f;} .btn.gold:hover{background:#e8c4a6;}
     .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hairline-strong);} .btn.ghost:hover{background:var(--surface-soft);}
     .okmsg{color:var(--ok);font-weight:700;}
     /* 기기 고르기 */
@@ -70,7 +70,7 @@
     .k svg{vertical-align:-3px;}
     /* 휴대폰 그림 (코드로 그린 화면) */
     .ph{width:240px;height:460px;border:10px solid #1f2125;border-radius:34px;background:#fff;position:relative;overflow:hidden;margin:0 auto;
-      box-shadow:0 14px 34px rgba(13,29,58,.18);font-size:11.5px;color:#202124;line-height:1.35;}
+      box-shadow:0 14px 34px rgba(46,32,22,.18);font-size:11.5px;color:#202124;line-height:1.35;}
     .ph.ios{border-radius:42px;}
     .ph .sb{height:24px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;font-size:10.5px;font-weight:700;}
     .ph.ios .sb{height:30px;padding:0 22px;}
@@ -81,12 +81,12 @@
     .ios .cbar .url{border-radius:10px;background:#e9eaec;justify-content:space-between;}
     .cbar .ic{width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;color:#3c4043;border-radius:50%;}
     .cbar .tabsn{width:16px;height:16px;border:1.8px solid #3c4043;border-radius:4px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-    .site{background:#0d1d3a;color:#fff;padding:12px 12px 16px;}
+    .site{background:#2e2016;color:#fff;padding:12px 12px 16px;}
     .site .lg{display:flex;align-items:center;gap:6px;font-weight:700;font-size:11px;}
     .site .lg img{width:18px;height:18px;border-radius:4px;}
     .site h4{margin:18px 0 6px;font-size:15px;line-height:1.35;}
     .site .ln{height:6px;border-radius:3px;background:rgba(255,255,255,.28);margin-top:6px;}
-    .site .cta{display:inline-block;margin-top:12px;background:#b89b5e;color:#1a1a1a;font-weight:700;font-size:10px;padding:5px 10px;border-radius:12px;}
+    .site .cta{display:inline-block;margin-top:12px;background:#b5562f;color:#13110f;font-weight:700;font-size:10px;padding:5px 10px;border-radius:12px;}
     .body{padding:12px;}
     .body .ln{height:7px;border-radius:4px;background:#e8e6e1;margin-top:8px;}
     .body .tile{height:46px;border-radius:8px;background:#f2efe8;margin-top:10px;}
@@ -98,19 +98,19 @@
     @media (prefers-reduced-motion:reduce){.hot::after{animation:none;}}
     .dim{position:absolute;inset:0;background:rgba(0,0,0,.38);z-index:2;}
     .amenu{position:absolute;top:28px;right:6px;width:150px;background:#fff;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:4;padding:4px 0;}
-    .amenu .row{display:flex;justify-content:space-around;padding:6px 4px 8px;border-bottom:1px solid #eee;color:#3c4043;}
+    .amenu .row{display:flex;justify-content:space-around;padding:6px 4px 8px;border-bottom:1px solid #ece6df;color:#3c4043;}
     .amenu .mi{padding:5.5px 12px;font-size:11px;}
     .amenu .mi.hot{background:#fff4f3;font-weight:700;}
     .amenu .mi.hot::after{inset:-1px 2px;border-radius:6px;}
     .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:16px 16px 0 0;z-index:4;padding:14px 14px 16px;}
-    .sheet .grab{width:34px;height:4px;border-radius:2px;background:#ccc;margin:0 auto 12px;}
+    .sheet .grab{width:34px;height:4px;border-radius:2px;background:#d9d0c6;margin:0 auto 12px;}
     .sheet .ttl{font-size:14px;font-weight:700;margin-bottom:12px;}
     .appline{display:flex;align-items:center;gap:10px;}
     .appline img{width:40px;height:40px;border-radius:10px;}
     .appline b{display:block;font-size:13px;} .appline small{color:#5f6368;font-size:10.5px;}
     .opts{margin:12px 0;border:1px solid #e6e6e6;border-radius:10px;overflow:hidden;}
     .opts div{padding:9px 10px;display:flex;gap:8px;align-items:center;font-size:11.5px;}
-    .opts div + div{border-top:1px solid #eee;}
+    .opts div + div{border-top:1px solid #ece6df;}
     .opts .rd{width:14px;height:14px;border-radius:50%;border:2px solid #9aa0a6;flex:none;}
     .opts .on .rd{border-color:#1a73e8;box-shadow:inset 0 0 0 3px #fff;background:#1a73e8;}
     .sbtns{display:flex;justify-content:flex-end;gap:8px;}
@@ -181,7 +181,7 @@
     }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=3" />
+  <link rel="stylesheet" href="assets/theme.css?v=4" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">← 삼괴지역 기독교 연합회</a></div></header>

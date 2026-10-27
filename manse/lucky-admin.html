@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
-      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;}
+    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
+      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--dark:#2e2016;
+      --gold:#b5562f;--gold-ink:#a43e1b;--ok:#0f7b3f;--err:#c0392b;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -26,7 +26,7 @@
     .title{margin:0;font-size:clamp(24px,4vw,30px);color:var(--ink);}
     .sub{margin:8px 0 22px;font-size:14.5px;color:var(--muted);line-height:1.8;}
     .state{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;vertical-align:4px;}
-    .state.open{background:#eafaf0;color:var(--ok);} .state.closed{background:#eee;color:#555;}
+    .state.open{background:#eafaf0;color:var(--ok);} .state.closed{background:#ece6df;color:#5a4f47;}
     .evbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px;}
     .evbar label{font-size:13px;font-weight:700;color:var(--muted);}
     .evbar select{flex:1 1 260px;min-width:0;min-height:42px;padding:0 10px;border:1px solid var(--hairline-strong);border-radius:8px;font-family:inherit;font-size:14.5px;background:#fff;color:var(--ink);}
@@ -46,7 +46,7 @@
     .sbtn{min-height:42px;padding:0 15px;border:1px solid var(--hairline-strong);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink);
       display:inline-flex;align-items:center;justify-content:center;gap:6px;user-select:none;-webkit-user-select:none;}
     .sbtn.pri{background:var(--primary);color:#fff;border-color:var(--primary);} .sbtn.pri:hover{background:var(--primary-active);}
-    .sbtn.gold{background:var(--gold);color:#1a1a1a;border-color:var(--gold);}
+    .sbtn.gold{background:var(--gold);color:#13110f;border-color:var(--gold);}
     .sbtn.danger{color:var(--err);border-color:#e9b9b3;}
     .sbtn.big{min-height:48px;padding:0 22px;font-size:15.5px;}
     .sbtn:disabled{opacity:.5;cursor:default;}
@@ -69,27 +69,27 @@
     .fl small{font-weight:400;color:var(--muted);}
     .fl input,.fl select{width:100%;min-height:42px;padding:0 10px;border:1px solid var(--hairline-strong);border-radius:8px;font-family:inherit;font-size:14.5px;background:#fff;color:var(--ink);}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .artBox{display:flex;gap:12px;align-items:center;padding:12px;border:1px dashed var(--hairline-strong);border-radius:10px;margin-bottom:12px;background:#faf9f6;}
-    .artBox .th{width:84px;height:84px;flex:none;border-radius:8px;background:#eee center/cover no-repeat;border:1px solid var(--hairline);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-align:center;}
+    .artBox{display:flex;gap:12px;align-items:center;padding:12px;border:1px dashed var(--hairline-strong);border-radius:10px;margin-bottom:12px;background:#fbf9f7;}
+    .artBox .th{width:84px;height:84px;flex:none;border-radius:8px;background:#ece6df center/cover no-repeat;border:1px solid var(--hairline);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-align:center;}
     .artBox .bt{display:flex;flex-wrap:wrap;gap:6px;}
     .artBox p{margin:0 0 8px;font-size:13px;color:var(--muted);line-height:1.6;}
-    .tg{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--hairline);border-radius:10px;background:#faf9f6;cursor:pointer;margin-bottom:8px;}
+    .tg{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--hairline);border-radius:10px;background:#fbf9f7;cursor:pointer;margin-bottom:8px;}
     .tg input{margin-top:2px;flex:none;width:18px;height:18px;accent-color:var(--primary);}
     .tg b{display:block;font-size:14px;color:var(--ink);} .tg small{display:block;margin-top:2px;font-size:12.5px;line-height:1.5;color:var(--muted);}
     .tg.open{border-color:#bfe3cc;background:#f1faf4;}
     .pprev{position:sticky;top:60px;}
-    .pprev canvas{display:block;width:100%;aspect-ratio:210/297;background:#fff;border:1px solid var(--hairline-strong);border-radius:4px;box-shadow:0 6px 18px rgba(13,29,58,.08);}
+    .pprev canvas{display:block;width:100%;aspect-ratio:210/297;background:#fff;border:1px solid var(--hairline-strong);border-radius:4px;box-shadow:0 6px 18px rgba(46,32,22,.08);}
     .pprev .cap{margin:8px 0 0;text-align:center;}
     .pout{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
     /* 표 */
     .tblWrap{overflow-x:auto;}
     table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;min-width:640px;}
     th,td{padding:9px 8px;border-bottom:1px solid var(--hairline);text-align:left;white-space:nowrap;}
-    th{font-size:12.5px;color:var(--muted);font-weight:600;background:#faf9f6;}
+    th{font-size:12.5px;color:var(--muted);font-weight:600;background:#fbf9f7;}
     td.r,th.r{text-align:right;} td.c,th.c{text-align:center;}
     td.no{font-weight:700;color:var(--primary);}
     td.nums{white-space:normal;min-width:200px;line-height:1.6;color:var(--muted);font-size:13px;}
-    tr.un td{color:#9a9a9a;}
+    tr.un td{color:#a39a91;}
     .lnk{border:0;background:none;color:var(--primary);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:4px 6px;}
     .win{color:var(--gold-ink);font-weight:700;}
     .empty{padding:24px;text-align:center;color:var(--muted);line-height:1.7;}
@@ -110,8 +110,8 @@
     @media (max-width:420px){ .row2{grid-template-columns:1fr;} .tools input.num{width:90px;} }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
-  <link rel="stylesheet" href="../assets/theme.css?v=3" />
-  <link rel="stylesheet" href="manse.css?v=7" />
+  <link rel="stylesheet" href="../assets/theme.css?v=4" />
+  <link rel="stylesheet" href="manse.css?v=9" />
 </head>
 <body>
   <header class="m-bar"><div class="in"><a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a><span id="mAuth"></span></div></header>

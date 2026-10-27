@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
-      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;}
+    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
+      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--dark:#2e2016;
+      --gold:#b5562f;--gold-ink:#a43e1b;--ok:#0f7b3f;--err:#c0392b;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -25,7 +25,7 @@
     .title{margin:0;font-size:clamp(24px,4vw,30px);color:var(--ink);}
     .sub{margin:8px 0 24px;font-size:14.5px;color:var(--muted);line-height:1.8;}
     .state{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;vertical-align:4px;}
-    .state.open{background:#eafaf0;color:var(--ok);} .state.closed{background:#eee;color:#555;}
+    .state.open{background:#eafaf0;color:var(--ok);} .state.closed{background:#ece6df;color:#5a4f47;}
     .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
     .kpi{background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:16px;}
     .kpi .k{font-size:12.5px;color:var(--muted);} .kpi .n{font-size:24px;font-weight:700;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;}
@@ -44,7 +44,7 @@
     .tblWrap{overflow-x:auto;}
     table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;min-width:640px;}
     th,td{padding:10px 8px;border-bottom:1px solid var(--hairline);text-align:right;white-space:nowrap;}
-    th.l,td.l{text-align:left;} th{font-size:12.5px;color:var(--muted);font-weight:600;background:#faf9f6;position:sticky;top:0;}
+    th.l,td.l{text-align:left;} th{font-size:12.5px;color:var(--muted);font-weight:600;background:#fbf9f7;position:sticky;top:0;}
     td.c,th.c{text-align:center;}
     tr.paid td{color:#8a8a8a;}
     .del{border:0;background:none;color:var(--err);cursor:pointer;font-size:12.5px;font-family:inherit;}
@@ -58,7 +58,7 @@
     .h3{margin:22px 0 10px;font-size:15px;color:var(--ink);}
     td.nums{white-space:normal;min-width:180px;line-height:1.6;}
     .ph{display:flex;gap:4px;flex-wrap:wrap;}
-    .ph a{display:block;width:48px;height:48px;border-radius:6px;overflow:hidden;background:#eee;}
+    .ph a{display:block;width:48px;height:48px;border-radius:6px;overflow:hidden;background:#ece6df;}
     .ph img{width:100%;height:100%;object-fit:cover;display:block;}
     .chips{display:flex;flex-wrap:wrap;gap:4px;padding:10px 0 4px;}
     .chips span{min-width:40px;padding:3px 6px;border-radius:6px;background:var(--surface-soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
@@ -73,7 +73,7 @@
     details.card>summary::-webkit-details-marker{display:none;}
     details.card>summary::after{content:'\25BE';margin-left:auto;color:var(--muted);font-size:14px;}
     details.card[open]>summary::after{content:'\25B4';} details.card[open]>summary{margin-bottom:8px;}
-    .chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:#eee;color:#555;}
+    .chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:#ece6df;color:#5a4f47;}
     .chip.on{background:#eafaf0;color:var(--ok);} .chip.gold{background:#fbf5e6;color:var(--gold-ink);}
     .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
     .fgrid label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--ink);min-width:0;}
@@ -82,7 +82,7 @@
     .fgrid input[readonly]{background:var(--surface-soft);color:var(--muted);}
     .fgrid .w2{grid-column:span 2;} .fgrid .w4{grid-column:1/-1;}
     .toggles{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
-    .tg{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--hairline);border-radius:10px;background:#faf9f6;cursor:pointer;}
+    .tg{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--hairline);border-radius:10px;background:#fbf9f7;cursor:pointer;}
     .tg input{margin-top:2px;flex:none;}
     .tg b{display:block;font-size:14.5px;color:var(--ink);} .tg small{display:block;margin-top:2px;font-size:12.5px;line-height:1.5;color:var(--muted);}
     .ev-msg{font-size:13.5px;line-height:1.6;color:var(--err);} .ev-msg.ok{color:var(--ok);}
@@ -90,8 +90,8 @@
     @media (max-width:480px){ .fgrid{grid-template-columns:1fr;} .fgrid .w2{grid-column:auto;} }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
-  <link rel="stylesheet" href="../assets/theme.css?v=3" />
-  <link rel="stylesheet" href="manse.css?v=7" />
+  <link rel="stylesheet" href="../assets/theme.css?v=4" />
+  <link rel="stylesheet" href="manse.css?v=9" />
 </head>
 <body>
   <header class="m-bar"><div class="in"><a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a><span id="mAuth"></span></div></header>
@@ -209,7 +209,7 @@
     // 회차 — init()에서 walk_events 표(manse-walk-setup.sql)를 읽어 정함. 주소 ?e=회차 코드
     var EVENTS=[], EV=WalkEv.FALLBACK, EVENT=EV.event, FEE=+EV.fee||0, whoName='임원', evMode='edit';
     function isPast(){ return WalkEv.state(EV)==='closed'; }
-    var NAVY='#032257', GOLD='#b89b5e', OK='#0f7b3f', MUTE='#d9d4c8';
+    var NAVY='#3a2a1e', GOLD='#b5562f', OK='#0f7b3f', MUTE='#d9d4c8';
     var $=function(id){return document.getElementById(id);};
     function won(n){return Number(n||0).toLocaleString('ko-KR');}
     function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -217,7 +217,7 @@
     function pad(n){return (n<10?'0':'')+n;}
     var rows=[], charts={};
 
-    if(window.Chart){ Chart.defaults.font.family="'Pretendard Variable',Pretendard,system-ui,sans-serif"; Chart.defaults.color='#555'; }
+    if(window.Chart){ Chart.defaults.font.family="'Pretendard Variable',Pretendard,system-ui,sans-serif"; Chart.defaults.color='#5a4f47'; }
 
     function render(){
       var t={apps:rows.length,adult:0,minor:0,paidAmt:0,paidCnt:0}, by={}, daily={};
@@ -246,7 +246,7 @@
       mk('cChurch',{type:'bar',data:{labels:ch,datasets:[
           {label:'성인',data:ch.map(function(c){return by[c].a;}),backgroundColor:NAVY,borderRadius:4},
           {label:'미성년',data:ch.map(function(c){return by[c].m;}),backgroundColor:GOLD,borderRadius:4}]},
-        options:{indexAxis:'y',maintainAspectRatio:false,responsive:true,scales:{x:{stacked:true,ticks:{precision:0},grid:{color:'#eee'}},y:{stacked:true,grid:{display:false}}},
+        options:{indexAxis:'y',maintainAspectRatio:false,responsive:true,scales:{x:{stacked:true,ticks:{precision:0},grid:{color:'#ece6df'}},y:{stacked:true,grid:{display:false}}},
           plugins:{legend:{position:'top',align:'end'},tooltip:{callbacks:{footer:function(it){var s=0;it.forEach(function(i){s+=i.parsed.x;});return '합계 '+s+'명';}}}}}});
       mk('cRatio',{type:'doughnut',data:{labels:['성인','미성년'],datasets:[{data:[t.adult,t.minor],backgroundColor:[NAVY,GOLD],borderWidth:2,borderColor:'#fff'}]},
         options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(c){var s=t.adult+t.minor;return c.label+' '+c.parsed+'명 ('+(s?Math.round(c.parsed/s*100):0)+'%)';}}}}}});
@@ -254,9 +254,9 @@
         options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(c){return c.label+' '+won(c.parsed)+'원';}}}}}});
       var days=Object.keys(daily).sort(), cum=0, cumArr=days.map(function(d){cum+=daily[d];return cum;});
       mk('cDaily',{data:{labels:days.map(function(d){var p=d.split('-');return (+p[1])+'/'+(+p[2]);}),datasets:[
-          {type:'bar',label:'그날 신청 인원',data:days.map(function(d){return daily[d];}),backgroundColor:'rgba(184,155,94,.55)',borderRadius:4,yAxisID:'y'},
+          {type:'bar',label:'그날 신청 인원',data:days.map(function(d){return daily[d];}),backgroundColor:'rgba(181,86,47,.55)',borderRadius:4,yAxisID:'y'},
           {type:'line',label:'누적 인원',data:cumArr,borderColor:NAVY,backgroundColor:NAVY,tension:.25,pointRadius:3,yAxisID:'y'}]},
-        options:{maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:'#eee'}},x:{grid:{display:false}}},plugins:{legend:{position:'top',align:'end'}}}});
+        options:{maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:'#ece6df'}},x:{grid:{display:false}}},plugins:{legend:{position:'top',align:'end'}}}});
     }
 
     function filtered(){

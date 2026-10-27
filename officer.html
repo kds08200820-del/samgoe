@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--surface-card:#faf9f6;--dark:#0d1d3a;--error:#dc2626;}
+    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
+      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--surface-card:#fbf9f7;--dark:#2e2016;--error:#dc2626;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -26,7 +26,7 @@
     /* 임원방 메뉴 — 임원 업무 · 관리 화면을 한곳에서 (관리자 · 운영관리는 권한 있는 사람에게만 보임) */
     .menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:0 0 30px;}
     .mi{display:flex;flex-direction:column;gap:3px;padding:16px 18px;background:var(--canvas);border:1px solid var(--hairline);transition:border-color .15s,box-shadow .15s;}
-    .mi:hover{border-color:var(--primary);box-shadow:0 6px 18px rgba(13,29,58,.08);}
+    .mi:hover{border-color:var(--primary);box-shadow:0 6px 18px rgba(46,32,22,.08);}
     .mi b{font-size:16px;font-weight:700;color:var(--ink);}
     .mi small{font-size:13px;color:var(--muted);line-height:1.5;}
     .mi.hot{background:var(--primary);border-color:var(--primary);}
@@ -64,7 +64,7 @@
     .btn.danger:hover{background:#fdecea;}
     .prog{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px;}
     .drop{border:2px dashed var(--hairline-strong);background:var(--surface-soft);padding:30px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;}
-    .drop.over{border-color:var(--primary);background:#f3efe4;}
+    .drop.over{border-color:var(--primary);background:#f7ebe2;}
     .drop .big{font-size:15px;font-weight:700;color:var(--ink);}
     .drop .small{font-size:12px;color:var(--muted);margin-top:5px;}
     .drop u{color:var(--primary);}
@@ -77,7 +77,7 @@
     .row{display:flex;align-items:center;gap:14px;padding:16px 20px;border-top:1px solid var(--hairline);cursor:pointer;}
     .row:first-child{border-top:0;}
     .row:hover{background:var(--surface-soft);}
-    .row .ic,.arcItem .ic,.ptop .ic{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 6px;border-radius:4px;background:#eef1f6;color:var(--primary);font-size:11.5px;font-weight:700;letter-spacing:-.02em;}
+    .row .ic,.arcItem .ic,.ptop .ic{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 6px;border-radius:4px;background:#f2ece5;color:var(--primary);font-size:11.5px;font-weight:700;letter-spacing:-.02em;}
     .row .main{flex:1;min-width:0;}
     .row .t{font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .row .m{font-size:13px;color:var(--muted);margin-top:3px;}
@@ -189,7 +189,7 @@
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
 
     /* ===== 부드러운 라운드 UI ===== */
-    :root{--r-lg:16px;--r-md:12px;--r-sm:10px;--shadow:0 1px 2px rgba(13,29,58,.04),0 6px 20px rgba(13,29,58,.06);--ring:0 0 0 3px rgba(3,34,87,.12);}
+    :root{--r-lg:16px;--r-md:12px;--r-sm:10px;--shadow:0 1px 2px rgba(46,32,22,.04),0 6px 20px rgba(46,32,22,.06);--ring:0 0 0 3px rgba(58,42,30,.12);}
     body{font-weight:400;}
     .badge{border-radius:8px;letter-spacing:1px;}
     .title{letter-spacing:-0.5px;}
@@ -197,14 +197,14 @@
     .tabs{display:inline-flex;gap:4px;padding:4px;background:#ece9e2;border:0;border-radius:999px;margin-bottom:26px;}
     .tab{padding:9px 20px;font-size:14px;border:0;margin:0;border-radius:999px;color:var(--muted);transition:background .15s,color .15s;}
     .tab:hover{color:var(--ink);}
-    .tab.on{background:#fff;color:var(--primary);border:0;box-shadow:0 1px 3px rgba(13,29,58,.12);}
+    .tab.on{background:#fff;color:var(--primary);border:0;box-shadow:0 1px 3px rgba(46,32,22,.12);}
     .tcnt{border-radius:999px;}
     /* 카드·목록 */
     .writeBox,.list,.docSide,.legacy,.notice,.arcList,.arcAdd,.modal{border-radius:var(--r-lg);}
     .writeBox,.list,.docSide{box-shadow:var(--shadow);border-color:#ebe8e1;}
     .list{overflow:hidden;}
     .row,.prow,.arcItem{border-top-color:#f0eee9;}
-    .row:hover,.arcItem:hover{background:#faf9f6;}
+    .row:hover,.arcItem:hover{background:#fbf9f7;}
     .ygrp{background:#f6f4ef;border-top-color:#f0eee9;}
     /* 입력 */
     .fld input,.fld textarea,.docTop input,.docTop select,.pctl select,.pctl input,.ptop .pt,.arcFilters select,.arcFilters input,.arcAdd select,.cmtForm textarea{
@@ -215,11 +215,11 @@
     /* 버튼 */
     .btn,.btn.sm,.btn.ghost,.btn.danger{border-radius:999px;}
     .btn.ghost{border-color:#ddd8ce;}
-    .btn.ghost:hover{background:#f3f1ec;border-color:#cfc9bd;}
+    .btn.ghost:hover{background:#f3f1ec;border-color:#d9d0c6;}
     .docBar button,.mclose{border-radius:999px;}
     /* 드롭 영역 */
-    .drop{border-radius:var(--r-md);border:2px dashed #d6d1c6;background:#faf9f6;padding:34px 20px;}
-    .drop.over{border-color:var(--primary);background:#eef2fa;}
+    .drop{border-radius:var(--r-md);border:2px dashed #d6d1c6;background:#fbf9f7;padding:34px 20px;}
+    .drop.over{border-color:var(--primary);background:#f7efe7;}
     /* 자료실 트리 */
     .docSide{padding:10px 8px;}
     .tn{border-radius:var(--r-sm);padding:8px 12px;margin:1px 0;}
@@ -231,15 +231,15 @@
     .prow{padding:16px 20px;}
     .legacy{border-radius:var(--r-md);}
     /* 모달·뷰어 */
-    .overlay{background:rgba(13,29,58,.45);backdrop-filter:blur(2px);}
-    .modal{overflow:hidden;box-shadow:0 20px 60px rgba(13,29,58,.25);}
+    .overlay{background:rgba(46,32,22,.45);backdrop-filter:blur(2px);}
+    .modal{overflow:hidden;box-shadow:0 20px 60px rgba(46,32,22,.25);}
     .docOv iframe{border-radius:var(--r-lg) var(--r-lg) 0 0;}
     .home{border-radius:999px;}
     @media (max-width:720px){ .tabs{display:flex;} .tab{flex:1;text-align:center;padding:9px 10px;} }
   </style>
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=3" />
+  <link rel="stylesheet" href="assets/theme.css?v=4" />
 </head>
 <body>
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회</a><span id="authArea"></span></div></header>
@@ -637,6 +637,6 @@
 
     })();
   </script>
-<div style="background:#0d1d3a;color:rgba(255,255,255,0.65);padding:20px 24px;text-align:center;font-size:12px;line-height:1.7;">© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp; <a href="terms.html#terms" style="color:rgba(255,255,255,0.85);font-weight:700;">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy" style="color:rgba(255,255,255,0.85);font-weight:700;">개인정보처리방침</a></div>
+<div style="background:#2e2016;color:rgba(255,255,255,0.65);padding:20px 24px;text-align:center;font-size:12px;line-height:1.7;">© 2026 삼괴지역 기독교 연합회 &nbsp;·&nbsp; <a href="terms.html#terms" style="color:rgba(255,255,255,0.85);font-weight:700;">이용약관</a> &nbsp;·&nbsp; <a href="terms.html#privacy" style="color:rgba(255,255,255,0.85);font-weight:700;">개인정보처리방침</a></div>
 </body>
 </html>

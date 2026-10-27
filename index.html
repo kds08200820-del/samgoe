@@ -13,7 +13,7 @@
 
   <!-- 스마트폰 홈 화면 앱 설치 (PWA) -->
   <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#0d1d3a" />
+  <meta name="theme-color" content="#2e2016" />
   <link rel="icon" type="image/png" href="assets/app-icon.png?v=4" />
   <link rel="apple-touch-icon" href="assets/app-icon.png?v=4" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -28,18 +28,18 @@
   <style>
     :root{
       /* ---- 2026 모던 디자인 시스템 ---- */
-      --accent:#032257; --accent-deep:#021838; --accent-soft:#f3efe4; --accent-ink:#021838;
-      --ink:#1a1a1a; --body:#3f3f3f; --muted:#7a7a7a; --faint:#a39e94;
-      --line:#e6e3dd; --line-soft:#eeebe4;
-      --bg:#ffffff; --soft:#f7f5f0; --card:#ffffff;
-      --dark:#0d1d3a; --dark-2:#102a52;
+      --accent:#3a2a1e; --accent-deep:#2a1d14; --accent-soft:#f7ebe2; --accent-ink:#2a1d14;
+      --ink:#13110f; --body:#3d3530; --muted:#7a6f67; --faint:#a39e94;
+      --line:#e9e4de; --line-soft:#f0ebe5;
+      --bg:#ffffff; --soft:#f5f3f2; --card:#ffffff;
+      --dark:#2e2016; --dark-2:#3d2b1f;
       --on-dark:#f1f5f9; --on-dark-soft:#a39e94;
       --radius:18px; --radius-sm:12px;
-      --shadow:0 1px 2px rgba(13,29,58,.04),0 10px 30px rgba(13,29,58,.06);
-      --shadow-lift:0 2px 4px rgba(13,29,58,.05),0 18px 44px rgba(13,29,58,.10);
+      --shadow:0 1px 2px rgba(46,32,22,.04),0 10px 30px rgba(46,32,22,.06);
+      --shadow-lift:0 2px 4px rgba(46,32,22,.05),0 18px 44px rgba(46,32,22,.10);
       /* 레거시 별칭 — 공용 스크립트가 참조 */
       --hairline:var(--line); --primary:var(--accent); --blue:var(--accent);
-      --navy:var(--accent-deep); --slate:#d4bf8c; --slate-deep:var(--muted);
+      --navy:var(--accent-deep); --slate:#e8c4a6; --slate-deep:var(--muted);
       --muted-soft:var(--faint);
     }
     *{box-sizing:border-box;}
@@ -126,29 +126,29 @@
     .btn-ghost-dark:hover{background:rgba(255,255,255,0.12);}
     .hero-contact{margin-top:36px;font-size:13.5px;font-weight:500;color:var(--faint);}
     .hero-walk{display:flex;align-items:center;gap:16px;max-width:640px;margin:34px auto 0;padding:16px 18px 16px 16px;text-align:left;
-      background:var(--soft);border:1px solid rgba(184,155,94,.55);border-radius:14px;color:var(--ink);
+      background:var(--soft);border:1px solid rgba(181,86,47,.55);border-radius:14px;color:var(--ink);
       transition:background .2s,transform .2s,border-color .2s;}
-    .hero-walk:hover{background:#f3efe4;border-color:#b89b5e;transform:translateY(-2px);}
-    .hero-walk .hw-badge{flex:none;background:#b89b5e;color:#1a1a1a;font-size:12px;font-weight:800;padding:6px 11px;border-radius:20px;white-space:nowrap;}
+    .hero-walk:hover{background:#f7ebe2;border-color:#b5562f;transform:translateY(-2px);}
+    .hero-walk .hw-badge{flex:none;background:#b5562f;color:#13110f;font-size:12px;font-weight:800;padding:6px 11px;border-radius:20px;white-space:nowrap;}
     .hero-walk .hw-badge b{margin-left:4px;}
     .hero-walk .hw-main{flex:1;display:flex;flex-direction:column;gap:3px;font-size:16px;line-height:1.45;}
     .hero-walk .hw-sub{font-size:13px;color:var(--muted);}
-    .hero-walk .hw-go{flex:none;background:#032257;color:#fff;font-size:14px;font-weight:800;padding:10px 16px;border-radius:24px;white-space:nowrap;}
+    .hero-walk .hw-go{flex:none;background:#3a2a1e;color:#fff;font-size:14px;font-weight:800;padding:10px 16px;border-radius:24px;white-space:nowrap;}
     @media (max-width:640px){ .hero-walk{flex-direction:column;align-items:flex-start;gap:10px;} .hero-walk .hw-go{align-self:stretch;text-align:center;} }
     /* 행사 기간: 히어로 문구를 잠시 가리고 행사 안내(.hero-focus)를 크게 — section의 walk-focus를 빼면 원래 히어로로 */
     .hero.walk-focus .hero-default,.hero.walk-focus .hero-walk{display:none;}
     .hero:not(.walk-focus) .hero-focus{display:none;}
     .hero-focus{max-width:720px;margin:0 auto;}
-    .hf-badge{display:inline-flex;align-items:center;gap:6px;background:#b89b5e;color:#1a1a1a;font-size:14px;font-weight:800;padding:7px 15px;border-radius:999px;}
-    .hf-title{margin:22px 0 14px;font-size:clamp(38px,6.4vw,68px);line-height:1.12;font-weight:800;letter-spacing:-0.03em;color:#032257;}
+    .hf-badge{display:inline-flex;align-items:center;gap:6px;background:#b5562f;color:#13110f;font-size:14px;font-weight:800;padding:7px 15px;border-radius:999px;}
+    .hf-title{margin:22px 0 14px;font-size:clamp(38px,6.4vw,68px);line-height:1.12;font-weight:800;letter-spacing:-0.03em;color:#3a2a1e;}
     .hf-when{margin:0 0 30px;font-size:clamp(17px,2.4vw,21px);line-height:1.7;color:var(--body);}
     .hf-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-    .hf-go{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 40px;border-radius:999px;background:#032257;color:#fff;
-      font-size:19px;font-weight:800;box-shadow:0 10px 30px rgba(3,34,87,.22);transition:background .15s ease,transform .12s ease;}
-    .hf-go:hover{background:#021838;} .hf-go:active{transform:scale(0.97);}
-    .hf-sub{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 26px;border-radius:999px;border:1.5px solid #cfc9bd;
-      color:#032257;font-size:16px;font-weight:700;transition:background .15s ease,border-color .15s ease;}
-    .hf-sub:hover{background:var(--soft);border-color:#b89b5e;}
+    .hf-go{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 40px;border-radius:999px;background:#3a2a1e;color:#fff;
+      font-size:19px;font-weight:800;box-shadow:0 10px 30px rgba(58,42,30,.22);transition:background .15s ease,transform .12s ease;}
+    .hf-go:hover{background:#2a1d14;} .hf-go:active{transform:scale(0.97);}
+    .hf-sub{display:inline-flex;align-items:center;justify-content:center;height:60px;padding:0 26px;border-radius:999px;border:1.5px solid #d9d0c6;
+      color:#3a2a1e;font-size:16px;font-weight:700;transition:background .15s ease,border-color .15s ease;}
+    .hf-sub:hover{background:var(--soft);border-color:#b5562f;}
     .hf-note{margin:22px 0 0;font-size:13px;line-height:1.7;color:var(--muted);}
     .hf-sponsor{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 14px;margin:18px 0 0;}
     .hf-sponsor span{font-size:12.5px;font-weight:600;letter-spacing:.14em;color:var(--muted);}
@@ -159,7 +159,7 @@
     .hero-event .hf-badge b{margin-left:4px;}
     .he-intro{margin:-12px auto 26px;max-width:580px;font-size:clamp(15px,2vw,16.5px);line-height:1.8;color:var(--body);word-break:keep-all;}
     .pz-ofc-wrap{margin:18px 0 0;}
-    .pz-ofc{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 24px;border-radius:999px;background:#b89b5e;color:#1a1a1a;
+    .pz-ofc{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 24px;border-radius:999px;background:#b5562f;color:#13110f;
       font-size:16px;font-weight:800;box-shadow:0 6px 18px rgba(138,109,52,.22);user-select:none;-webkit-user-select:none;}
     .pz-ofc small{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.55);}
     .pz-ofc::after{content:'→';}
@@ -233,13 +233,13 @@
       transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
     .quick-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:#e3dccb;}
     .quick-tile .qa{color:var(--accent);font-weight:800;}
-    .quick-walk{background:linear-gradient(120deg,#032257 0%,#0d3a7a 60%,#1a4f8f 100%)!important;color:#fff!important;border-color:transparent!important;}
-    .quick-walk .qa{color:#d4bf8c!important;font-size:1.15em;}
-    .quick-walk .qw-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#b89b5e;color:#1a1a1a;font-size:12px;font-weight:700;vertical-align:1px;}
-    .quick-walk:hover{box-shadow:0 10px 30px rgba(3,34,87,.35)!important;}
+    .quick-walk{background:linear-gradient(120deg,#3a2a1e 0%,#0d3a7a 60%,#1a4f8f 100%)!important;color:#fff!important;border-color:transparent!important;}
+    .quick-walk .qa{color:#e8c4a6!important;font-size:1.15em;}
+    .quick-walk .qw-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#b5562f;color:#13110f;font-size:12px;font-weight:700;vertical-align:1px;}
+    .quick-walk:hover{box-shadow:0 10px 30px rgba(58,42,30,.35)!important;}
     .quick-walk[hidden]{display:none!important;}
     @media (max-width:600px){ .quick-walk .qw-tag{display:table;margin:0 0 8px;} }
-    .quick-app .qp-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#f3efe4;color:#8a6d34;font-size:12px;font-weight:700;vertical-align:1px;}
+    .quick-app .qp-tag{display:inline-block;margin-right:12px;padding:3px 10px;border-radius:20px;background:#f7ebe2;color:#a43e1b;font-size:12px;font-weight:700;vertical-align:1px;}
     @media (max-width:600px){ .quick-app .qp-tag{display:table;margin:0 0 8px;} }
     @media (max-width:960px){ .quick-grid{grid-template-columns:repeat(2,1fr);} }
 
@@ -272,7 +272,7 @@
     .notice-del{flex:0 0 auto;font-size:12.5px;color:var(--faint);text-decoration:underline;cursor:pointer;padding-top:5px;}
 
     /* ===================== 수요조찬기도회 ===================== */
-    .pray-next{background:linear-gradient(135deg,#021838 0%,#032257 60%,#1a3a6b 100%);
+    .pray-next{background:linear-gradient(135deg,#2a1d14 0%,#3a2a1e 60%,#1a3a6b 100%);
       color:#fff;border-radius:var(--radius);padding:36px 38px;display:flex;gap:36px;align-items:center;
       flex-wrap:wrap;box-shadow:var(--shadow-lift);}
     .pray-next .pn-date{flex:0 0 auto;text-align:center;padding-right:36px;border-right:1px solid rgba(255,255,255,0.22);}
@@ -339,8 +339,8 @@
       display:inline-flex;align-items:center;gap:6px;}
     .press-actions{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2;}
     .press-act{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;border:0;cursor:pointer;
-      font-family:inherit;background:rgba(13,29,58,0.62);color:#fff;backdrop-filter:blur(4px);}
-    .press-act:hover{background:rgba(13,29,58,0.82);}
+      font-family:inherit;background:rgba(46,32,22,0.62);color:#fff;backdrop-filter:blur(4px);}
+    .press-act:hover{background:rgba(46,32,22,0.82);}
     .press-act.danger:hover{background:#dc2626;}
 
     /* ===================== 갤러리 — 인스타그램형 (다크) ===================== */
@@ -361,7 +361,7 @@
     .mq-badge{position:absolute;top:10px;right:10px;z-index:2;background:rgba(0,0,0,0.55);color:#fff;
       font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px);}
     .mq-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:8px;color:#d4bf8c;font-size:14px;font-weight:600;background:linear-gradient(150deg,#0d1d3a,#102a52);}
+      gap:8px;color:#e8c4a6;font-size:14px;font-weight:600;background:linear-gradient(150deg,#2e2016,#3d2b1f);}
     .mq-ph span{font-size:34px;}
     .ig-actions{display:flex;justify-content:center;gap:12px;margin-top:28px;flex-wrap:wrap;}
     /* 업로드 패널 (평상시 숨김) */
@@ -446,7 +446,7 @@
     .fee-row.head .f1,.fee-row.head .f2,.fee-row.head .f3{font-size:13px;font-weight:700;color:var(--faint);}
     .account-card{background:var(--dark);border-radius:var(--radius);padding:32px 30px;color:var(--on-dark);
       display:flex;flex-direction:column;justify-content:center;}
-    .account-card .k{font-size:13px;font-weight:700;letter-spacing:0.04em;color:#d4bf8c;}
+    .account-card .k{font-size:13px;font-weight:700;letter-spacing:0.04em;color:#e8c4a6;}
     .account-card .num{margin-top:12px;font-size:23px;font-weight:800;letter-spacing:-0.01em;white-space:nowrap;}
     .account-card .who{margin-top:8px;font-size:14.5px;color:var(--on-dark-soft);}
     .account-card .note{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.14);
@@ -492,12 +492,12 @@
     footer a:hover{color:var(--accent) !important;}
   .ofc-card{position:relative;}
     .sup-only{display:none !important;}
-    .ofc-replace{position:absolute;top:8px;right:8px;z-index:3;height:30px;padding:0 12px;border:0;border-radius:4px;background:rgba(13,29,58,0.88);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
-    .ofc-replace:hover{background:rgba(13,29,58,1);}
+    .ofc-replace{position:absolute;top:8px;right:8px;z-index:3;height:30px;padding:0 12px;border:0;border-radius:4px;background:rgba(46,32,22,0.88);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .ofc-replace:hover{background:rgba(46,32,22,1);}
   </style>
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
-  <link rel="stylesheet" href="assets/theme.css?v=3" />
+  <link rel="stylesheet" href="assets/theme.css?v=4" />
 </head>
 <body>
 <div style="width:100%;overflow-x:hidden;overflow-x:clip;">
@@ -571,8 +571,8 @@
     var ctx = canvas.getContext('2d');
     var hero = canvas.parentElement;
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    /* 위치(좌→우)에 따른 그라데이션: 금색 → 짙은 금색 → 남색 → 짙은 금색 → 금색 (흰 바탕에서 보이는 톤) */
-    var STOPS = [[184,155,94],[150,120,62],[40,66,120],[150,120,62],[184,155,94]];
+    /* 위치(좌→우)에 따른 그라데이션: 연한 갈색 → 녹슨 주황 → 짙은 갈색 → 녹슨 주황 → 연한 갈색 (흰 바탕에서 보이는 톤) */
+    var STOPS = [[200,150,110],[181,86,47],[74,53,39],[181,86,47],[200,150,110]];
     var W = 0, H = 0, parts = [], mouse = {x:-9999, y:-9999};
     var running = false, rafId = 0;
 
@@ -857,7 +857,7 @@
   <!-- ===================== 갤러리 — 인스타그램형 (다크) ===================== -->
   <section id="gallery" class="section gallery-sec" style="scroll-margin-top:110px;">
     <div style="text-align:center;margin-bottom:36px;padding:0 24px;">
-      <span class="eyebrow" style="background:rgba(255,255,255,0.1);color:#d4bf8c;">갤러리</span>
+      <span class="eyebrow" style="background:rgba(255,255,255,0.1);color:#e8c4a6;">갤러리</span>
       <h2 class="sec-h2" style="color:#fff;">함께한 순간들</h2>
       <p class="sec-sub" style="color:var(--on-dark-soft);">연합의 발자취</p>
     </div>

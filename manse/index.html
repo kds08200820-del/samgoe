@@ -27,7 +27,7 @@
       if (/elaockhopuvadamvwjeg/.test(JSON.parse(atob(t)).iss || '')) location.replace('move.html' + h); } catch (_) {} })();
   </script>
   <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#0b0b0b" />
+  <meta name="theme-color" content="#2e2016" />
   <meta name="application-name" content="삼일만세운동본부" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="만세운동본부" />
@@ -55,7 +55,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
   <style>
-    :root{--primary:#111111;--ink:#1a1a1a;--body:#3f3f3f;--muted:#767676;--line:#e5e5e5;--line-soft:#eeeeee;--accent:#111111;
+    :root{--primary:#3a2a1e;--ink:#13110f;--body:#3d3530;--muted:#776c64;--line:#e9e4de;--line-soft:#ece6df;--accent:#3a2a1e;
       --radius:10px;--shadow-lift:0 2px 4px rgba(0,0,0,.05),0 16px 40px rgba(0,0,0,.10);--card:#fff;}
     *{box-sizing:border-box;}
     html{scroll-behavior:smooth;}
@@ -64,12 +64,12 @@
       -webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none;}
     img{display:block;}
-    .gbar{position:sticky;top:0;z-index:60;background:#0b0b0b;}
+    .gbar{position:sticky;top:0;z-index:60;background:#2e2016;}
     .gbar .in{max-width:1080px;margin:0 auto;height:44px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
     .gbar .nm{font-size:12.5px;color:rgba(255,255,255,.75);white-space:nowrap;}
     #mAuth{font-size:12.5px;color:rgba(255,255,255,.88);display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;}
-    #mAuth a{color:rgba(255,255,255,.9);} #mAuth a:hover{color:#e8e8e8;}
-    #mAuth .m-officer{color:#e8e8e8;font-weight:700;} #mAuth .m-me{color:#fff;font-weight:600;}
+    #mAuth a{color:rgba(255,255,255,.9);} #mAuth a:hover{color:#e9e4de;}
+    #mAuth .m-officer{color:#e9e4de;font-weight:700;} #mAuth .m-me{color:#fff;font-weight:600;}
     .m-sep{color:rgba(255,255,255,.3);margin:0 7px;}
     #mAuth .m-back{color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:2px 11px;margin-right:12px;white-space:nowrap;}
     #mAuth .m-back:hover{background:rgba(255,255,255,.12);}
@@ -80,34 +80,34 @@
     .snav nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
     .snav nav::-webkit-scrollbar{display:none;}
     .snav nav a{flex:0 0 auto;font-size:14px;color:var(--ink);padding:8px 9px;border-bottom:2px solid transparent;}
-    .snav nav a:hover{color:#444444;border-bottom-color:#8c8c8c;}
-    footer.ft{background:#0b0b0b;color:rgba(255,255,255,.7);padding:34px 20px;font-size:13.5px;}
+    .snav nav a:hover{color:#4a3f37;border-bottom-color:#8a7f76;}
+    footer.ft{background:#2e2016;color:rgba(255,255,255,.7);padding:34px 20px;font-size:13.5px;}
     footer.ft .in{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;}
     footer.ft .nm{display:flex;align-items:center;gap:10px;color:#fff;font-family:"Noto Serif KR",serif;font-weight:700;font-size:16px;}
-    footer.ft .nm span.disc{width:34px;height:34px;border-radius:50%;background:#f5f5f5;display:grid;place-items:center;}
+    footer.ft .nm span.disc{width:34px;height:34px;border-radius:50%;background:#f5f3f2;display:grid;place-items:center;}
     footer.ft .nm img{width:30px;height:30px;}
     footer.ft .lk{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
     footer.ft .lk a,footer.ft .lk button{color:rgba(255,255,255,.88);font-weight:600;background:none;border:0;padding:0;font:inherit;font-weight:600;cursor:pointer;}
-    footer.ft .lk a:hover,footer.ft .lk button:hover{color:#e8e8e8;}
+    footer.ft .lk a:hover,footer.ft .lk button:hover{color:#e9e4de;}
     footer.ft .cp{max-width:1080px;margin:18px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);font-size:12.5px;line-height:1.8;}
     @media (max-width:760px){ .snav .brand span{display:none;} .gbar .nm{display:none;} }
     /* 3·1 만세길 걷기 — 삼기연 임원방에서 '첫 화면 게시'한 회차 (참가 신청은 삼기연 홈페이지에서) */
-    .mz-walkban{display:flex;align-items:center;gap:14px;max-width:680px;margin:30px auto 0;padding:16px 18px;border-radius:16px;background:#fff;color:#1a1a1a;
+    .mz-walkban{display:flex;align-items:center;gap:14px;max-width:680px;margin:30px auto 0;padding:16px 18px;border-radius:16px;background:#fff;color:#13110f;
       text-align:left;box-shadow:0 12px 30px rgba(0,0,0,.35);transition:transform .15s;}
     .mz-walkban[hidden]{display:none;}
     .mz-walkban:hover{transform:translateY(-2px);}
-    .mz-walkban .wb-tag{flex:none;background:#1a1a1a;color:#fff;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;white-space:nowrap;}
+    .mz-walkban .wb-tag{flex:none;background:#13110f;color:#fff;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;white-space:nowrap;}
     .mz-walkban .wb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
     .mz-walkban .wb-main b{font-size:17px;line-height:1.4;}
-    .mz-walkban .wb-main span{font-size:13.5px;line-height:1.5;color:#555;}
-    .mz-walkban .wb-go{flex:none;background:#111;color:#fff;font-size:14px;font-weight:800;padding:10px 16px;border-radius:999px;white-space:nowrap;}
+    .mz-walkban .wb-main span{font-size:13.5px;line-height:1.5;color:#5a4f47;}
+    .mz-walkban .wb-go{flex:none;background:#3a2a1e;color:#fff;font-size:14px;font-weight:800;padding:10px 16px;border-radius:999px;white-space:nowrap;}
     .mz-walkban + .mz-walkban{margin-top:12px;}
-    .mz-walkban.rep .wb-tag{background:#c8322b;}   /* 결과 보고 (관리자 메뉴에서 '홈페이지에 게시'한 회차) */
+    .mz-walkban.rep .wb-tag{background:var(--rust,#b5562f);}   /* 결과 보고 (관리자 메뉴에서 '홈페이지에 게시'한 회차) */
     @media (max-width:640px){ .mz-walkban{flex-direction:column;align-items:flex-start;gap:10px;} .mz-walkban .wb-go{align-self:stretch;text-align:center;} }
   </style>
-  <link rel="stylesheet" href="../assets/audiobook/player.css" />
-  <link rel="stylesheet" href="../assets/audiobook/section.css" />
-  <link rel="stylesheet" href="archive/archive.css?v=10" />
+  <link rel="stylesheet" href="../assets/audiobook/player.css?v=2" />
+  <link rel="stylesheet" href="../assets/audiobook/section.css?v=2" />
+  <link rel="stylesheet" href="archive/archive.css?v=11" />
 </head>
 <body class="mz">
   <header class="gbar"><div class="in">

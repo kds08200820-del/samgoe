@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#0d1d3a",
+  "theme_color": "#2e2016",
   "lang": "ko",
   "icons": [
     { "src": "assets/app-icon-192.png?v=6", "sizes": "192x192", "type": "image/png", "purpose": "any" },

@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#032257;--primary-active:#021838;--ink:#262626;--bodytext:#3c3c3c;--muted:#6b6b6b;
-      --hairline:#e6e3dd;--hairline-strong:#cfc9bd;--canvas:#fff;--surface-soft:#f7f5f0;--dark:#0d1d3a;
-      --gold:#b89b5e;--gold-ink:#8a6d34;--ok:#0f7b3f;--err:#c0392b;}
+    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
+      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--dark:#2e2016;
+      --gold:#b5562f;--gold-ink:#a43e1b;--ok:#0f7b3f;--err:#c0392b;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -52,12 +52,12 @@
     .tblWrap{overflow-x:auto;}
     table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;min-width:600px;}
     th,td{padding:9px 8px;border-bottom:1px solid var(--hairline);text-align:left;vertical-align:top;}
-    th{font-size:12.5px;color:var(--muted);font-weight:600;background:#faf9f6;white-space:nowrap;}
+    th{font-size:12.5px;color:var(--muted);font-weight:600;background:#fbf9f7;white-space:nowrap;}
     td.no,th.no{width:40px;text-align:center;color:var(--muted);}
     /* 경품 란(번호 · 상품)과 지원자 란(이름 · 인증 시각 · 인증 사진)을 색과 굵은 선으로 나눔 */
     th.gh{font-size:13px;font-weight:800;text-align:center;letter-spacing:.04em;}
-    th.gp,td.gp{background:#fcf7ea;} th.gp.gh{background:#f3e7c6;color:var(--gold-ink);}
-    th.gw,td.gw{background:#f3f6fb;} th.gw.gh{background:#dfe7f3;color:var(--primary);}
+    th.gp,td.gp{background:#fbf6ef;} th.gp.gh{background:#f3e6d8;color:var(--gold-ink);}
+    th.gw,td.gw{background:#fbf9f7;} th.gw.gh{background:#ebe4dc;color:var(--primary);}
     .gw-start{border-left:3px solid var(--primary)!important;}
     .gp-start{border-left:3px solid var(--gold)!important;}
     td .ln{line-height:1.7;white-space:nowrap;}
@@ -66,16 +66,16 @@
     td.tm{color:var(--muted);font-size:13px;white-space:nowrap;}
     td.sign{width:110px;}
     .ths{display:flex;flex-wrap:wrap;gap:6px;min-width:120px;}
-    .th{width:64px;height:64px;padding:0;border:1px solid var(--hairline-strong);border-radius:8px;overflow:hidden;background:#eee;cursor:zoom-in;
+    .th{width:64px;height:64px;padding:0;border:1px solid var(--hairline-strong);border-radius:8px;overflow:hidden;background:#ece6df;cursor:zoom-in;
       user-select:none;-webkit-user-select:none;}
     .th img{width:100%;height:100%;object-fit:cover;display:block;}
-    .th:focus-visible{outline:3px solid rgba(3,34,87,.35);outline-offset:2px;}
+    .th:focus-visible{outline:3px solid rgba(58,42,30,.35);outline-offset:2px;}
     .ph-none{font-size:12.5px;color:var(--muted);}
     /* 인증 사진 크게 보기 */
     .lb{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,14,24,.86);overscroll-behavior:contain;}
     .lb[hidden]{display:none;}
     .lb-box{display:flex;flex-direction:column;gap:10px;max-width:min(1000px,100%);max-height:100%;}
-    .lb-box img{display:block;max-width:100%;max-height:calc(100vh - 120px);object-fit:contain;margin:0 auto;border-radius:8px;background:#111;}
+    .lb-box img{display:block;max-width:100%;max-height:calc(100vh - 120px);object-fit:contain;margin:0 auto;border-radius:8px;background:#3a2a1e;}
     .lb-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;color:#fff;font-size:14px;}
     .lb-cap{line-height:1.5;}
     .lb-btns{display:flex;gap:6px;}
@@ -90,7 +90,7 @@
     .empty{padding:28px;text-align:center;color:var(--muted);line-height:1.7;}
     /* 수령 확인 — 번호 · 상품 · 수령 칸의 줄 높이를 맞춰 같은 번호끼리 나란히 */
     td.gp .ln,td.gk .ln{min-height:40px;display:flex;align-items:center;}
-    th.gk,td.gk{background:#f1f8f3;} th.gk.gh{background:#d8eedf;color:var(--ok);}
+    th.gk,td.gk{background:#f6f7f1;} th.gk.gh{background:#e4eadb;color:var(--ok);}
     .gk-start{border-left:3px solid var(--ok)!important;}
     .pk{min-height:34px;padding:0 12px;border:1.5px solid var(--ok);border-radius:8px;background:#fff;color:var(--ok);font-family:inherit;font-size:13.5px;font-weight:700;
       cursor:pointer;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;user-select:none;-webkit-user-select:none;}
@@ -150,31 +150,31 @@
       .sec{border:0;border-radius:0;padding:0;margin:0 0 22px;}
       body.pb .sec + .sec{break-before:page;}
       body.no-un .sec.un{display:none;}
-      .pr-head{display:block;margin:0 0 4px;font-size:11px;color:#555;}
-      .pr-foot{display:block;margin-top:16px;font-size:11px;color:#555;}
+      .pr-head{display:block;margin:0 0 4px;font-size:11px;color:#5a4f47;}
+      .pr-foot{display:block;margin-top:16px;font-size:11px;color:#5a4f47;}
       .sec-h h2{font-size:18px;}
-      .sum span{background:none;border-color:#999;color:#000;}
+      .sum span{background:none;border-color:#a39a91;color:#000;}
       .tblWrap{overflow:visible;}
       table{min-width:0;font-size:12.5px;}
-      th{background:#eee!important;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-      th,td{border-bottom:1px solid #999;padding:6px 6px;}
+      th{background:#ece6df!important;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      th,td{border-bottom:1px solid #a39a91;padding:6px 6px;}
       th.gh,th.gp,th.gw,td.gp,td.gw{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       thead{display:table-header-group;} tr{break-inside:avoid;}
-      .th{width:72px;height:72px;border-color:#999;}
+      .th{width:72px;height:72px;border-color:#a39a91;}
       .chips span,.chips button{border:1px solid #bbb;background:none;color:#000;}
       .chips button.on{text-decoration:line-through;}
       .lb,.pk-all,.pk-done,.pk-note,.bar-in{display:none!important;}
       body.part .stock{display:none!important;}   /* 교회를 골라 인쇄할 때는 재고표 빼고, 전체 인쇄일 때만 맨 끝에 붙임 */
       .stock{break-inside:avoid;}
-      .flow span{background:none!important;border-color:#999!important;color:#000!important;} .flow span b{color:#000!important;}
+      .flow span{background:none!important;border-color:#a39a91!important;color:#000!important;} .flow span b{color:#000!important;}
       td.gp .ln,td.gk .ln{min-height:22px;}
       .pk{border:0;padding:0;min-height:0;background:none!important;color:#000!important;font-size:12px;}
       th.gk,td.gk{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     }
   </style>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
-  <link rel="stylesheet" href="../assets/theme.css?v=3" />
-  <link rel="stylesheet" href="manse.css?v=7" />
+  <link rel="stylesheet" href="../assets/theme.css?v=4" />
+  <link rel="stylesheet" href="manse.css?v=9" />
 </head>
 <body class="pb">
   <header class="m-bar"><div class="in"><a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a><span id="mAuth"></span></div></header>

@@ -8,13 +8,13 @@
   <link rel="canonical" href="https://samgoe-cc.or.kr/manse/prize.html" />
   <link rel="icon" type="image/png" href="img/favicon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#0b0b0b" />
+  <meta name="theme-color" content="#2e2016" />
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
-  <link rel="stylesheet" href="manse.css?v=7" />
+  <link rel="stylesheet" href="manse.css?v=9" />
   <style>
-    :root{--soft:#f5f5f5;--line-soft:#eeeeee;}
+    :root{--soft:#f5f3f2;--line-soft:#ece6df;}
     .pzw{max-width:640px;margin:0 auto;padding:30px 16px 72px;text-align:center;}
     .pz-eyebrow{display:inline-block;margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--red);}
     .pzw h1{margin:0 0 8px;font-size:clamp(24px,4.6vw,32px);line-height:1.3;}
@@ -24,28 +24,28 @@
     .pz-foot{margin:22px 0 0;font-size:13px;color:var(--muted);line-height:1.7;}
     /* 경품 당첨 확인 · 당첨 인증 (제6회 3·1 만세길 걷기) */
     .pz-logo{display:block;width:92px;height:92px;margin:24px auto 0;}
-    .pz-title{margin:14px 0 14px;font-size:clamp(28px,4.8vw,46px);line-height:1.22;font-weight:800;letter-spacing:-0.03em;color:#032257;word-break:keep-all;}
+    .pz-title{margin:14px 0 14px;font-size:clamp(28px,4.8vw,46px);line-height:1.22;font-weight:800;letter-spacing:-0.03em;color:#3a2a1e;word-break:keep-all;}
     .pz-thanks{margin:0 auto 22px;max-width:580px;font-size:clamp(15.5px,2vw,17px);line-height:1.8;color:var(--body);word-break:keep-all;}
     .pz-stats{display:flex;justify-content:center;gap:10px;margin:0 auto 22px;}
     .pz-stats>div{min-width:132px;padding:12px 18px;border-radius:14px;background:rgba(255,255,255,.85);border:1px solid #e3dccb;backdrop-filter:blur(6px);}
     .pz-stats>div[hidden]{display:none;}
-    .pz-stats b{display:block;font-size:26px;font-weight:800;color:#032257;font-variant-numeric:tabular-nums;line-height:1.2;}
+    .pz-stats b{display:block;font-size:26px;font-weight:800;color:#3a2a1e;font-variant-numeric:tabular-nums;line-height:1.2;}
     .pz-stats span{font-size:13px;font-weight:600;color:var(--muted);}
-    .pz-box{max-width:540px;margin:0 auto;padding:24px 22px 18px;background:rgba(255,255,255,.94);border:1px solid rgba(184,155,94,.6);border-radius:18px;
-      box-shadow:0 14px 40px rgba(3,34,87,.10);backdrop-filter:blur(6px);text-align:center;scroll-margin-top:110px;}
-    .pz-label{display:block;font-size:21px;font-weight:800;color:#032257;}
+    .pz-box{max-width:540px;margin:0 auto;padding:24px 22px 18px;background:rgba(255,255,255,.94);border:1px solid rgba(181,86,47,.6);border-radius:18px;
+      box-shadow:0 14px 40px rgba(58,42,30,.10);backdrop-filter:blur(6px);text-align:center;scroll-margin-top:110px;}
+    .pz-label{display:block;font-size:21px;font-weight:800;color:#3a2a1e;}
     .pz-help{margin:6px 0 16px;font-size:14px;line-height:1.6;color:var(--muted);word-break:keep-all;}
     .pz-row{display:flex;gap:10px;}
-    .pz-row input{flex:1;min-width:0;height:58px;padding:0 16px;border:1.5px solid #cfc9bd;border-radius:14px;background:#fff;color:var(--ink);
+    .pz-row input{flex:1;min-width:0;height:58px;padding:0 16px;border:1.5px solid #d9d0c6;border-radius:14px;background:#fff;color:var(--ink);
       font-family:inherit;font-size:22px;font-weight:700;text-align:center;}
     .pz-row input::placeholder{font-size:16px;font-weight:500;color:#b3ada2;}
-    .pz-box input:focus{outline:none;border-color:#032257;box-shadow:0 0 0 3px rgba(3,34,87,.14);}
-    .pz-btn{flex:none;height:58px;padding:0 26px;border:0;border-radius:14px;background:#032257;color:#fff;font-family:inherit;font-size:18px;font-weight:800;
+    .pz-box input:focus{outline:none;border-color:#3a2a1e;box-shadow:0 0 0 3px rgba(58,42,30,.14);}
+    .pz-btn{flex:none;height:58px;padding:0 26px;border:0;border-radius:14px;background:#3a2a1e;color:#fff;font-family:inherit;font-size:18px;font-weight:800;
       cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .15s ease,transform .12s ease;}
-    .pz-btn:hover{background:#021838;} .pz-btn:active{transform:scale(.97);} .pz-btn:disabled{opacity:.6;cursor:default;transform:none;}
+    .pz-btn:hover{background:#2a1d14;} .pz-btn:active{transform:scale(.97);} .pz-btn:disabled{opacity:.6;cursor:default;transform:none;}
     .pz-result:empty{display:none;}
     .pz-result{margin-top:16px;text-align:left;}
-    .pz-head{margin:0 0 10px;text-align:center;font-size:19px;font-weight:800;color:#032257;}
+    .pz-head{margin:0 0 10px;text-align:center;font-size:19px;font-weight:800;color:#3a2a1e;}
     .pz-head.miss{color:var(--body);font-size:17px;}
     .pz-sub{margin:-4px 0 12px;text-align:center;font-size:14px;color:var(--muted);line-height:1.6;}
     .pz-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
@@ -53,9 +53,9 @@
     .pz-li.win{background:#fbf5e6;border-color:#d9c48f;}
     .pz-li .n{flex:none;min-width:58px;font-size:18px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;}
     .pz-li .p{flex:1;min-width:0;font-size:15.5px;line-height:1.45;color:var(--body);}
-    .pz-li.win .p{font-weight:800;color:#032257;font-size:16.5px;}
+    .pz-li.win .p{font-weight:800;color:#3a2a1e;font-size:16.5px;}
     .pz-li .t{flex:none;font-size:12px;font-weight:800;padding:4px 9px;border-radius:20px;background:#e8e4da;color:#6b665c;white-space:nowrap;}
-    .pz-li.win .t{background:#b89b5e;color:#1a1a1a;}
+    .pz-li.win .t{background:#b5562f;color:#13110f;}
     .pz-li.win .t.ok{background:#0f7b3f;color:#fff;}
     .pz-x{flex:none;width:40px;height:40px;border:0;background:none;border-radius:10px;font-size:20px;line-height:1;color:#9a958b;cursor:pointer;user-select:none;-webkit-user-select:none;}
     .pz-x:hover{background:rgba(0,0,0,.05);color:var(--ink);}
@@ -63,24 +63,24 @@
     .pz-done{margin:14px 0 0;padding:14px;border-radius:12px;background:#eafaf0;color:#0f5c31;font-size:15px;font-weight:700;line-height:1.6;}
     .pz-wait{margin:14px 0 0;font-size:14px;color:var(--muted);}
     .pz-claim{margin-top:20px;padding-top:20px;border-top:1px dashed #d9d2c2;text-align:left;}
-    .pz-ct{margin:0;text-align:center;font-size:19px;font-weight:800;color:#032257;}
+    .pz-ct{margin:0;text-align:center;font-size:19px;font-weight:800;color:#3a2a1e;}
     .pz-claim .pz-help{text-align:center;}
     .pz-fs{margin:0 0 16px;padding:0;border:0;min-width:0;}
     .pz-fl{display:block;margin:0 0 7px;font-size:14.5px;font-weight:700;color:var(--ink);}
     .pz-fl em{font-style:normal;font-weight:500;font-size:12.5px;color:var(--muted);margin-left:4px;}
     .pz-pick{display:flex;flex-wrap:wrap;gap:8px;}
     .pz-pick label{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:6px 12px;border-radius:10px;background:#fff;border:1.5px solid #d9c48f;font-size:14.5px;cursor:pointer;}
-    .pz-pick input{width:18px;height:18px;accent-color:#032257;margin:0;}
+    .pz-pick input{width:18px;height:18px;accent-color:#3a2a1e;margin:0;}
     .pz-fld{margin:0 0 16px;}
-    .pz-fld input[type=text]{width:100%;height:50px;padding:0 14px;border:1.5px solid #cfc9bd;border-radius:12px;background:#fff;font-family:inherit;font-size:16px;color:var(--ink);}
-    .pz-photo-btn{position:relative;display:flex;align-items:center;justify-content:center;min-height:52px;border:1.5px dashed #b89b5e;border-radius:12px;background:#fffdf7;
-      font-size:15.5px;font-weight:700;color:#032257;cursor:pointer;user-select:none;-webkit-user-select:none;}
+    .pz-fld input[type=text]{width:100%;height:50px;padding:0 14px;border:1.5px solid #d9d0c6;border-radius:12px;background:#fff;font-family:inherit;font-size:16px;color:var(--ink);}
+    .pz-photo-btn{position:relative;display:flex;align-items:center;justify-content:center;min-height:52px;border:1.5px dashed #b5562f;border-radius:12px;background:#fffdf7;
+      font-size:15.5px;font-weight:700;color:#3a2a1e;cursor:pointer;user-select:none;-webkit-user-select:none;}
     .pz-photo-btn:hover{background:#fbf5e6;}
-    .pz-photo-btn:focus-within{outline:3px solid rgba(3,34,87,.25);outline-offset:2px;}
+    .pz-photo-btn:focus-within{outline:3px solid rgba(58,42,30,.25);outline-offset:2px;}
     .pz-photo-btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
     .pz-thumbs:empty{display:none;}
     .pz-thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;margin-top:10px;}
-    .pz-thumbs figure{position:relative;margin:0;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#eee;}
+    .pz-thumbs figure{position:relative;margin:0;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#ece6df;}
     .pz-thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
     .pz-thumbs button{position:absolute;top:3px;right:3px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:16px;line-height:1;cursor:pointer;}
     .pz-send{width:100%;}
@@ -89,7 +89,7 @@
     .pz-msg.busy{color:var(--muted);}
     .pz-priv{margin:10px 0 0;font-size:12.5px;color:var(--muted);text-align:center;}
     .pz-all{margin-top:16px;text-align:left;}
-    .pz-all summary{display:block;padding:10px;text-align:center;font-size:14px;font-weight:700;color:#032257;cursor:pointer;list-style:none;}
+    .pz-all summary{display:block;padding:10px;text-align:center;font-size:14px;font-weight:700;color:#3a2a1e;cursor:pointer;list-style:none;}
     .pz-all summary::-webkit-details-marker{display:none;}
     .pz-all summary::after{content:' ▾';} .pz-all[open] summary::after{content:' ▴';}
     .pz-grp{padding:12px 2px;border-top:1px solid var(--line-soft);}
@@ -97,7 +97,7 @@
     .pz-grp b small{margin-left:6px;font-size:12.5px;font-weight:600;color:var(--muted);}
     .pz-grp p{margin:0;display:flex;flex-wrap:wrap;gap:4px;}
     .pz-grp span{min-width:38px;padding:3px 5px;border-radius:6px;background:var(--soft);font-size:13px;text-align:center;font-variant-numeric:tabular-nums;color:var(--body);}
-    .pz-grp span.hit{background:#032257;color:#fff;font-weight:800;}
+    .pz-grp span.hit{background:#3a2a1e;color:#fff;font-weight:800;}
     /* 무효표 — 개수에는 넣고 '무효표'로 표시, 당첨 인증은 받지 않음 */
     .pz-li.void{background:#f4f1f1;border-color:#e2d6d6;}
     .pz-li.void .p{color:#8a4b4b;font-weight:700;}
