@@ -104,7 +104,8 @@
       return true;
     });
     $('docCount').textContent = list.length + ' / ' + DOCS.length + '건';
-    if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>자료 올리기</b> 탭에서 공문·자료를 올려 주세요.</div>'; return; }
+    if (!DOCS.length) { $('docList').innerHTML = '<div class="o-empty">아직 올린 자료가 없습니다. <b>자료 올리기</b> 탭에서 공문·자료를 올려 주세요.' +
+      (perms.manager ? '<br>10월 27일 전에 올린 자료는 <a href="move.html"><b>옛 자료 옮기기</b></a>로 가져올 수 있습니다.' : '') + '</div>'; return; }
     if (!list.length) { $('docList').innerHTML = '<div class="o-empty">조건에 맞는 자료가 없습니다.</div>'; return; }
     var byYear = {};
     list.forEach(function (d) { (byYear[d.year] = byYear[d.year] || []).push(d); });

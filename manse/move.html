@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>옛 자료 옮기기 | 삼일만세운동본부</title>
+  <meta name="robots" content="noindex" />
+  <script>
+  // 옛 프로젝트 비밀번호 재설정 메일에서 돌아왔을 때 — 주소에 붙은 로그인 표를 새 프로젝트 로그인(auth.js)이 건드리기 전에 챙겨 둠
+  (function () { var h = location.hash; if (/access_token=|error_description=/.test(h)) { window.__OLD_HASH = h.slice(1); history.replaceState(null, '', location.pathname + location.search); } })();
+  </script>
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="manse.css?v=6" />
+  <style>
+    .mv{max-width:760px;margin:0 auto;padding:36px 16px 72px;}
+    .mv h1{margin:0 0 6px;font-size:26px;}
+    .mv .lead{margin:0 0 20px;color:var(--muted);font-size:15px;line-height:1.75;}
+    .mv .m-card{padding:24px 22px;margin:0 0 16px;}
+    .mv .m-card h2{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:18px;}
+    .mv .m-card h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--night);color:#fff;font-size:13px;}
+    .mv .m-card.off{opacity:.5;}
+    .mv .st{margin:0;font-size:14.5px;line-height:1.7;}
+    .mv form .m-btn{margin-top:14px;}
+    .mv .row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:14px;}
+    .mv .lk{border:0;background:none;padding:0;font:inherit;color:var(--navy);font-weight:700;text-decoration:underline;cursor:pointer;}
+    .mv table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;}
+    .mv th,.mv td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;}
+    .mv th{font-size:12.5px;color:var(--muted);background:#fafafa;}
+    .mv td.r,.mv th.r{text-align:right;}
+    .mv td.todo{font-weight:800;color:var(--ink);}
+    .mv .bar{height:10px;background:#eee;border-radius:99px;overflow:hidden;margin:14px 0 6px;}
+    .mv .bar i{display:block;height:100%;width:0;background:var(--night);transition:width .2s;}
+    .mv pre{max-height:260px;overflow:auto;margin:8px 0 0;padding:10px 12px;background:#fafafa;border:1px solid var(--line);border-radius:8px;font:12.5px/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;}
+    .mv .note{margin:10px 0 0;font-size:13px;color:var(--muted);line-height:1.7;}
+  </style>
+</head>
+<body>
+  <header class="m-bar"><div class="in">
+    <a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a>
+    <span id="mAuth"></span>
+  </div></header>
+  <main class="mv">
+    <h1>옛 자료 옮기기</h1>
+    <p class="lead">10월 27일에 홈페이지가 새 저장소(Supabase <b>manse</b>)로 옮겨 가면서, 그 전에 쓰던 <b>옛 저장소</b>의 공문·자료 · 임원 명단 · 활동 기록이 새 쪽에 아직 없습니다.
+      옛 홈페이지 계정으로 한 번 로그인하면 이 화면이 새 저장소로 <b>복사</b>합니다. 옛 자료는 지우지 않고, 여러 번 눌러도 이미 옮긴 것은 건너뜁니다.</p>
+
+    <section class="m-card" id="c1">
+      <h2><span class="n">1</span>새 홈페이지 로그인</h2>
+      <p class="st" id="newSt">확인하는 중…</p>
+    </section>
+
+    <section class="m-card off" id="c2">
+      <h2><span class="n">2</span>옛 홈페이지 계정으로 로그인</h2>
+      <p class="st" id="oldSt">10월 27일 전에 만세운동본부 홈페이지에서 쓰던 <b>이메일 · 비밀번호</b>입니다 (삼괴연합회 비밀번호와 다를 수 있습니다).</p>
+      <form id="oldForm" novalidate>
+        <label class="m-l" for="oEmail">이메일</label>
+        <input class="m-in" id="oEmail" type="email" autocomplete="username" required />
+        <label class="m-l" for="oPw">비밀번호</label>
+        <input class="m-in" id="oPw" type="password" autocomplete="current-password" required />
+        <button class="m-btn block" type="submit" id="oGo">옛 홈페이지로 로그인</button>
+        <div class="row2">비밀번호가 기억나지 않으면 <button class="lk" type="button" id="oForgot">재설정 메일 받기</button></div>
+      </form>
+      <form id="pwForm" hidden novalidate>
+        <p class="st">재설정 메일로 들어왔습니다. 옛 홈페이지에서 쓸 <b>새 비밀번호</b>를 정해 주세요.</p>
+        <label class="m-l" for="nPw">새 비밀번호 (8자 이상)</label>
+        <input class="m-in" id="nPw" type="password" autocomplete="new-password" minlength="8" required />
+        <label class="m-l" for="nPw2">한 번 더</label>
+        <input class="m-in" id="nPw2" type="password" autocomplete="new-password" minlength="8" required />
+        <button class="m-btn block" type="submit">새 비밀번호 저장</button>
+      </form>
+      <div class="row2" id="oOutRow" hidden><button class="lk" type="button" id="oOut">옛 홈페이지 로그아웃</button></div>
+      <div class="m-msg" id="oMsg" role="status"></div>
+    </section>
+
+    <section class="m-card off" id="c3">
+      <h2><span class="n">3</span>옮기기</h2>
+      <div id="scan"><p class="st">옛 홈페이지에 로그인하면 옮길 자료가 여기에 나옵니다.</p></div>
+      <button class="m-btn block" type="button" id="goAll" hidden disabled>모두 옮기기</button>
+      <div class="bar" id="bar" hidden><i></i></div>
+      <p class="st" id="prog"></p>
+      <pre id="log" hidden></pre>
+      <p class="note">회원(가입한 사람) 계정은 옮길 수 없습니다. 삼괴연합회 회원은 삼괴연합회 계정으로 그대로 들어오고, 아닌 분은 다시 가입하면 됩니다.<br>
+        사진 · 파일이 많으면 몇 분 걸릴 수 있습니다. 중간에 멈추면 다시 누르세요 — 옮기지 못한 것만 이어서 옮깁니다.</p>
+    </section>
+    <a class="m-home" href="officer.html">← 관리자 메뉴</a>
+  </main>
+  <footer class="m-footer">© 2026 삼일만세운동본부</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=4"></script>
+  <script src="auth.js?v=6"></script>
+  <script src="move.js?v=1"></script>
+</body>
+</html>

@@ -13,6 +13,7 @@
   --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.06);
 }
 *{box-sizing:border-box;}
+[hidden]{display:none!important;}   /* 숨김(hidden)은 단추 · 칸 모양(display)보다 앞서게 — 운영임원 전용 단추 등 */
 html{-webkit-text-size-adjust:100%;}
 body{margin:0;background:var(--paper);color:var(--body);font-weight:400;line-height:1.6;
   font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;

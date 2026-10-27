@@ -20,6 +20,12 @@
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- 앱(설치형 웹앱) — 삼일만세운동본부 전용 -->
+  <script>
+  // 옛 만세 저장소(10월 27일 전)의 비밀번호 재설정 메일이 첫 화면으로 돌아오면 '옛 자료 옮기기'로
+  (function () { var h = location.hash; if (!/access_token=/.test(h) || !/type=recovery/.test(h)) return;
+    try { var t = h.match(/access_token=([^&]+)/)[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      if (/elaockhopuvadamvwjeg/.test(JSON.parse(atob(t)).iss || '')) location.replace('move.html' + h); } catch (_) {} })();
+  </script>
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#0b0b0b" />
   <meta name="application-name" content="삼일만세운동본부" />
