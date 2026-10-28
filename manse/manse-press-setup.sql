@@ -11,7 +11,7 @@
 
 -- 0) 맞는 프로젝트인지 확인 (manse-setup.sql 을 먼저)
 do $$ begin
-  if to_regprocedure('public.my_perms()') is null or to_regclass('public.walk_applications') is not null then
+  if to_regprocedure('public.my_perms()') is null or to_regclass('public.officer_files') is not null then
     raise exception '이 SQL은 삼일만세운동본부 Supabase 프로젝트에서, manse-setup.sql 을 먼저 실행한 뒤에 실행해야 합니다. (아무것도 바뀌지 않았습니다)';
   end if;
 end $$;

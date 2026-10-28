@@ -12,7 +12,7 @@
 
 -- 0) 맞는 프로젝트인지 확인 — 삼기연(samgoe-cc) · 교회 앱 등 다른 프로젝트에서 실행하면 아무것도 바꾸지 않고 멈춤
 do $$ begin
-  if to_regclass('public.walk_applications') is not null or to_regclass('public.sermons') is not null
+  if to_regclass('public.officer_files') is not null or to_regclass('public.sermons') is not null
      or (to_regclass('public.profiles') is not null
          and not exists (select 1 from information_schema.columns
                          where table_schema = 'public' and table_name = 'profiles' and column_name = 'samgoe_uid')) then
