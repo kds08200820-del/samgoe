@@ -63,6 +63,14 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- 회원가입 Edge Function(manse-signup)이 한꺼번에 많이 만들지 못하게 — 최근 몇 분 동안 생긴 계정 수 (관리자 키로만)
+create or replace function public.manse_signup_recent(p_minutes int default 10)
+returns int language sql security definer set search_path = public, auth stable as $$
+  select count(*)::int from auth.users where created_at > now() - make_interval(mins => greatest(1, least(coalesce(p_minutes, 10), 1440)));
+$$;
+revoke all on function public.manse_signup_recent(int) from public, anon, authenticated;
+grant execute on function public.manse_signup_recent(int) to service_role;
+
 -- 내 정보에서 이메일을 바꾸면 회원 정보의 이메일도 같이 (임원 명단은 이메일로 찾음)
 create or replace function public.sync_profile_email()
 returns trigger language plpgsql security definer set search_path = public as $$

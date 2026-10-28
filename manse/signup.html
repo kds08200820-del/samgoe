@@ -62,7 +62,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=4"></script>
-  <script src="auth.js?v=8"></script>
+  <script src="auth.js?v=9"></script>
   <script>
   (function () {
     var $ = function (id) { return document.getElementById(id); };
@@ -100,11 +100,21 @@
       var data = { name: name, phone: $('phone').value.trim(), church: $('church').value.trim(), terms_agreed_at: new Date().toISOString() };
       var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = '가입 처리 중…';
       try {
+        // 가입은 Edge Function(manse-signup)으로 — 메일 확인 없이 계정을 바로 만들고 이어서 로그인
+        //  (Supabase 기본 메일은 운영진 주소로만 가서 가입 확인 메일을 회원에게 보낼 수 없음)
+        var fr = null, j = {};
+        try { fr = await fetch(window.MANSE_SUPABASE_URL + '/functions/v1/manse-signup', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: window.MANSE_SUPABASE_KEY },
+          body: JSON.stringify({ name: data.name, email: email, password: pw, phone: data.phone, church: data.church, terms: true }) }); j = await fr.json().catch(function () { return {}; }); } catch (_) { fr = null; }
+        if (fr && fr.status !== 404) {
+          if (!fr.ok) throw new Error(j.error || '회원가입을 하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+          var si = await window.msb.auth.signInWithPassword({ email: email, password: pw });
+          if (si.error) { location.href = 'login.html?joined=1'; return; }
+          location.href = './'; return;
+        }
+        // 함수를 아직 올리지 않았으면 예전 방식
         var r = await window.msb.auth.signUp({ email: email, password: pw, options: { data: data } });
         if (r.error) throw r.error;
-        // 이메일 확인이 꺼져 있으면 바로 로그인 상태
         if (r.data && r.data.session) { location.href = './'; return; }
-        // 이미 가입된 이메일은 identities가 비어서 돌아옴(보안상 오류 대신)
         if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length === 0) throw new Error('already registered');
         location.href = 'login.html?joined=1'; return;
       } catch (ex) { show(msg, 'err', window.mErr(ex)); }

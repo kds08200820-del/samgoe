@@ -70,11 +70,13 @@
         <li><b>manse</b> 프로젝트의 SQL Editor 열기 → 맨 위 프로젝트 이름이 <b>manse</b> 인지 확인 (samgoe-cc 이면 안 됩니다) → 붙여넣기 → <b>Run</b>
           <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/sql/new" target="_blank" rel="noopener">manse SQL Editor 열기 ↗</a>
           결과 창에 <b>장부 기록 (처음엔 0)</b> 한 줄이 나오면 성공</li>
-        <li>manse 프로젝트 왼쪽 <b>Authentication</b> 에서 두 가지 (처음 한 번)<br>
-          ① <b>Sign In / Providers → Email</b> 의 <b>Confirm email</b> 끄기 → Save (가입하면 바로 로그인되게)
-          <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/auth/providers" target="_blank" rel="noopener">① 이메일 가입 설정 열기 ↗</a>
-          ② <b>URL Configuration</b> 의 Site URL 에 <code>https://samgoe-cc.or.kr/manse/</code>, Redirect URLs 에 <code>https://samgoe-cc.or.kr/manse/**</code> 넣고 Save (비밀번호 찾기 메일용)
-          <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/auth/url-configuration" target="_blank" rel="noopener">② 주소 설정 열기 ↗</a></li>
+        <li><b>회원가입 · 로그인 설정은 따로 할 일이 없습니다.</b><br>
+          회원가입은 확인 메일 없이 바로 되도록 홈페이지에서 처리합니다 (Edge Function <code>manse-signup</code>). 삼괴연합회 회원은 '삼괴연합회 계정으로 로그인'을 그대로 씁니다.
+          <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">나중에 비밀번호 찾기 메일을 쓰려면 (선택)</summary>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.7;color:var(--muted)">Supabase 기본 메일은 운영진(팀) 주소로만 보내져 회원에게는 가지 않습니다. 메일 발송 서비스(SMTP)를 연결한 뒤,
+            <b>Authentication → URL Configuration</b> 의 Site URL 에 <code>https://samgoe-cc.or.kr/manse/</code>, Redirect URLs 에 <code>https://samgoe-cc.or.kr/manse/**</code> 를 넣으면 됩니다.</p>
+            <a class="btn line" href="https://supabase.com/dashboard/project/nuqzwuwuhgrzglkjangq/auth/url-configuration" target="_blank" rel="noopener">주소 설정 열기 ↗</a>
+          </details></li>
       </ol>
     </section>
 

@@ -69,6 +69,8 @@
     if (/New password should be different|same password|different from the old/i.test(m)) return '이전과 다른 비밀번호를 입력해 주세요.';
     if (/Password should be at least|password.*(short|requirement|contain)/i.test(m)) return '비밀번호는 8자 이상이어야 합니다.';
     if (/valid email|Unable to validate email|invalid.*email/i.test(m)) return '올바른 이메일 형식이 아닙니다.';
+    // Supabase 기본 메일은 운영진 주소로만 보냄 — 비밀번호 찾기 · 가입 확인 메일을 회원 주소로 못 보낼 때
+    if (/not authorized|email_address_not_authorized|Error sending|sending (recovery|confirmation|magic)/i.test(m)) return '지금은 이 주소로 메일을 보낼 수 없습니다. 삼괴연합회 회원이면 \'삼괴연합회 계정으로 로그인\'을 써 주시고, 아니면 문의처로 연락해 주세요. (' + (window.MANSE_CONTACT || '운영 담당자') + ')';
     if (/For security purposes|after \d+ second/i.test(m)) return '보안을 위해 잠시 후 다시 시도해 주세요.';
     if (/rate limit|too many/i.test(m)) return '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.';
     if (/could not find the function|does not exist/i.test(m)) return 'DB 설정이 아직 완료되지 않았습니다. 관리자가 설정 SQL(manse-setup.sql)을 SQL Editor에서 실행해 주세요.';
