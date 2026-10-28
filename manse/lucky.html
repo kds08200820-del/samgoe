@@ -69,6 +69,19 @@
     .mine b{color:var(--primary);font-variant-numeric:tabular-nums;}
     .mine span{color:var(--muted);font-size:13.5px;}
     .helper{margin:-4px 0 18px!important;padding:11px 14px;border-radius:10px;background:#f6efe7;border:1px solid #e6d3c2;color:var(--primary);font-size:14px!important;line-height:1.65!important;}
+    /* 카메라로 QR 읽기 (화면 안에서) */
+    .scan{position:relative;margin:0 0 14px;border-radius:12px;overflow:hidden;background:#13110f;aspect-ratio:1/1;max-height:62vh;}
+    .scan video{display:block;width:100%;height:100%;object-fit:cover;}
+    .scan .frame{position:absolute;left:50%;top:50%;width:62%;aspect-ratio:1/1;transform:translate(-50%,-56%);border-radius:14px;
+      box-shadow:0 0 0 2000px rgba(19,17,15,.38);outline:3px solid #fff;outline-offset:-3px;}
+    .scan .frame::after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:#e8c4a6;opacity:.85;animation:scanline 1.6s ease-in-out infinite alternate;}
+    @keyframes scanline{from{transform:translateY(-110px);}to{transform:translateY(110px);}}
+    @media (prefers-reduced-motion: reduce){ .scan .frame::after{animation:none;} }
+    .scan .cap{position:absolute;left:0;right:0;bottom:0;margin:0!important;padding:12px 14px;background:linear-gradient(transparent,rgba(19,17,15,.82));
+      color:#fff;font-size:15px!important;font-weight:600;text-align:center;}
+    .scan.hit .frame{outline-color:#7ed69b;}
+    .or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;font-size:13px;color:var(--muted);}
+    .or::before,.or::after{content:"";flex:1;height:1px;background:var(--hairline);}
     .foot{margin-top:24px;text-align:center;font-size:13px;color:var(--muted);line-height:1.8;}
     .foot a{color:var(--primary);font-weight:600;}
   </style>
@@ -131,6 +144,7 @@
       <div class="ticket"><span>행운권</span><b id="tNo"></b></div>
       <p id="tText"></p>
       <p class="small" id="tHelp"></p>
+      <button class="btn ghost" type="button" data-next>다른 행운권 등록하기</button>
     </section>
 
     <!-- 등록을 받지 않음 -->
@@ -138,12 +152,17 @@
       <h2>지금은 행운권 등록을 받지 않습니다</h2>
       <div class="ticket"><span>행운권</span><b id="cNo"></b></div>
       <p class="small" id="cHelp"></p>
+      <button class="btn ghost" type="button" data-next>다른 행운권 등록하기</button>
     </section>
 
     <!-- 확인 코드 직접 넣기 (QR이 안 찍히거나 못 찾았을 때) -->
     <form class="card" id="vCode" novalidate hidden>
       <h2 id="kTitle">확인 코드 넣기</h2>
       <p id="kText">QR이 찍히지 않으면 행운권의 QR 아래에 적힌 <b>확인 코드 8자리</b>(예: ABCD-2345)를 넣어 주세요.</p>
+      <div class="scan" id="scan" hidden><video id="scanVideo" playsinline muted autoplay></video><div class="frame" aria-hidden="true"></div><p class="cap" id="scanCap" role="status">카메라를 여는 중…</p></div>
+      <button class="btn" id="scanBtn" type="button">카메라로 QR 찍기</button>
+      <button class="btn ghost" id="scanStop" type="button" hidden>카메라 끄기</button>
+      <div class="or">또는 확인 코드 8자리 넣기</div>
       <div class="codebox">
         <input id="kCode" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-2345" aria-label="확인 코드">
         <button class="btn" id="kGo" type="submit">확인</button>
@@ -301,15 +320,85 @@
       e.preventDefault(); $('kMsg').classList.remove('on');
       var c=norm($('kCode').value);
       if(c.length!==8){ $('kMsg').textContent='확인 코드 8자리를 넣어 주세요. (예: ABCD-2345)'; $('kMsg').classList.add('on'); $('kCode').focus(); return; }
-      code=c; try{ history.replaceState(null,'','lucky.html?c='+c); }catch(_){}
+      stopScan(); code=c; try{ history.replaceState(null,'','lucky.html?c='+c); }catch(_){}
       $('kTitle').textContent='확인 코드 넣기'; load();
     });
-    // 다른 분 행운권도 등록하기 (어르신 · 가족 돕기) — 다음 행운권 QR을 찍거나 확인 코드를 넣음
-    $('dNext').addEventListener('click',function(){
+    // ---------- 카메라로 QR 읽기 (이 화면 안에서) ----------
+    //  휴대폰 브라우저가 QR 읽기를 지원하면(BarcodeDetector) 그것으로, 아니면(아이폰 등) jsQR 로 읽음
+    var stream=null, detector=null, scanTimer=0, scanSeq=0, cv=null, notLucky=0;
+    function codeFrom(text){
+      text=String(text||'').trim(); var c='';
+      try{ var u=new URL(text); if(/lucky\.html$/.test(u.pathname)) c=norm(u.searchParams.get('c')); }catch(_){ if(/^[A-Za-z2-9]{4}-?[A-Za-z2-9]{4}$/.test(text)) c=norm(text); }
+      return c.length===8?c:'';
+    }
+    function loadJsQR(){
+      return window.jsQR?Promise.resolve():new Promise(function(res,rej){
+        var sc=document.createElement('script'); sc.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'; sc.onload=function(){ res(); }; sc.onerror=function(){ rej(new Error('jsQR')); }; document.head.appendChild(sc); });
+    }
+    function scanUi(on){ $('scan').hidden=!on; $('scanBtn').hidden=on; $('scanStop').hidden=!on; $('scan').classList.remove('hit'); }
+    function stopScan(){
+      scanSeq++; clearTimeout(scanTimer);
+      if(stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream=null; }
+      $('scanVideo').srcObject=null; scanUi(false);
+    }
+    function scanFail(t){ stopScan(); $('kMsg').textContent=t; $('kMsg').classList.add('on'); }
+    async function startScan(){
+      stopScan(); $('kMsg').classList.remove('on');
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return scanFail('이 브라우저에서는 카메라를 열 수 없습니다. 휴대폰 카메라 앱으로 QR을 찍거나, 아래에 확인 코드 8자리를 넣어 주세요.');
+      var seq=scanSeq; scanUi(true); $('scanCap').textContent='카메라를 여는 중…';
+      try{ var st=await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' }, width:{ ideal:1280 }, height:{ ideal:720 } }, audio:false }); }
+      catch(ex){ return scanFail(ex && /NotAllowed|Security/.test(ex.name) ? '카메라를 쓰도록 허용되지 않았습니다. 브라우저 주소창의 자물쇠 → 권한에서 카메라를 허용하거나, 아래에 확인 코드 8자리를 넣어 주세요.' : '카메라를 열지 못했습니다. 휴대폰 카메라 앱으로 QR을 찍거나, 아래에 확인 코드 8자리를 넣어 주세요.'); }
+      if(seq!==scanSeq){ st.getTracks().forEach(function(t){ t.stop(); }); return; }
+      stream=st; var v=$('scanVideo'); v.srcObject=st; try{ await v.play(); }catch(_){}
+      detector=null;
+      try{ if('BarcodeDetector' in window && (await window.BarcodeDetector.getSupportedFormats()).indexOf('qr_code')>=0) detector=new window.BarcodeDetector({ formats:['qr_code'] }); }catch(_){ detector=null; }
+      if(!detector){ try{ await loadJsQR(); }catch(_){ return scanFail('QR 읽기 도구를 불러오지 못했습니다. 휴대폰 카메라 앱으로 QR을 찍거나, 아래에 확인 코드 8자리를 넣어 주세요.'); } }
+      if(seq!==scanSeq) return;
+      $('scanCap').textContent='행운권의 QR을 네모 안에 맞춰 주세요';
+      $('scan').scrollIntoView({ block:'center', behavior:'smooth' });
+      tick(seq);
+    }
+    async function readFrame(v){
+      if(detector){ var r=await detector.detect(v); return r&&r[0]?r[0].rawValue:''; }
+      var w=v.videoWidth, h=v.videoHeight; if(!w||!h) return '';
+      var k=Math.min(1,720/Math.max(w,h)); cv=cv||document.createElement('canvas'); cv.width=Math.round(w*k); cv.height=Math.round(h*k);
+      var x=cv.getContext('2d',{ willReadFrequently:true }); x.drawImage(v,0,0,cv.width,cv.height);
+      var d=x.getImageData(0,0,cv.width,cv.height), q=window.jsQR(d.data,cv.width,cv.height,{ inversionAttempts:'dontInvert' });
+      return q?q.data:'';
+    }
+    async function tick(seq){
+      if(seq!==scanSeq || !stream) return;
+      var v=$('scanVideo'), text='';
+      if(v.readyState>=2){ try{ text=await readFrame(v); }catch(_){ text=''; } }
+      if(seq!==scanSeq) return;
+      if(text){
+        var c=codeFrom(text);
+        if(c){
+          $('scan').classList.add('hit'); $('scanCap').textContent='찾았습니다';
+          if(navigator.vibrate) try{ navigator.vibrate(60); }catch(_){}
+          stopScan(); code=c; try{ history.replaceState(null,'','lucky.html?c='+c); }catch(_){}
+          $('kTitle').textContent='확인 코드 넣기'; load(); window.scrollTo(0,0); return;
+        }
+        if(Date.now()-notLucky>2500){ notLucky=Date.now(); $('scanCap').textContent='행운권 QR이 아닙니다. 행운권의 QR을 비춰 주세요'; }
+      }
+      scanTimer=setTimeout(function(){ tick(seq); },180);
+    }
+    $('scanBtn').addEventListener('click',startScan);
+    $('scanStop').addEventListener('click',function(){ stopScan(); $('kCode').focus(); });
+    document.addEventListener('visibilitychange',function(){ if(document.hidden && stream) stopScan(); });
+    window.addEventListener('pagehide',stopScan);
+
+    // 다른 분 행운권도 등록하기 (어르신 · 가족 돕기) — 휴대폰이면 카메라가 바로 켜져 다음 행운권 QR을 읽음 (확인 코드도 됨)
+    function nextTicket(){
       $('kTitle').textContent='다른 분 행운권 등록하기';
-      $('kText').innerHTML='다음 행운권의 <b>QR을 휴대폰 카메라로</b> 찍어 주세요. 카메라로 안 되면 QR 아래에 적힌 <b>확인 코드 8자리</b>를 넣어 주세요.';
+      $('kText').innerHTML='다음 행운권의 <b>QR을 카메라에 비춰</b> 주세요. 카메라로 안 되면 QR 아래에 적힌 <b>확인 코드 8자리</b>를 넣어 주세요.';
       $('kCode').value=''; $('kMsg').classList.remove('on'); show('vCode'); window.scrollTo(0,0);
-    });
+      // 앞사람 이름 · 생년월일 · 휴대폰은 비움 (소속은 남김 — 같은 교회 분을 이어서 도울 때가 많음)
+      $('fName').value=''; $('fBirth').value=''; $('fPhone').value=''; $('fAgree').checked=false; $('fMsg').classList.remove('on'); birthHint(false);
+      if(window.matchMedia && window.matchMedia('(pointer:coarse)').matches) startScan();   // 휴대폰 · 태블릿은 바로 카메라
+    }
+    $('dNext').addEventListener('click',nextTicket);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-next]'),function(b){ b.addEventListener('click',nextTicket); });
 
     load();
   })();
