@@ -213,7 +213,7 @@ window.pzStart = function(){
       ? '<p class="pz-head">축하합니다! '+(list.length>1?wins.length+'개 번호가 ':'')+'당첨되었습니다</p>'
       : (voids.length
         ? '<p class="pz-head miss">무효표로 기록된 번호입니다</p><p class="pz-sub">추첨에서 무효 처리되어 경품이 없습니다. 궁금하신 점은 행사 문의로 연락해 주세요.</p>'
-        : '<p class="pz-head miss">아쉽게도 당첨 번호가 아닙니다</p><p class="pz-sub">비 오는 날 함께 걸어 주신 것만으로 감사합니다. 번호를 다시 한 번 확인해 주세요.</p>');
+        : '<p class="pz-head miss">아쉽게도 당첨 번호가 아닙니다</p><p class="pz-sub">함께 걸어 주신 것만으로 감사합니다. 번호를 다시 한 번 확인해 주세요.</p>');
     h+='<ul class="pz-list">'+list.map(function(it){
       var tag = it.void ? '<span class="t void">무효표</span>' : (!it.prizes ? '<span class="t">당첨 아님</span>' : (it.claimed===true ? '<span class="t ok">인증 완료</span>' : '<span class="t">당첨</span>'));
       return '<li class="pz-li'+(it.prizes?' win':(it.void?' void':''))+'"><span class="n">'+it.n+'번</span><span class="p">'+(it.prizes?esc(it.prizes.join(' · ')):(it.void?'무효표 · 경품 없음':'당첨 번호가 아닙니다'))+'</span>'+tag+
@@ -361,6 +361,10 @@ window.pzStart = function(){
       });
       window.PZ_EVENT = E.event; window.PZ_VOID = voids; window.PZ_PRIZES = order.map(function (x) { return [x[0], x[1], x[2].join(',')]; });
       window.pzStart();
+      // 첫 화면의 '행운권 당첨 번호 확인'에서 넣은 번호(?n=123)는 바로 확인
+      var n0 = (new URLSearchParams(location.search).get('n') || '').replace(/[^\d,\s]/g, '').trim();
+      if (n0) { $('pzNum').value = n0; $('pzFind').requestSubmit ? $('pzFind').requestSubmit() : $('pzFind').dispatchEvent(new Event('submit', { cancelable: true }));
+        setTimeout(function () { $('pzResult').scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 60); }
       var u = window.mUser ? await window.mUser() : null, p = u && window.mPerms ? await window.mPerms() : null;
       $('pzOfc').hidden = !(p && p.officer);
     } catch (ex) { fail('당첨 번호를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'); }

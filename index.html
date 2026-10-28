@@ -157,6 +157,18 @@
     @media (max-width:640px){ .hf-cta a{width:100%;} }
     .hero-event{max-width:720px;margin:0 auto;}
     .hero-event .hf-badge b{margin-left:4px;}
+    /* 행운권 당첨 번호 확인 — 삼일만세운동본부 행운권 관리에서 '추첨 마감'을 누르면 보임 (번호를 넣으면 manse/prize.html 에서 바로 확인) */
+    .hero-lucky{display:flex;align-items:center;gap:14px;max-width:640px;margin:30px auto 0;padding:14px 16px;border-radius:16px;background:#fff;color:#13110f;text-align:left;
+      box-shadow:0 12px 30px rgba(0,0,0,.28);}
+    .hero-lucky[hidden]{display:none;}
+    .hero-lucky .hl-tag{flex:none;background:#b5562f;color:#fff;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;white-space:nowrap;}
+    .hero-lucky .hl-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+    .hero-lucky .hl-t b{font-size:16px;line-height:1.4;word-break:keep-all;} .hero-lucky .hl-t small{font-size:13px;line-height:1.5;color:#5a4f47;}
+    .hero-lucky .hl-in{flex:none;display:flex;gap:6px;}
+    .hero-lucky input{width:124px;height:44px;padding:0 12px;border:1.5px solid #d9d0c6;border-radius:999px;font:inherit;font-size:16px;font-weight:700;text-align:center;color:#13110f;background:#fff;}
+    .hero-lucky input:focus{outline:none;border-color:#3a2a1e;}
+    .hero-lucky button{height:44px;padding:0 18px;border:0;border-radius:999px;background:#3a2a1e;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;}
+    @media (max-width:640px){ .hero-lucky{flex-direction:column;align-items:flex-start;gap:10px;} .hero-lucky .hl-in{align-self:stretch;} .hero-lucky input{flex:1;width:auto;min-width:0;} }
     .he-intro{margin:-12px auto 26px;max-width:580px;font-size:clamp(15px,2vw,16.5px);line-height:1.8;color:var(--body);word-break:keep-all;}
     .pz-ofc-wrap{margin:18px 0 0;}
     .pz-ofc{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 24px;border-radius:999px;background:#b5562f;color:#13110f;
@@ -614,6 +626,13 @@
           <a href="#about" class="mv-btn ghost press">연합회 소개</a>
         </div>
       </div>
+      <!-- 행운권 당첨 번호 확인 — 삼일만세운동본부 행운권 QR 관리 → ④ 경품 추첨에서 '추첨 마감' (만세 Supabase lucky_events) -->
+      <form class="hero-lucky" id="heLucky" action="manse/prize.html" method="get" hidden>
+        <span class="hl-tag">추첨 결과</span>
+        <span class="hl-t"><b id="hlTitle">행운권 당첨 번호 확인</b><small>행운권 번호를 넣으면 당첨 여부를 바로 알려 드립니다</small></span>
+        <span class="hl-in"><input type="text" name="n" id="hlNum" inputmode="numeric" maxlength="40" placeholder="행운권 번호" aria-label="행운권 번호" autocomplete="off"><button type="submit">확인</button></span>
+        <input type="hidden" name="e" id="hlEv">
+      </form>
       <div class="hero-contact">문의 · 사무총장 010-4271-5090</div>
     </div>
   </section>
@@ -1607,6 +1626,16 @@ window.samMarquee = function(row, speed){
 (async function(){
   if(!window.supabase || !window.WalkEv || !window.MANSE_SUPABASE_URL) return;
   var mc=window.supabase.createClient(window.MANSE_SUPABASE_URL, window.MANSE_SUPABASE_KEY, { auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey:'manse-public' } });
+  // 행운권 추첨을 마감한 가장 최근 회차 (첫 화면 보이기를 켜 둔 것) → 번호를 넣으면 만세 당첨 확인 화면에서 바로 확인
+  (async function(){
+    var lr=await mc.from('lucky_events').select('event,done_at').eq('draw_state','done').eq('draw_hero',true).order('done_at',{ascending:false}).limit(1);
+    var lk=!lr.error && lr.data && lr.data[0]; if(!lk) return;
+    var le=await mc.from('walk_events').select('event,title').eq('event',lk.event).maybeSingle();
+    var f=document.getElementById('heLucky');
+    document.getElementById('hlTitle').textContent=((le.data&&le.data.title)?le.data.title+' · ':'')+'행운권 당첨 번호 확인';
+    document.getElementById('hlEv').value=lk.event; f.hidden=false;
+    f.addEventListener('submit',function(e){ if(!/\d/.test(document.getElementById('hlNum').value)){ e.preventDefault(); document.getElementById('hlNum').focus(); } });
+  })().catch(function(){});
   var r; try{ r=await mc.from('walk_events').select(WalkEv.COLS).eq('hero',true).order('no',{ascending:false}).limit(1); }catch(_){ return; }
   var ev=r && !r.error && r.data && r.data[0]; if(!ev) return;
   var $=function(id){ return document.getElementById(id); };

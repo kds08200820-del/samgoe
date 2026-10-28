@@ -1,10 +1,10 @@
 -- ============================================================
 --  삼일만세운동본부 — 3·1 만세길 걷기 (회차 · 참가 신청 · 행운권 QR · 경품 당첨 · 인증 · 수령)
 --  ▶ manse-setup.sql 실행 후 → 만세운동본부 Supabase 프로젝트 SQL Editor → 전체 붙여넣고 Run (여러 번 실행해도 안전)
---  ▶ 화면: walk.html(참가 신청 · 경품 당첨 인증) · walk-admin.html(회차 · 신청 기록) · lucky-admin.html(행운권 QR) · lucky.html(행운권 등록)
+--  ▶ 화면: walk.html(참가 신청 · 경품 당첨 인증) · walk-admin.html(회차 · 신청 기록) · lucky-admin.html(행운권 QR · 경품 추첨) · lucky.html(행운권 등록)
 --          prize-winners.html(당첨자 명단 · 수령) · officer.html 걷기대회 관리(결과 보고)
 --  권한 (만세운동본부 임원 = 임원 명단 재직자, 운영임원 = 대표회장 · 서기 · 최고관리자)
---   · 회차 정보 · 당첨 번호: 누구나 봄 (개인정보 없음)
+--   · 회차 정보 · 당첨 번호: 누구나 봄 (개인정보 없음) — 행운권 추첨 회차는 '추첨 마감'을 누른 뒤부터
 --   · 참가 신청 · 행운권 등록 · 당첨 인증: 누구나 (로그인 없이) — 함수로만, 개인정보는 임원만 봄
 --   · 회차 만들기 · 고치기 · 첫 화면 게시 · 신청 받기 · 행운권 만들기 · 등록 고치기 · 입금 확인 · 수령 확인 · 인증 삭제: 임원
 --   · 회차 지우기(신청 없을 때) · 등록 정보 모두 지우기: 운영임원
@@ -242,6 +242,16 @@ create table if not exists public.lucky_events (
   updated_at timestamptz not null default now(),
   updated_by text
 );
+-- 경품 추첨 (lucky-admin.html ④): 상품 등록(ready) → 등록 마감 · 추첨하기(drawing) → 추첨 마감(done)
+alter table public.lucky_events add column if not exists prizes     jsonb not null default '[]'::jsonb;   -- [{name, qty}] 위에서부터 추첨 순서
+alter table public.lucky_events add column if not exists draw_state text  not null default 'ready';
+alter table public.lucky_events add column if not exists draw_hero  boolean not null default true;      -- 추첨 마감 뒤 첫 화면에 '행운권 당첨 번호 확인'
+alter table public.lucky_events add column if not exists done_at    timestamptz;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'lucky_draw_state_chk') then
+    alter table public.lucky_events add constraint lucky_draw_state_chk check (draw_state in ('ready', 'drawing', 'done'));
+  end if;
+end $$;
 alter table public.lucky_events enable row level security;
 revoke all on public.lucky_events from anon, authenticated;
 grant select on public.lucky_events to anon, authenticated;
@@ -249,9 +259,48 @@ grant insert, update on public.lucky_events to authenticated;
 select pg_temp.pol('le_read',   'public.lucky_events', 'select', 'anon, authenticated', 'true', null);
 select pg_temp.pol('le_insert', 'public.lucky_events', 'insert', 'authenticated', null, 'public.is_officer()');
 select pg_temp.pol('le_update', 'public.lucky_events', 'update', 'authenticated', 'public.is_officer()', 'public.is_officer()');
+-- 상품 목록 확인 — 이름 1 ~ 60자 · 수량 1 ~ 9999 · 같은 이름 없음 · 이미 뽑힌 상품은 빼거나 이름을 바꾸거나 뽑힌 수보다 줄일 수 없음
+create or replace function public.lucky_prizes_check(p_event text, p_prizes jsonb)
+returns void language plpgsql set search_path = public as $$
+declare x jsonb; v_name text; v_names text[] := '{}'; v_qty int; w record;
+begin
+  if jsonb_typeof(p_prizes) is distinct from 'array' or jsonb_array_length(p_prizes) > 200 then raise exception '상품 목록이 올바르지 않습니다.'; end if;
+  for x in select e from jsonb_array_elements(p_prizes) e loop
+    v_name := btrim(coalesce(x ->> 'name', ''));
+    if char_length(v_name) not between 1 and 60 then raise exception '상품 이름을 1 ~ 60자로 적어 주세요.'; end if;
+    if v_name = '무효표' then raise exception '''무효표''는 상품 이름으로 쓸 수 없습니다.'; end if;
+    if coalesce(x ->> 'qty', '') !~ '^[0-9]{1,4}$' or (x ->> 'qty')::int < 1 then raise exception '% 수량을 1 ~ 9999로 적어 주세요.', v_name; end if;
+    if v_name = any(v_names) then raise exception '같은 이름의 상품(%)이 두 번 있습니다.', v_name; end if;
+    v_names := v_names || v_name;
+  end loop;
+  for w in select p.prize, count(*)::int n from public.prize_winners p where p.event = p_event and p.prize <> '무효표' group by p.prize loop
+    v_qty := null;
+    select (e ->> 'qty')::int into v_qty from jsonb_array_elements(p_prizes) e where btrim(e ->> 'name') = w.prize limit 1;
+    if v_qty is null then raise exception '이미 %개를 뽑은 상품(%)은 빼거나 이름을 바꿀 수 없습니다.', w.n, w.prize; end if;
+    if v_qty < w.n then raise exception '%은(는) 이미 %개를 뽑아 수량을 그보다 적게 할 수 없습니다.', w.prize, w.n; end if;
+  end loop;
+end $$;
+-- 고친 시각 · 추첨 단계는 lucky_draw_set 함수로만 · 상품은 '상품 등록' 단계에서만
 create or replace function public.lucky_events_touch()
-returns trigger language plpgsql set search_path = public as $$ begin new.updated_at := now(); return new; end $$;
-create or replace trigger trg_lucky_events_touch before update on public.lucky_events for each row execute function public.lucky_events_touch();
+returns trigger language plpgsql set search_path = public as $$
+declare v_fn boolean := coalesce(current_setting('lucky.draw_fn', true), '') = '1';
+begin
+  new.updated_at := now();
+  if tg_op = 'INSERT' then
+    if not v_fn and (new.draw_state <> 'ready' or new.done_at is not null) then raise exception '추첨 단계는 행운권 관리 화면의 단추로만 바꿀 수 있습니다.'; end if;
+    if new.prizes <> '[]'::jsonb then perform public.lucky_prizes_check(new.event, new.prizes); end if;
+    return new;
+  end if;
+  if not v_fn and (new.draw_state is distinct from old.draw_state or new.done_at is distinct from old.done_at) then
+    raise exception '추첨 단계는 행운권 관리 화면의 단추로만 바꿀 수 있습니다.';
+  end if;
+  if new.prizes is distinct from old.prizes then
+    if old.draw_state <> 'ready' then raise exception '등록을 마감한 뒤에는 상품을 고칠 수 없습니다. 먼저 ''상품 고치기''(등록 마감 풀기)를 눌러 주세요.'; end if;
+    perform public.lucky_prizes_check(new.event, new.prizes);
+  end if;
+  return new;
+end $$;
+create or replace trigger trg_lucky_events_touch before insert or update on public.lucky_events for each row execute function public.lucky_events_touch();
 
 create table if not exists public.lucky_tickets (
   event         text not null references public.walk_events(event),
@@ -398,11 +447,16 @@ create table if not exists public.prize_winners (
   seq    int  not null,                          -- 추첨 순서
   primary key (event, ticket, prize)
 );
+alter table public.prize_winners add column if not exists drawn_at timestamptz;   -- 추첨하기에서 넣은 시각 · 넣은 임원
+alter table public.prize_winners add column if not exists drawn_by text;
 alter table public.prize_winners enable row level security;
 revoke all on public.prize_winners from anon, authenticated;
 grant select on public.prize_winners to anon, authenticated;
 grant insert, update, delete on public.prize_winners to authenticated;
-select pg_temp.pol('pw_read',   'public.prize_winners', 'select', 'anon, authenticated', 'true', null);
+-- 누구나 봄 — 단, 행운권 추첨 회차는 '추첨 마감'을 누른 뒤부터 (그 전에는 임원만: pw_read_officer)
+select pg_temp.pol('pw_read',   'public.prize_winners', 'select', 'anon, authenticated',
+  'not exists (select 1 from public.lucky_events le where le.event = prize_winners.event and le.draw_state <> ''done'')', null);
+select pg_temp.pol('pw_read_officer', 'public.prize_winners', 'select', 'authenticated', 'public.is_officer()', null);
 select pg_temp.pol('pw_write',  'public.prize_winners', 'insert', 'authenticated', null, 'public.is_officer()');
 select pg_temp.pol('pw_update', 'public.prize_winners', 'update', 'authenticated', 'public.is_officer()', 'public.is_officer()');
 select pg_temp.pol('pw_delete', 'public.prize_winners', 'delete', 'authenticated', 'public.is_officer()', null);
@@ -453,6 +507,9 @@ begin
   if exists (select 1 from public.prize_claims c where c.batch_id = p_batch) then
     return query select c.ticket, c.prize from public.prize_claims c where c.batch_id = p_batch order by c.ticket; return;
   end if;
+  if exists (select 1 from public.lucky_events le where le.event = p_event and le.draw_state <> 'done') then
+    raise exception '아직 경품 추첨이 끝나지 않았습니다. 추첨 결과가 공개된 뒤에 당첨 인증을 해 주세요.';
+  end if;
   if char_length(btrim(coalesce(p_name, ''))) not between 1 and 40 then raise exception '이름을 적어 주세요.'; end if;
   if char_length(btrim(coalesce(p_church, ''))) > 60 then raise exception '소속 이름은 60자까지 적을 수 있습니다.'; end if;
   if coalesce(array_length(p_tickets, 1), 0) not between 1 and 50 then raise exception '인증할 번호를 1개 이상 골라 주세요.'; end if;
@@ -493,6 +550,73 @@ select pg_temp.pol('pp_read',   'public.prize_pickups', 'select', 'authenticated
 select pg_temp.pol('pp_insert', 'public.prize_pickups', 'insert', 'authenticated', null,
   'public.is_officer() and picked_by = auth.uid() and exists (select 1 from public.prize_winners w where w.event = prize_pickups.event and w.ticket = prize_pickups.ticket and w.prize <> ''무효표'')');
 select pg_temp.pol('pp_delete', 'public.prize_pickups', 'delete', 'authenticated', 'public.is_officer()', null);
+
+-- ============================================================
+-- 4-2) 행운권 경품 추첨 (lucky-admin.html ④) ---------------------
+--   상품 등록 → [등록 마감] 상품 목록 고정 · 행운권 QR 등록 멈춤 → 추첨하기(당첨 번호 + 받은 상품)
+--   → [추첨 마감] 당첨 번호 공개 · 첫 화면에 '행운권 당첨 번호 확인'
+--   잘못 넣은 번호는 추첨하기 단계에서 임원이 지움 (prize_winners 지우기 권한)
+-- ============================================================
+create or replace function public.lucky_draw_set(p_event text, p_state text)
+returns text language plpgsql security definer set search_path = public as $$
+declare le public.lucky_events; v_n int;
+begin
+  if not public.is_officer() then raise exception '임원만 할 수 있습니다.'; end if;
+  if coalesce(p_state, '') not in ('ready', 'drawing', 'done') then raise exception '추첨 단계가 올바르지 않습니다.'; end if;
+  if not exists (select 1 from public.walk_events e where e.event = p_event) then raise exception '회차를 찾지 못했습니다.'; end if;
+  perform set_config('lucky.draw_fn', '1', true);
+  insert into public.lucky_events (event) values (p_event) on conflict (event) do nothing;
+  select * into le from public.lucky_events x where x.event = p_event for update;
+  if p_state = 'drawing' then
+    if le.draw_state = 'ready' then        -- 등록 마감: 상품 목록 고정 · 행운권 QR 등록도 멈춤
+      if jsonb_array_length(le.prizes) = 0 then raise exception '먼저 상품을 하나 이상 등록해 주세요.'; end if;
+      update public.lucky_events set draw_state = 'drawing', open = false, done_at = null where event = p_event;
+    elsif le.draw_state = 'done' then      -- 추첨 다시 열기: 공개를 멈추고 고침
+      update public.lucky_events set draw_state = 'drawing', done_at = null where event = p_event;
+    end if;
+  elsif p_state = 'ready' then             -- 상품 고치기 (등록 마감 풀기) — 이미 뽑은 번호는 남음
+    update public.lucky_events set draw_state = 'ready', done_at = null where event = p_event;
+  else                                     -- 추첨 마감: 당첨 번호 공개 · 첫 화면에 당첨 번호 확인
+    if le.draw_state <> 'drawing' then raise exception '추첨하기 단계에서만 추첨을 마감할 수 있습니다.'; end if;
+    select count(*) into v_n from public.prize_winners w where w.event = p_event;
+    if v_n = 0 then raise exception '아직 뽑은 번호가 없습니다.'; end if;
+    update public.lucky_events set draw_state = 'done', done_at = now(), draw_hero = true where event = p_event;
+  end if;
+  perform set_config('lucky.draw_fn', '', true);
+  return (select x.draw_state from public.lucky_events x where x.event = p_event);
+end $$;
+revoke all on function public.lucky_draw_set(text, text) from public, anon;
+grant execute on function public.lucky_draw_set(text, text) to authenticated;
+
+-- 당첨 번호 넣기 — 만든 행운권 번호 · 등록한 상품(또는 무효표) · 한 번호는 한 번만 · 상품 수량까지만
+create or replace function public.lucky_draw_add(p_event text, p_ticket int, p_prize text, p_by text default null)
+returns table (ticket int, prize text, won int, qty int)
+language plpgsql security definer set search_path = public as $$
+declare le public.lucky_events; v_name text := btrim(coalesce(p_prize, '')); v_seq int; v_qty int; v_won int; v_prev text;
+begin
+  if not public.is_officer() then raise exception '임원만 당첨 번호를 넣을 수 있습니다.'; end if;
+  select * into le from public.lucky_events x where x.event = p_event for update;
+  if not found or le.draw_state <> 'drawing' then raise exception '등록을 마감한 뒤(추첨하기 단계)에만 당첨 번호를 넣을 수 있습니다.'; end if;
+  if p_ticket is null or not exists (select 1 from public.lucky_tickets t where t.event = p_event and t.no = p_ticket) then
+    raise exception '%번은 만들지 않은 행운권 번호입니다. 번호를 다시 확인해 주세요.', coalesce(p_ticket::text, '');
+  end if;
+  select string_agg(w.prize, ' · ') into v_prev from public.prize_winners w where w.event = p_event and w.ticket = p_ticket;
+  if v_prev is not null then raise exception '%번은 이미 뽑힌 번호입니다. (%)', p_ticket, v_prev; end if;
+  if v_name = '무효표' then
+    v_seq := 999;
+  else
+    select o.ord::int, (o.x ->> 'qty')::int into v_seq, v_qty
+      from jsonb_array_elements(le.prizes) with ordinality as o(x, ord) where btrim(o.x ->> 'name') = v_name limit 1;
+    if v_seq is null then raise exception '받은 상품을 등록한 상품 목록에서 골라 주세요.'; end if;
+    select count(*) into v_won from public.prize_winners w where w.event = p_event and w.prize = v_name;
+    if v_won >= v_qty then raise exception '%은(는) %개를 모두 뽑았습니다. 다른 상품을 골라 주세요.', v_name, v_qty; end if;
+  end if;
+  insert into public.prize_winners as w (event, ticket, prize, seq, drawn_at, drawn_by)
+  values (p_event, p_ticket, v_name, v_seq, now(), left(nullif(btrim(coalesce(p_by, '')), ''), 60));
+  return query select p_ticket, v_name, (select count(*)::int from public.prize_winners w where w.event = p_event and w.prize = v_name), v_qty;
+end $$;
+revoke all on function public.lucky_draw_add(text, int, text, text) from public, anon;
+grant execute on function public.lucky_draw_add(text, int, text, text) to authenticated;
 
 -- ============================================================
 -- 5) 처음 회차 · 제6회 당첨 번호 (이미 있으면 그대로) ------------------
@@ -599,6 +723,7 @@ select e.no as "회차", e.title as "행사", e.event_date as "날짜",
        (select count(*) from public.walk_applications w where w.event = e.event) as "신청",
        (select count(*) from public.lucky_tickets t where t.event = e.event) as "행운권",
        (select count(*) from public.prize_winners p where p.event = e.event) as "당첨 번호",
+       (select le.draw_state from public.lucky_events le where le.event = e.event) as "추첨",
        (select count(*) from public.prize_claims c where c.event = e.event) as "당첨 인증",
        (select count(*) from public.prize_pickups k where k.event = e.event) as "수령"
 from public.walk_events e order by e.no;

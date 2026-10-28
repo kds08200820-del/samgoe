@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>행운권 QR | 관리자 메뉴 · 삼일만세운동본부</title>
+  <title>행운권 QR · 경품 추첨 | 관리자 메뉴 · 삼일만세운동본부</title>
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -104,6 +104,37 @@
     .modal .who{margin:0 0 14px;padding:10px 12px;border-radius:8px;background:var(--surface-soft);font-size:14px;line-height:1.6;}
     .modal .acts{display:flex;flex-wrap:wrap;gap:8px;}
     .modal .acts .sbtn{flex:1 1 auto;}
+    /* ④ 경품 추첨 */
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 18px;padding:0;list-style:none;counter-reset:st;}
+    .steps li{counter-increment:st;padding:10px 4px 0;border-top:4px solid var(--hairline);font-size:13px;font-weight:600;color:var(--muted);text-align:center;line-height:1.4;}
+    .steps li::before{content:counter(st);display:block;margin:0 auto 4px;width:22px;height:22px;border-radius:50%;background:var(--hairline);color:#fff;font-size:12px;line-height:22px;}
+    .steps li.past{border-color:var(--primary);color:var(--primary);} .steps li.past::before{background:var(--primary);}
+    .steps li.now{border-color:var(--gold);color:var(--ink);} .steps li.now::before{background:var(--gold);}
+    .pzt input{width:100%;min-height:38px;padding:0 9px;border:1px solid var(--hairline-strong);border-radius:7px;font-family:inherit;font-size:14.5px;color:var(--ink);background:#fff;}
+    .pzt input.q{width:84px;text-align:right;font-variant-numeric:tabular-nums;}
+    .pzt td{vertical-align:middle;} .pzt td.nm{min-width:180px;white-space:normal;}
+    .pzt .mv{border:1px solid var(--hairline-strong);background:#fff;border-radius:6px;width:30px;height:30px;cursor:pointer;color:var(--ink);font-size:13px;}
+    .pzt .mv:disabled{opacity:.35;cursor:default;}
+    .dfoot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--hairline);}
+    .dfoot .sum{font-size:14px;color:var(--bodytext);} .dfoot .sum b{color:var(--ink);font-variant-numeric:tabular-nums;}
+    .dfoot .acts{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto;}
+    .drawbox{display:grid;grid-template-columns:170px minmax(0,1fr) auto;gap:10px;align-items:end;padding:16px;border-radius:10px;background:#fbf6ef;border:1px solid #ecdcc9;}
+    .drawbox label{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:13px;font-weight:700;color:var(--ink);}
+    .drawbox input,.drawbox select{width:100%;min-width:0;min-height:52px;padding:0 12px;border:1px solid var(--hairline-strong);border-radius:9px;font-family:inherit;font-size:17px;background:#fff;color:var(--ink);}
+    .drawbox input{font-size:24px;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums;}
+    .drawbox .sbtn{min-height:52px;font-size:16px;padding:0 24px;}
+    .drwho{min-height:24px;margin:10px 2px 0;font-size:15px;line-height:1.6;color:var(--bodytext);}
+    .drwho b{color:var(--ink);} .drwho .bad{color:var(--err);font-weight:600;} .drwho .soft{color:var(--muted);}
+    .prog{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:16px 0 4px;}
+    .prog div{padding:10px 12px;border:1px solid var(--hairline);border-radius:9px;background:#fff;font-size:13.5px;}
+    .prog div b{display:flex;justify-content:space-between;gap:8px;color:var(--ink);font-size:14px;}
+    .prog div b span{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;white-space:nowrap;}
+    .prog i{display:block;height:6px;margin-top:7px;border-radius:3px;background:var(--hairline);overflow:hidden;}
+    .prog i em{display:block;height:100%;background:var(--gold);}
+    .prog div.full{background:#fbf9f7;} .prog div.full i em{background:var(--primary);}
+    .doneBox{padding:16px;border-radius:10px;background:#f1faf4;border:1px solid #bfe3cc;font-size:14.5px;line-height:1.8;color:var(--bodytext);}
+    .doneBox b{color:var(--ink);}
+    @media (max-width:640px){ .drawbox{grid-template-columns:minmax(0,1fr);} .steps li{font-size:12px;} }
     footer{background:var(--dark);color:rgba(255,255,255,0.65);padding:22px;text-align:center;font-size:12px;}
     @media (max-width:860px){ .pgrid{grid-template-columns:1fr;} .pprev{position:static;max-width:420px;margin:0 auto;width:100%;} }
     @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr);} }
@@ -243,6 +274,60 @@
       <div class="tblWrap" id="tbl"><div class="empty">불러오는 중…</div></div>
     </section>
 
+    <!-- ④ 경품 추첨: 상품 등록 → 등록 마감 → 추첨하기 → 추첨 마감 (manse-walk-setup.sql 4-2) -->
+    <section class="card" id="drawCard">
+      <h2>④ 경품 추첨</h2>
+      <p class="cap">상품을 모두 등록하고 <b>등록 마감</b>을 누르면 추첨하기가 열립니다. 추첨함에서 뽑은 행운권 번호와 받은 상품을 넣고, 다 뽑은 뒤 <b>추첨 마감하기</b>를 누르면 당첨 번호가 공개되고 첫 화면에 <b>행운권 당첨 번호 확인</b>이 나타납니다.</p>
+      <ol class="steps" id="drSteps"><li>상품 등록</li><li>등록 마감</li><li>추첨하기</li><li>추첨 마감</li></ol>
+      <div class="warn" id="drSetup" hidden>경품 추첨을 쓰려면 Supabase에서 <b>설치 SQL(3·1 만세길 걷기)</b>을 한 번 더 실행해야 합니다. <a href="../setup-sql.html">설치 SQL 복사 페이지 열기 →</a></div>
+
+      <!-- 1 상품 등록 -->
+      <div id="drReady" hidden>
+        <div class="tblWrap" id="pzTbl"></div>
+        <form class="tools" id="pzAdd" novalidate style="margin-top:12px">
+          <input id="pzName" maxlength="60" placeholder="상품 이름 (예: 쌀 10kg)" aria-label="상품 이름" style="flex:1 1 220px;min-width:0">
+          <input class="num" id="pzQty" type="number" min="1" max="9999" inputmode="numeric" placeholder="수량" aria-label="수량">
+          <button class="sbtn pri" id="pzAddBtn" type="submit">상품 추가</button>
+          <span class="msg" id="pzMsg" role="status"></span>
+        </form>
+        <p class="cap" style="margin:0">위에서부터 추첨 순서입니다. 이름 · 수량은 칸에서 바로 고치면 저장됩니다.</p>
+        <div class="dfoot">
+          <span class="sum" id="pzSum"></span>
+          <span class="acts"><button class="sbtn gold big" id="drClose" type="button">등록 마감 · 추첨 시작</button></span>
+        </div>
+        <p class="cap" style="margin:10px 0 0">등록을 마감하면 상품 목록이 고정되고 <b>행운권 QR 등록도 멈춥니다.</b></p>
+      </div>
+
+      <!-- 3 추첨하기 -->
+      <div id="drDraw" hidden>
+        <form class="drawbox" id="drForm" novalidate autocomplete="off">
+          <label>당첨 번호<input id="drNo" type="text" inputmode="numeric" maxlength="5" placeholder="예: 123" enterkeyhint="done"></label>
+          <label>받은 상품<select id="drPrize"></select></label>
+          <button class="sbtn pri" id="drSave" type="submit">기록</button>
+        </form>
+        <div class="drwho" id="drWho" role="status"></div>
+        <p class="msg" id="drMsg" role="status"></p>
+        <div class="prog" id="drProg"></div>
+        <h3 class="h3">뽑은 번호 <small id="drCount" style="font-weight:500;color:var(--muted)"></small></h3>
+        <div class="tblWrap" id="drList"></div>
+        <div class="dfoot">
+          <span class="sum" id="drSum"></span>
+          <span class="acts"><button class="sbtn" id="drReopen" type="button">상품 고치기 (등록 마감 풀기)</button><button class="sbtn gold big" id="drDone" type="button">추첨 마감하기</button></span>
+        </div>
+      </div>
+
+      <!-- 4 추첨 마감 -->
+      <div id="drFin" hidden>
+        <div class="doneBox" id="drFinText"></div>
+        <label class="tg" style="margin-top:12px"><input type="checkbox" id="drHero"><span><b>첫 화면에 '행운권 당첨 번호 확인' 보이기</b><small>두 홈페이지 첫 화면에서 행운권 번호를 넣어 당첨을 확인할 수 있습니다. 경품 전달이 끝나면 꺼 두세요. (누르면 바로 저장)</small></span></label>
+        <div class="prog" id="drFinProg"></div>
+        <div class="dfoot">
+          <span class="acts" style="margin-left:0"><a class="sbtn" id="drPrizeLink" href="prize.html" target="_blank" rel="noopener">당첨 번호 확인 화면 ↗</a><a class="sbtn" id="drWinLink" href="prize-winners.html">당첨자 명단 · 수령 확인 →</a></span>
+          <span class="acts"><button class="sbtn" id="drReopen2" type="button">추첨 다시 열기 (고치기)</button></span>
+        </div>
+      </div>
+    </section>
+
     <!-- 경품 전달을 마친 뒤: 서기 · 대표회장이 개인정보 지우기 -->
     <section class="card" id="wipeCard">
       <h2>등록 정보 모두 지우기</h2>
@@ -270,6 +355,8 @@
     var $=function(id){return document.getElementById(id);};
     var EVENTS=[], EV=WalkEv.FALLBACK, EVENT=EV.event, LE=null, tickets=[], prizes={}, me=null, myProfile=null, whoName='임원', canWipe=false, ready=false;
     var art=null, artUrl='', pdfUrl='', busy={}, sDirty=false, prevTimer=0;
+    // 행운권 설정 열 — 경품 추첨 열(prizes · draw_state …)은 설치 SQL을 다시 실행해야 생김 (없으면 추첨 칸만 안내)
+    var LEBASE='event,title,subtitle,art_path,open,updated_at,updated_by', LECOLS=LEBASE+',prizes,draw_state,draw_hero,done_at', drawOk=true, winners=[];
     function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
     function pad(n){return (n<10?'0':'')+n;}
     function kd(iso){ return new Date(new Date(iso).getTime()+9*3600000); }
@@ -298,7 +385,10 @@
 
     // ---------- 불러오기 ----------
     async function loadLE(){
-      var r=await window.msb.from('lucky_events').select('event,title,subtitle,art_path,open,updated_at,updated_by').eq('event',EVENT).maybeSingle();
+      var r=await window.msb.from('lucky_events').select(LECOLS).eq('event',EVENT).maybeSingle();
+      if(r.error && drawOk && /prizes|draw_state|draw_hero|done_at|column/i.test(r.error.message||'')){
+        drawOk=false; LECOLS=LEBASE; r=await window.msb.from('lucky_events').select(LECOLS).eq('event',EVENT).maybeSingle();
+      }
       if(r.error) throw r.error;
       LE=r.data||null;
     }
@@ -312,14 +402,16 @@
       tickets=all;
     }
     async function loadPrizes(){
-      var r=await window.msb.from('prize_winners').select('ticket,prize,seq').eq('event',EVENT).order('seq');
-      prizes={}; (r.data||[]).forEach(function(x){ (prizes[x.ticket]=prizes[x.ticket]||[]).push(x.prize); });
+      var r=await window.msb.from('prize_winners').select('ticket,prize,seq,drawn_at,drawn_by').eq('event',EVENT).order('seq').order('ticket');
+      if(r.error) r=await window.msb.from('prize_winners').select('ticket,prize,seq').eq('event',EVENT).order('seq').order('ticket');
+      winners=r.data||[];
+      prizes={}; winners.forEach(function(x){ (prizes[x.ticket]=prizes[x.ticket]||[]).push(x.prize); });
     }
 
     // ---------- 위쪽: 회차 · 숫자 ----------
     function autoSub(){ return [EV.event_date?WalkEv.dotDate(EV.event_date)+(EV.time_text?' '+EV.time_text:''):'', EV.place||''].filter(Boolean).join(' · '); }
     function drawHead(){
-      document.title=EV.title+' 행운권 QR | 관리자 메뉴 · 삼일만세운동본부';
+      document.title=EV.title+' 행운권 QR · 경품 추첨 | 관리자 메뉴 · 삼일만세운동본부';
       $('evTitle').textContent=EV.title;
       $('evSel').innerHTML=EVENTS.map(function(e){ return '<option value="'+esc(e.event)+'"'+(e.event===EVENT?' selected':'')+'>제'+e.no+'회'+(e.event_date?' · '+WalkEv.dotDate(e.event_date):'')+' — '+esc(e.title)+'</option>'; }).join('');
       $('toWalk').href='walk-admin.html?e='+encodeURIComponent(EVENT);
@@ -401,7 +493,7 @@
       var v=this.checked, el=this;
       if(!v && !confirm('QR 등록 받기를 끕니다. 끄면 행운권 QR을 찍어도 등록할 수 없습니다.\n\n계속할까요?')){ el.checked=true; return; }
       el.disabled=true;
-      var r=await window.msb.from('lucky_events').upsert({ event:EVENT, open:v, updated_by:whoName },{ onConflict:'event' }).select('event,title,subtitle,art_path,open,updated_at,updated_by').single();
+      var r=await window.msb.from('lucky_events').upsert({ event:EVENT, open:v, updated_by:whoName },{ onConflict:'event' }).select(LECOLS).single();
       el.disabled=false;
       if(r.error){ el.checked=!v; return alert('저장하지 못했습니다: '+errText(r.error)); }
       LE=r.data; drawOpen();
@@ -416,7 +508,7 @@
     async function saveSettings(quiet){
       var title=$('sTitle').value.trim(), sub=$('sSub').value.trim();
       var r=await window.msb.from('lucky_events').upsert({ event:EVENT, title:title&&title!==EV.title?title:null, subtitle:sub, updated_by:whoName },{ onConflict:'event' })
-        .select('event,title,subtitle,art_path,open,updated_at,updated_by').single();
+        .select(LECOLS).single();
       if(r.error){ msg('sMsg','저장하지 못했습니다: '+errText(r.error)); return false; }
       LE=r.data; sDirty=false; if(!quiet) msg('sMsg','저장했습니다. 등록 화면에도 이 행사명이 나옵니다.',true);
       return true;
@@ -462,7 +554,7 @@
         var blob=await shrink(f), path=EVENT+'/'+Date.now()+'.jpg', old=LE&&LE.art_path;
         var up=await window.msb.storage.from('lucky-art').upload(path, blob, { contentType:'image/jpeg', cacheControl:'31536000' });
         if(up.error) throw up.error;
-        var r=await window.msb.from('lucky_events').upsert({ event:EVENT, art_path:path, updated_by:whoName },{ onConflict:'event' }).select('event,title,subtitle,art_path,open,updated_at,updated_by').single();
+        var r=await window.msb.from('lucky_events').upsert({ event:EVENT, art_path:path, updated_by:whoName },{ onConflict:'event' }).select(LECOLS).single();
         if(r.error){ await window.msb.storage.from('lucky-art').remove([path]); throw r.error; }
         LE=r.data;
         if(old && old!==path) window.msb.storage.from('lucky-art').remove([old]);
@@ -474,7 +566,7 @@
     $('artDel').addEventListener('click',async function(){
       if(busy.art || !(LE&&LE.art_path) || !confirm('행운권 이미지를 뺄까요? 행사명과 QR만 들어갑니다.')) return;
       busy.art=true; var old=LE.art_path;
-      var r=await window.msb.from('lucky_events').update({ art_path:null, updated_by:whoName }).eq('event',EVENT).select('event,title,subtitle,art_path,open,updated_at,updated_by').single();
+      var r=await window.msb.from('lucky_events').update({ art_path:null, updated_by:whoName }).eq('event',EVENT).select(LECOLS).single();
       busy.art=false;
       if(r.error) return alert('빼지 못했습니다: '+errText(r.error));
       LE=r.data; window.msb.storage.from('lucky-art').remove([old]);
@@ -679,6 +771,180 @@
       closeModal(); drawAll();
     }
 
+    // ---------- ④ 경품 추첨: 상품 등록 → 등록 마감 → 추첨하기 → 추첨 마감 ----------
+    function dState(){ return (LE&&LE.draw_state)||'ready'; }
+    function plist(){ return ((LE&&LE.prizes)||[]).map(function(x){ return { name:String(x.name||''), qty:+x.qty||0 }; }); }
+    function won(name){ return winners.filter(function(w){ return w.prize===name; }).length; }
+    function totalQty(){ return plist().reduce(function(a,x){ return a+x.qty; },0); }
+    function realWins(){ return winners.filter(function(w){ return w.prize!=='무효표'; }); }
+    function whoText(n){
+      var t=byNo(n); if(!t) return '';
+      return isReg(t)?'<b>'+esc(t.name)+'</b> · '+esc(t.church)+(t.phone?' · '+fmtPhone(t.phone):''):'<span class="soft">등록 안 된 행운권</span>';
+    }
+    function rpcErr(e){ var m=String((e&&e.message)||e||''); return /lucky_draw|function .* does not exist|schema cache/i.test(m)?'설치 SQL(3·1 만세길 걷기)을 한 번 더 실행해 주세요.':errText(e); }
+    function drawDraw(){
+      var st=dState(), idx={ ready:0, drawing:2, done:3 }[st];
+      Array.prototype.forEach.call($('drSteps').children,function(li,i){ li.className=i<idx?'past':(i===idx?'now':''); });
+      if(st==='drawing') $('drSteps').children[1].className='past';
+      $('drSetup').hidden=drawOk; $('drReady').hidden=!drawOk||st!=='ready'; $('drDraw').hidden=!drawOk||st!=='drawing'; $('drFin').hidden=!drawOk||st!=='done';
+      if(!drawOk) return;
+      if(st==='ready') drawPzTable(); else if(st==='drawing') drawDrawing(); else drawFin();
+    }
+    // 1) 상품 등록
+    function drawPzTable(){
+      var L=plist();
+      $('pzTbl').innerHTML = L.length
+        ? '<table class="pzt"><thead><tr><th class="c">순서</th><th>상품</th><th class="r">수량</th>'+(winners.length?'<th class="r">뽑음</th>':'')+'<th class="c">관리</th></tr></thead><tbody>'+
+          L.map(function(x,i){ var w=won(x.name);
+            return '<tr><td class="c">'+(i+1)+'</td><td class="nm"><input data-i="'+i+'" data-f="name" maxlength="60" value="'+esc(x.name)+'" aria-label="'+(i+1)+'번째 상품 이름"'+(w?' readonly title="이미 뽑은 상품은 이름을 바꿀 수 없습니다"':'')+'></td>'+
+              '<td class="r"><input class="q" data-i="'+i+'" data-f="qty" type="number" min="'+Math.max(1,w)+'" max="9999" inputmode="numeric" value="'+x.qty+'" aria-label="'+esc(x.name)+' 수량"></td>'+
+              (winners.length?'<td class="r">'+(w||'')+'</td>':'')+
+              '<td class="c" style="white-space:nowrap"><button class="mv" type="button" data-up="'+i+'"'+(i?'':' disabled')+' aria-label="위로">▲</button> <button class="mv" type="button" data-down="'+i+'"'+(i<L.length-1?'':' disabled')+' aria-label="아래로">▼</button> '+
+              '<button class="lnk" type="button" data-rm="'+i+'"'+(w?' disabled title="이미 뽑은 상품은 뺄 수 없습니다"':'')+' style="color:var(--err)">빼기</button></td></tr>'; }).join('')+'</tbody></table>'
+        : '<div class="empty">아직 등록한 상품이 없습니다 — 아래에 상품 이름과 수량을 넣고 <b>상품 추가</b>를 누르세요.</div>';
+      $('pzSum').innerHTML=L.length?'상품 <b>'+L.length+'</b>가지 · 모두 <b>'+totalQty().toLocaleString('ko-KR')+'</b>개':'';
+      $('drClose').disabled=!L.length||busy.pz;
+    }
+    async function savePrizes(L, okText){
+      if(busy.pz) return false; busy.pz=true; msg('pzMsg','저장하는 중…',true);
+      var r=await window.msb.from('lucky_events').upsert({ event:EVENT, prizes:L, updated_by:whoName },{ onConflict:'event' }).select(LECOLS).single();
+      busy.pz=false;
+      if(r.error){ msg('pzMsg','저장하지 못했습니다: '+errText(r.error)); drawPzTable(); return false; }
+      LE=r.data; msg('pzMsg',okText||'저장했습니다.',true); drawPzTable(); return true;
+    }
+    $('pzAdd').addEventListener('submit',async function(e){
+      e.preventDefault(); if(!ready) return;
+      var name=$('pzName').value.trim(), q=parseInt($('pzQty').value,10), L=plist();
+      if(!name) { $('pzName').focus(); return msg('pzMsg','상품 이름을 적어 주세요.'); }
+      if(name==='무효표') return msg('pzMsg',"'무효표'는 상품 이름으로 쓸 수 없습니다.");
+      if(!(q>=1 && q<=9999)) { $('pzQty').focus(); return msg('pzMsg','수량을 1 ~ 9999로 적어 주세요.'); }
+      if(L.some(function(x){ return x.name===name; })) return msg('pzMsg','같은 이름의 상품이 이미 있습니다. 수량을 고쳐 주세요.');
+      L.push({ name:name, qty:q });
+      if(await savePrizes(L, name+' '+q+'개를 추가했습니다.')){ $('pzName').value=''; $('pzQty').value=''; $('pzName').focus(); }
+    });
+    $('pzTbl').addEventListener('change',function(e){
+      var el=e.target, i=+el.getAttribute('data-i'), f=el.getAttribute('data-f'); if(!f) return;
+      var L=plist(), x=L[i]; if(!x) return;
+      if(f==='name'){ var v=el.value.trim(); if(!v || v==='무효표' || L.some(function(y,j){ return j!==i && y.name===v; })){ msg('pzMsg',!v?'상품 이름을 비울 수 없습니다.':(v==='무효표'?"'무효표'는 상품 이름으로 쓸 수 없습니다.":'같은 이름의 상품이 이미 있습니다.')); el.value=x.name; return; } x.name=v; }
+      else { var q=parseInt(el.value,10); if(!(q>=1 && q<=9999)){ msg('pzMsg','수량을 1 ~ 9999로 적어 주세요.'); el.value=x.qty; return; } x.qty=q; }
+      savePrizes(L);
+    });
+    $('pzTbl').addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b || b.disabled) return;
+      var L=plist(), u=b.getAttribute('data-up'), d=b.getAttribute('data-down'), rm=b.getAttribute('data-rm'), t;
+      if(u!==null){ u=+u; t=L[u-1]; L[u-1]=L[u]; L[u]=t; savePrizes(L); }
+      else if(d!==null){ d=+d; t=L[d+1]; L[d+1]=L[d]; L[d]=t; savePrizes(L); }
+      else if(rm!==null){ var x=L[+rm]; if(!confirm(x.name+'('+x.qty+'개)을 상품 목록에서 뺄까요?')) return; L.splice(+rm,1); savePrizes(L, x.name+'을(를) 뺐습니다.'); }
+    });
+    async function setState(st){
+      var r=await window.msb.rpc('lucky_draw_set',{ p_event:EVENT, p_state:st });
+      if(r.error) throw r.error;
+      await Promise.all([loadLE(), loadPrizes()]); drawOpen(); drawAll(); drawDraw();
+    }
+    $('drClose').addEventListener('click',async function(){
+      var L=plist(); if(!L.length || busy.st) return;
+      if(!confirm('상품 등록을 마감하고 추첨을 시작합니다.\n\n· 상품 '+L.length+'가지 · 모두 '+totalQty()+'개\n· 행운권 QR 등록도 멈춥니다 (등록 '+tickets.filter(isReg).length+'장)\n\n계속할까요?')) return;
+      busy.st=true; this.disabled=true;
+      try{ await setState('drawing'); $('drNo').focus(); }catch(ex){ msg('pzMsg','마감하지 못했습니다: '+rpcErr(ex)); }
+      busy.st=false; this.disabled=false;
+    });
+    // 3) 추첨하기
+    var lastPrize='';
+    function remain(x){ return x.qty-won(x.name); }
+    function drawSelect(){
+      var L=plist(), cur=$('drPrize').value||lastPrize;
+      if(!L.some(function(x){ return x.name===cur && remain(x)>0; })){ var nx=L.filter(function(x){ return remain(x)>0; })[0]; cur=nx?nx.name:''; }
+      $('drPrize').innerHTML=L.map(function(x){ var r=remain(x); return '<option value="'+esc(x.name)+'"'+(r>0?'':' disabled')+(x.name===cur?' selected':'')+'>'+esc(x.name)+' — '+(r>0?'남은 '+r+' / '+x.qty:'다 뽑음')+'</option>'; }).join('')+
+        '<option value="무효표"'+(cur===''?' selected':'')+'>무효표 (경품 없음)</option>';
+    }
+    function drawProg(id){
+      $(id).innerHTML=plist().map(function(x){ var w=won(x.name), pc=x.qty?Math.min(100,Math.round(w/x.qty*100)):0;
+        return '<div'+(w>=x.qty?' class="full"':'')+'><b>'+esc(x.name)+'<span>'+w+' / '+x.qty+'</span></b><i><em style="width:'+pc+'%"></em></i></div>'; }).join('');
+    }
+    function drawDrawing(){
+      drawSelect(); drawProg('drProg'); drawWho();
+      var list=winners.slice().sort(function(a,b){ return (b.drawn_at||'')<(a.drawn_at||'')?-1:(b.drawn_at||'')>(a.drawn_at||'')?1:b.ticket-a.ticket; });
+      var rw=realWins().length, vd=winners.length-rw, left=plist().reduce(function(a,x){ return a+Math.max(0,remain(x)); },0);
+      $('drCount').textContent=winners.length?winners.length+'장'+(vd?' (무효표 '+vd+')':''):'';
+      $('drSum').innerHTML='당첨 <b>'+rw+'</b>장 · 남은 상품 <b>'+left+'</b>개'+(vd?' · 무효표 '+vd+'장':'');
+      $('drDone').disabled=!winners.length;
+      $('drList').innerHTML = list.length
+        ? '<table><thead><tr><th>번호</th><th>상품</th><th>이름 · 소속</th><th>넣은 시각</th><th class="c">관리</th></tr></thead><tbody>'+
+          list.map(function(w){ return '<tr><td class="no">'+noText(w.ticket)+'</td><td class="win">'+esc(w.prize)+'</td><td>'+(whoText(w.ticket)||'')+'</td>'+
+            '<td>'+(w.drawn_at?short(w.drawn_at)+(w.drawn_by?' <small style="color:var(--muted)">· '+esc(w.drawn_by)+'</small>':''):'')+'</td>'+
+            '<td class="c"><button class="lnk" type="button" data-undo="'+w.ticket+'" style="color:var(--err)">지우기</button></td></tr>'; }).join('')+'</tbody></table>'
+        : '<div class="empty">추첨함에서 행운권을 뽑아 위에 번호와 받은 상품을 넣으세요.</div>';
+    }
+    function drawWho(){
+      var v=$('drNo').value.replace(/\D/g,''), n=parseInt(v,10), box=$('drWho');
+      if(!v){ box.innerHTML=''; return; }
+      var t=byNo(n), w=winners.filter(function(x){ return x.ticket===n; })[0];
+      box.innerHTML = !t ? '<span class="bad">'+n+'번은 만들지 않은 행운권 번호입니다.</span>'
+        : (w ? '<span class="bad">'+noText(n)+'은(는) 이미 뽑혔습니다 — '+esc(w.prize)+'</span>'
+        : noText(n)+' · '+whoText(n));
+    }
+    $('drNo').addEventListener('input',function(){ msg('drMsg',''); drawWho(); });
+    $('drPrize').addEventListener('change',function(){ lastPrize=this.value; });
+    $('drForm').addEventListener('submit',async function(e){
+      e.preventDefault(); if(busy.dr) return;
+      var n=parseInt($('drNo').value.replace(/\D/g,''),10), prize=$('drPrize').value;
+      if(!(n>=1)) { $('drNo').focus(); return msg('drMsg','당첨된 행운권 번호를 넣어 주세요.'); }
+      if(!byNo(n)) { $('drNo').select(); return msg('drMsg',n+'번은 만들지 않은 행운권 번호입니다. 번호를 다시 확인해 주세요.'); }
+      if(!prize) return msg('drMsg','받은 상품을 골라 주세요.');
+      busy.dr=true; $('drSave').disabled=true;
+      var r; try{ r=await window.msb.rpc('lucky_draw_add',{ p_event:EVENT, p_ticket:n, p_prize:prize, p_by:whoName }); }catch(ex){ r={ error:ex }; }
+      busy.dr=false; $('drSave').disabled=false;
+      if(r.error){ msg('drMsg','기록하지 못했습니다: '+rpcErr(r.error)); await loadPrizes(); drawDrawing(); $('drNo').select(); return; }
+      var x=(r.data||[])[0]||{};
+      lastPrize=prize; await loadPrizes(); drawAll(); drawDrawing();
+      msg('drMsg',noText(n)+' → '+prize+(x.qty?' 기록 ('+x.won+' / '+x.qty+')':' 기록'),true);
+      $('drNo').value=''; drawWho(); $('drNo').focus();
+    });
+    $('drList').addEventListener('click',async function(e){
+      var b=e.target.closest('[data-undo]'); if(!b || busy.dr) return;
+      var n=+b.getAttribute('data-undo'), w=winners.filter(function(x){ return x.ticket===n; })[0]; if(!w) return;
+      if(!confirm(noText(n)+' '+w.prize+' 기록을 지울까요?')) return;
+      busy.dr=true;
+      var r=await window.msb.from('prize_winners').delete().eq('event',EVENT).eq('ticket',n).select('ticket');
+      busy.dr=false;
+      if(r.error || !(r.data||[]).length) return msg('drMsg','지우지 못했습니다: '+(r.error?errText(r.error):'임원만 지울 수 있습니다.'));
+      await loadPrizes(); drawAll(); drawDrawing(); msg('drMsg',noText(n)+' 기록을 지웠습니다.',true);
+    });
+    $('drReopen').addEventListener('click',async function(){
+      if(busy.st || !confirm('등록 마감을 풀고 상품 목록을 고칩니다. 지금까지 뽑은 번호는 그대로 남습니다.\n(행운권 QR 등록은 계속 멈춰 있습니다)\n\n계속할까요?')) return;
+      busy.st=true; try{ await setState('ready'); }catch(ex){ msg('drMsg','바꾸지 못했습니다: '+rpcErr(ex)); } busy.st=false;
+    });
+    $('drDone').addEventListener('click',async function(){
+      if(busy.st || !winners.length) return;
+      var left=plist().filter(function(x){ return remain(x)>0; }).map(function(x){ return x.name+' '+remain(x)+'개'; });
+      if(!confirm('추첨을 마감합니다.\n\n· 당첨 '+realWins().length+'장'+(winners.length>realWins().length?' · 무효표 '+(winners.length-realWins().length)+'장':'')+
+        (left.length?'\n· 아직 남은 상품: '+left.join(', '):'\n· 상품을 모두 뽑았습니다')+
+        '\n\n마감하면 당첨 번호가 공개되고, 두 홈페이지 첫 화면에 \'행운권 당첨 번호 확인\'이 나타납니다.\n계속할까요?')) return;
+      busy.st=true; this.disabled=true;
+      try{ await setState('done'); window.scrollTo({ top:$('drawCard').offsetTop-60, behavior:'smooth' }); }catch(ex){ msg('drMsg','마감하지 못했습니다: '+rpcErr(ex)); }
+      busy.st=false; this.disabled=false;
+    });
+    // 4) 추첨 마감
+    function drawFin(){
+      var rw=realWins().length, vd=winners.length-rw;
+      $('drFinText').innerHTML='<b>추첨을 마감했습니다.</b> '+(LE&&LE.done_at?stamp(LE.done_at)+' · ':'')+'당첨 <b>'+rw+'</b>장'+(vd?' · 무효표 '+vd+'장':'')+'<br>'+
+        (LE&&LE.draw_hero!==false?'두 홈페이지 첫 화면에 <b>행운권 당첨 번호 확인</b>이 보이고 있습니다. 당첨된 분은 번호를 넣어 확인하고 당첨 인증을 할 수 있습니다.':'첫 화면의 행운권 당첨 번호 확인은 꺼 두었습니다. 당첨 번호 확인 화면은 주소로 계속 열 수 있습니다.');
+      $('drHero').checked=!(LE&&LE.draw_hero===false);
+      $('drPrizeLink').href='prize.html?e='+encodeURIComponent(EVENT); $('drWinLink').href='prize-winners.html?e='+encodeURIComponent(EVENT);
+      drawProg('drFinProg');
+    }
+    $('drHero').addEventListener('change',async function(){
+      var v=this.checked, el=this; el.disabled=true;
+      var r=await window.msb.from('lucky_events').update({ draw_hero:v, updated_by:whoName }).eq('event',EVENT).select(LECOLS).single();
+      el.disabled=false;
+      if(r.error){ el.checked=!v; return alert('저장하지 못했습니다: '+errText(r.error)); }
+      LE=r.data; drawFin();
+    });
+    $('drReopen2').addEventListener('click',async function(){
+      if(busy.st || !confirm('추첨을 다시 엽니다. 다시 마감할 때까지 당첨 번호 공개와 첫 화면의 당첨 번호 확인이 멈춥니다.\n\n계속할까요?')) return;
+      busy.st=true; try{ await setState('drawing'); }catch(ex){ alert('바꾸지 못했습니다: '+rpcErr(ex)); } busy.st=false;
+    });
+
     // ---------- 등록 정보 모두 지우기 (서기 · 대표회장) ----------
     function drawWipe(){
       var n=tickets.filter(isReg).length;
@@ -755,16 +1021,18 @@
       }catch(ex){
         $('setupWarn').hidden=false;
         ['mkBtn','pMake','sSave','sOpen','dropBtn','artFile'].forEach(function(id){ $(id).disabled=true; });
+        drawOk=false;
       }
-      drawHead(); fillSettings(); drawAll(); drawWipe();
+      drawHead(); fillSettings(); drawAll(); drawWipe(); drawDraw();
       if(tickets.length){ $('pFrom').value=tickets[0].no; $('pTo').value=tickets[tickets.length-1].no; }
       else { $('mkFrom').value=1; $('pFrom').value=1; }
       drawPrintInfo();
       await loadArt(); preview();
       // 화면을 보고 있을 때만 1분마다 새로 불러옴 (창을 열어 둔 동안은 쉼)
       setInterval(async function(){
-        if(!ready || document.hidden || !$('ov').hidden || busy.mk || busy.pdf) return;
-        try{ await loadTickets(); drawStats(); drawChurches(); drawTable(); drawWipe(); }catch(_){}
+        if(!ready || document.hidden || !$('ov').hidden || busy.mk || busy.pdf || busy.dr || busy.pz || busy.st) return;
+        try{ await Promise.all([loadTickets(), loadLE(), loadPrizes()]); drawOpen(); drawStats(); drawChurches(); drawTable(); drawWipe();
+          if(dState()!=='ready' || !document.activeElement || !$('pzTbl').contains(document.activeElement)) drawDraw(); }catch(_){}
       },60000);
     })();
   })();
