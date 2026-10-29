@@ -515,7 +515,8 @@
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
   <link rel="stylesheet" href="assets/theme.css?v=5" />
-  <link rel="stylesheet" href="assets/hero-motion.css?v=2" />
+  <link rel="stylesheet" href="assets/hero-motion.css?v=3" />
+  <link rel="stylesheet" href="assets/hero-editorial.css?v=1" />
 </head>
 <body>
 <div style="width:100%;overflow-x:hidden;overflow-x:clip;">
@@ -551,7 +552,7 @@
     </div>
   </nav>
 
-  <!-- ===================== HERO — 마우스 반응형 파티클 ===================== -->
+  <!-- ===================== HERO — 함께 이어지는 길 ===================== -->
     <section id="top" class="hero">
     <div class="in">
       <img class="hero-logo" src="assets/logo-trans.png" alt="삼기연" style="height:44px;width:auto;margin:0 auto 26px;" />
@@ -567,14 +568,17 @@
         </div>
         <p class="hf-note" id="heNote"></p>
       </div>
-      <!-- 영상처럼 움직이는 히어로 (assets/hero-motion.css · hero-motion.js) — 19초 · 4장면 반복 · 내용은 자료실 기록(총회자료 · 회의록 · 행사 보고)에서 -->
-      <div class="hero-default mv" id="mv">
-        <div class="mv-stage">
-          <section class="mv-scene" aria-label="삼괴지역 기독교 연합회">
+      <!-- 네 장면의 연합회 이야기. 수치와 연도는 기존 자료실 기록을 유지합니다. -->
+      <div class="hero-default mv" id="mv" role="region" aria-label="삼기연 이야기">
+        <div class="mv-topline"><span class="mv-edition">서로 다른 교회, 하나의 마음</span><span>함께 써 내려가는 이야기 &nbsp; <span id="mvIndex">01</span> / 04</span></div>
+        <div class="mv-layout">
+        <div class="mv-stage" id="mvStage">
+          <section class="mv-scene on" aria-label="삼괴지역 기독교 연합회">
             <p class="mv-kick mv-up">화성특례시 우정읍 · 장안면</p>
-            <h1 class="mv-title"><span class="ln"><span>한 형제처럼, 한 마음으로</span></span><span class="ln"><span><em>삼괴지역 기독교 연합회</em></span></span></h1>
+            <h1 class="mv-title"><span class="ln"><span>한 형제처럼,</span></span><span class="ln"><span><em>한 마음으로.</em></span></span></h1>
             <div class="mv-rule"></div>
-            <p class="mv-sub mv-up" data-d="4"><b>12개 교단 49개 교회</b> · 예수 그리스도 안에서 한 형제 된 목회자들의 연합</p>
+            <p class="mv-sub mv-up" data-d="3">교회의 담을 넘어, 이웃의 곁으로.<br><b>12개 교단 49개 교회</b>가 함께 믿음의 길을 걷습니다.</p>
+            <p class="mv-identity mv-up" data-d="4">삼괴지역 기독교 연합회</p>
           </section>
           <section class="mv-scene" aria-label="기록으로 보는 삼기연">
             <p class="mv-kick mv-up">기록으로 보는 삼기연</p>
@@ -612,18 +616,37 @@
             <p class="mv-verse mv-up" data-d="6">“보라 형제가 연합하여 동거함이 어찌 그리 선하고 아름다운고”<small>시편 133:1</small></p>
           </section>
         </div>
+
+        <div class="mv-art" aria-hidden="true">
+          <span class="mv-art-note">United in faith.</span><span class="mv-art-mark"></span>
+          <svg viewBox="0 0 600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="copperThread" x1="70" y1="400" x2="500" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#78604a"/><stop offset=".3" stop-color="#b1855c"/><stop offset=".6" stop-color="#e2c6a0"/><stop offset="1" stop-color="#816347"/></linearGradient>
+              <linearGradient id="silkThread" x1="80" y1="420" x2="560" y2="300" gradientUnits="userSpaceOnUse"><stop stop-color="#80634d"/><stop offset=".45" stop-color="#e7d4b4"/><stop offset=".75" stop-color="#b88a61"/><stop offset="1" stop-color="#514438"/></linearGradient>
+            </defs>
+            <path d="M15 472H580" stroke="#c9ad8c" stroke-opacity=".14" stroke-width=".7"/>
+            <g class="thread-group thread-back" stroke="url(#copperThread)" stroke-width=".8"><path d="M 64.0 458 C 30.0 335 45.0 124.0 228.0 90.0 C 480.0 48.0 541.0 302 472.0 448" opacity="0.37"/><path d="M 68.3 458 C 34.3 335 48.8 124.7 230.7 90.8 C 480.4 50.0 539.6 302 468.3 448" opacity="0.41"/><path d="M 72.6 458 C 38.6 335 52.6 125.3 233.4 91.7 C 480.8 52.0 538.2 302 464.6 448" opacity="0.45"/><path d="M 76.9 458 C 42.9 335 56.4 126.0 236.1 92.5 C 481.2 54.0 536.8 302 460.9 448" opacity="0.49"/><path d="M 81.2 458 C 47.2 335 60.2 126.6 238.8 93.4 C 481.6 56.0 535.4 302 457.2 448" opacity="0.53"/><path d="M 85.5 458 C 51.5 335 64.0 127.2 241.5 94.2 C 482.0 58.0 534.0 302 453.5 448" opacity="0.57"/><path d="M 89.8 458 C 55.8 335 67.8 127.9 244.2 95.1 C 482.4 60.0 532.6 302 449.8 448" opacity="0.61"/><path d="M 94.1 458 C 60.1 335 71.6 128.6 246.9 96.0 C 482.8 62.0 531.2 302 446.1 448" opacity="0.37"/><path d="M 98.4 458 C 64.4 335 75.4 129.2 249.6 96.8 C 483.2 64.0 529.8 302 442.4 448" opacity="0.41"/><path d="M 102.7 458 C 68.7 335 79.2 129.8 252.3 97.7 C 483.6 66.0 528.4 302 438.7 448" opacity="0.45"/><path d="M 107.0 458 C 73.0 335 83.0 130.5 255.0 98.5 C 484.0 68.0 527.0 302 435.0 448" opacity="0.49"/><path d="M 111.3 458 C 77.3 335 86.8 131.2 257.7 99.3 C 484.4 70.0 525.6 302 431.3 448" opacity="0.53"/><path d="M 115.6 458 C 81.6 335 90.6 131.8 260.4 100.2 C 484.8 72.0 524.2 302 427.6 448" opacity="0.57"/><path d="M 119.9 458 C 85.9 335 94.4 132.4 263.1 101.0 C 485.2 74.0 522.8 302 423.9 448" opacity="0.61"/><path d="M 124.2 458 C 90.2 335 98.2 133.1 265.8 101.9 C 485.6 76.0 521.4 302 420.2 448" opacity="0.37"/><path d="M 128.5 458 C 94.5 335 102.0 133.8 268.5 102.8 C 486.0 78.0 520.0 302 416.5 448" opacity="0.41"/><path d="M 132.8 458 C 98.8 335 105.8 134.4 271.2 103.6 C 486.4 80.0 518.6 302 412.8 448" opacity="0.45"/><path d="M 137.1 458 C 103.1 335 109.6 135.1 273.9 104.5 C 486.8 82.0 517.2 302 409.1 448" opacity="0.49"/><path d="M 141.4 458 C 107.4 335 113.4 135.7 276.6 105.3 C 487.2 84.0 515.8 302 405.4 448" opacity="0.53"/><path d="M 145.7 458 C 111.7 335 117.2 136.3 279.3 106.2 C 487.6 86.0 514.4 302 401.7 448" opacity="0.57"/><path d="M 150.0 458 C 116.0 335 121.0 137.0 282.0 107.0 C 488.0 88.0 513.0 302 398.0 448" opacity="0.61"/><path d="M 154.3 458 C 120.3 335 124.8 137.7 284.7 107.8 C 488.4 90.0 511.6 302 394.3 448" opacity="0.37"/><path d="M 158.6 458 C 124.6 335 128.6 138.3 287.4 108.7 C 488.8 92.0 510.2 302 390.6 448" opacity="0.41"/><path d="M 162.9 458 C 128.9 335 132.4 138.9 290.1 109.5 C 489.2 94.0 508.8 302 386.9 448" opacity="0.45"/><path d="M 167.2 458 C 133.2 335 136.2 139.6 292.8 110.4 C 489.6 96.0 507.4 302 383.2 448" opacity="0.49"/><path d="M 171.5 458 C 137.5 335 140.0 140.2 295.5 111.2 C 490.0 98.0 506.0 302 379.5 448" opacity="0.53"/><path d="M 175.8 458 C 141.8 335 143.8 140.9 298.2 112.1 C 490.4 100.0 504.6 302 375.8 448" opacity="0.57"/><path d="M 180.1 458 C 146.1 335 147.6 141.6 300.9 113.0 C 490.8 102.0 503.2 302 372.1 448" opacity="0.61"/><path d="M 184.4 458 C 150.4 335 151.4 142.2 303.6 113.8 C 491.2 104.0 501.8 302 368.4 448" opacity="0.37"/><path d="M 188.7 458 C 154.7 335 155.2 142.8 306.3 114.7 C 491.6 106.0 500.4 302 364.7 448" opacity="0.41"/><path d="M 193.0 458 C 159.0 335 159.0 143.5 309.0 115.5 C 492.0 108.0 499.0 302 361.0 448" opacity="0.45"/><path d="M 197.3 458 C 163.3 335 162.8 144.2 311.7 116.3 C 492.4 110.0 497.6 302 357.3 448" opacity="0.49"/><path d="M 201.6 458 C 167.6 335 166.6 144.8 314.4 117.2 C 492.8 112.0 496.2 302 353.6 448" opacity="0.53"/><path d="M 205.9 458 C 171.9 335 170.4 145.4 317.1 118.0 C 493.2 114.0 494.8 302 349.9 448" opacity="0.57"/><path d="M 210.2 458 C 176.2 335 174.2 146.1 319.8 118.9 C 493.6 116.0 493.4 302 346.2 448" opacity="0.61"/><path d="M 214.5 458 C 180.5 335 178.0 146.8 322.5 119.8 C 494.0 118.0 492.0 302 342.5 448" opacity="0.37"/><path d="M 218.8 458 C 184.8 335 181.8 147.4 325.2 120.6 C 494.4 120.0 490.6 302 338.8 448" opacity="0.41"/><path d="M 223.1 458 C 189.1 335 185.6 148.1 327.9 121.5 C 494.8 122.0 489.2 302 335.1 448" opacity="0.45"/></g>
+            <g class="thread-group thread-front" stroke="url(#silkThread)" stroke-width=".85"><path d="M 28.0 372.0 C 160.0 514.0 223.0 192.0 327.0 219.0 C 421.0 242.0 433.0 402.0 551.0 349.0" opacity="0.35"/><path d="M 30.0 374.9 C 161.2 512.8 223.7 194.6 329.1 222.6 C 422.4 245.6 435.3 402.4 551.3 351.1" opacity="0.39"/><path d="M 32.0 377.8 C 162.4 511.6 224.4 197.2 331.2 226.2 C 423.8 249.2 437.6 402.8 551.6 353.2" opacity="0.44"/><path d="M 34.0 380.7 C 163.6 510.4 225.1 199.8 333.3 229.8 C 425.2 252.8 439.9 403.2 551.9 355.3" opacity="0.48"/><path d="M 36.0 383.6 C 164.8 509.2 225.8 202.4 335.4 233.4 C 426.6 256.4 442.2 403.6 552.2 357.4" opacity="0.52"/><path d="M 38.0 386.5 C 166.0 508.0 226.5 205.0 337.5 237.0 C 428.0 260.0 444.5 404.0 552.5 359.5" opacity="0.57"/><path d="M 40.0 389.4 C 167.2 506.8 227.2 207.6 339.6 240.6 C 429.4 263.6 446.8 404.4 552.8 361.6" opacity="0.61"/><path d="M 42.0 392.3 C 168.4 505.6 227.9 210.2 341.7 244.2 C 430.8 267.2 449.1 404.8 553.1 363.7" opacity="0.66"/><path d="M 44.0 395.2 C 169.6 504.4 228.6 212.8 343.8 247.8 C 432.2 270.8 451.4 405.2 553.4 365.8" opacity="0.70"/><path d="M 46.0 398.1 C 170.8 503.2 229.3 215.4 345.9 251.4 C 433.6 274.4 453.7 405.6 553.7 367.9" opacity="0.35"/><path d="M 48.0 401.0 C 172.0 502.0 230.0 218.0 348.0 255.0 C 435.0 278.0 456.0 406.0 554.0 370.0" opacity="0.39"/><path d="M 50.0 403.9 C 173.2 500.8 230.7 220.6 350.1 258.6 C 436.4 281.6 458.3 406.4 554.3 372.1" opacity="0.44"/><path d="M 52.0 406.8 C 174.4 499.6 231.4 223.2 352.2 262.2 C 437.8 285.2 460.6 406.8 554.6 374.2" opacity="0.48"/><path d="M 54.0 409.7 C 175.6 498.4 232.1 225.8 354.3 265.8 C 439.2 288.8 462.9 407.2 554.9 376.3" opacity="0.52"/><path d="M 56.0 412.6 C 176.8 497.2 232.8 228.4 356.4 269.4 C 440.6 292.4 465.2 407.6 555.2 378.4" opacity="0.57"/><path d="M 58.0 415.5 C 178.0 496.0 233.5 231.0 358.5 273.0 C 442.0 296.0 467.5 408.0 555.5 380.5" opacity="0.61"/><path d="M 60.0 418.4 C 179.2 494.8 234.2 233.6 360.6 276.6 C 443.4 299.6 469.8 408.4 555.8 382.6" opacity="0.66"/><path d="M 62.0 421.3 C 180.4 493.6 234.9 236.2 362.7 280.2 C 444.8 303.2 472.1 408.8 556.1 384.7" opacity="0.70"/><path d="M 64.0 424.2 C 181.6 492.4 235.6 238.8 364.8 283.8 C 446.2 306.8 474.4 409.2 556.4 386.8" opacity="0.35"/><path d="M 66.0 427.1 C 182.8 491.2 236.3 241.4 366.9 287.4 C 447.6 310.4 476.7 409.6 556.7 388.9" opacity="0.39"/><path d="M 68.0 430.0 C 184.0 490.0 237.0 244.0 369.0 291.0 C 449.0 314.0 479.0 410.0 557.0 391.0" opacity="0.44"/><path d="M 70.0 432.9 C 185.2 488.8 237.7 246.6 371.1 294.6 C 450.4 317.6 481.3 410.4 557.3 393.1" opacity="0.48"/><path d="M 72.0 435.8 C 186.4 487.6 238.4 249.2 373.2 298.2 C 451.8 321.2 483.6 410.8 557.6 395.2" opacity="0.52"/><path d="M 74.0 438.7 C 187.6 486.4 239.1 251.8 375.3 301.8 C 453.2 324.8 485.9 411.2 557.9 397.3" opacity="0.57"/><path d="M 76.0 441.6 C 188.8 485.2 239.8 254.4 377.4 305.4 C 454.6 328.4 488.2 411.6 558.2 399.4" opacity="0.61"/><path d="M 78.0 444.5 C 190.0 484.0 240.5 257.0 379.5 309.0 C 456.0 332.0 490.5 412.0 558.5 401.5" opacity="0.66"/><path d="M 80.0 447.4 C 191.2 482.8 241.2 259.6 381.6 312.6 C 457.4 335.6 492.8 412.4 558.8 403.6" opacity="0.70"/><path d="M 82.0 450.3 C 192.4 481.6 241.9 262.2 383.7 316.2 C 458.8 339.2 495.1 412.8 559.1 405.7" opacity="0.35"/><path d="M 84.0 453.2 C 193.6 480.4 242.6 264.8 385.8 319.8 C 460.2 342.8 497.4 413.2 559.4 407.8" opacity="0.39"/><path d="M 86.0 456.1 C 194.8 479.2 243.3 267.4 387.9 323.4 C 461.6 346.4 499.7 413.6 559.7 409.9" opacity="0.44"/><path d="M 88.0 459.0 C 196.0 478.0 244.0 270.0 390.0 327.0 C 463.0 350.0 502.0 414.0 560.0 412.0" opacity="0.48"/><path d="M 90.0 461.9 C 197.2 476.8 244.7 272.6 392.1 330.6 C 464.4 353.6 504.3 414.4 560.3 414.1" opacity="0.52"/></g>
+            <circle cx="301" cy="476" r="2" fill="#d5ac85"/>
+            <path d="M301 486v12" stroke="#d5ac85" stroke-opacity=".4"/>
+          </svg>
+          <div class="mv-art-caption"><span>하나로 이어지는 믿음의 길</span><span>우정 · 장안</span></div>
+        </div>
+        </div>
+        <div class="mv-bottom">
         <div class="mv-bar">
           <button class="mv-play" type="button" aria-label="멈춤">
             <svg class="i-pause" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>
             <svg class="i-play" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.2v11.6c0 .5.5.8.9.5l9-5.8c.4-.3.4-.8 0-1.1l-9-5.8C3.5.4 3 .7 3 1.2z"/></svg>
           </button>
-          <div class="mv-chap" role="tablist" aria-label="장면">
-            <button type="button"><i></i>연합회</button><button type="button"><i></i>기록</button><button type="button"><i></i>절기</button><button type="button"><i></i>걸어온 길</button>
+          <div class="mv-chap" role="group" aria-label="이야기 장면 선택">
+            <button type="button" data-number="01" aria-controls="mvStage"><i></i>연합회</button><button type="button" data-number="02" aria-controls="mvStage"><i></i>기록</button><button type="button" data-number="03" aria-controls="mvStage"><i></i>절기</button><button type="button" data-number="04" aria-controls="mvStage"><i></i>걸어온 길</button>
           </div>
         </div>
         <div class="mv-cta">
-          <a href="#dashboard" class="mv-btn solid press">한눈에 보기</a>
-          <a href="#about" class="mv-btn ghost press">연합회 소개</a>
+          <a href="#dashboard" class="mv-btn solid press">삼기연 한눈에 보기 <span class="arrow" aria-hidden="true">↗</span></a>
+          <a href="#about" class="mv-btn ghost press">연합회 소개 <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
         </div>
       </div>
       <!-- 행운권 당첨 번호 확인 — 삼일만세운동본부 행운권 QR 관리 → ④ 경품 추첨에서 '추첨 마감' (만세 Supabase lucky_events) -->
@@ -637,142 +660,7 @@
     </div>
   </section>
 
-  <script>
-  /* 히어로 파티클 — 콘텐츠 주위를 함께 도는 대시 스웜 (마우스 반응) */
-  (function(){
-    var canvas = document.getElementById('heroCanvas');
-    if(!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext('2d');
-    var hero = canvas.parentElement;
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    /* 위치(좌→우)에 따른 그라데이션: 연한 갈색 → 녹슨 주황 → 짙은 갈색 → 녹슨 주황 → 연한 갈색 (흰 바탕에서 보이는 톤) */
-    var STOPS = [[200,150,110],[181,86,47],[74,53,39],[181,86,47],[200,150,110]];
-    var W = 0, H = 0, parts = [], mouse = {x:-9999, y:-9999};
-    var running = false, rafId = 0;
 
-    function colorAt(p){
-      p = Math.min(Math.max(p, 0), 1) * (STOPS.length - 1);
-      var i = Math.min(p | 0, STOPS.length - 2), f = p - i;
-      var a = STOPS[i], b = STOPS[i + 1];
-      return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' +
-                      Math.round(a[1] + (b[1] - a[1]) * f) + ',' +
-                      Math.round(a[2] + (b[2] - a[2]) * f) + ')';
-    }
-
-    function build(){
-      parts = [];
-      var n = Math.min(280, Math.round(W * H / 3800));
-      for(var i = 0; i < n; i++){
-        var a0 = Math.random() * Math.PI * 2;
-        var sp = 12 + Math.random() * 14;          /* 천천히 유영하는 기본 속도(px/s) */
-        parts.push({
-          x: Math.random() * W, y: Math.random() * H,
-          vx: Math.cos(a0) * sp, vy: Math.sin(a0) * sp,
-          speed: sp,
-          offAmp: 0.5 + Math.random() * 0.7,       /* 무리 방향 대비 개체별 편차(라디안) */
-          offFreq: 0.15 + Math.random() * 0.2,
-          phase: Math.random() * Math.PI * 2,
-          panic: 0,                                /* 포식자(마우스)를 만난 공포 정도 */
-          len: 5 + Math.random() * 6, w: 2 + Math.random() * 1.4,
-          alpha: 0.24 + Math.random() * 0.36
-        });
-      }
-    }
-
-    function resize(){
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = canvas.clientWidth; H = canvas.clientHeight;
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      build();
-      if(reduceMotion) draw(0);
-    }
-
-    function draw(t, dt){
-      dt = dt || 0.016;
-      ctx.clearRect(0, 0, W, H);
-      var cx = W / 2, cy = H / 2, R = 170;
-      /* 무리 전체가 향하는 방향 — 깊은 바다 물고기 떼처럼 느리게 굽이침 */
-      var head = t * 0.015 + 1.2 * Math.sin(t * 0.10) + 0.9 * Math.sin(t * 0.041 + 2.1);
-      /* 중앙 텍스트 회피 타원 */
-      var ax = Math.min(W * 0.30, 430), ay = Math.min(H * 0.32, 240);
-      for(var i = 0; i < parts.length; i++){
-        var p = parts[i];
-        /* 원하는 유영 방향(무리 + 개체 편차) · 꼬리치기 리듬 */
-        var a = head + p.offAmp * Math.sin(t * p.offFreq + p.phase);
-        var s = p.speed * (1 + 0.18 * Math.sin(t * 1.8 + p.phase));
-        var k = Math.min(1, dt * (1.2 + p.panic * 4)); /* 놀랐을 땐 더 급하게 방향 전환 */
-        p.vx += (Math.cos(a) * s - p.vx) * k;
-        p.vy += (Math.sin(a) * s - p.vy) * k;
-        /* 포식자(마우스) — 가까울수록 강하게 흩어짐 */
-        var mdx = p.x - mouse.x, mdy = p.y - mouse.y, md2 = mdx * mdx + mdy * mdy;
-        if(md2 < R * R){
-          var md = Math.sqrt(md2) || 1, f = (R - md) / R;
-          p.vx += (mdx / md) * f * f * 1400 * dt;
-          p.vy += (mdy / md) * f * f * 1400 * dt;
-          p.panic = Math.max(p.panic, f);
-        }
-        p.panic *= Math.exp(-dt * 1.6); /* 공포는 서서히 가라앉고 무리로 복귀 */
-        /* 중앙 텍스트 영역은 부드럽게 비켜 감 */
-        var ex = (p.x - cx) / ax, ey = (p.y - cy) / ay, e2 = ex * ex + ey * ey;
-        if(e2 < 1){
-          var el = Math.sqrt(e2) || 0.001, push = (1 - e2) * 260 * dt;
-          p.vx += (ex / el) * push; p.vy += (ey / el) * push;
-        }
-        /* 속도 제한(평소 느리게, 놀라면 빠르게) */
-        var vmax = 45 + p.panic * 420;
-        var vm = Math.hypot(p.vx, p.vy);
-        if(vm > vmax){ p.vx *= vmax / vm; p.vy *= vmax / vm; }
-        /* 이동 + 화면 가장자리 순환 */
-        p.x += p.vx * dt; p.y += p.vy * dt;
-        var m = 40;
-        if(p.x < -m) p.x = W + m; else if(p.x > W + m) p.x = -m;
-        if(p.y < -m) p.y = H + m; else if(p.y > H + m) p.y = -m;
-        /* 진행 방향으로 정렬해 그리기 */
-        ctx.save();
-        ctx.translate(p.x, p.y); ctx.rotate(Math.atan2(p.vy, p.vx));
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = colorAt(p.x / W);
-        ctx.beginPath();
-        if(ctx.roundRect){ ctx.roundRect(-p.len / 2, -p.w / 2, p.len, p.w, p.w / 2); }
-        else { ctx.rect(-p.len / 2, -p.w / 2, p.len, p.w); }
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    var elapsed = 0, last = null;
-    function frame(now){
-      var d = 0.016;
-      if(last !== null){ d = Math.min(now - last, 100) / 1000; elapsed += d; }
-      last = now;
-      draw(elapsed, d);
-      if(running) rafId = requestAnimationFrame(frame);
-    }
-    function start(){ if(!running && !reduceMotion){ running = true; last = null; rafId = requestAnimationFrame(frame); } }
-    function stop(){ running = false; cancelAnimationFrame(rafId); }
-
-    hero.addEventListener('pointermove', function(e){
-      var r = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
-    });
-    hero.addEventListener('pointerleave', function(){ mouse.x = -9999; mouse.y = -9999; });
-    window.addEventListener('resize', resize);
-
-    /* 화면 밖이거나 탭이 숨겨지면 애니메이션 중지 */
-    if('IntersectionObserver' in window){
-      new IntersectionObserver(function(entries){
-        entries[0].isIntersecting ? start() : stop();
-      }).observe(hero);
-    } else { start(); }
-    document.addEventListener('visibilitychange', function(){
-      document.hidden ? stop() : start();
-    });
-
-    resize();
-    if(reduceMotion) draw(0);
-  })();
-  </script>
 
   <!-- ===================== 대시보드 ===================== -->
   <section id="dashboard" class="section" style="scroll-margin-top:110px;background:var(--soft);">
@@ -2198,6 +2086,6 @@ if ('serviceWorker' in navigator) {
       var f=document.getElementById('hfDday'); if(f) f.textContent=d.textContent; }
   })();
   </script>
-<script src="assets/hero-motion.js?v=2"></script>
+<script src="assets/hero-editorial.js?v=1"></script>
 </body>
 </html>
