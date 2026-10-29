@@ -207,15 +207,15 @@
     var w = walkRoot();
     function cnt(id){ var ids=descendants(id); return all.filter(function(f){ return ids.indexOf(f.folder_id)>=0; }).length; }
     function node(r){
-      var h = '<div class="tn root'+(view.folder===r.id?' on':'')+'" data-f="'+r.id+'">'+esc(r.name)+' <span class="c">'+cnt(r.id)+'</span></div>';
-      children(r.id).forEach(function(k){ h += '<div class="tn sub'+(view.folder===k.id?' on':'')+'" data-f="'+k.id+'">'+esc(k.name)+' <span class="c">'+cnt(k.id)+'</span></div>'; });
+      var h = '<button type="button" aria-pressed="'+(view.folder===r.id)+'" class="tn root'+(view.folder===r.id?' on':'')+'" data-f="'+r.id+'">'+esc(r.name)+' <span class="c">'+cnt(r.id)+'</span></button>';
+      children(r.id).forEach(function(k){ h += '<button type="button" aria-pressed="'+(view.folder===k.id)+'" class="tn sub'+(view.folder===k.id?' on':'')+'" data-f="'+k.id+'">'+esc(k.name)+' <span class="c">'+cnt(k.id)+'</span></button>'; });
       return h;
     }
     var mine = all.filter(function(f){ return !inWalk(f.folder_id); });
-    var html = '<div class="tn'+(view.folder===''?' on':'')+'" data-f="">'+(w?'삼괴연합회 자료 전체':'전체 자료')+' <span class="c">'+mine.length+'</span></div>';
+    var html = '<button type="button" aria-pressed="'+(view.folder==='')+'" class="tn'+(view.folder===''?' on':'')+'" data-f="">'+(w?'삼괴연합회 자료 전체':'전체 자료')+' <span class="c">'+mine.length+'</span></button>';
     roots().forEach(function(r){ if(!w || r.id!==w.id) html += node(r); });
     var un = all.filter(function(f){ return !f.folder_id; }).length;
-    if(un) html += '<div class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></div>';
+    if(un) html += '<button type="button" aria-pressed="'+(view.folder==='__none')+'" class="tn'+(view.folder==='__none'?' on':'')+'" data-f="__none">미분류 <span class="c">'+un+'</span></button>';
     // 3·1 만세길 걷기 — 삼일만세운동본부 사업 자료는 따로
     html += '<div class="tn sep">3·1 만세길 걷기 · 삼일만세운동본부</div>';
     if(w) html += node(w);
@@ -243,7 +243,8 @@
     var all = FILES.filter(function(f){ return f.status!=='pending'; });
     var res = all.filter(matches);
     var head = document.getElementById('docHead');
-    head.textContent = (view.folder==='__none'?'미분류':(view.folder?pathName(view.folder):(walkRoot()?(view.q?'모든 자료':'삼괴연합회 자료 전체'):'전체 자료')))+' · '+res.length+'건'+(view.q?' (검색: '+view.q+')':'');
+    var heading = view.folder==='__none'?'미분류':(view.folder?pathName(view.folder):(walkRoot()?(view.q?'모든 자료':'삼괴연합회 자료 전체'):'전체 자료'));
+    head.innerHTML = '<span class="doc-heading-label">'+esc(heading)+'</span><span class="doc-count">'+res.length+'건</span>'+(view.q?'<span class="doc-query">검색: '+esc(view.q)+'</span>':'');
     var unN = all.filter(function(f){ return !f.folder_id; }).length;
     if(unN){ head.innerHTML += ' <button class="btn sm" style="margin-left:10px" onclick="window.refileUnfiled()">미분류 '+unN+'건 자동 정리</button>'; }
     var list = document.getElementById('docList');
@@ -279,7 +280,11 @@
       '<div style="display:flex;gap:8px;"><button class="btn sm" id="eSave">저장</button><button class="btn ghost sm" id="eCancel">취소</button><span class="prog" id="eProg"></span></div></div>';
     box.style.display=''; box.scrollIntoView({behavior:'smooth',block:'nearest'});
     document.getElementById('eCancel').onclick = function(){ box.style.display='none'; box.innerHTML=''; };
+    var saving = false;
     document.getElementById('eSave').onclick = async function(){
+      if(saving) return;
+      saving=true; this.disabled=true; this.textContent='저장 중…';
+      try{
       var up = await window.sb.from('officer_files').update({
         title: document.getElementById('eTitle').value.trim()||null,
         folder_id: document.getElementById('eFolder').value||null,
@@ -289,6 +294,12 @@
       if(up.error){ document.getElementById('eProg').textContent='저장 실패: '+up.error.message; return; }
       box.style.display='none'; box.innerHTML='';
       await loadAll(); renderPending(); renderDocs();
+      }catch(error){
+        var message=document.getElementById('eProg'); if(message) message.textContent='저장 실패: '+error.message;
+      }finally{
+        saving=false;
+        var save=document.getElementById('eSave'); if(save){ save.disabled=false; save.textContent='저장'; }
+      }
     };
   }
   async function delFile(id){
@@ -435,7 +446,13 @@
       else if(e.target.closest('.pdel')){ delFile(row.getAttribute('data-id')); }
     });
 
-    document.getElementById('folderTree').addEventListener('click', function(e){ var n=e.target.closest&&e.target.closest('.tn'); if(!n) return; view.folder=n.getAttribute('data-f'); renderDocs(); });
+    document.getElementById('folderTree').addEventListener('click', function(e){
+      var n=e.target.closest&&e.target.closest('button[data-f]'); if(!n) return;
+      view.folder=n.getAttribute('data-f'); renderDocs();
+      if(e.detail===0 && window.matchMedia('(min-width:900px)').matches){
+        var selected=document.querySelector('#folderTree button.on'); if(selected) selected.focus({preventScroll:true});
+      }
+    });
     document.getElementById('docYear').addEventListener('change', function(){ view.year=this.value; renderDocs(); });
     var timer=null; document.getElementById('docSearch').addEventListener('input', function(){ var v=this.value.trim(); clearTimeout(timer); timer=setTimeout(function(){ view.q=v; renderDocs(); },150); });
     document.getElementById('docList').addEventListener('click', function(e){
