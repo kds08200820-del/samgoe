@@ -1,9 +1,13 @@
 /* Public Manse site: editorial heritage theme, scoped to the existing archive. */
-.mz {
+:root,.mz {
   --primary:#a33d32;--accent:#a33d32;--rust:#a33d32;--rust-deep:#842d25;
   --navy:#2c4137;--night:#202e29;--gold:#a33d32;--gold-soft:#e4d5ba;--gold-ink:#91372e;
   --paper:#f3f2eb;--card:#fffefa;--ink:#202c29;--body:#414a46;--muted:#68706b;
   --line:#dfdfd5;--line-soft:#e8e8de;--r:8px;--radius:8px;
+  --navy-deep:#202e29;--night-2:#2e3e36;--rust-soft:#f7ece8;--cream:#f3f2eb;
+  --red:#a33d32;--faint:#7b857c;--line-strong:#c5c9bd;--primary-active:#202e29;
+  --bodytext:#414a46;--hairline:#dfdfd5;--hairline-strong:#c5c9bd;
+  --canvas:#fffefa;--surface-soft:#f3f2eb;--dark:#202e29;--soft:#f3f2eb;
   --shadow:0 4px 20px rgba(32,46,41,.035);
   --ab-accent:#a33d32;--ab-accent-deep:#842d25;--ab-accent-soft:#f7ece8;
   background:#fffefa;word-break:keep-all;overflow-wrap:break-word;
@@ -174,4 +178,109 @@ html {scroll-padding-top:112px;}
 @media(prefers-reduced-motion:reduce) {
   html {scroll-behavior:auto;}
   .mz *,.mz *::before,.mz *::after {animation:none!important;transition:none!important;}
+}
+
+/* Shared application pages: reports, membership, event forms and administration. */
+.manse-app {
+  --primary:var(--navy);--primary-active:var(--night);
+  background:var(--paper);color:var(--body);font-weight:400;line-height:1.7;
+  word-break:keep-all;overflow-wrap:break-word;
+}
+.manse-app button,.manse-app input,.manse-app textarea,.manse-app select {font-family:inherit;}
+.manse-app h1,.manse-app h2,.manse-app h3 {letter-spacing:-.035em;line-height:1.45;}
+.manse-app ::selection {background:var(--rust);color:#fff;}
+.manse-app a:focus-visible,.manse-app button:focus-visible,.manse-app summary:focus-visible {outline:3px solid var(--rust);outline-offset:4px;}
+.manse-app .m-bar,.manse-app .bar {background:rgba(255,254,250,.98);border-bottom:1px solid var(--line);height:auto;}
+.manse-app .m-bar .in,.manse-app .bar .in {height:auto;min-height:76px;max-width:1240px;width:100%;padding:14px 24px;gap:20px;}
+.manse-app .m-brand {font-size:18px;color:var(--ink);letter-spacing:-.05em;}
+.manse-app .m-badge {background:transparent;width:38px;height:38px;flex-basis:38px;}
+.manse-app .m-badge img {width:36px;height:36px;}
+.manse-app .bar .in > a {color:var(--ink);font-family:var(--serif);font-size:17px;letter-spacing:-.04em;}
+.manse-app #mAuth,.manse-app #authArea {color:var(--muted);font-size:12px;}
+.manse-app #mAuth a,.manse-app #authArea a,.manse-app #mAuth .m-me {color:var(--ink);}
+.manse-app #mAuth .m-officer,.manse-app #mAuth a:hover,.manse-app #authArea a:hover {color:var(--rust);}
+.manse-app .m-sep {color:var(--line-strong);}
+.manse-app #mAuth .m-back {color:var(--ink);border-color:var(--line-strong);border-radius:5px;padding:4px 10px;}
+.manse-app #mAuth .m-back:hover {background:var(--paper);color:var(--ink);}
+.manse-app .m-wrap {padding-top:44px;padding-bottom:72px;}
+.manse-app .m-card {background:var(--card);border-color:var(--line);border-radius:8px;box-shadow:0 4px 24px #202e2904;}
+.manse-app .m-title {font-weight:600;font-size:28px;}
+.manse-app .m-sub {font-size:14px;line-height:1.8;margin-top:10px;}
+.manse-app .m-btn,.manse-app .btn,.manse-app .sbtn {border-radius:5px;font-weight:600;}
+.manse-app .m-btn {background:var(--night);font-size:14px;}
+.manse-app .m-btn:hover {background:var(--navy);}
+.manse-app .m-btn.ghost {background:var(--card);color:var(--ink);border-color:var(--line-strong);}
+.manse-app .m-btn.ghost:hover {background:var(--paper);border-color:var(--ink);}
+.manse-app .m-btn.gold,.manse-app .btn.gold,.manse-app .sbtn.gold {background:var(--rust);color:#fff;border-color:var(--rust);}
+.manse-app .m-btn.gold:hover,.manse-app .btn.gold:hover {background:#842d25;}
+.manse-app .m-btn.danger {background:#fff;color:var(--bad);border-color:#efc7c2;}
+.manse-app .m-btn:disabled {background:var(--line-strong);cursor:default;}
+.manse-app .m-in {border-radius:5px;background:var(--card);border-color:var(--line-strong);}
+.manse-app .m-in:focus {border-color:var(--navy);box-shadow:0 0 0 3px #2c413714;}
+.manse-app .m-footer,.manse-app > footer {background:var(--night);color:#d1d9ce;}
+.manse-app .link-card {background:var(--card);border-color:var(--line);box-shadow:none;}
+.manse-app .o-tabs .o-tab[aria-selected=true] {color:var(--rust);border-bottom-color:var(--rust);}
+.manse-app .o-head h1 {font-size:30px;font-weight:600;}
+.manse-app .o-group,.manse-app .card,.manse-app .kpi,.manse-app .sec {border-radius:8px;border-color:var(--line);box-shadow:none;}
+.manse-app .o-group > h3,.manse-app table.o-table th {background:var(--paper);}
+.manse-app #p-ledger {--lg-accent-page:var(--navy);}
+.manse-app .pz-title,.manse-app .pz-label,.manse-app .pz-head,.manse-app .pz-ct {color:var(--ink);}
+.manse-app .pz-btn {background:var(--night);border-radius:5px;}
+.manse-app .pz-btn:hover {background:var(--navy);}
+.manse-app .pz-stats > div,.manse-app .pz-box {background:var(--card);border-color:var(--line);border-radius:8px;box-shadow:none;}
+.manse-app .pz-stats b {color:var(--ink);}
+.manse-app .pz-li.win .t:not(.ok) {background:var(--rust);color:#fff;}
+.manse-app .ticket span {color:#d1d9ce;}
+.manse-app .total,.manse-app .prefill,.manse-app .drawbox {background:var(--card);border:1px solid var(--line);}
+
+/* Public and administrator report components use the same statistics and chart colors. */
+.manse-app .rpw {max-width:1160px;padding:32px 24px 72px;}
+.manse-app .rpw-top {margin-bottom:20px;}
+.manse-app .rpw-card {padding:38px;}
+.rp .rp-eyebrow {color:var(--rust);font-size:11px;letter-spacing:.08em;margin-bottom:12px;}
+.rp .rp-kpis > div {background:var(--card);border:1px solid var(--line);border-radius:7px;}
+.rp:not(.pg) .rp-kpis > div {padding:18px;}
+.rp:not(.pg) .rp-kpis b {font-size:25px;line-height:1.4;}
+.rp:not(.pg) .rp-kpis span {font-size:12px;}
+.rp .rp-t {background:var(--card);}
+.rp .rp-t th {background:var(--paper);color:var(--muted);}
+.rp .rp-t th,.rp .rp-t td {border-color:var(--line);}
+.rp .rp-bar .b {background:#e5e8df;}
+.rp .rp-bar .b.st i.s1,.rp .rp-legend i.s1 {background:var(--night);}
+.rp .rp-bar .b.st i.s2,.rp .rp-legend i.s2 {background:#879488;}
+.rp .rp-bar .b.st i.s3,.rp .rp-legend i.s3 {background:#dce1d6;}
+.rp:not(.pg) .rp-2 {grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;}
+.rp:not(.pg) .rp-head {padding-bottom:12px;margin-bottom:22px;border-bottom:1px solid var(--line);}
+.rp:not(.pg) .rp-head h2 {font-size:30px;font-weight:600;letter-spacing:-.04em;}
+.rp:not(.pg) h3 {font-family:inherit;font-size:16px;margin-top:24px;margin-bottom:12px;}
+.rp:not(.pg) .rp-t th,.rp:not(.pg) .rp-t td {padding:9px 10px;}
+@media(min-width:900px) {
+  .manse-app .o-body .o-tabs {background:var(--night);border-radius:8px;}
+  .manse-app .o-body .o-tab[aria-selected=true] {color:#fff;border-left-color:var(--rust);}
+}
+@media(max-width:760px) {
+  .rp:not(.pg) .rp-2 {grid-template-columns:minmax(0,1fr);gap:8px;}
+  .manse-app .m-bar .in,.manse-app .bar .in {min-height:70px;padding:12px 18px;gap:12px;flex-wrap:wrap;}
+  .manse-app #mAuth {gap:0;font-size:11px;}
+  .manse-app .m-brand {font-size:16px;}
+  .manse-app .m-badge {width:32px;height:32px;flex-basis:32px;}
+  .manse-app .m-badge img {width:30px;height:30px;}
+  .manse-app .rpw {padding:22px 16px 48px;}
+  .manse-app .rpw-card {padding:24px 18px;}
+  .rp:not(.pg) .rp-head h2 {font-size:25px;}
+  .rp:not(.pg) .rp-kpis > div {padding:14px 12px;}
+  .rp:not(.pg) .rp-kpis b {font-size:22px;}
+}
+@media print {
+  .manse-app {background:#fff;color:#202c29;}
+  .manse-app .m-bar,.manse-app .bar,.manse-app .m-footer,.manse-app .rpw-top,.manse-app .rpw-links {display:none!important;}
+  .manse-app .rpw {max-width:none;padding:0;}
+  .manse-app .rpw-card {padding:0;border:0;box-shadow:none;background:#fff;}
+  .rp:not(.pg) .rp-head {padding-bottom:6px;margin-bottom:12px;}
+  .rp:not(.pg) .rp-head h2 {font-size:24px;}
+  .rp:not(.pg) .rp-kpis > div {padding:10px 12px;}
+  .rp:not(.pg) .rp-2 {grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;}
+  .rp:not(.pg) .rp-t th,.rp:not(.pg) .rp-t td {padding:5px 7px;}
+  .rp .rp-bar,.rp .rp-kpis > div,.rp .rp-t tr {break-inside:avoid;}
+  .rp .rp-bars,.rp .rp-legend {-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }

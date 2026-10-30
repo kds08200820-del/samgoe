@@ -9,9 +9,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
-      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--dark:#2e2016;
-      --gold:#b5562f;--gold-ink:#a43e1b;--ok:#0f7b3f;--err:#c0392b;--toss:#0064ff;}
+    :root{--primary:#2c4137;--primary-active:#202e29;--ink:#202c29;--bodytext:#414a46;--muted:#68706b;
+      --hairline:#dfdfd5;--hairline-strong:#c5c9bd;--canvas:#fff;--surface-soft:#f3f2eb;--dark:#202e29;
+      --gold:#a33d32;--gold-ink:#91372e;--ok:#0f7b3f;--err:#c0392b;--toss:#0064ff;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -32,14 +32,14 @@
       background:var(--primary);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;}
     .btn:hover{background:var(--primary-active);} .btn:disabled{background:var(--hairline-strong);cursor:default;}
     .btn.toss{background:var(--toss);} .btn.toss:hover{background:#0050cc;}
-    .btn.gold{background:var(--gold);color:#13110f;} .btn.gold:hover{background:#e8c4a6;}
+    .btn.gold{background:var(--gold);color:#202c29;} .btn.gold:hover{background:#e4d5ba;}
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
     .fld label{display:block;font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:7px;}
     .fld input{width:100%;padding:13px 12px;border:1px solid var(--hairline-strong);border-radius:8px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink);}
     .fld input:focus{outline:none;border:2px solid var(--primary);padding:12px 11px;}
     .fld{margin-bottom:16px;}
     .hint{font-size:12.5px;color:var(--muted);margin-top:6px;}
-    .prefill{display:none;background:#f6efe7;border:1px solid #e6d3c2;color:var(--primary);font-size:13.5px;padding:10px 14px;border-radius:8px;margin-bottom:16px;line-height:1.6;}
+    .prefill{display:none;background:#f3f2eb;border:1px solid #c5c9bd;color:var(--primary);font-size:13.5px;padding:10px 14px;border-radius:8px;margin-bottom:16px;line-height:1.6;}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
     .stat{background:var(--surface-soft);border-radius:8px;padding:14px 10px;text-align:center;}
     .stat .n{font-size:24px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;}
@@ -51,7 +51,7 @@
     tfoot td{font-weight:700;color:var(--ink);border-bottom:0;border-top:2px solid var(--ink);}
     .note{font-size:13.5px;color:var(--muted);margin-top:14px;line-height:1.9;}
     .empty{padding:18px 0;text-align:center;color:var(--muted);font-size:14px;}
-    .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px;background:#f7ebe2;border-radius:8px;margin-bottom:14px;}
+    .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px;background:#f7ece8;border-radius:8px;margin-bottom:14px;}
     .total b{font-size:26px;color:var(--primary);font-variant-numeric:tabular-nums;}
     .acct{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border:1px dashed var(--hairline-strong);border-radius:8px;margin-top:12px;font-size:15px;}
     .acct .num{font-weight:800;color:var(--primary);font-size:20px;letter-spacing:.03em;}
@@ -64,7 +64,7 @@
     .done p{margin:0 0 16px;color:var(--muted);font-size:14.5px;line-height:1.8;}
     .lock{font-size:14px;color:var(--muted);line-height:1.8;}
     .lock a{color:var(--primary);font-weight:700;text-decoration:underline;}
-    .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;background:#f7ebe2;color:var(--gold-ink);margin-left:6px;vertical-align:2px;}
+    .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;background:#f7ece8;color:var(--gold-ink);margin-left:6px;vertical-align:2px;}
     .closed{text-align:center;padding:40px 22px;}
     .closed h2{font-size:22px;}
     .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;}
@@ -98,8 +98,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
   <link rel="stylesheet" href="../assets/theme.css?v=5" />
   <link rel="stylesheet" href="manse.css?v=9" />
+  <link rel="stylesheet" href="theme.css?v=20261030-3">
 </head>
-<body>
+<body class="manse-app">
   <header class="m-bar"><div class="in"><a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a><span id="mAuth"></span></div></header>
 
   <main class="wrap">

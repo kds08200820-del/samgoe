@@ -10,16 +10,16 @@
 .rp-2{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
 .rp-t{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;background:#fff;}
 .rp-t th,.rp-t td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;}
-.rp-t th{font-size:12px;color:var(--muted);font-weight:700;background:#fbf9f7;}
+.rp-t th{font-size:12px;color:var(--muted);font-weight:700;background:#f8f7f1;}
 .rp-t .r{text-align:right;} .rp-t .c{text-align:center;} .rp-t tr.tot td{font-weight:700;border-top:2px solid var(--ink);}
 .rp-dim{color:var(--faint);}
 .rp-note{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.6;}
 .rp-bars{display:flex;flex-direction:column;gap:5px;}
 .rp-bar{display:grid;grid-template-columns:150px 1fr 64px;gap:8px;align-items:center;font-size:13px;}
 .rp-bar .l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
-.rp-bar .b{height:14px;background:#f0ebe5;border-radius:3px;overflow:hidden;display:flex;}
+.rp-bar .b{height:14px;background:#f3f2eb;border-radius:3px;overflow:hidden;display:flex;}
 .rp-bar .b i{display:block;height:100%;background:var(--night);}
-.rp-bar .b.st i.s1,.rp-legend i.s1{background:var(--night);} .rp-bar .b.st i.s2,.rp-legend i.s2{background:#a39a91;} .rp-bar .b.st i.s3,.rp-legend i.s3{background:#dcdcdc;}
+.rp-bar .b.st i.s1,.rp-legend i.s1{background:var(--night);} .rp-bar .b.st i.s2,.rp-legend i.s2{background:#879488;} .rp-bar .b.st i.s3,.rp-legend i.s3{background:#dcdcdc;}
 .rp-bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--body);}
 .rp-legend{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;margin:0 0 8px;font-size:12px;color:var(--muted);}
 .rp-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:-6px;}
@@ -29,7 +29,7 @@
 .rp-print{position:absolute;left:-10000px;top:0;}
 .rp.pg{width:794px;height:1123px;padding:46px 52px 64px;background:#fff;position:relative;overflow:hidden;font-family:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
 .rp.pg .rp-t{font-size:12.5px;} .rp.pg .rp-t th,.rp.pg .rp-t td{padding:5px 8px;}
-.pg-foot{position:absolute;left:52px;right:52px;bottom:26px;padding-top:8px;border-top:1px solid #ddd5cb;font-size:10.5px;color:#8a7f76;text-align:center;}
+.pg-foot{position:absolute;left:52px;right:52px;bottom:26px;padding-top:8px;border-top:1px solid #dfdfd5;font-size:10.5px;color:#68706b;text-align:center;}
 .rp-pub{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 12px;font-size:13.5px;color:var(--muted);}
 .rp-pub a,.rp-pub button.lk{color:var(--navy);font-weight:700;}
 .rp-pub button.lk{border:0;background:none;padding:0;font:inherit;cursor:pointer;text-decoration:underline;}

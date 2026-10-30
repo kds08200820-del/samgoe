@@ -6,13 +6,13 @@
   <title>행운권 등록 | 3·1 만세길 걷기 · 삼일만세운동본부</title>
   <meta name="description" content="3·1 만세길 걷기 행운권 등록 — 행운권의 QR을 찍고 이름 · 생년월일 · 소속을 적어 주세요.">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#2e2016">
+  <meta name="theme-color" content="#202e29">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
-    :root{--primary:#3a2a1e;--primary-active:#2a1d14;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;
-      --hairline:#e9e4de;--hairline-strong:#d9d0c6;--canvas:#fff;--surface-soft:#f5f3f2;--dark:#2e2016;
-      --gold:#b5562f;--gold-ink:#a43e1b;--ok:#0f7b3f;--err:#c0392b;}
+    :root{--primary:#2c4137;--primary-active:#202e29;--ink:#202c29;--bodytext:#414a46;--muted:#68706b;
+      --hairline:#dfdfd5;--hairline-strong:#c5c9bd;--canvas:#fff;--surface-soft:#f3f2eb;--dark:#202e29;
+      --gold:#a33d32;--gold-ink:#91372e;--ok:#0f7b3f;--err:#c0392b;}
     *{box-sizing:border-box;}
     body{margin:0;background:var(--surface-soft);color:var(--bodytext);font-weight:300;word-break:keep-all;
       font-family:'Pretendard Variable',Pretendard,system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased;}
@@ -42,7 +42,7 @@
     .fld input.bad{border-color:var(--err);}
     .hint{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.6;}
     .hint.ok{color:var(--ok);font-weight:600;} .hint.err{color:var(--err);}
-    .agree{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--hairline);border-radius:10px;background:#fbf9f7;cursor:pointer;margin:4px 0 18px;}
+    .agree{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--hairline);border-radius:10px;background:#f8f7f1;cursor:pointer;margin:4px 0 18px;}
     .agree input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--primary);}
     .agree b{display:block;font-size:15px;color:var(--ink);font-weight:700;}
     .agree small{display:block;margin-top:4px;font-size:13px;line-height:1.6;color:var(--muted);}
@@ -68,13 +68,13 @@
     .mine li:first-child{border-top:0;}
     .mine b{color:var(--primary);font-variant-numeric:tabular-nums;}
     .mine span{color:var(--muted);font-size:13.5px;}
-    .helper{margin:-4px 0 18px!important;padding:11px 14px;border-radius:10px;background:#f6efe7;border:1px solid #e6d3c2;color:var(--primary);font-size:14px!important;line-height:1.65!important;}
+    .helper{margin:-4px 0 18px!important;padding:11px 14px;border-radius:10px;background:#f3f2eb;border:1px solid #c5c9bd;color:var(--primary);font-size:14px!important;line-height:1.65!important;}
     /* 카메라로 QR 읽기 (화면 안에서) */
-    .scan{position:relative;margin:0 0 14px;border-radius:12px;overflow:hidden;background:#13110f;aspect-ratio:1/1;max-height:62vh;}
+    .scan{position:relative;margin:0 0 14px;border-radius:12px;overflow:hidden;background:#202c29;aspect-ratio:1/1;max-height:62vh;}
     .scan video{display:block;width:100%;height:100%;object-fit:cover;}
     .scan .frame{position:absolute;left:50%;top:50%;width:62%;aspect-ratio:1/1;transform:translate(-50%,-56%);border-radius:14px;
       box-shadow:0 0 0 2000px rgba(19,17,15,.38);outline:3px solid #fff;outline-offset:-3px;}
-    .scan .frame::after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:#e8c4a6;opacity:.85;animation:scanline 1.6s ease-in-out infinite alternate;}
+    .scan .frame::after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:#e4d5ba;opacity:.85;animation:scanline 1.6s ease-in-out infinite alternate;}
     @keyframes scanline{from{transform:translateY(-110px);}to{transform:translateY(110px);}}
     @media (prefers-reduced-motion: reduce){ .scan .frame::after{animation:none;} }
     .scan .cap{position:absolute;left:0;right:0;bottom:0;margin:0!important;padding:12px 14px;background:linear-gradient(transparent,rgba(19,17,15,.82));
@@ -88,8 +88,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" />
   <link rel="stylesheet" href="../assets/theme.css?v=5" />
   <link rel="stylesheet" href="manse.css?v=9" />
+  <link rel="stylesheet" href="theme.css?v=20261030-3">
 </head>
-<body>
+<body class="manse-app">
   <header class="m-bar"><div class="in"><a class="m-brand" href="./"><span class="m-badge"><img src="img/logo-192.png" alt="" /></span>삼일만세운동본부</a><span id="mAuth"></span></div></header>
 
   <main class="wrap">
