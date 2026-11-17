@@ -28,7 +28,7 @@
 
   function mount(root, o) {
     var sb = o.client, setup = o.setupFile || 'ledger-setup.sql', canWrite = !!o.canWrite;
-    var S = { year: +todayK().slice(0, 4), period: 'all', from: '', to: '', entries: [], opening: null, openNote: '', edit: null, busy: false, years: [] };
+    var S = { year: +todayK().slice(0, 4), period: 'all', from: '', to: '', entries: [], opening: null, openNote: '', closed: false, yinfo: null, closedYears: {}, edit: null, busy: false, years: [] };
     var CATS = { '수입': (o.cats && o.cats['수입']) || [], '지출': (o.cats && o.cats['지출']) || [] };
     var signers = o.signers || ['회계', '감사', '회장'];
 
@@ -71,6 +71,7 @@
       '<details class="lg-log" data-k="logBox"><summary>변경 기록 — 누가 언제 넣고 · 고치고 · 지웠는지</summary><div data-k="log"></div></details>' +
       '</div></div></div>';
     var $ = function (k) { return root.querySelector('[data-k="' + k + '"]'); };
+    function wr() { return canWrite && !S.closed; }
     var kind = '수입';
     function setKind(k) { kind = k; root.querySelectorAll('.lg-kind button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-kind') === k); }); fillCats(); }
     function fillCats() {
@@ -128,14 +129,14 @@
       var q = $('q').value.trim(), fk = $('fkind').value;
       var list = C.rows.filter(function (e) { return (!fk || e.kind === fk) && (!q || [e.category, e.description, e.counterpart, e.memo, e.method].join(' ').indexOf(q) >= 0); });
       $('count').textContent = R.label + ' · ' + list.length + '건';
-      $('list').innerHTML = list.length ? '<table class="lg-t"><thead><tr><th>날짜</th><th>구분</th><th>계정과목</th><th>적요</th><th class="r">수입</th><th class="r">지출</th><th class="r">잔액</th>' + (canWrite ? '<th class="c">관리</th>' : '') + '</tr></thead><tbody>' +
+      $('list').innerHTML = list.length ? '<table class="lg-t"><thead><tr><th>날짜</th><th>구분</th><th>계정과목</th><th>적요</th><th class="r">수입</th><th class="r">지출</th><th class="r">잔액</th>' + (wr() ? '<th class="c">관리</th>' : '') + '</tr></thead><tbody>' +
         list.map(function (e) {
           return '<tr><td class="nw">' + md(e.entry_date) + '</td><td><span class="lg-chip ' + (e.kind === '수입' ? 'in' : 'out') + '">' + e.kind + '</span></td><td>' + esc(e.category) + '</td>' +
             '<td class="desc">' + esc(e.description) + ((e.counterpart || e.method || e.memo) ? '<small>' + esc([e.counterpart, e.method, e.memo].filter(Boolean).join(' · ')) + '</small>' : '') + '</td>' +
             '<td class="r">' + (e.kind === '수입' ? won(e.amount) : '') + '</td><td class="r">' + (e.kind === '지출' ? won(e.amount) : '') + '</td><td class="r b">' + won(e._bal) + '</td>' +
-            (canWrite ? '<td class="c nw"><button type="button" class="lg-lnk" data-edit="' + e.id + '">고치기</button><button type="button" class="lg-lnk del" data-del="' + e.id + '">지우기</button></td>' : '') + '</tr>';
+            (wr() ? '<td class="c nw"><button type="button" class="lg-lnk" data-edit="' + e.id + '">고치기</button><button type="button" class="lg-lnk del" data-del="' + e.id + '">지우기</button></td>' : '') + '</tr>';
         }).join('') + '</tbody></table>'
-        : '<div class="lg-empty">' + (C.rows.length ? '찾는 기록이 없습니다.' : R.label + '에는 아직 기록이 없습니다.' + (canWrite ? ' 위에서 수입 · 지출을 기록하세요.' : '')) + '</div>';
+        : '<div class="lg-empty">' + (C.rows.length ? '찾는 기록이 없습니다.' : R.label + '에는 아직 기록이 없습니다.' + (wr() ? ' 위에서 수입 · 지출을 기록하세요.' : '')) + '</div>';
     }
     function catTables(C) {
       function one(k) {
@@ -153,10 +154,38 @@
         '</tbody><tfoot><tr><td>합계</td><td class="r">' + won(C.inc) + '</td><td class="r">' + won(C.out) + '</td><td class="r">' + ((C.inc - C.out) > 0 ? '+' : '') + won(C.inc - C.out) + '</td><td class="r">' + won(C.end) + '</td></tr></tfoot></table>';
     }
     function drawOpen() {
-      var y = S.year, has = S.opening !== null;
+      var y = S.year, has = S.opening !== null, yi = S.yinfo || {};
+      var f = $('form'); if (f) f.hidden = S.closed;
       $('open').innerHTML = '<span>' + y + '년 전기이월 (작년에서 넘어온 돈): <b>' + (has ? won(S.opening) + '원' : '아직 안 넣음 (0원으로 계산)') + '</b>' + (S.openNote ? ' · ' + esc(S.openNote) : '') + '</span>' +
-        (canWrite ? ' <button type="button" class="lg-lnk" data-k="openEdit">' + (has ? '고치기' : '넣기') + '</button>' : '');
+        (wr() ? ' <button type="button" class="lg-lnk" data-k="openEdit">' + (has ? '고치기' : '넣기') + '</button>' : '') +
+        '<div class="lg-close' + (S.closed ? ' done' : '') + '">' +
+          (S.closed
+            ? '<span><b>' + y + '년 회계 마감됨</b> · 차기이월 ' + won(yi.closing_balance || 0) + '원' + (yi.closed_at ? ' · ' + dot(String(yi.closed_at).slice(0, 10)) : '') + (yi.closed_by_name ? ' · ' + esc(yi.closed_by_name) : '') + ' — 이 해의 장부는 고칠 수 없습니다.</span>' +
+              (canWrite ? '<button type="button" class="lg-btn" data-k="reopen">마감 풀기</button>' : '')
+            : (canWrite ? '<span>한 해 기록을 마치면 마감하세요. 잔액이 ' + (y + 1) + '년 전기이월로 자동으로 넘어갑니다.</span><button type="button" class="lg-btn pri" data-k="closeY">' + y + '년 마감하고 ' + (y + 1) + '년 장부 시작</button>' : '')) +
+          '<span class="lg-msg" data-k="closeMsg"></span></div>';
       var b = $('openEdit'); if (b) b.onclick = openEditor;
+      var c = $('closeY'); if (c) c.onclick = closeYear;
+      var r = $('reopen'); if (r) r.onclick = reopenYear;
+    }
+    async function closeYear() {
+      var y = S.year, C = calc();
+      if (!confirm(y + '년 회계를 마감할까요?\n\n차기이월(잔액): ' + won(C.end) + '원\n→ ' + (y + 1) + '년 전기이월로 넘어갑니다.\n\n마감 뒤에는 ' + y + '년 수입 · 지출을 넣거나 고칠 수 없습니다. (회계 · 최고관리자가 마감을 풀 수 있음)')) return;
+      if (S.busy) return; S.busy = true; var btn = $('closeY'); btn.disabled = true; btn.textContent = '마감하는 중…';
+      var r = await sb.rpc('ledger_close_year', { p_year: y });
+      S.busy = false;
+      if (r.error) { btn.disabled = false; btn.textContent = y + '년 마감하고 ' + (y + 1) + '년 장부 시작'; $('closeMsg').textContent = '마감하지 못했습니다: ' + errText(r.error, setup); return; }
+      S.year = y + 1; await reload();
+      alert(y + '년 회계를 마감했습니다.\n' + (y + 1) + '년 장부가 전기이월 ' + won(+r.data) + '원으로 시작되었습니다.');
+    }
+    async function reopenYear() {
+      var y = S.year;
+      if (!confirm(y + '년 마감을 풀까요?\n\n풀면 ' + y + '년 기록을 다시 고칠 수 있습니다. 고친 뒤에는 다시 마감해야 ' + (y + 1) + '년 전기이월이 새 잔액으로 바뀝니다.')) return;
+      if (S.busy) return; S.busy = true; $('reopen').disabled = true;
+      var r = await sb.rpc('ledger_reopen_year', { p_year: y });
+      S.busy = false;
+      if (r.error) { $('reopen').disabled = false; $('closeMsg').textContent = '마감을 풀지 못했습니다: ' + errText(r.error, setup); return; }
+      await reload();
     }
     async function openEditor() {
       var y = S.year, prev = await closingOf(y - 1);
@@ -188,9 +217,10 @@
       var a = await sb.from('ledger_entries').select('entry_date').order('entry_date').limit(1);
       if (a.error) throw a.error;
       if (a.data && a.data[0]) first = Math.min(first, +a.data[0].entry_date.slice(0, 4));
-      var b = await sb.from('ledger_years').select('year');
-      (b.data || []).forEach(function (r) { first = Math.min(first, r.year); });
-      var last = Math.max(cur, S.year); S.years = []; for (var y = last; y >= first; y--) S.years.push(y);
+      var b = await sb.from('ledger_years').select('*');
+      var maxY = cur; S.closedYears = {};
+      (b.data || []).forEach(function (r) { first = Math.min(first, r.year); maxY = Math.max(maxY, r.year); if (r.closed) S.closedYears[r.year] = true; });
+      var last = Math.max(maxY, S.year); S.years = []; for (var y = last; y >= first; y--) S.years.push(y);
       $('year').innerHTML = S.years.map(function (y) { return '<option value="' + y + '"' + (y === S.year ? ' selected' : '') + '>' + y + '년</option>'; }).join('');
       drawYearNav();
     }
@@ -198,8 +228,9 @@
       var cur = +todayK().slice(0, 4), nav = $('yearNav'); if (!nav) return;
       var html = '', archHead = false;
       S.years.forEach(function (y) {
-        if (y < cur && !archHead) { html += '<div class="lg-ysep">아카이브 · 지난 연도</div>'; archHead = true; }
-        html += '<button type="button" data-y="' + y + '" class="' + (y === S.year ? 'on' : '') + '"' + (y === S.year ? ' aria-current="true"' : '') + '>' + y + '년' + (y === cur ? '<small>올해</small>' : '<small>마감</small>') + '</button>';
+        if (y < cur && S.closedYears[y] && !archHead) { html += '<div class="lg-ysep">아카이브 · 지난 연도</div>'; archHead = true; }
+        var tag = S.closedYears[y] ? '마감' : (y === cur ? '올해' : (y > cur ? '새 장부' : '진행 중'));
+        html += '<button type="button" data-y="' + y + '" class="' + (y === S.year ? 'on' : '') + (S.closedYears[y] ? ' closed' : '') + '"' + (y === S.year ? ' aria-current="true"' : '') + '>' + y + '년<small>' + tag + '</small></button>';
       });
       nav.innerHTML = html;
       nav.querySelectorAll('[data-y]').forEach(function (b) {
@@ -213,8 +244,9 @@
         if (r.error) throw r.error; all = all.concat(r.data || []); if (!r.data || r.data.length < 1000) break; from += 1000;
       }
       S.entries = all;
-      var o = await sb.from('ledger_years').select('opening_balance,note').eq('year', y).maybeSingle();
+      var o = await sb.from('ledger_years').select('*').eq('year', y).maybeSingle();
       S.opening = o.data ? +o.data.opening_balance : null; S.openNote = (o.data && o.data.note) || '';
+      S.yinfo = o.data || null; S.closed = !!(o.data && o.data.closed);
       fillCats(); draw();
     }
     async function loadLog() {

@@ -108,3 +108,11 @@
   .lg-years button{width:auto;flex:0 0 auto;gap:6px;margin:0;}
 }
 @media print{ .lg-years{display:none !important;} .lg-shell{display:block;} }
+
+/* 회계연도 마감 */
+.lg-close{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:8px;padding:12px 14px;border:1px dashed #d9d0c6;border-radius:10px;background:#fff;}
+.lg-close.done{border-style:solid;border-color:#c9d8cc;background:#f2f7f3;color:#2c4137;}
+.lg-close .lg-btn{margin-left:auto;}
+.lg-years button.closed small{color:#2c7a4b;}
+.lg-years button.on.closed small{color:rgba(255,255,255,.8);}
+@media print{ .lg-close{display:none !important;} }
