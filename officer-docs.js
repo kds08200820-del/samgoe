@@ -260,7 +260,7 @@
       var meta = arc ? esc(pathName(f.folder_id))+' · 기록물'+(f.memo?' · '+esc(f.memo):'')
                      : esc(pathName(f.folder_id))+' · '+esc(f.name)+' · '+fmtSize(f.size)+' · '+esc(f.author_name||'')+' · '+fmtDT(f.created_at)+(f.memo?' · '+esc(f.memo):'');
       var open = arc ? '<button class="btn ghost sm dopen">열기</button>' : '<a class="btn ghost sm" href="'+esc(f.url)+'" target="_blank" rel="noopener">다운로드</a>';
-      html += '<div class="row drow" data-id="'+f.id+'"><div class="ic">'+(arc?'기록':fileIcon(f.name))+'</div><div class="main">'+
+      html += '<div class="row drow" tabindex="0" title="클릭하면 미리보기" data-id="'+f.id+'"><div class="ic">'+(arc?'기록':fileIcon(f.name))+'</div><div class="main">'+
         '<div class="t">'+esc(f.title||f.name)+'</div>'+
         '<div class="m">'+meta+'</div></div>'+
         '<div class="side">'+open+'<button class="btn ghost sm dedit">정보 수정</button>'+(canRm?'<button class="btn danger sm ddel">삭제</button>':'')+'</div></div>';
@@ -360,6 +360,44 @@
     }
   }
   window.refileUnfiled = async function(){ await autoFileLegacy(); renderPending(); renderDocs(); };
+  // ---------- 클릭 미리보기 (행 아래에 작게 펼침) ----------
+  function closePreview(){ var o=document.querySelector('#docList .dprev'); if(o){ var r=o.previousElementSibling; if(r) r.classList.remove('prev-on'); o.remove(); } }
+  function togglePreview(row){
+    var id=row.getAttribute('data-id');
+    var open=row.nextElementSibling && row.nextElementSibling.classList.contains('dprev');
+    closePreview(); if(open) return;
+    var f=FILES.find(function(x){ return x.id===id; }); if(!f) return;
+    var box=document.createElement('div'); box.className='dprev'; box.setAttribute('role','region'); box.setAttribute('aria-label','미리보기');
+    box.innerHTML='<div class="dprev-in"><div class="dprev-load">미리보기 불러오는 중…</div></div>';
+    row.after(box); row.classList.add('prev-on');
+    var inner=box.firstChild, name=(f.name||'')+'', url=f.url||'';
+    function set(h){ inner.innerHTML=h; }
+    function frameHtml(html){
+      var fr=document.createElement('iframe'); fr.className='dprev-doc'; fr.setAttribute('sandbox',''); fr.setAttribute('title','문서 미리보기');
+      fr.srcdoc='<base target="_blank"><style>body{zoom:.72;margin:14px;font-family:sans-serif;}</style>'+html;
+      inner.innerHTML=''; inner.appendChild(fr);
+    }
+    if(isArc(f)){
+      if(f.path.indexOf('arcdb:')===0){
+        window.sb.from('archive_docs').select('html').eq('id', f.path.slice(6)).single().then(function(r){
+          if(r.error||!r.data){ set('<div class="dprev-none">미리보기를 불러오지 못했습니다.</div>'); return; } frameHtml(r.data.html||'');
+        });
+      } else {
+        fetch(url).then(function(r){ if(!r.ok) throw 0; return r.text(); }).then(frameHtml)
+          .catch(function(){ set('<div class="dprev-none">미리보기를 불러오지 못했습니다.</div>'); });
+      }
+      return;
+    }
+    if(/\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(name)) set('<img class="dprev-img" src="'+esc(url)+'" alt="'+esc(f.title||name)+'" loading="lazy">');
+    else if(/\.(mp4|mov|webm)$/i.test(name)) set('<video class="dprev-img" src="'+esc(url)+'" controls preload="metadata"></video>');
+    else if(/\.pdf$/i.test(name)) set('<iframe class="dprev-doc" src="'+esc(url)+'#view=FitH&toolbar=0" title="PDF 미리보기"></iframe>');
+    else if(/\.(txt|csv|md)$/i.test(name)){
+      fetch(url).then(function(r){ return r.text(); }).then(function(t){ set('<pre class="dprev-txt">'+esc(t.slice(0,3000))+(t.length>3000?'\n…':'')+'</pre>'); })
+        .catch(function(){ set('<div class="dprev-none">미리보기를 불러오지 못했습니다.</div>'); });
+    }
+    else set('<div class="dprev-none">이 형식('+esc((name.split('.').pop()||'').toUpperCase())+')은 미리보기를 지원하지 않습니다. 다운로드해서 열어 주세요.</div>');
+  }
+
   function openArc(id){
     var f = FILES.find(function(x){ return x.id===id; }); if(!f || !window.openDoc) return;
     var title = f.title||f.name;
@@ -455,11 +493,17 @@
     });
     document.getElementById('docYear').addEventListener('change', function(){ view.year=this.value; renderDocs(); });
     var timer=null; document.getElementById('docSearch').addEventListener('input', function(){ var v=this.value.trim(); clearTimeout(timer); timer=setTimeout(function(){ view.q=v; renderDocs(); },150); });
+    document.getElementById('docList').addEventListener('keydown', function(e){
+      if(e.key==='Escape') closePreview();
+      var row=e.target.classList&&e.target.classList.contains('drow')?e.target:null;
+      if(row && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); togglePreview(row); }
+    });
     document.getElementById('docList').addEventListener('click', function(e){
       var row=e.target.closest&&e.target.closest('.drow'); if(!row) return;
       if(e.target.closest('.dopen')) openArc(row.getAttribute('data-id'));
       else if(e.target.closest('.dedit')) openEdit(row.getAttribute('data-id'));
       else if(e.target.closest('.ddel')) delFile(row.getAttribute('data-id'));
+      else if(!e.target.closest('.side a, .side button')) togglePreview(row);
     });
     document.getElementById('newFolder').addEventListener('click', openNewFolder);
     document.getElementById('delFolder').addEventListener('click', deleteFolder);

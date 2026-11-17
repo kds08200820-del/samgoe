@@ -193,7 +193,15 @@
     .sideBtns{display:flex;gap:6px;padding:10px 12px 4px;border-top:1px solid var(--hairline);margin-top:8px;flex-wrap:wrap;}
     .docHead{font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
     .ygrp{padding:8px 20px;background:var(--surface-soft);font-size:12px;font-weight:700;color:var(--muted);border-top:1px solid var(--hairline);}
-    .row.drow{cursor:default;}
+    .row.drow{cursor:pointer;}
+    .row.drow:hover,.row.drow.prev-on{background:#faf7f3;}
+    .dprev{padding:0 20px 16px 72px;background:#faf7f3;border-top:0;}
+    .dprev-in{border:1px solid var(--hairline);border-radius:10px;background:#fff;overflow:hidden;max-width:640px;}
+    .dprev-load,.dprev-none{padding:18px;font-size:13.5px;color:var(--muted);}
+    .dprev-img{display:block;max-width:100%;max-height:300px;margin:0 auto;object-fit:contain;background:#f4f1ed;}
+    .dprev-doc{display:block;width:100%;height:320px;border:0;background:#fff;}
+    .dprev-txt{margin:0;padding:14px;max-height:300px;overflow:auto;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-all;}
+    @media (max-width:640px){ .dprev{padding:0 12px 14px;} .dprev-doc{height:260px;} }
     @media (max-width:1100px) and (min-width:900px){ .docGrid{grid-template-columns:1fr;} .docSide{position:static;} }
     @media (max-width:720px){ .docGrid{grid-template-columns:1fr;} .docSide{position:static;} .pctl{grid-template-columns:1fr 1fr;} .docTop{flex-wrap:wrap;} .docTop input{flex-basis:100%;} }
     @media (max-width:620px){ .frow{grid-template-columns:1fr;} }
@@ -244,6 +252,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
   <link rel="stylesheet" href="assets/theme.css?v=5" />
   <link rel="stylesheet" href="assets/officer-workspace.css?v=1" />
+  <link rel="stylesheet" href="ledger.css?v=4" />
 </head>
 <body class="officer-workspace">
   <header class="bar"><div class="in"><a href="index.html">삼괴지역 기독교 연합회<span class="bsub">관리자 메뉴</span></a><span id="authArea"></span></div></header>
@@ -262,7 +271,7 @@
     <nav class="o-tabs" id="ofcMenu" aria-label="관리자 메뉴">
       <button type="button" class="tab o-tab on" data-tab="docs" aria-pressed="true" aria-controls="paneDocs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3Z"/><path d="M3 11h18"/></svg><span>자료실</span></button>
       <button type="button" class="tab o-tab" data-tab="meeting" aria-pressed="false" aria-controls="paneMeeting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 11h16m-12 4h3m2 0h3"/></svg><span>임원회의</span></button>
-      <a class="o-tab mi" href="accounting.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8m-8 5h2m4 0h2m-8 4h2m4 0h2"/></svg><span>회계 관리</span></a>
+      <button type="button" class="tab o-tab" data-tab="ledger" aria-pressed="false" aria-controls="paneLedger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8m-8 5h2m4 0h2m-8 4h2m4 0h2"/></svg><span>회계 관리</span></button>
       <a class="o-tab mi adm" href="admin.html" id="miAdmin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3m1-16a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5"/></svg><span>회원 · 임원 관리</span></a>
       <a class="o-tab mi adm" href="operator.html" id="miOperator" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/><circle cx="8" cy="7" r="2" fill="currentColor"/><circle cx="16" cy="17" r="2" fill="currentColor"/></svg><span>운영관리</span></a>
       <a class="o-tab mi" href="manse/officer.html#walks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 21V4l7-1 7 1v17M5 12l7-1 7 1M12 3v18"/></svg><span>3·1 만세길 걷기<small>삼일만세운동본부</small></span></a>
@@ -272,6 +281,11 @@
     <div class="o-main">
 
     <!-- 임원회의 (연도별 회의 글 + 회의 자료) -->
+    <div class="pane" id="paneLedger">
+      <h2 style="margin:0 0 6px;">회계 관리</h2>
+      <p style="margin:0 0 18px;color:var(--muted);font-size:14px;">삼괴지역기독교연합회의 수입 · 지출을 기록하고, 연도 · 달 · 기간별 회계 보고를 인쇄합니다.</p>
+      <div id="ledgerMount"><div style="padding:30px 0;color:var(--muted);">불러오는 중…</div></div>
+    </div>
     <div class="pane" id="paneMeeting">
       <div class="workspace-heading"><div><h2>임원회의</h2><p>논의한 안건과 결정, 다음 걸음을 기록합니다.</p></div></div>
       <div class="writeBox">
@@ -345,7 +359,8 @@
   <script src="supabase-config.js?v=3"></script>
   <script src="archive-list.js?v=5"></script>
   <script src="auth.js?v=14"></script>
-  <script src="officer-docs.js?v=15"></script>
+  <script src="ledger.js?v=4"></script>
+  <script src="officer-docs.js?v=16"></script>
   <script src="assets/officer-workspace.js?v=1"></script>
   <script>
     var me = null, myProfile = null, isAdminUser = false, isSuper = false;
@@ -374,12 +389,30 @@
         t.classList.add('on');
         t.setAttribute('aria-pressed','true');
         var tab = t.getAttribute('data-tab');
-        var paneId = {docs:'paneDocs',meeting:'paneMeeting'}[tab]||'paneBasket';
+        var paneId = {docs:'paneDocs',meeting:'paneMeeting',ledger:'paneLedger'}[tab]||'paneBasket';
+        if(tab==='ledger') mountLedger();
+        if(history.replaceState) history.replaceState(null,'','#'+tab);
         if(tab==='meeting') loadMeetings();
         document.getElementById(paneId).classList.add('on');
       });
     });
     if(location.hash==='#docs'||location.hash==='#archive'){ var dt=document.querySelector('.tab[data-tab="docs"]'); if(dt) dt.click(); }
+    var ledgerMounted=false;
+    async function mountLedger(){
+      if(ledgerMounted || !window.Ledger || !window.sb) return; ledgerMounted=true;
+      var s=await window.sb.auth.getSession(); var u=s.data&&s.data.session?s.data.session.user:null;
+      var p=(window.getMyProfile? await window.getMyProfile():null)||{};
+      var canWrite = p.officer_role==='회계' || window.isSuperAdmin(u);
+      window.Ledger.mount(document.getElementById('ledgerMount'), {
+        client: window.sb, org: '삼괴지역기독교연합회', canWrite: canWrite, setupFile: 'ledger-setup.sql', setupPage: 'setup-sql.html',
+        signers: ['회계', '감사', '회장'],
+        cats: {
+          '수입': ['회비', '헌금', '후원금', '찬조금', '행사 참가비', '이자', '기타 수입'],
+          '지출': ['행사비', '장학금', '작은교회 후원', '선교 · 구제', '회의비', '식비 · 다과', '사무 · 통신비', '인쇄 · 홍보비', '경조사비', '차량 · 교통비', '기타 지출']
+        }
+      });
+    }
+    if(location.hash==='#ledger'){ var lt=document.querySelector('.tab[data-tab="ledger"]'); if(lt) lt.click(); }
     if(location.hash==='#meeting'){ var mt=document.querySelector('.tab[data-tab="meeting"]'); if(mt) mt.click(); }
 
     // ---------- 역사 자료 아카이브 (유형·연도·검색 + 업로드 + 뷰어) ----------

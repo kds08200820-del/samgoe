@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <script>location.replace("officer.html#ledger");</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>회계 관리 | 관리자 메뉴 · 삼괴지역 기독교 연합회</title>
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="ledger.css?v=3" />
+  <link rel="stylesheet" href="ledger.css?v=4" />
   <style>
     :root{--primary:#3a2a1e;--ink:#1f1813;--bodytext:#3d3530;--muted:#776c64;--hairline:#e9e4de;--surface-soft:#f5f3f2;--dark:#2e2016;}
     *{box-sizing:border-box;}
@@ -35,7 +36,7 @@
   <main class="wrap" id="content">
     <div class="crumb"><a href="officer.html">← 관리자 메뉴</a> · 회계 관리</div>
     <h1 class="title">회계 관리</h1>
-    <p class="sub" id="sub">삼괴지역기독교연합회의 수입 · 지출을 기록하고, 연도 · 달 · 기간별 회계 보고를 인쇄합니다. 삼일만세운동본부 회계와는 따로 관리됩니다.</p>
+    <p class="sub" id="sub">삼괴지역기독교연합회의 수입 · 지출을 기록하고, 연도 · 달 · 기간별 회계 보고를 인쇄합니다.</p>
     <div id="ledger"></div>
   </main>
 
@@ -44,15 +45,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=3"></script>
   <script src="auth.js?v=14"></script>
-  <script src="ledger.js?v=3"></script>
+  <script src="ledger.js?v=4"></script>
   <script>
   (async function(){
     // 임원이면 보기 · 인쇄, 기록 · 고치기 · 지우기는 회계만 (ledger-setup.sql 의 is_treasurer 와 같은 기준)
     var res = await window.requireOfficer(); if(!res) return;
     var me = res.user, p = res.profile || {};
-    var canWrite = p.officer_role === '회계';
+    var canWrite = p.officer_role === '회계' || window.isSuperAdmin(me);  // 최고관리자는 모든 권한
     document.getElementById('loading').style.display='none'; document.getElementById('content').style.display='block';
-    if(!canWrite) document.getElementById('sub').textContent += ' 기록 · 고치기는 회계만 할 수 있고, 다른 임원은 보기 · 인쇄만 할 수 있습니다.';
     window.Ledger.mount(document.getElementById('ledger'), {
       client: window.sb, org: '삼괴지역기독교연합회', canWrite: canWrite, setupFile: 'ledger-setup.sql', setupPage: 'setup-sql.html',
       signers: ['회계', '감사', '회장'],

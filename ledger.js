@@ -33,7 +33,9 @@
     var signers = o.signers || ['회계', '감사', '회장'];
 
     root.innerHTML =
-      '<div class="lg">' +
+      '<div class="lg"><div class="lg-shell">' +
+      '<aside class="lg-years" aria-label="연도별 회계"><div class="lg-yh">연도별 회계</div><nav data-k="yearNav"></nav></aside>' +
+      '<div class="lg-main">' +
       '<div class="lg-warn" data-k="warn" hidden></div>' +
       '<div class="lg-bar">' +
         '<label>연도 <select data-k="year"></select></label>' +
@@ -67,7 +69,7 @@
       '<div class="lg-tools"><input type="search" data-k="q" placeholder="적요 · 계정과목 · 거래처 찾기"><select data-k="fkind"><option value="">수입 · 지출 모두</option><option>수입</option><option>지출</option></select></div>' +
       '<div class="lg-tw" data-k="list"><div class="lg-empty">불러오는 중…</div></div>' +
       '<details class="lg-log" data-k="logBox"><summary>변경 기록 — 누가 언제 넣고 · 고치고 · 지웠는지</summary><div data-k="log"></div></details>' +
-      '</div>';
+      '</div></div></div>';
     var $ = function (k) { return root.querySelector('[data-k="' + k + '"]'); };
     var kind = '수입';
     function setKind(k) { kind = k; root.querySelectorAll('.lg-kind button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-kind') === k); }); fillCats(); }
@@ -190,6 +192,19 @@
       (b.data || []).forEach(function (r) { first = Math.min(first, r.year); });
       var last = Math.max(cur, S.year); S.years = []; for (var y = last; y >= first; y--) S.years.push(y);
       $('year').innerHTML = S.years.map(function (y) { return '<option value="' + y + '"' + (y === S.year ? ' selected' : '') + '>' + y + '년</option>'; }).join('');
+      drawYearNav();
+    }
+    function drawYearNav() {
+      var cur = +todayK().slice(0, 4), nav = $('yearNav'); if (!nav) return;
+      var html = '', archHead = false;
+      S.years.forEach(function (y) {
+        if (y < cur && !archHead) { html += '<div class="lg-ysep">아카이브 · 지난 연도</div>'; archHead = true; }
+        html += '<button type="button" data-y="' + y + '" class="' + (y === S.year ? 'on' : '') + '"' + (y === S.year ? ' aria-current="true"' : '') + '>' + y + '년' + (y === cur ? '<small>올해</small>' : '<small>마감</small>') + '</button>';
+      });
+      nav.innerHTML = html;
+      nav.querySelectorAll('[data-y]').forEach(function (b) {
+        b.onclick = function () { var y = +b.getAttribute('data-y'); if (y === S.year) return; $('year').value = String(y); $('year').onchange.call($('year')); };
+      });
     }
     async function loadYear() {
       var y = S.year, all = [], from = 0;
@@ -261,7 +276,7 @@
     }
 
     // ---------- 기간 · 찾기 ----------
-    $('year').onchange = function () { S.year = +this.value; if (S.period === 'range') { S.from = ''; S.to = ''; $('from').value = ''; $('to').value = ''; } loadYear().catch(function (ex) { warn(errText(ex, setup)); }); };
+    $('year').onchange = function () { S.year = +this.value; drawYearNav(); if (S.period === 'range') { S.from = ''; S.to = ''; $('from').value = ''; $('to').value = ''; } loadYear().catch(function (ex) { warn(errText(ex, setup)); }); };
     $('period').onchange = function () {
       S.period = this.value; $('range').hidden = S.period !== 'range';
       if (S.period === 'range') { if (!$('from').value) $('from').value = S.year + '-01-01'; if (!$('to').value) $('to').value = S.year + '-12-31'; S.from = $('from').value; S.to = $('to').value; }
