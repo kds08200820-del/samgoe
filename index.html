@@ -388,6 +388,7 @@
       border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden;
       box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
     @media (max-width:600px){ .press-card{width:290px;} }
+    .press-card{cursor:pointer;}
     .press-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:#e3dccb;}
     .press-thumb{aspect-ratio:16/9;background:var(--soft);overflow:hidden;display:block;}
     .press-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -1509,7 +1510,7 @@ window.samMarquee = function(row, speed){
 
   var period = w, pos = -period, last = null, rafId = 0, alive = true;
   var baseSpeed = Math.abs(speed), dir = 1, vel = baseSpeed;
-  var hovering = false, dragging = false, moved = 0;
+  var hovering = false, dragging = false, moved = 0, captured = false;
   var lastX = 0, lastT = 0, flingV = 0;
 
   function apply(){ row.style.transform = 'translate3d(' + pos + 'px,0,0)'; }
@@ -1522,15 +1523,16 @@ window.samMarquee = function(row, speed){
 
   // 드래그 / 쓸어 넘기기
   function onDown(e){
-    dragging = true; moved = 0; flingV = 0;
+    dragging = true; moved = 0; flingV = 0; captured = false;
     lastX = e.clientX; lastT = performance.now();
-    try{ wrap.setPointerCapture(e.pointerId); }catch(_){}
   }
   function onMove(e){
     if(!dragging) return;
     var now = performance.now();
     var dx = e.clientX - lastX;
     moved += Math.abs(dx);
+    // 실제로 끌기 시작했을 때만 포인터를 잡음 — 누르자마자 잡으면 카드 링크 클릭이 사라짐
+    if(!captured && moved > 8){ captured = true; try{ wrap.setPointerCapture(e.pointerId); }catch(_){} }
     var dt = (now - lastT) / 1000;
     if(dt > 0){ flingV = 0.75 * flingV + 0.25 * (dx / dt); }
     lastX = e.clientX; lastT = now;
@@ -2130,7 +2132,11 @@ if ('serviceWorker' in navigator) {
     var d=e.target.closest?e.target.closest('[data-prdel]'):null;
     if(d){ delPress(d.getAttribute('data-prdel')); return; }
     var ed=e.target.closest?e.target.closest('[data-predit]'):null;
-    if(ed){ editPress(ed.getAttribute('data-predit')); }
+    if(ed){ editPress(ed.getAttribute('data-predit')); return; }
+    // 카드 어디를 눌러도 기사 원문 열기
+    if(e.defaultPrevented || e.target.closest('a,button')) return;
+    var card=e.target.closest('.press-card'), a=card&&card.querySelector('a.press-link');
+    if(a && a.getAttribute('href') && a.getAttribute('href')!=='#') window.open(a.href,'_blank','noopener');
   }); });
   function resetPressForm(){
     editingPressId=null;
