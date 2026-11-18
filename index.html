@@ -1960,7 +1960,7 @@ if ('serviceWorker' in navigator) {
   (function(){
     var btn=document.getElementById('pcalShare'), toast=document.getElementById('pcalToast'), tm=null;
     function say(t){ toast.textContent=t; toast.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){ toast.classList.remove('on'); },2600); }
-    function link(){ return location.origin+location.pathname+'#prayer-apply-'+pcalCur.y+'-'+('0'+(pcalCur.m+1)).slice(-2); }
+    function link(){ var k=pcalCur.y+'-'+('0'+(pcalCur.m+1)).slice(-2); return (pcalCur.y>=2026&&pcalCur.y<=2030) ? location.origin+'/prayer/'+k+'.html' : location.origin+location.pathname+'#prayer-apply-'+k; }
     if(btn) btn.addEventListener('click',async function(){
       var ok=false;
       var L=link(), ml=pcalCur.y+'년 '+(pcalCur.m+1)+'월';
