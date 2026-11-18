@@ -860,7 +860,7 @@
       <div class="pcal" id="prayerCal">
         <div class="pcal-head">
           <h3>기도회 신청 캘린더</h3>
-          <button type="button" class="pcal-share" id="pcalShare">🔗 신청 링크 복사</button>
+          <button type="button" class="pcal-share" id="pcalShare">🔗 이 달 신청 링크 복사</button>
           <div class="pcal-nav">
             <button type="button" id="pcalPrev" aria-label="이전 달">‹</button>
             <span class="pcal-ym" id="pcalYm"></span>
@@ -1960,17 +1960,20 @@ if ('serviceWorker' in navigator) {
   (function(){
     var btn=document.getElementById('pcalShare'), toast=document.getElementById('pcalToast'), tm=null;
     function say(t){ toast.textContent=t; toast.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){ toast.classList.remove('on'); },2600); }
-    var link=location.origin+location.pathname+'#prayer-apply';
+    function link(){ return location.origin+location.pathname+'#prayer-apply-'+pcalCur.y+'-'+('0'+(pcalCur.m+1)).slice(-2); }
     if(btn) btn.addEventListener('click',async function(){
       var ok=false;
-      try{ await navigator.clipboard.writeText(link); ok=true; }catch(_){
-        var ta=document.createElement('textarea'); ta.value=link; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+      var L=link(), ml=pcalCur.y+'년 '+(pcalCur.m+1)+'월';
+      try{ await navigator.clipboard.writeText(L); ok=true; }catch(_){
+        var ta=document.createElement('textarea'); ta.value=L; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
         try{ ok=document.execCommand('copy'); }catch(__){} ta.remove();
       }
-      if(ok) say('신청 링크를 복사했습니다. 카카오톡 · 문자에 붙여 넣어 보내세요.');
-      else prompt('아래 링크를 복사해 보내세요.', link);
+      if(ok) say(ml+' 신청 링크를 복사했습니다. 카카오톡 · 문자에 붙여 넣어 보내세요.');
+      else prompt(ml+' 신청 링크를 복사해 보내세요.', L);
     });
-    if(location.hash==='#prayer-apply'){
+    var hm=/^#prayer-apply(?:-(\d{4})-(\d{1,2}))?$/.exec(location.hash);
+    if(hm){
+      if(hm[1]){ pcalCur.y=+hm[1]; pcalCur.m=Math.min(11,Math.max(0,+hm[2]-1)); renderPcal(); window.__pcalAuto=true; }
       var go=function(){ var c=document.getElementById('prayerCal'); if(c) c.scrollIntoView({block:'start'}); };
       setTimeout(go,300); setTimeout(go,1200);
     }
@@ -2041,6 +2044,10 @@ if ('serviceWorker' in navigator) {
     }
     if(!r || r.error || !r.data){ return; }
     var rows=r.data; prayerRows=rows; renderPcal();
+    if(window.__pcalAuto){ window.__pcalAuto=false;
+      var cell=document.querySelector('#pcalGrid [data-apply]');
+      if(cell) setTimeout(function(){ cell.scrollIntoView({block:'center'}); openApply(cell.getAttribute('data-apply'),cell); },700);
+    }
     var today=todayStr();
     var upcoming=rows.filter(function(m){ return m.meet_date>=today && m.status!=='신청'; }).sort(function(a,b){ return a.meet_date<b.meet_date?-1:1; });
     var nextM=upcoming.length?upcoming[0]:null;
