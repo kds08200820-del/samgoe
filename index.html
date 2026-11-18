@@ -354,6 +354,12 @@
     .pmodal-x{position:absolute;top:12px;right:14px;width:40px;height:40px;border:0;background:transparent;font-size:24px;cursor:pointer;color:var(--muted);user-select:none;}
     .pmodal-msg{font-size:13px;color:#b42318;min-height:18px;margin-bottom:6px;}
     body.pmodal-open{overflow:hidden;}
+    .pcal{scroll-margin-top:110px;}
+    .pcal-share{min-height:40px;padding:0 14px;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;user-select:none;margin-right:auto;margin-left:12px;}
+    .pcal-share:hover{background:#fff6ef;}
+    .pcal-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#2a1d14;color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;z-index:1100;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100vw - 32px);text-align:center;}
+    .pcal-toast.on{opacity:1;}
+    @media (max-width:560px){ .pcal-share{margin-left:0;order:3;width:100%;} }
 
     /* ===================== 관리자 인라인 입력 ===================== */
     .adm-btn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 18px;
@@ -854,13 +860,14 @@
       <div class="pcal" id="prayerCal">
         <div class="pcal-head">
           <h3>기도회 신청 캘린더</h3>
+          <button type="button" class="pcal-share" id="pcalShare">🔗 신청 링크 복사</button>
           <div class="pcal-nav">
             <button type="button" id="pcalPrev" aria-label="이전 달">‹</button>
             <span class="pcal-ym" id="pcalYm"></span>
             <button type="button" id="pcalNext" aria-label="다음 달">›</button>
           </div>
         </div>
-        <p style="font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.6;">매월 <b>첫째 주 수요일</b> 중 비어 있는 날짜(점선 칸)를 누르면 우리 교회가 기도회를 섬기겠다고 신청할 수 있습니다. 신청 후 확인을 거쳐 확정됩니다.</p>
+        <p style="font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.6;">매월 <b>첫째 주 수요일</b> 중 비어 있는 날짜(점선 칸)를 누르면 우리 교회가 기도회를 섬기겠다고 신청할 수 있습니다. 로그인하지 않아도 신청할 수 있으며, 확인을 거쳐 확정됩니다.</p>
         <div class="pcal-grid" id="pcalGrid"></div>
         <div class="pcal-legend">
           <span><i style="background:#f3ece4;"></i>확정된 기도회</span>
@@ -887,6 +894,7 @@
   </section>
 
   <!-- 기도회 신청 모달 -->
+  <div class="pcal-toast" id="pcalToast" role="status" aria-live="polite"></div>
   <div class="pmodal" id="pmodal" role="dialog" aria-modal="true" aria-labelledby="pmodalTitle">
     <div class="pmodal-box">
       <button class="pmodal-x" type="button" id="pmodalX" aria-label="닫기">×</button>
@@ -895,9 +903,9 @@
       <form id="pmodalForm" novalidate>
         <label for="paChurch">섬기는 교회 *</label>
         <input id="paChurch" type="text" placeholder="예: 조암신흥교회" />
-        <label for="paName">신청자 이름</label>
+        <label for="paName">신청자 이름 <span id="paReqN">*</span></label>
         <input id="paName" type="text" placeholder="담임목사 성함" />
-        <label for="paPhone">연락처</label>
+        <label for="paPhone">연락처 <span id="paReqP">*</span></label>
         <input id="paPhone" type="tel" placeholder="010-0000-0000" />
         <label for="paTopic">기도 제목 / 말씀 (선택)</label>
         <textarea id="paTopic" placeholder="예: 시 119:17-32 내 눈을 열어주소서"></textarea>
@@ -1949,6 +1957,24 @@ if ('serviceWorker' in navigator) {
     renderPcal();
   })();
 
+  (function(){
+    var btn=document.getElementById('pcalShare'), toast=document.getElementById('pcalToast'), tm=null;
+    function say(t){ toast.textContent=t; toast.classList.add('on'); clearTimeout(tm); tm=setTimeout(function(){ toast.classList.remove('on'); },2600); }
+    var link=location.origin+location.pathname+'#prayer-apply';
+    if(btn) btn.addEventListener('click',async function(){
+      var ok=false;
+      try{ await navigator.clipboard.writeText(link); ok=true; }catch(_){
+        var ta=document.createElement('textarea'); ta.value=link; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+        try{ ok=document.execCommand('copy'); }catch(__){} ta.remove();
+      }
+      if(ok) say('신청 링크를 복사했습니다. 카카오톡 · 문자에 붙여 넣어 보내세요.');
+      else prompt('아래 링크를 복사해 보내세요.', link);
+    });
+    if(location.hash==='#prayer-apply'){
+      var go=function(){ var c=document.getElementById('prayerCal'); if(c) c.scrollIntoView({block:'start'}); };
+      setTimeout(go,300); setTimeout(go,1200);
+    }
+  })();
   var pmodal=document.getElementById('pmodal'), pmOpener=null, pmDate=null, pmBusy=false;
   function pmDirty(){ return !!document.getElementById('paTopic').value.trim() || document.getElementById('paChurch').value.trim()!==((myProfile&&myProfile.church)||''); }
   function closeApply(force){
@@ -1959,7 +1985,6 @@ if ('serviceWorker' in navigator) {
   }
   async function openApply(dateKey,opener){
     await adminReady;
-    if(!me){ if(confirm('기도회 신청은 로그인 후 가능합니다. 로그인 화면으로 이동할까요?')) location.href='login.html'; return; }
     pmOpener=opener||document.activeElement; pmDate=dateKey;
     var t=new Date(dateKey+'T00:00:00');
     document.getElementById('pmodalDate').textContent=t.getFullYear()+'년 '+(t.getMonth()+1)+'월 '+t.getDate()+'일 (수) 오전 7시';
@@ -1967,6 +1992,7 @@ if ('serviceWorker' in navigator) {
     document.getElementById('paName').value=(myProfile&&myProfile.name)||'';
     document.getElementById('paPhone').value=(myProfile&&myProfile.phone)||'';
     document.getElementById('paTopic').value=''; document.getElementById('pmodalMsg').textContent='';
+    document.getElementById('paReqN').style.display=me?'none':''; document.getElementById('paReqP').style.display=me?'none':'';
     pmodal.classList.add('open'); document.body.classList.add('pmodal-open');
     var c=document.getElementById('paChurch'); setTimeout(function(){ (c.value?document.getElementById('paTopic'):c).focus(); },30);
   }
@@ -1986,11 +2012,14 @@ if ('serviceWorker' in navigator) {
       e.preventDefault(); if(pmBusy) return;
       var church=document.getElementById('paChurch').value.trim(), msg=document.getElementById('pmodalMsg');
       if(!church){ msg.textContent='섬기는 교회명을 입력해 주세요.'; document.getElementById('paChurch').focus(); return; }
+      var nm=document.getElementById('paName').value.trim(), ph=document.getElementById('paPhone').value.trim();
+      if(!me && !nm){ msg.textContent='신청자 이름을 입력해 주세요.'; document.getElementById('paName').focus(); return; }
+      if(!me && ph.replace(/\D/g,'').length<9){ msg.textContent='연락받을 전화번호를 입력해 주세요.'; document.getElementById('paPhone').focus(); return; }
       var btn=document.getElementById('pmodalSave'); pmBusy=true; btn.disabled=true; btn.textContent='신청 중…'; msg.textContent='';
       var ins=await window.sb.from('prayer_meetings').insert({
         meet_date:pmDate, host_church:church, topic:document.getElementById('paTopic').value.trim()||null,
         status:'신청', applicant_name:document.getElementById('paName').value.trim()||null,
-        applicant_phone:document.getElementById('paPhone').value.trim()||null, created_by:me.id
+        applicant_phone:document.getElementById('paPhone').value.trim()||null, created_by:me?me.id:null
       });
       pmBusy=false; btn.disabled=false; btn.textContent='신청하기';
       if(ins.error){ msg.textContent=/duplicate|unique/i.test(ins.error.message)?'이미 다른 교회가 신청한 날짜입니다.':'신청 실패: '+ins.error.message; return; }
@@ -2003,8 +2032,13 @@ if ('serviceWorker' in navigator) {
     var listEl=document.getElementById('prayerList'), nextEl=document.getElementById('prayerNext'), dashEl=document.getElementById('dashPrayer');
     if(!window.sb) return;
     var r;
-    try{ r=await window.sb.from('prayer_meetings').select('*').order('meet_date',{ascending:false}); }
+    try{ r=await window.sb.from('prayer_meetings').select('id,meet_date,host_church,topic,note,status,created_by,created_at').order('meet_date',{ascending:false}); }
     catch(e){ r={error:e}; }
+    await adminReady;
+    if(r && r.data && isAdminUser){
+      try{ var ap=await window.sb.rpc('prayer_applicants'); var am={}; (ap.data||[]).forEach(function(x){ am[x.id]=x; });
+        r.data.forEach(function(m){ var x=am[m.id]; if(x){ m.applicant_name=x.applicant_name; m.applicant_phone=x.applicant_phone; } }); }catch(_){}
+    }
     if(!r || r.error || !r.data){ return; }
     var rows=r.data; prayerRows=rows; renderPcal();
     var today=todayStr();
