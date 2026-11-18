@@ -1971,12 +1971,20 @@ if ('serviceWorker' in navigator) {
       if(ok) say(ml+' 신청 링크를 복사했습니다. 카카오톡 · 문자에 붙여 넣어 보내세요.');
       else prompt(ml+' 신청 링크를 복사해 보내세요.', L);
     });
-    var hm=/^#prayer-apply(?:-(\d{4})-(\d{1,2}))?$/.exec(location.hash);
-    if(hm){
+    function fromHash(loaded){
+      var hm=/^#prayer-apply(?:-(\d{4})-(\d{1,2}))?$/.exec(location.hash);
+      if(!hm) return;
       if(hm[1]){ pcalCur.y=+hm[1]; pcalCur.m=Math.min(11,Math.max(0,+hm[2]-1)); renderPcal(); window.__pcalAuto=true; }
       var go=function(){ var c=document.getElementById('prayerCal'); if(c) c.scrollIntoView({block:'start'}); };
       setTimeout(go,300); setTimeout(go,1200);
+      // 이미 열린 페이지에서 링크만 바뀐 경우: 일정이 이미 있으니 바로 신청 창
+      if(loaded && window.__pcalAuto){ window.__pcalAuto=false;
+        var cell=document.querySelector('#pcalGrid [data-apply]');
+        if(cell) setTimeout(function(){ openApply(cell.getAttribute('data-apply'),cell); },700);
+      }
     }
+    fromHash(false);
+    window.addEventListener('hashchange',function(){ fromHash(true); });
   })();
   var pmodal=document.getElementById('pmodal'), pmOpener=null, pmDate=null, pmBusy=false;
   function pmDirty(){ return !!document.getElementById('paTopic').value.trim() || document.getElementById('paChurch').value.trim()!==((myProfile&&myProfile.church)||''); }
