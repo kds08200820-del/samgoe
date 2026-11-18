@@ -2029,7 +2029,7 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('hashchange',function(){ fromHash(true); });
   })();
   var pmodal=document.getElementById('pmodal'), pmOpener=null, pmDate=null, pmBusy=false;
-  function pmDirty(){ return !!document.getElementById('paTopic').value.trim() || document.getElementById('paChurch').value.trim()!==((myProfile&&myProfile.church)||''); }
+  function pmDirty(){ return !!document.getElementById('paTopic').value.trim() || document.getElementById('paChurch').value.trim()!==(window.__paChurch0||''); }
   function closeApply(force){
     if(!pmodal.classList.contains('open')) return;
     if(!force && pmDirty() && !confirm('작성 중인 내용이 있습니다. 닫을까요?')) return;
@@ -2038,12 +2038,17 @@ if ('serviceWorker' in navigator) {
   }
   async function openApply(dateKey,opener){
     await adminReady;
+    // 다른 탭에서 나중에 로그인했어도 지금 로그인 상태로 다시 확인
+    if(!me && window.sb){ try{ var ss=await window.sb.auth.getSession(); me=ss.data&&ss.data.session?ss.data.session.user:null; if(me) myProfile=await window.getMyProfile(); }catch(_){} }
     pmOpener=opener||document.activeElement; pmDate=dateKey;
     var t=new Date(dateKey+'T00:00:00');
-    document.getElementById('pmodalDate').textContent=t.getFullYear()+'년 '+(t.getMonth()+1)+'월 '+t.getDate()+'일 (수) 오전 7시';
-    document.getElementById('paChurch').value=(myProfile&&myProfile.church)||'';
-    document.getElementById('paName').value=(myProfile&&myProfile.name)||'';
-    document.getElementById('paPhone').value=(myProfile&&myProfile.phone)||'';
+    document.getElementById('pmodalDate').textContent=t.getFullYear()+'년 '+(t.getMonth()+1)+'월 '+t.getDate()+'일 ('+'일월화수목금토'.charAt(t.getDay())+') 오전 7시';
+    // 회원 정보: 프로필 → 가입할 때 넣은 정보 순으로 채움
+    var md=(me&&me.user_metadata)||{}, pf=myProfile||{};
+    window.__paChurch0=pf.church||md.church||'';
+    document.getElementById('paChurch').value=window.__paChurch0;
+    document.getElementById('paName').value=pf.name||md.name||md.full_name||'';
+    document.getElementById('paPhone').value=pf.phone||md.phone||'';
     document.getElementById('paTopic').value=''; document.getElementById('pmodalMsg').textContent='';
     document.getElementById('paReqN').style.display=me?'none':''; document.getElementById('paReqP').style.display=me?'none':'';
     pmodal.classList.add('open'); document.body.classList.add('pmodal-open');
