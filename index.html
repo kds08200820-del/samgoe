@@ -354,6 +354,14 @@
     .pmodal-x{position:absolute;top:12px;right:14px;width:40px;height:40px;border:0;background:transparent;font-size:24px;cursor:pointer;color:var(--muted);user-select:none;}
     .pmodal-msg{font-size:13px;color:#b42318;min-height:18px;margin-bottom:6px;}
     body.pmodal-open{overflow:hidden;}
+    .pcal-ev.movable{cursor:pointer;outline:1.5px solid transparent;}
+    .pcal-ev.movable:hover,.pcal-ev.movable:focus{outline-color:var(--accent);}
+    .pcal-hint{font-size:13px;color:var(--accent);background:#fff6ef;border-radius:8px;padding:8px 12px;margin:0 0 12px;}
+    .pmv-quick{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px;}
+    .pmv-quick button{min-height:36px;padding:0 12px;border:1px solid var(--line);background:#fff;border-radius:999px;font-family:inherit;font-size:13px;cursor:pointer;user-select:none;}
+    .pmv-quick button:hover{border-color:var(--accent);color:var(--accent);}
+    .pmodal-box .pmv-chk{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:10px;}
+    .pmodal-box .pmv-chk input{width:auto;margin:0;}
     .pcal{scroll-margin-top:110px;}
     .pcal-share{min-height:40px;padding:0 14px;border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;user-select:none;margin-right:auto;margin-left:12px;}
     .pcal-share:hover{background:#fff6ef;}
@@ -868,6 +876,7 @@
           </div>
         </div>
         <p style="font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.6;">매월 <b>첫째 주 수요일</b> 중 비어 있는 날짜(점선 칸)를 누르면 우리 교회가 기도회를 섬기겠다고 신청할 수 있습니다. 로그인하지 않아도 신청할 수 있으며, 확인을 거쳐 확정됩니다.</p>
+        <p class="pcal-hint" id="pcalMoveHint" hidden>임원 안내: 캘린더의 기도회를 누르면 날짜를 1~2주 앞뒤로 옮기거나 교회를 바꿀 수 있습니다.</p>
         <div class="pcal-grid" id="pcalGrid"></div>
         <div class="pcal-legend">
           <span><i style="background:#f3ece4;"></i>확정된 기도회</span>
@@ -894,6 +903,23 @@
   </section>
 
   <!-- 기도회 신청 모달 -->
+  <div class="pmodal" id="pmove" role="dialog" aria-modal="true" aria-labelledby="pmoveTitle">
+    <div class="pmodal-box">
+      <button class="pmodal-x" type="button" id="pmoveX" aria-label="닫기">×</button>
+      <h4 id="pmoveTitle">기도회 날짜 조정</h4>
+      <div class="pm-sub" id="pmoveSub"></div>
+      <form id="pmoveForm" novalidate>
+        <label for="pmvDate">새 날짜</label>
+        <input id="pmvDate" type="date" />
+        <div class="pmv-quick" id="pmvQuick"></div>
+        <label for="pmvChurch">섬기는 교회</label>
+        <input id="pmvChurch" type="text" />
+        <label class="pmv-chk"><input id="pmvConfirm" type="checkbox" /> 확정된 일정으로 표시</label>
+        <div class="pmodal-msg" id="pmoveMsg"></div>
+        <div class="adm-row"><button class="adm-btn" id="pmoveSave" type="submit" style="margin-left:auto;">저장하기</button></div>
+      </form>
+    </div>
+  </div>
   <div class="pcal-toast" id="pcalToast" role="status" aria-live="polite"></div>
   <div class="pmodal" id="pmodal" role="dialog" aria-modal="true" aria-labelledby="pmodalTitle">
     <div class="pmodal-box">
@@ -1930,21 +1956,28 @@ if ('serviceWorker' in navigator) {
     var y=pcalCur.y, m=pcalCur.m, today=todayStr();
     ym.textContent=y+'년 '+(m+1)+'월';
     var byDate={}; prayerRows.forEach(function(r){ byDate[r.meet_date]=r; });
-    var fw=firstWed(y,m);
+    var fw=firstWed(y,m), ymKey=ymd(y,m,1).slice(0,7);
+    var monthHas=prayerRows.some(function(r){ return String(r.meet_date).slice(0,7)===ymKey; });
+    var canMove=!!(isOfficerUser||isAdminUser);
     var html=['일','월','화','수','목','금','토'].map(function(n,i){ return '<div class="pcal-dow'+(i===3?' wed':'')+'">'+n+'</div>'; }).join('');
     var first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
     for(var i=0;i<first;i++) html+='<div class="pcal-cell empty"></div>';
     for(var d=1;d<=days;d++){
       var key=ymd(y,m,d), ev=byDate[key], past=key<today, isFw=(d===fw);
-      var open=isFw && !ev && !past;
+      var open=isFw && !monthHas && !past;
       var cls='pcal-cell'+(past?' past':'')+(key===today?' today':'')+(isFw?' firstwed':'')+(open?' open':'');
       html+='<div class="'+cls+'"'+(open?' data-apply="'+key+'" role="button" tabindex="0" aria-label="'+(m+1)+'월 '+d+'일 기도회 신청"':'')+'>'+
         '<span class="pcal-day">'+d+'</span>'+
-        (ev?'<div class="pcal-ev'+(ev.status==='신청'?' pending':'')+'" title="'+esc(ev.host_church||'')+'">'+esc(ev.host_church||'회원교회 순회')+(ev.status==='신청'?'<small>신청 대기</small>':(ev.topic?'<small>'+esc(ev.topic)+'</small>':''))+'</div>':'')+
+        (ev?'<div class="pcal-ev'+(ev.status==='신청'?' pending':'')+(canMove?' movable':'')+'"'+(canMove?' data-move="'+ev.id+'" role="button" tabindex="0" aria-label="'+esc(ev.host_church||'기도회')+' 날짜 조정"':'')+' title="'+esc(ev.host_church||'')+(canMove?' — 눌러서 날짜 조정':'')+'">'+esc(ev.host_church||'회원교회 순회')+(ev.status==='신청'?'<small>신청 대기</small>':(ev.topic?'<small>'+esc(ev.topic)+'</small>':''))+'</div>':'')+
         (open?'<span class="pcal-apply">＋ 신청</span>':'')+
       '</div>';
     }
     grid.innerHTML=html;
+    Array.prototype.forEach.call(grid.querySelectorAll('[data-move]'),function(c){
+      c.addEventListener('click',function(){ openMove(c.getAttribute('data-move'),c); });
+      c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openMove(c.getAttribute('data-move'),c); } });
+    });
+    var hint=document.getElementById('pcalMoveHint'); if(hint) hint.hidden=!canMove;
     Array.prototype.forEach.call(grid.querySelectorAll('[data-apply]'),function(c){
       c.addEventListener('click',function(){ openApply(c.getAttribute('data-apply'),c); });
       c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openApply(c.getAttribute('data-apply'),c); } });
@@ -2036,6 +2069,60 @@ if ('serviceWorker' in navigator) {
       if(ins.error){ msg.textContent=/duplicate|unique/i.test(ins.error.message)?'이미 다른 교회가 신청한 날짜입니다.':'신청 실패: '+ins.error.message; return; }
       closeApply(true); loadPrayer();
       alert('신청이 접수되었습니다. 확인 후 확정됩니다.');
+    });
+  }
+
+  // ---- 임원: 기도회 날짜 조정 ----
+  var pmove=document.getElementById('pmove'), mvOpener=null, mvRow=null, mvBusy=false;
+  function mvDirty(){ return mvRow && (document.getElementById('pmvDate').value!==mvRow.meet_date || document.getElementById('pmvChurch').value.trim()!==(mvRow.host_church||'')); }
+  function closeMove(force){
+    if(!pmove.classList.contains('open')) return;
+    if(!force && mvDirty() && !confirm('바꾼 내용이 저장되지 않았습니다. 닫을까요?')) return;
+    pmove.classList.remove('open'); document.body.classList.remove('pmodal-open');
+    if(mvOpener && mvOpener.focus) mvOpener.focus(); mvOpener=null; mvRow=null;
+  }
+  function openMove(id,opener){
+    var r=prayerRows.find(function(x){ return String(x.id)===String(id); }); if(!r) return;
+    mvRow=r; mvOpener=opener||document.activeElement;
+    var t=new Date(r.meet_date+'T00:00:00');
+    document.getElementById('pmoveSub').textContent='지금: '+t.getFullYear()+'년 '+(t.getMonth()+1)+'월 '+t.getDate()+'일 · '+(r.host_church||'회원교회 순회')+(r.status==='신청'?' (신청 대기)':'');
+    document.getElementById('pmvDate').value=r.meet_date;
+    document.getElementById('pmvChurch').value=r.host_church||'';
+    document.getElementById('pmvConfirm').checked=r.status!=='신청';
+    document.getElementById('pmoveMsg').textContent='';
+    var q=document.getElementById('pmvQuick');
+    q.innerHTML=[-14,-7,7,14].map(function(d){ var x=new Date(t); x.setDate(x.getDate()+d); return '<button type="button" data-d="'+ymd(x.getFullYear(),x.getMonth(),x.getDate())+'">'+(d<0?(-d/7)+'주 앞':(d/7)+'주 뒤')+' ('+(x.getMonth()+1)+'/'+x.getDate()+')</button>'; }).join('');
+    Array.prototype.forEach.call(q.querySelectorAll('button'),function(b){ b.onclick=function(){ document.getElementById('pmvDate').value=b.getAttribute('data-d'); }; });
+    pmove.classList.add('open'); document.body.classList.add('pmodal-open');
+    setTimeout(function(){ document.getElementById('pmvDate').focus(); },30);
+  }
+  if(pmove){
+    (function(){ var down=false;
+      pmove.addEventListener('mousedown',function(e){ down=(e.target===pmove); });
+      pmove.addEventListener('click',function(e){ if(down&&e.target===pmove) closeMove(); down=false; }); })();
+    document.getElementById('pmoveX').addEventListener('click',function(){ closeMove(); });
+    document.addEventListener('keydown',function(e){
+      if(!pmove.classList.contains('open')) return;
+      if(e.key==='Escape'){ e.preventDefault(); closeMove(); return; }
+      if(e.key==='Tab'){ var f=Array.prototype.filter.call(pmove.querySelectorAll('input,button'),function(x){return !x.disabled;});
+        var a=f[0], b=f[f.length-1];
+        if(e.shiftKey&&document.activeElement===a){ e.preventDefault(); b.focus(); } else if(!e.shiftKey&&document.activeElement===b){ e.preventDefault(); a.focus(); } }
+    });
+    document.getElementById('pmoveForm').addEventListener('submit',async function(e){
+      e.preventDefault(); if(mvBusy||!mvRow) return;
+      var nd=document.getElementById('pmvDate').value, msg=document.getElementById('pmoveMsg');
+      if(!nd){ msg.textContent='새 날짜를 골라 주세요.'; return; }
+      var clash=prayerRows.find(function(x){ return x.meet_date===nd && x.id!==mvRow.id; });
+      if(clash){ msg.textContent='그 날에는 이미 '+(clash.host_church||'다른')+' 기도회가 있습니다.'; return; }
+      var btn=document.getElementById('pmoveSave'); mvBusy=true; btn.disabled=true; btn.textContent='저장 중…'; msg.textContent='';
+      var u=await window.sb.from('prayer_meetings').update({
+        meet_date:nd, host_church:document.getElementById('pmvChurch').value.trim()||null,
+        status:document.getElementById('pmvConfirm').checked?'확정':'신청'
+      }).eq('id',mvRow.id).select('id');
+      mvBusy=false; btn.disabled=false; btn.textContent='저장하기';
+      if(u.error||!u.data||!u.data.length){ msg.textContent='저장하지 못했습니다: '+(u.error?u.error.message:'권한이 없습니다. (임원 권한 설정이 필요합니다)'); return; }
+      var t=new Date(nd+'T00:00:00'); pcalCur={y:t.getFullYear(),m:t.getMonth()};
+      closeMove(true); loadPrayer();
     });
   }
 
