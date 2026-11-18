@@ -354,6 +354,8 @@
     .pmodal-x{position:absolute;top:12px;right:14px;width:40px;height:40px;border:0;background:transparent;font-size:24px;cursor:pointer;color:var(--muted);user-select:none;}
     .pmodal-msg{font-size:13px;color:#b42318;min-height:18px;margin-bottom:6px;}
     body.pmodal-open{overflow:hidden;}
+    .pcal-cell.pick{cursor:pointer;}
+    .pcal-cell.pick:hover,.pcal-cell.pick:focus{background:#fff6ef;border-color:var(--accent);}
     .pcal-ev.movable{cursor:pointer;outline:1.5px solid transparent;}
     .pcal-ev.movable:hover,.pcal-ev.movable:focus{outline-color:var(--accent);}
     .pcal-hint{font-size:13px;color:var(--accent);background:#fff6ef;border-radius:8px;padding:8px 12px;margin:0 0 12px;}
@@ -876,7 +878,7 @@
           </div>
         </div>
         <p style="font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.6;">매월 <b>첫째 주 수요일</b> 중 비어 있는 날짜(점선 칸)를 누르면 우리 교회가 기도회를 섬기겠다고 신청할 수 있습니다. 로그인하지 않아도 신청할 수 있으며, 확인을 거쳐 확정됩니다.</p>
-        <p class="pcal-hint" id="pcalMoveHint" hidden>임원 안내: 캘린더의 기도회를 누르면 날짜를 1~2주 앞뒤로 옮기거나 교회를 바꿀 수 있습니다.</p>
+        <p class="pcal-hint" id="pcalMoveHint" hidden>임원 안내: 빈 날짜를 누르면 그 달 기도회(또는 신청 칸)를 그 날로 옮깁니다. 등록된 기도회를 누르면 날짜 · 교회를 고칠 수 있습니다.</p>
         <div class="pcal-grid" id="pcalGrid"></div>
         <div class="pcal-legend">
           <span><i style="background:#f3ece4;"></i>확정된 기도회</span>
@@ -1947,7 +1949,7 @@ if ('serviceWorker' in navigator) {
   });
 
   // ---------- 수요조찬기도회 ----------
-  var prayerRows=[];
+  var prayerRows=[], prayerSlots={};
   var pcalCur=(function(){ var t=new Date(); return {y:t.getFullYear(),m:t.getMonth()}; })();
   function ymd(y,m,d){ return y+'-'+('0'+(m+1)).slice(-2)+'-'+('0'+d).slice(-2); }
   function firstWed(y,m){ var d=new Date(y,m,1); return 1+((3-d.getDay()+7)%7); }
@@ -1956,7 +1958,8 @@ if ('serviceWorker' in navigator) {
     var y=pcalCur.y, m=pcalCur.m, today=todayStr();
     ym.textContent=y+'년 '+(m+1)+'월';
     var byDate={}; prayerRows.forEach(function(r){ byDate[r.meet_date]=r; });
-    var fw=firstWed(y,m), ymKey=ymd(y,m,1).slice(0,7);
+    var ymKey=ymd(y,m,1).slice(0,7), fw=prayerSlots[ymKey]?+prayerSlots[ymKey].slice(8,10):firstWed(y,m);
+    var monthRows=prayerRows.filter(function(r){ return String(r.meet_date).slice(0,7)===ymKey; });
     var monthHas=prayerRows.some(function(r){ return String(r.meet_date).slice(0,7)===ymKey; });
     var canMove=!!(isOfficerUser||isAdminUser);
     var html=['일','월','화','수','목','금','토'].map(function(n,i){ return '<div class="pcal-dow'+(i===3?' wed':'')+'">'+n+'</div>'; }).join('');
@@ -1965,8 +1968,9 @@ if ('serviceWorker' in navigator) {
     for(var d=1;d<=days;d++){
       var key=ymd(y,m,d), ev=byDate[key], past=key<today, isFw=(d===fw);
       var open=isFw && !monthHas && !past;
-      var cls='pcal-cell'+(past?' past':'')+(key===today?' today':'')+(isFw?' firstwed':'')+(open?' open':'');
-      html+='<div class="'+cls+'"'+(open?' data-apply="'+key+'" role="button" tabindex="0" aria-label="'+(m+1)+'월 '+d+'일 기도회 신청"':'')+'>'+
+      var pick=canMove && !ev && !past && !open;
+      var cls='pcal-cell'+(pick?' pick':'')+(past?' past':'')+(key===today?' today':'')+(isFw?' firstwed':'')+(open?' open':'');
+      html+='<div class="'+cls+'"'+(pick?' data-pick="'+key+'" role="button" tabindex="0" aria-label="'+(m+1)+'월 '+d+'일로 기도회 날짜 옮기기"':'')+(open?' data-apply="'+key+'" role="button" tabindex="0" aria-label="'+(m+1)+'월 '+d+'일 기도회 신청"':'')+'>'+
         '<span class="pcal-day">'+d+'</span>'+
         (ev?'<div class="pcal-ev'+(ev.status==='신청'?' pending':'')+(canMove?' movable':'')+'"'+(canMove?' data-move="'+ev.id+'" role="button" tabindex="0" aria-label="'+esc(ev.host_church||'기도회')+' 날짜 조정"':'')+' title="'+esc(ev.host_church||'')+(canMove?' — 눌러서 날짜 조정':'')+'">'+esc(ev.host_church||'회원교회 순회')+(ev.status==='신청'?'<small>신청 대기</small>':(ev.topic?'<small>'+esc(ev.topic)+'</small>':''))+'</div>':'')+
         (open?'<span class="pcal-apply">＋ 신청</span>':'')+
@@ -1978,6 +1982,11 @@ if ('serviceWorker' in navigator) {
       c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openMove(c.getAttribute('data-move'),c); } });
     });
     var hint=document.getElementById('pcalMoveHint'); if(hint) hint.hidden=!canMove;
+    Array.prototype.forEach.call(grid.querySelectorAll('[data-pick]'),function(c){
+      var go=function(){ pickDate(c.getAttribute('data-pick'), monthRows, ymKey); };
+      c.addEventListener('click',go);
+      c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+    });
     Array.prototype.forEach.call(grid.querySelectorAll('[data-apply]'),function(c){
       c.addEventListener('click',function(){ openApply(c.getAttribute('data-apply'),c); });
       c.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openApply(c.getAttribute('data-apply'),c); } });
@@ -2072,6 +2081,26 @@ if ('serviceWorker' in navigator) {
     });
   }
 
+  // ---- 임원: 빈 날짜를 눌러 그 달 기도회 · 신청 칸 옮기기 ----
+  var pickBusy=false;
+  async function pickDate(key, monthRows, ymKey){
+    if(pickBusy) return;
+    var t=new Date(key+'T00:00:00'), lbl=(t.getMonth()+1)+'월 '+t.getDate()+'일 ('+'일월화수목금토'.charAt(t.getDay())+')', r;
+    if(monthRows.length===1){
+      var ev=monthRows[0];
+      if(!confirm((ev.host_church||'이 달')+' 기도회를 '+lbl+'로 옮길까요?')) return;
+      pickBusy=true; r=await window.sb.from('prayer_meetings').update({meet_date:key}).eq('id',ev.id).select('id');
+    } else if(monthRows.length>1){
+      alert('이 달에는 기도회가 둘 이상 있습니다. 옮길 기도회를 먼저 눌러 날짜를 고쳐 주세요.'); return;
+    } else {
+      if(!confirm((t.getMonth()+1)+'월 기도회 신청 날짜를 '+lbl+'로 바꿀까요?\n신청 링크로 들어온 사람도 이 날짜로 신청하게 됩니다.')) return;
+      pickBusy=true; r=await window.sb.from('prayer_slots').upsert({ym:ymKey, slot_date:key, updated_at:new Date().toISOString()},{onConflict:'ym'}).select('ym');
+    }
+    pickBusy=false;
+    if(r.error||!r.data||!r.data.length){ alert('옮기지 못했습니다: '+(r.error?r.error.message:'권한이 없습니다.')); return; }
+    loadPrayer();
+  }
+
   // ---- 임원: 기도회 날짜 조정 ----
   var pmove=document.getElementById('pmove'), mvOpener=null, mvRow=null, mvBusy=false;
   function mvDirty(){ return mvRow && (document.getElementById('pmvDate').value!==mvRow.meet_date || document.getElementById('pmvChurch').value.trim()!==(mvRow.host_church||'')); }
@@ -2138,6 +2167,7 @@ if ('serviceWorker' in navigator) {
         r.data.forEach(function(m){ var x=am[m.id]; if(x){ m.applicant_name=x.applicant_name; m.applicant_phone=x.applicant_phone; } }); }catch(_){}
     }
     if(!r || r.error || !r.data){ return; }
+    try{ var sl=await window.sb.from('prayer_slots').select('ym,slot_date'); prayerSlots={}; (sl.data||[]).forEach(function(x){ prayerSlots[x.ym]=x.slot_date; }); }catch(_){}
     var rows=r.data; prayerRows=rows; renderPcal();
     if(window.__pcalAuto){ window.__pcalAuto=false;
       var cell=document.querySelector('#pcalGrid [data-apply]');
