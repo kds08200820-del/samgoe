@@ -547,20 +547,20 @@
       // 사진을 누르면 크게 보기 — 지금 보이는 장으로. 사진 틀에 한 번만 걸어 둠
       //  (쓸어 넘기기에서 손가락을 틀이 잡고 있으면 누른 곳이 사진이 아니라 틀로 잡혀서, 사진에 걸면 가끔 안 열림)
       var mediaEl = modal.querySelector('.imedia');
+      function expandPhoto(){mediaEl.focus({preventScroll:true});openLightbox(photos.map(function(x){return x.url;}),slideIdx);}
       if(mediaEl && track){
         mediaEl.tabIndex=0;mediaEl.setAttribute('aria-label','사진 보기: 좌우로 넘기거나 Enter 키로 확대');
         mediaEl.addEventListener('keydown',function(e){if(e.target===mediaEl && (e.key==='Enter'||e.key===' ')){e.preventDefault();mediaEl.focus();openLightbox(photos.map(function(x){return x.url;}),slideIdx);}});
       }
       if(mediaEl && track) mediaEl.addEventListener('click', function(e){
         if(e.target.closest('.inav')) return;
-        mediaEl.focus({preventScroll:true});
-        openLightbox(photos.map(function(x){return x.url;}), slideIdx);
+        expandPhoto();
       });
-      if(mediaEl && track && photos.length>1){
+      if(mediaEl && track){
         bindPhotoSwipe(mediaEl, function(dx){
           track.style.transition=dx===null?'':'none';
           track.style.transform=dx===null?'translateX(-'+(slideIdx*100)+'%)':'translateX(calc(-'+(slideIdx*100)+'% + '+dx+'px))';
-        }, function(dir){ slideIdx=(slideIdx+dir+photos.length)%photos.length; drawSlide(); });
+        }, function(dir){ slideIdx=(slideIdx+dir+photos.length)%photos.length; drawSlide(); }, expandPhoto);
       }
       modal.photoStep=function(dir){ if(photos.length>1){slideIdx=(slideIdx+dir+photos.length)%photos.length;drawSlide();} };
       // 좋아요·댓글
@@ -683,13 +683,13 @@
     }
 
     // Commit only horizontal, primary-pointer gestures; cancellation never turns a page.
-    function bindPhotoSwipe(el, paint, step){
+    function bindPhotoSwipe(el, paint, step, tap){
       var start=null, dx=0, horizontal=false, suppressUntil=0;
       el.addEventListener('pointerdown',function(e){
         if(!e.isPrimary){start=null;paint(null);return;}
         suppressUntil=0;
         if(e.button!==0 || e.target.closest('button') || (window.visualViewport && visualViewport.scale>1.01)) return;
-        start={x:e.clientX,y:e.clientY,id:e.pointerId};dx=0;horizontal=false;
+        start={x:e.clientX,y:e.clientY,id:e.pointerId,kind:e.pointerType};dx=0;horizontal=false;
       });
       el.addEventListener('pointermove',function(e){
         if(!start || e.pointerId!==start.id) return;
@@ -704,7 +704,10 @@
       function end(e){
         if(!start || e.pointerId!==start.id)return;
         var change=horizontal && e.type!=='pointercancel' && Math.abs(dx)>Math.max(40,el.clientWidth*.12);
+        var touchTap=tap && start.kind==='touch' && !horizontal && e.type==='pointerup' && Math.abs(e.clientX-start.x)<8 && Math.abs(e.clientY-start.y)<8;
         start=null;paint(null);if(change)step(dx<0?1:-1);
+        // Mobile browsers can omit the compatibility click immediately after a swipe.
+        if(touchTap){suppressUntil=Date.now()+450;tap();}
       }
       el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
       el.addEventListener('click',function(e){if(Date.now()<suppressUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
