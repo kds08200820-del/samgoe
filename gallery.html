@@ -163,7 +163,29 @@
   <!-- 운평교회 톤 공용 테마 -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Cormorant+Garamond:wght@500;600&display=swap" />
   <link rel="stylesheet" href="assets/theme.css?v=5" />
-<link rel="stylesheet" href="assets/renewal.css?v=20261125d"><link rel="stylesheet" href="assets/modern-theme.css?v=20261125d"><meta name="description" content="삼기연의 예배와 교제, 장학사업과 지역사회 활동을 사진·영상으로 나눕니다. 삼괴지역기독교연합회의 함께한 순간을 만나보세요."><link rel="canonical" href="https://samgoe-cc.or.kr/gallery.html"><meta property="og:title" content="갤러리 | 삼기연 · 삼괴지역기독교연합회"><meta property="og:description" content="삼기연의 예배와 교제, 장학사업과 지역사회 활동을 사진·영상으로 나눕니다. 삼괴지역기독교연합회의 함께한 순간을 만나보세요."><meta property="og:url" content="https://samgoe-cc.or.kr/gallery.html"><meta property="og:site_name" content="삼기연 · 삼괴지역기독교연합회"><meta property="og:locale" content="ko_KR"><meta property="og:image" content="https://samgoe-cc.or.kr/assets/img/hero.webp"><meta name="twitter:card" content="summary_large_image"></head>
+<link rel="stylesheet" href="assets/renewal.css?v=20261125d"><link rel="stylesheet" href="assets/modern-theme.css?v=20261125d"><meta name="description" content="삼기연의 예배와 교제, 장학사업과 지역사회 활동을 사진·영상으로 나눕니다. 삼괴지역기독교연합회의 함께한 순간을 만나보세요."><link rel="canonical" href="https://samgoe-cc.or.kr/gallery.html"><meta property="og:title" content="갤러리 | 삼기연 · 삼괴지역기독교연합회"><meta property="og:description" content="삼기연의 예배와 교제, 장학사업과 지역사회 활동을 사진·영상으로 나눕니다. 삼괴지역기독교연합회의 함께한 순간을 만나보세요."><meta property="og:url" content="https://samgoe-cc.or.kr/gallery.html"><meta property="og:site_name" content="삼기연 · 삼괴지역기독교연합회"><meta property="og:locale" content="ko_KR"><meta property="og:image" content="https://samgoe-cc.or.kr/assets/img/hero.webp"><meta name="twitter:card" content="summary_large_image"><style>
+/* Gallery dialogs stay above the shared sticky navigation. */
+.overlay{z-index:300;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));height:100dvh;box-sizing:border-box;overflow:hidden;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.overlay>.modal{position:relative;width:100%;max-height:100%;margin:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+#detailModal .ihead{position:sticky;top:0;background:var(--canvas);z-index:4}
+#detailModal .ihead .mclose{position:static;flex:0 0 44px;width:44px;height:44px;margin-left:auto}
+#detailModal .imedia{touch-action:pan-y pinch-zoom}
+#detailModal .imedia .track img{height:min(52dvh,520px);max-height:none;width:100%;object-fit:contain}
+#detailModal .inav{top:0;bottom:0;transform:none;height:auto;width:52px;border-radius:0;background:transparent;color:white;text-shadow:0 1px 5px #000;font-size:38px}
+#detailModal .inav:hover{background:rgba(0,0,0,.18)}
+#detailModal .inav.prev{left:0}#detailModal .inav.next{right:0}
+#detailModal .icount{pointer-events:none}
+#detailModal .idots{display:none}
+.lb{z-index:400;touch-action:pan-y pinch-zoom}
+.lb img{max-height:calc(100dvh - 140px);max-width:100vw}
+.lb .x{top:max(16px,env(safe-area-inset-top));right:16px;z-index:3}
+.lb .nav{width:52px;min-height:72px;background:rgba(0,0,0,.24);z-index:2}
+.lb .prev{left:0}.lb .next{right:0}
+.lb .count{bottom:max(20px,env(safe-area-inset-bottom))}
+@media(max-width:600px){.overlay{padding:12px 8px}.overlay>.modal{max-width:100%!important}#detailModal .ihead{padding:8px 12px}#detailModal .imedia .track img{height:44dvh}}
+@media(prefers-reduced-motion:reduce){.imedia .track,.lb img{transition:none!important}}
+</style></head>
 <body>
   <header class="r-header">
     <a class="r-brand" href="index.html" aria-label="삼괴지역기독교연합회 홈"><img class="r-official-logo" src="assets/samgoe-logo-transparent.png" alt="화성특례시 삼괴기독교연합회"></a>
@@ -249,7 +271,7 @@
     <button class="nav prev" id="lbPrev" aria-label="이전">‹</button>
     <img id="lbImg" src="" alt="" />
     <button class="nav next" id="lbNext" aria-label="다음">›</button>
-    <div class="count" id="lbCount"></div>
+    <div class="count" id="lbCount" aria-live="polite"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -425,14 +447,24 @@
     }
 
     // ---------- 히스토리(뒤로가기) 모달 관리 ----------
-    var modalStack = [];
-    function pushModal(name){ modalStack.push(name); history.pushState({m:name}, ''); }
-    function requestCloseTop(){ if(modalStack.length) history.back(); }
+    var modalStack = [], modalFocus = [], modalClosing = false;
+    function pushModal(name){
+      modalFocus.push(document.activeElement); modalStack.push(name); history.pushState({m:name}, '');
+      var el=document.getElementById(name==='detail'?'detailOverlay':name==='write'?'writeOverlay':'lightbox');
+      el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',name==='lightbox'?'사진 확대 보기':name==='detail'?'갤러리 게시글':'게시글 작성');
+      if(name==='lightbox') document.getElementById('detailOverlay').inert=true;
+      else document.querySelector('header').inert=true;
+      var first=el.querySelector('button'); if(first) first.focus();
+    }
+    function requestCloseTop(){ if(modalStack.length && !modalClosing){ modalClosing=true; history.back(); } }
     window.addEventListener('popstate', function(){
-      var name = modalStack.pop();
+      var name = modalStack.pop(); modalClosing=false;
+      document.getElementById('detailOverlay').inert=false;
+      if(!modalStack.length) document.querySelector('header').inert=false;
       if(name === 'lightbox') hideLightbox();
       else if(name === 'detail') hideDetail();
       else if(name === 'write') hideWrite();
+      var focus=modalFocus.pop(); if(focus && focus.isConnected) focus.focus({preventScroll:true});
     });
 
     // ---------- 상세 모달 ----------
@@ -514,45 +546,23 @@
       if(iNext) iNext.addEventListener('click', function(e){ e.stopPropagation(); slideIdx=(slideIdx+1)%photos.length; drawSlide(); });
       // 사진을 누르면 크게 보기 — 지금 보이는 장으로. 사진 틀에 한 번만 걸어 둠
       //  (쓸어 넘기기에서 손가락을 틀이 잡고 있으면 누른 곳이 사진이 아니라 틀로 잡혀서, 사진에 걸면 가끔 안 열림)
-      var mediaEl = modal.querySelector('.imedia'), swMoved = 0;
+      var mediaEl = modal.querySelector('.imedia');
+      if(mediaEl && track){
+        mediaEl.tabIndex=0;mediaEl.setAttribute('aria-label','사진 보기: 좌우로 넘기거나 Enter 키로 확대');
+        mediaEl.addEventListener('keydown',function(e){if(e.target===mediaEl && (e.key==='Enter'||e.key===' ')){e.preventDefault();mediaEl.focus();openLightbox(photos.map(function(x){return x.url;}),slideIdx);}});
+      }
       if(mediaEl && track) mediaEl.addEventListener('click', function(e){
-        if(swMoved > 8 || e.target.closest('.inav')) return;
+        if(e.target.closest('.inav')) return;
+        mediaEl.focus({preventScroll:true});
         openLightbox(photos.map(function(x){return x.url;}), slideIdx);
       });
-      // 쓸어 넘기기 (모바일·마우스 드래그 공용) — 손을 따라 움직이고, 충분히 밀면 다음/이전 장
-      if(mediaEl && track && photos.length > 1){
-        var swX = null, swDx = 0;
-        mediaEl.addEventListener('pointerdown', function(e){
-          swX = e.clientX; swDx = 0; swMoved = 0;
-          try{ mediaEl.setPointerCapture(e.pointerId); }catch(_){}
-        });
-        // 옆으로 쓸 때는 브라우저가 화면 스크롤로 받지 않게 — 스크롤로 받으면 쓸어 넘긴 뒤 첫 번째 누름이 먹혀서
-        //  사진을 두 번 눌러야 크게 보임 (위아래 스크롤은 그대로)
-        sideSwipe(mediaEl, function(){ return swX !== null; });
-        mediaEl.addEventListener('pointermove', function(e){
-          if(swX === null) return;
-          swDx = e.clientX - swX;
-          swMoved = Math.max(swMoved, Math.abs(swDx));
-          track.style.transition = 'none';
-          track.style.transform = 'translateX(calc(-' + (slideIdx*100) + '% + ' + swDx + 'px))';
-        });
-        function swEnd(){
-          if(swX === null) return;
-          track.style.transition = '';
-          var th = Math.max(40, (mediaEl.clientWidth || 300) * 0.15);
-          if(Math.abs(swDx) > th){
-            slideIdx = Math.min(photos.length - 1, Math.max(0, slideIdx + (swDx < 0 ? 1 : -1)));
-          }
-          drawSlide(); swX = null; swDx = 0;
-        }
-        mediaEl.addEventListener('pointerup', swEnd);
-        mediaEl.addEventListener('pointercancel', swEnd);
-        // 쓸어 넘긴 경우에는 사진 클릭(라이트박스 확대) 무시
-        mediaEl.addEventListener('click', function(e){
-          if(swMoved > 8){ e.preventDefault(); e.stopPropagation(); }
-        }, true);
-        mediaEl.addEventListener('dragstart', function(e){ e.preventDefault(); });
+      if(mediaEl && track && photos.length>1){
+        bindPhotoSwipe(mediaEl, function(dx){
+          track.style.transition=dx===null?'':'none';
+          track.style.transform=dx===null?'translateX(-'+(slideIdx*100)+'%)':'translateX(calc(-'+(slideIdx*100)+'% + '+dx+'px))';
+        }, function(dir){ slideIdx=(slideIdx+dir+photos.length)%photos.length; drawSlide(); });
       }
+      modal.photoStep=function(dir){ if(photos.length>1){slideIdx=(slideIdx+dir+photos.length)%photos.length;drawSlide();} };
       // 좋아요·댓글
       var heart = document.getElementById('iHeart');
       if(heart) heart.addEventListener('click', function(){ toggleReaction(p.id,HEART); });
@@ -672,15 +682,33 @@
       });
     }
 
-    // 옆으로 쓸 때는 브라우저가 화면 스크롤로 받지 않게 — 스크롤로 받으면 쓸어 넘긴 뒤 첫 번째 누름이 먹혀서
-    //  사진을 두 번 눌러야 크게 보임. 위아래로 쓸거나 두 손가락(확대)일 때는 그대로 둠
-    function sideSwipe(el, active){
-      var x0=0, y0=0;
-      el.addEventListener('touchstart', function(e){ var t=e.touches[0]; x0=t.clientX; y0=t.clientY; }, { passive:true });
-      el.addEventListener('touchmove', function(e){
-        var t=e.touches[0], dx=Math.abs(t.clientX-x0), dy=Math.abs(t.clientY-y0);
-        if(active() && e.touches.length===1 && dx>10 && dx>dy*1.2 && e.cancelable) e.preventDefault();
-      }, { passive:false });
+    // Commit only horizontal, primary-pointer gestures; cancellation never turns a page.
+    function bindPhotoSwipe(el, paint, step){
+      var start=null, dx=0, horizontal=false, suppressUntil=0;
+      el.addEventListener('pointerdown',function(e){
+        if(!e.isPrimary){start=null;paint(null);return;}
+        suppressUntil=0;
+        if(e.button!==0 || e.target.closest('button') || (window.visualViewport && visualViewport.scale>1.01)) return;
+        start={x:e.clientX,y:e.clientY,id:e.pointerId};dx=0;horizontal=false;
+      });
+      el.addEventListener('pointermove',function(e){
+        if(!start || e.pointerId!==start.id) return;
+        dx=e.clientX-start.x;var dy=e.clientY-start.y;
+        if(!horizontal){
+          if(Math.abs(dy)>10 && Math.abs(dy)>Math.abs(dx)){start=null;return;}
+          if(Math.abs(dx)<10 || Math.abs(dx)<Math.abs(dy)*1.2)return;
+          horizontal=true;try{el.setPointerCapture(e.pointerId);}catch(_){}
+        }
+        suppressUntil=Date.now()+450; paint(dx);
+      });
+      function end(e){
+        if(!start || e.pointerId!==start.id)return;
+        var change=horizontal && e.type!=='pointercancel' && Math.abs(dx)>Math.max(40,el.clientWidth*.12);
+        start=null;paint(null);if(change)step(dx<0?1:-1);
+      }
+      el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+      el.addEventListener('click',function(e){if(Date.now()<suppressUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+      el.addEventListener('dragstart',function(e){e.preventDefault();});
     }
 
     // ---------- 라이트박스 ----------
@@ -689,6 +717,7 @@
     function hideLightbox(){ document.getElementById('lightbox').classList.remove('on'); }
     function drawLb(){
       document.getElementById('lbImg').src = lbPhotos[lbIdx]||'';
+      document.getElementById('lbImg').alt = '갤러리 사진 '+(lbIdx+1)+' / '+lbPhotos.length;
       document.getElementById('lbCount').textContent = (lbPhotos.length>1)? (lbIdx+1)+' / '+lbPhotos.length : '';
       var multi = lbPhotos.length>1;
       document.getElementById('lbPrev').style.display = multi?'block':'none';
@@ -697,47 +726,35 @@
     document.getElementById('lbClose').addEventListener('click', requestCloseTop);
     document.getElementById('lbPrev').addEventListener('click', function(e){ e.stopPropagation(); lbIdx=(lbIdx-1+lbPhotos.length)%lbPhotos.length; drawLb(); });
     document.getElementById('lbNext').addEventListener('click', function(e){ e.stopPropagation(); lbIdx=(lbIdx+1)%lbPhotos.length; drawLb(); });
-    // 쓸어 넘기기 (모바일) — 손가락을 따라 사진이 움직이고, 충분히 밀면 이전 · 다음 장 (확대해서 보는 중에는 쉼)
-    var lbX=null, lbDx=0, lbMoved=0;
-    (function(){
-      var lb=document.getElementById('lightbox'), img=document.getElementById('lbImg');
-      // 양옆 ‹ › 단추 위에서 시작해도 쓸어 넘길 수 있음 (엄지가 닿는 곳) — 닫기(×)만 뺌
-      lb.addEventListener('pointerdown', function(e){
-        lbMoved=0;
-        if(lbPhotos.length<2 || e.target.closest('.x') || (window.visualViewport && window.visualViewport.scale>1.01)) return;
-        lbX=e.clientX; lbDx=0; img.style.transition='none';
-      });
-      lb.addEventListener('pointermove', function(e){
-        if(lbX===null) return;
-        lbDx=e.clientX-lbX; lbMoved=Math.max(lbMoved,Math.abs(lbDx));
-        img.style.transform='translateX('+lbDx+'px)';
-      });
-      function end(){
-        if(lbX===null) return;
-        lbX=null; img.style.transition='transform .2s ease'; img.style.transform='';
-        if(Math.abs(lbDx)>Math.max(40, window.innerWidth*0.12)){ lbIdx=(lbIdx+(lbDx<0?1:-1)+lbPhotos.length)%lbPhotos.length; drawLb(); }
-      }
-      lb.addEventListener('pointerup', end);
-      lb.addEventListener('pointercancel', end);
-      img.addEventListener('dragstart', function(e){ e.preventDefault(); });
-      sideSwipe(lb, function(){ return lbX!==null; });
-      // 쓸어 넘긴 경우에는 ‹ › 단추 누름으로 치지 않음
-      lb.addEventListener('click', function(e){ if(lbMoved>8 && e.target!==lb){ e.preventDefault(); e.stopPropagation(); } }, true);
-    })();
-    // 바깥(검은 곳)을 누르면 닫기 — 쓸어 넘긴 경우는 닫지 않음
-    document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this && lbMoved<=8) requestCloseTop(); });
+    bindPhotoSwipe(document.getElementById('lightbox'),function(dx){
+      var img=document.getElementById('lbImg');img.style.transform=dx===null?'':'translateX('+dx+'px)';
+    },function(dir){if(lbPhotos.length>1){lbIdx=(lbIdx+dir+lbPhotos.length)%lbPhotos.length;drawLb();}});
 
     // ---------- 글쓰기 팝업 ----------
     function openWrite(){ document.getElementById('writeOverlay').classList.add('on'); document.body.style.overflow='hidden'; pushModal('write'); }
     function hideWrite(){ document.getElementById('writeOverlay').classList.remove('on'); if(!modalStack.length) document.body.style.overflow=''; }
     document.getElementById('writeOpenBtn').addEventListener('click', openWrite);
     document.getElementById('wClose').addEventListener('click', requestCloseTop);
-    document.getElementById('writeOverlay').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
+
 
     // 오버레이 배경 클릭 / ESC 로 닫기
-    document.getElementById('detailOverlay').addEventListener('click', function(e){ if(e.target===this) requestCloseTop(); });
+    ['detailOverlay','writeOverlay','lightbox'].forEach(function(id){
+      var el=document.getElementById(id), down=false;
+      el.addEventListener('pointerdown',function(e){down=e.target===el;});
+      el.addEventListener('pointercancel',function(){down=false;});
+      el.addEventListener('click',function(e){if(down && e.target===el)requestCloseTop();down=false;});
+    });
     document.addEventListener('keydown', function(e){
-      if(e.key==='Escape'){ requestCloseTop(); }
+      if(!modalStack.length)return;
+      if(e.key==='Tab'){
+        var top=modalStack[modalStack.length-1], root=document.getElementById(top==='lightbox'?'lightbox':top==='detail'?'detailOverlay':'writeOverlay');
+        var nodes=Array.from(root.querySelectorAll('button,a[href],textarea,input,select,[tabindex="0"]')).filter(function(n){return !n.disabled && n.getClientRects().length;});
+        if(nodes.length && e.shiftKey && document.activeElement===nodes[0]){e.preventDefault();nodes[nodes.length-1].focus();}
+        else if(nodes.length && !e.shiftKey && document.activeElement===nodes[nodes.length-1]){e.preventDefault();nodes[0].focus();}
+      }
+      if(e.key==='Escape'){ e.preventDefault();requestCloseTop(); }
+      else if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+      else if(modalStack[modalStack.length-1]==='detail' && (e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();var step=document.getElementById('detailModal').photoStep;if(step)step(e.key==='ArrowLeft'?-1:1);}
       else if(document.getElementById('lightbox').classList.contains('on') && lbPhotos.length>1){
         if(e.key==='ArrowLeft'){ lbIdx=(lbIdx-1+lbPhotos.length)%lbPhotos.length; drawLb(); }
         else if(e.key==='ArrowRight'){ lbIdx=(lbIdx+1)%lbPhotos.length; drawLb(); }
