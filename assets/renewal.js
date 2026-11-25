@@ -8,6 +8,8 @@
   panels.forEach(function(p){p.addEventListener('pointerenter',function(){if(fine.matches)activate(p);});p.addEventListener('focusin',function(){activate(p);});var b=p.querySelector('[data-panel-toggle]');if(b)b.addEventListener('click',function(){activate(p);});});
   // Reuse the same loaded records as the calendar, including officer-adjusted dates.
   window.addEventListener('samgoe:prayer',function(e){renderPrayer(e.detail);});
+  var applyLink=document.getElementById('rApply');
+  if(applyLink)applyLink.addEventListener('click',function(e){if(location.hash===applyLink.hash&&/^#prayer-apply-/.test(applyLink.hash)){e.preventDefault();window.dispatchEvent(new HashChangeEvent('hashchange'));}});
   function renderPrayer(data){
     var label=document.getElementById('rNextDate'), place=document.getElementById('rNextPlace'), apply=document.getElementById('rApply');
     if(!label||!apply)return;
