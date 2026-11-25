@@ -1,0 +1,345 @@
+[
+  {
+    "name": "고온교회",
+    "pastor": "심상훈 목사",
+    "denomination": "대한 예수교 성결교",
+    "region": "우정읍",
+    "address": "우정읍 매향선창길 34"
+  },
+  {
+    "name": "꽃밭교회",
+    "pastor": "남기훈 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 꽃밭길 25-6"
+  },
+  {
+    "name": "길벗교회",
+    "pastor": "정한숙 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 3.1 만세로 136"
+  },
+  {
+    "name": "노진제일교회",
+    "pastor": "박종덕 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 노진길 159"
+  },
+  {
+    "name": "노진교회",
+    "pastor": "손병민 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "장안면",
+    "address": "장안면 화곡로 159-8"
+  },
+  {
+    "name": "덕성교회",
+    "pastor": "이상철 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 반개골길 26-20"
+  },
+  {
+    "name": "독정교회",
+    "pastor": "김동천 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "장안면",
+    "address": "장안면 풍무길 90번길 23"
+  },
+  {
+    "name": "매향교회",
+    "pastor": "정진학 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "우정읍",
+    "address": "우정읍 매향웃말길 15"
+  },
+  {
+    "name": "복지교회",
+    "pastor": "오대석 목사",
+    "denomination": "대한 선교 침례 연합",
+    "region": "우정읍",
+    "address": "우정읍 이화뱅곶길 48번길 8-3"
+  },
+  {
+    "name": "브니엘교회",
+    "pastor": "조영애 목사",
+    "denomination": "대한 예수교 장로회(개혁)",
+    "region": "장안면",
+    "address": "장안면 사랑길 15"
+  },
+  {
+    "name": "생명나무교회",
+    "pastor": "박상현 목사",
+    "denomination": "대한 예수교 장로회(개혁)",
+    "region": "우정읍",
+    "address": "우정읍 조암로 50-3"
+  },
+  {
+    "name": "새화수교회",
+    "pastor": "한길용 목사",
+    "denomination": "대한 기독교 나사렛 성결회",
+    "region": "우정읍",
+    "address": "우정읍 원안길 167"
+  },
+  {
+    "name": "석천교회",
+    "pastor": "최현재 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 작은낭깨길 9-6"
+  },
+  {
+    "name": "석포교회",
+    "pastor": "박주환 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "장안면",
+    "address": "장안면 무봉길 176-3"
+  },
+  {
+    "name": "성은교회",
+    "pastor": "황권선 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 조암동로 36번길 11 201호"
+  },
+  {
+    "name": "생수교회",
+    "pastor": "이영이 목사",
+    "denomination": "기독교대한 하나님의 성회",
+    "region": "장안면",
+    "address": "장안면 포승장안로 1528"
+  },
+  {
+    "name": "시은소교회",
+    "pastor": "김낭주 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 포승장문로 1524"
+  },
+  {
+    "name": "신흥비전교회",
+    "pastor": "김선미 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "우정읍",
+    "address": "우정읍 조암로 21번길4 2층"
+  },
+  {
+    "name": "염광교회",
+    "pastor": "한준용 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "우정읍",
+    "address": "우정읍 매향석천로 110"
+  },
+  {
+    "name": "영광교회",
+    "pastor": "김경진 목사",
+    "denomination": "독립",
+    "region": "우정읍",
+    "address": "우정읍 평밭길 256-7"
+  },
+  {
+    "name": "예수정안교회",
+    "pastor": "이성범 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "장안면",
+    "address": "장안면 용토길 9-7"
+  },
+  {
+    "name": "예손교회",
+    "pastor": "김용훈 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "화성시 우정읍 버들로42"
+  },
+  {
+    "name": "우정교회",
+    "pastor": "조인상 목사",
+    "denomination": "기독교 한국 침례회",
+    "region": "우정읍",
+    "address": "우정읍 물미길 12"
+  },
+  {
+    "name": "우정교회",
+    "pastor": "양봉국 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 띨뿌리1길 21-2"
+  },
+  {
+    "name": "운평장로교회",
+    "pastor": "김동석 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "우정읍",
+    "address": "우정읍 운평길 47"
+  },
+  {
+    "name": "이화교회",
+    "pastor": "김지웅 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 덕곡길 46-9"
+  },
+  {
+    "name": "인자교회",
+    "pastor": "김용구 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "우정읍",
+    "address": "우정읍 조암안말길 2-4"
+  },
+  {
+    "name": "장안교회",
+    "pastor": "한민규 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 장호동길30"
+  },
+  {
+    "name": "장안제일교회",
+    "pastor": "김두희 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "장안면",
+    "address": "장안면 장안고잔길5"
+  },
+  {
+    "name": "조암교회",
+    "pastor": "진대흥 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 조암북로 24번길11"
+  },
+  {
+    "name": "조암신흥교회",
+    "pastor": "장명희 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "우정읍",
+    "address": "우정읍 조암북로19번길16"
+  },
+  {
+    "name": "조암제일교회",
+    "pastor": "김재도 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "장안면",
+    "address": "장안면 사랑길 133-8"
+  },
+  {
+    "name": "조암중앙교회",
+    "pastor": "제재호 목사",
+    "denomination": "기독교 한국 침례회",
+    "region": "우정읍",
+    "address": "우정읍 버돌로 88번길 18"
+  },
+  {
+    "name": "주곡교회",
+    "pastor": "김종호 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 매바위로 127"
+  },
+  {
+    "name": "주사랑교회",
+    "pastor": "이우성 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 기아자동차로 762"
+  },
+  {
+    "name": "엘바람교회",
+    "pastor": "이정렬 목사",
+    "denomination": "대한예수교연합오순절",
+    "region": "우정읍",
+    "address": "조암동로 58 상가동 1호"
+  },
+  {
+    "name": "한마음교회",
+    "pastor": "김광옥 목사",
+    "denomination": "기독교 대한 하나님의 성회",
+    "region": "장안면",
+    "address": "장안면 승저골길 8"
+  },
+  {
+    "name": "호곡교회",
+    "pastor": "박성규 목사",
+    "denomination": "대한 기독교 나사렛 성결회",
+    "region": "우정읍",
+    "address": "우정읍 호곡길 158-12"
+  },
+  {
+    "name": "화산교회",
+    "pastor": "유승용 목사",
+    "denomination": "대한 예수교장로회(합동)",
+    "region": "우정읍",
+    "address": "우정읍 한말길 63-8"
+  },
+  {
+    "name": "화성권능교회",
+    "pastor": "류성원 목사",
+    "denomination": "대한 예수교장로회(합동)",
+    "region": "우정읍",
+    "address": "우정읍 남양만로 881"
+  },
+  {
+    "name": "화성소망교회",
+    "pastor": "김용태 목사",
+    "denomination": "대한 예수교 장로회(통합)",
+    "region": "우정읍",
+    "address": "우정읍 쌍봉로 465-7"
+  },
+  {
+    "name": "화수교회",
+    "pastor": "남용남 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "우정읍",
+    "address": "우정읍 화수길 22-6"
+  },
+  {
+    "name": "장안제일교회",
+    "pastor": "김요한 목사",
+    "denomination": "기독교 대한 감리회",
+    "region": "장안면",
+    "address": "장안면 한천 1길 32-3"
+  },
+  {
+    "name": "굳프랜드교회",
+    "pastor": "오동길 목사",
+    "denomination": "대한 예수교 장로회(백석)",
+    "region": "우정읍",
+    "address": "우정읍 조암서로 7 4층"
+  },
+  {
+    "name": "순복음조암영광교회",
+    "pastor": "김정서 목사",
+    "denomination": "기독교 대한 하나님의 성회",
+    "region": "우정읍",
+    "address": "우정읍 장안로 32"
+  },
+  {
+    "name": "축복교회",
+    "pastor": "박창대 목사",
+    "denomination": "대한 예수교 장로회(백석)",
+    "region": "장안면",
+    "address": "장안면 포승장안로 861-18"
+  },
+  {
+    "name": "율리교회",
+    "pastor": "박현정 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "우정읍",
+    "address": "우정읍 배미길 87"
+  },
+  {
+    "name": "활빈교회",
+    "pastor": "권오현 목사",
+    "denomination": "대한 예수교장로회(통합)",
+    "region": "우정읍",
+    "address": "우정읍 남양만로 854-7"
+  },
+  {
+    "name": "향원교회",
+    "pastor": "우종현 목사",
+    "denomination": "대한 예수교 장로회(합동)",
+    "region": "우정읍",
+    "address": "우정읍 기아자동차로 531 2층"
+  }
+]
