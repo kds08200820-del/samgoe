@@ -1,5 +1,17 @@
 # 삼괴지역 기독교 연합회 (삼기연) — 공식 홈페이지
 
+## 2026년 11월 홈페이지 리뉴얼
+
+- `index.html`: 다섯 개의 반응형 패널(나의 메뉴, 교회 및 임원 소개, 갤러리, 언론 보도, 삼기연 활동). 임원 자료실은 상단 메뉴에서 연결합니다.
+- `introduction.html`: 제19회 총회 자료집의 회원교회 49곳 검색과 임원 8명 소개. 공개 교회 명단은 `assets/council-churches.json`에서 관리합니다.
+- `activities.html`: 총회 사업보고와 기존 홈페이지 기록을 활용한 2026년 활동 16건, 조찬기도회 7건. 활동 종류별 필터는 `assets/activities.js`가 담당합니다.
+- `press.html`: 기존 Supabase `press_articles`를 읽는 검색 가능한 보도 목록입니다. 등록·수정은 기존 홈페이지 관리 화면에서 합니다.
+- `assets/renewal.css`, `assets/renewal.js`: 공통 헤더, 패널 확장, 모바일 메뉴, 로그인 상태와 다음 기도회 안내. 기도회 안내는 기존 캘린더가 불러온 데이터와 `samgoe:prayer` 이벤트를 공유합니다.
+- `assets/modern-theme.css`: 회원·관리 화면과 팝업까지 공통 색상·글꼴·버튼·입력창을 적용합니다. 각 페이지의 스타일보다 마지막에 불러옵니다.
+- 검색 노출을 위한 canonical, Organization 구조화 데이터와 공개 페이지용 `sitemap.xml`을 관리합니다. 관리·회원 전용 화면에는 `noindex`를 사용합니다. 접근 권한은 기존 Supabase RLS 및 서버에서 확인해야 합니다.
+
+화면 확인: 390px 모바일 가로 넘침, 메뉴 열기/Escape, 패널 선택, 교회 검색, 활동 필터, 보도 데이터 로드, 기도회 신청창 열기/닫기/초점 복원. 신청 시험에서는 운영 DB에 기록하지 않습니다.
+
 Static, single-page site implemented from the Claude Design handoff
 (`project/삼괴지역 기독교 연합회.dc.html`). No build step, no framework — plain
 HTML + CSS. The prototype's React `dc-runtime` and drag-and-drop `<image-slot>`
