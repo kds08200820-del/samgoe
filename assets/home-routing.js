@@ -1,1 +1,3 @@
 (function(){function route(){var hash=location.hash,target=null;if(/^#prayer(?:-apply(?:-\d{4}-\d{1,2})?)?$/.test(hash)||hash==='#prayerCal')target='prayer.html'+hash;else target={'#notices':'updates.html','#pressSec':'press-manage.html','#about':'introduction.html#about','#org':'introduction.html#officers','#churches':'introduction.html#churches','#gallery':'gallery.html','#bylaws':'bylaws.html','#join':'join.html','#contact':'contact.html'}[hash];if(target)location.replace(target);}route();window.addEventListener('hashchange',route);})();
+
+if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
