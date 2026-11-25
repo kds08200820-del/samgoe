@@ -11,3 +11,4 @@ footer:not(.r-footer){background:#f0f2e9!important;border-top:1px solid #dfe3d7!
 .r-menu-toggle{white-space:nowrap;min-width:68px;font-size:14px}.r-header .r-brand{flex-shrink:0}@media(max-width:760px){.r-header{gap:12px;padding:0 16px}.r-brand img.r-official-logo{width:235px!important}}
 
 .r-header #authArea{max-width:none!important;flex-shrink:0;white-space:nowrap;gap:8px;flex-wrap:nowrap!important}.r-header #authArea>a,.r-header #authArea>span{white-space:nowrap!important;flex-shrink:0}.r-header .r-nav{flex-shrink:0}@media(min-width:1091px) and (max-width:1350px){.r-brand img.r-official-logo{width:230px!important}.r-header{padding-inline:22px;gap:18px}.r-nav{gap:13px}.r-nav a{font-size:13px}}
+@media(min-width:761px){.r-home{height:calc(100svh - 136px);min-height:560px;max-height:none}.r-bottom-strip{min-height:58px;align-items:center}}
