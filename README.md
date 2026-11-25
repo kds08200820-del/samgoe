@@ -10,6 +10,8 @@
 - `assets/modern-theme.css`: 회원·관리 화면과 팝업까지 공통 색상·글꼴·버튼·입력창을 적용합니다. 각 페이지의 스타일보다 마지막에 불러옵니다.
 - 검색 노출을 위한 canonical, Organization 구조화 데이터와 공개 페이지용 `sitemap.xml`을 관리합니다. 관리·회원 전용 화면에는 `noindex`를 사용합니다. 접근 권한은 기존 Supabase RLS 및 서버에서 확인해야 합니다.
 
+첫 화면은 메뉴 패널만 제공하며 박스를 클릭하면 각각의 페이지로 이동합니다. 기도회 일정과 신청은 `prayer.html`, 공지는 `updates.html`, 보도 등록·관리는 `press-manage.html`, 회칙·가입·문의는 `bylaws.html`·`join.html`·`contact.html`에서 제공합니다. 기존 `index.html#prayer-apply-...` 공유 주소는 `assets/home-routing.js`가 새 기도회 페이지로 연결합니다. 첫 화면의 기도회 요약은 공개 일정·신청 슬롯만 조회합니다. 사모 게시판 메뉴는 종료했으며 기존 `samo.html` 주소는 홈으로 이동합니다. 기록은 DB에서 삭제하지 않습니다.
+
 화면 확인: 390px 모바일 가로 넘침, 메뉴 열기/Escape, 패널 선택, 교회 검색, 활동 필터, 보도 데이터 로드, 기도회 신청창 열기/닫기/초점 복원. 신청 시험에서는 운영 DB에 기록하지 않습니다.
 
 Static, single-page site implemented from the Claude Design handoff

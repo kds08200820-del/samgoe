@@ -104,7 +104,6 @@
       parts.push('<span style="color:#fff;font-weight:600">' + String(nm).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }) + '님</span>');
       if (window.canEnterOfficerRoom(user, profile)) parts.push('<a href="officer.html" style="color:#e8c4a6;font-weight:700">관리자 메뉴</a>');
       parts.push(lk('inquiry.html', '문의'));
-      if (window.isSamo(user, profile)) parts.push(lk('samo.html', '사모 게시판', ';font-weight:700'));
       parts.push(lk('mypage.html', '내 정보'));
       parts.push('<a href="#" id="logoutBtn" style="color:rgba(255,255,255,0.9)">로그아웃</a>');
       el.innerHTML = parts.join(sep);
