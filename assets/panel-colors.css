@@ -1,0 +1,12 @@
+/* Distinct, restrained colors for the five homepage destinations. */
+.r-personal{background:#efeee7!important}
+.r-personal .r-prayer{background:#dedfd6}
+.r-panel[data-page="introduction.html"]{--panel-rgb:70,91,107;background:#465b6b!important}
+.r-panel[data-page="gallery.html"]{--panel-rgb:126,96,80;background:#7e6050!important}
+.r-panel[data-page="press.html"]{--panel-rgb:84,110,89;background:#546e59!important}
+.r-panel[data-page="activities.html"]{--panel-rgb:45,55,57;background:#2d3739!important}
+.r-panel[data-page] .r-panel-bg{height:69%;filter:grayscale(1);opacity:.92}
+.r-panel[data-page].is-active .r-panel-bg{filter:grayscale(1)}
+.r-panel[data-page]::after{background:linear-gradient(180deg,rgba(var(--panel-rgb),.42) 0%,rgba(var(--panel-rgb),.06) 32%,rgba(var(--panel-rgb),.12) 48%,rgba(var(--panel-rgb),.78) 62%,rgb(var(--panel-rgb)) 70%)}
+.r-panel[data-page] .r-panel-top{color:#fff}
+.r-personal .r-panel-title{color:#30352e}
